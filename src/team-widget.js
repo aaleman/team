@@ -383,10 +383,9 @@ PanelsWidget.prototype = {
                 value: panel.name
             })
         });
-        console.log(data);
 
         this.diseaseStore = Ext.create("Ext.data.Store", {
-            fields: ['value'],
+            fields: ['name','value'],
             data: data
         });
 
@@ -1392,7 +1391,6 @@ PanelsWidget.prototype = {
     _initializeDiseasePanel: function () {
         var panels = []
         panels.push(this._createDiseasePanel("Example Panel Ret.", ["Retinitis"], ["Usher syndrome"]));
-//        panels.push(this._createDiseasePanel("Example Panel Usher.", ["Usher Syndrome"], ["Retinitis"]));
 
         if (localStorage.bioinfo_panels_panels) {
             var lsPanels = JSON.parse(localStorage.bioinfo_panels_panels);
@@ -1400,6 +1398,14 @@ PanelsWidget.prototype = {
                 panels.push(lsPanels[i]);
             }
         }
+
+        if(localStorage.bioinfo_panels_user_settings)
+            {
+                var userDefinedPanels = JSON.parse(localStorage.bioinfo_panels_user_settings);
+                for(var i = 0; i< userDefinedPanels.length; i++){
+                    panels.push(userDefinedPanels[i]);
+                }
+            }
 
         return panels;
     },
