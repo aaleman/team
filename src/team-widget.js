@@ -702,15 +702,15 @@ PanelsWidget.prototype = {
                 dataIndex: 'quality',
                 flex: 1
             },
-            {dataIndex: "ensembl_protein", text: 'ensembl_protein', flex: 1},
-            {dataIndex: "reference_mutation", text: 'reference_mutation', flex: 1},
-            {dataIndex: "xref", text: 'xref', flex: 1},
-            {dataIndex: "description", text: 'description', flex: 1},
-            {dataIndex: "omim", text: 'onim', flex: 1},
-            {dataIndex: "hgvs_cds", text: 'hgvs_cds', flex: 1},
-            {dataIndex: "hgvs_protein", text: 'hgvs_protein', flex: 1},
-            {dataIndex: "sift", text: 'sift', flex: 1},
-            {dataIndex: "polyphen", text: 'polyphen', flex: 1}
+            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1},
+            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1},
+            {dataIndex: "xref"              , text: 'Xref'              , flex: 1},
+            {dataIndex: "description"       , text: 'Description'       , flex: 1},
+            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1},
+            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1},
+            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1},
+            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1},
+            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1}
         ];
 
         _this.modelVC = Ext.define('Variant', {
@@ -796,7 +796,7 @@ PanelsWidget.prototype = {
                 flex: 1
             },
             {
-                text: 'Id',
+                text: 'SNP Id',
                 dataIndex: 'id_snp',
                 flex: 1
             },
@@ -815,7 +815,7 @@ PanelsWidget.prototype = {
                 flex: 1
             },
             {
-                text: 'Consequence Type',
+                text: 'Conseq. Type',
                 dataIndex: 'ct',
                 flex: 1
             },
@@ -824,15 +824,15 @@ PanelsWidget.prototype = {
                 dataIndex: 'quality',
                 flex: 1
             },
-            {dataIndex: "ensembl_protein", text: 'ensembl_protein', flex: 1},
-            {dataIndex: "reference_mutation", text: 'reference_mutation', flex: 1},
-            {dataIndex: "xref", text: 'xref', flex: 1},
-            {dataIndex: "description", text: 'description', flex: 1},
-            {dataIndex: "omim", text: 'onim', flex: 1},
-            {dataIndex: "hgvs_cds", text: 'hgvs_cds', flex: 1},
-            {dataIndex: "hgvs_protein", text: 'hgvs_protein', flex: 1},
-            {dataIndex: "sift", text: 'sift', flex: 1},
-            {dataIndex: "polyphen", text: 'polyphen', flex: 1}
+            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1},
+            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1},
+            {dataIndex: "xref"              , text: 'Xref'              , flex: 1},
+            {dataIndex: "description"       , text: 'Description'       , flex: 1},
+            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1},
+            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1},
+            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1},
+            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1},
+            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1}
         ];
 
         _this.modelSec = Ext.define('Variant', {
@@ -940,15 +940,15 @@ PanelsWidget.prototype = {
                 dataIndex: 'quality',
                 flex: 1
             },
-            {dataIndex: "ensembl_protein", text: 'ensembl_protein', flex: 1},
-            {dataIndex: "reference_mutation", text: 'reference_mutation', flex: 1},
-            {dataIndex: "xref", text: 'xref', flex: 1},
-            {dataIndex: "description", text: 'description', flex: 1},
-            {dataIndex: "omim", text: 'onim', flex: 1},
-            {dataIndex: "hgvs_cds", text: 'hgvs_cds', flex: 1},
-            {dataIndex: "hgvs_protein", text: 'hgvs_protein', flex: 1},
-            {dataIndex: "sift", text: 'sift', flex: 1},
-            {dataIndex: "polyphen", text: 'polyphen', flex: 1}
+            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1},
+            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1},
+            {dataIndex: "xref"              , text: 'Xref'              , flex: 1},
+            {dataIndex: "description"       , text: 'Description'       , flex: 1},
+            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1},
+            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1},
+            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1},
+            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1},
+            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1}
         ];
 
         _this.modelExtra = Ext.define('Variant', {

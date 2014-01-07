@@ -389,7 +389,7 @@ PanelListWidget.prototype.draw = function () {
     }
     this.exampleGrid.loadData(names);
 
-    this.show();
+    //this.show();
 };
 
 

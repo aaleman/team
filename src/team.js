@@ -5,10 +5,10 @@ function Team(args) {
     this.id = Utils.genId("Team");
 
     //set default args
-    this.suiteId = 61;
-    this.title = 'Team';
-    this.description = 'beta';
-    this.version = '0.0.1';
+    this.suiteId = 86;
+    this.title = 'TEAM';
+    this.description = '';
+    this.version = '1.0.0';
     this.border = true;
     this.targetId;
     this.width;
@@ -44,8 +44,8 @@ Team.prototype = {
         $(this.targetDiv).append(this.div);
 
 
-//        this.headerWidgetDiv = $('<div id="header-widget"></div>')[0];
-        this.headerWidgetDiv = $('<div id="header-widget" style="padding: 25px 0 20px 25px;"><div class="appName">' + this.title + '</div></div>')[0];
+        this.headerWidgetDiv = $('<div id="header-widget"></div>')[0];
+        //this.headerWidgetDiv = $('<div id="header-widget" style="padding: 25px 0 20px 25px;"><div class="appName">' + this.title + '</div></div>')[0];
 
         $(this.div).append(this.headerWidgetDiv);
         this.menuDiv = $('<div id="menu"></div>')[0];
@@ -92,7 +92,7 @@ Team.prototype = {
 
 
         /* Header Widget */
-        // this.headerWidget = this._createHeaderWidget($(this.headerWidgetDiv).attr('id'));
+        this.headerWidget = this._createHeaderWidget($(this.headerWidgetDiv).attr('id'));
 
         /* Header Widget */
         this.menu = this._createMenu($(this.menuDiv).attr('id'));
@@ -147,9 +147,9 @@ Team.prototype = {
                 {
                     id: this.id + 'jobsButton',
                     tooltip: 'Settings',
-                    text: '<span class="emph"> Hide settings </span>',
+                    text: '<span class="emph"> Show settings </span>',
                     enableToggle: true,
-                    pressed: true,
+                    pressed: false,
                     toggleHandler: function () {
                         if (this.pressed) {
                             this.setText('<span class="emph"> Hide settings </span>');
@@ -185,7 +185,38 @@ Team.prototype = {
 //        });
 
         return panelListWidget;
-    }
+    },
+    _createHeaderWidget: function (targetId) {
+        var _this = this;
+        var headerWidget = new HeaderWidget({
+            targetId: targetId,
+            autoRender: true,
+            appname: this.title,
+            description: this.description,
+            version: this.version,
+            //suiteId: this.suiteId,
+            suiteId: this.suiteId,
+            accountData: this.accountData,
+            allowLogin:false,
+            //handlers: {
+                //'login': function (event) {
+                    //Ext.example.msg('Welcome', 'You logged in');
+                    ////_this.sessionInitiated();
+                //},
+                //'logout': function (event) {
+                    //Ext.example.msg('Good bye', 'You logged out');
+                    ////_this.sessionFinished();
 
+                //},
+                //'account:change': function (event) {
+                    //_this.setAccountData(event.response);
+
+                //}
+            //}
+        });
+        headerWidget.draw();
+
+        return headerWidget;
+    },
 
 };

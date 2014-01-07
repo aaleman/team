@@ -69,6 +69,8 @@ PanelSettingsView.prototype = {
         _this.allDiseases.addAll(_this.secDiseases.getData());
 
         _this.panelName.reset();
+        _this.polyphen.reset();
+        _this.sift.reset();
         _this.allDiseases.refresh();
         _this.primDiseases.clear();
         _this.secDiseases.clear();
@@ -107,6 +109,9 @@ PanelSettingsView.prototype = {
             _this.clearSettings();
 
             _this.panelName.setValue(panel.name);
+            _this.polyphen.setValue(panel.polyphen);
+            _this.sift.setValue(panel.sift);
+            
             _this.primDiseases.loadData(primD);
             _this.secDiseases.loadData(secD);
             _this.diseaseGenes.loadData(genes);
@@ -218,6 +223,31 @@ PanelSettingsView.prototype = {
                 maxWidth: 300,
                 margin: "0 0 20 0"
             });
+        this.polyphen = Ext.create('Ext.form.NumberField',
+            {
+                id: _this.id + '_polyphen',
+                name: 'polyphen',
+                fieldLabel: 'PolyPhen',
+                height: 20,
+                maxWidth: 300,
+                step:0.01,
+                maxValue:1,
+                minValue:0
+
+                //margin: "0 0 20 0"
+            });
+        this.sift = Ext.create('Ext.form.NumberField',
+            {
+                id: _this.id + '_sift',
+                name: 'Sift',
+                fieldLabel: 'Sift',
+                height: 20,
+                maxWidth: 300,
+                step:0.01,
+                maxValue:1,
+                minValue:0
+                //margin: "0 0 20 0"
+            });
 
         _this.allDiseases = _this._createAllDiseases(filters, _this.diseases);
         _this.diseaseGenes = _this._createGenesGrid("Genes");
@@ -227,8 +257,8 @@ PanelSettingsView.prototype = {
 
         var window = Ext.create('Ext.window.Window', {
                 title: 'Settings',
-                height: 800,
-                width: 1000,
+                height: 600,
+                width: 800,
                 layout: {
                     type: 'vbox',
                     align: 'stretch'
@@ -276,6 +306,8 @@ PanelSettingsView.prototype = {
                         ]
 
                     },
+                    this.polyphen,
+                    this.sift
                 ],
                 listeners: {
                     minimize: function (win, obj) {
@@ -289,6 +321,8 @@ PanelSettingsView.prototype = {
                         handler: function () {
                             if (_this.edit) {
                                 var name = Ext.getCmp(_this.id + "_panelname").getValue();
+                                var polyphen = Ext.getCmp(_this.id + "_polyphen").getValue();
+                                var sift = Ext.getCmp(_this.id + "_sift").getValue();
                                 var pd = [];
                                 var sd = [];
                                 var genes = [];
@@ -309,16 +343,17 @@ PanelSettingsView.prototype = {
                                     name: name,
                                     primaryDiseases: pd,
                                     secondaryDisases: sd,
-                                    genes: genes
+                                    genes: genes,
+                                    polyphen:polyphen,
+                                    sift:sift
                                 };
 
                                 _this.parent.add(panel);
-//                                _this._addPanel(panel);
 //
                                 _this.clearSettings();
                                 _this.hide();
 
-//                                console.log(panel);
+                                console.log(panel);
 
                             }
                         }
