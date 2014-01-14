@@ -32,13 +32,6 @@ PanelsWidget.prototype = {
 
         this.panel = this._createPanel(this.targetId);
         this.tabPanel = this._createTabPanel();
-        //this.settings = this._createSettings();
-//        this.panelSettings = new PanelSettingsView({
-//            autoRender: true
-//        });
-//        this.panelSettings.draw();
-
-
         this.panels = this._initializeDiseasePanel();
 
         this.form = this._createForm();
@@ -661,55 +654,23 @@ PanelsWidget.prototype = {
         ];
         _this.columnsVC = [
             new Ext.grid.RowNumberer({width: 30}),
-            {
-                text: 'Chromosome',
-                dataIndex: 'chromosome',
-                flex: 1
-            },
-            {
-                text: 'Position',
-                dataIndex: 'position',
-                flex: 1
-            },
-            {
-                text: 'Id',
-                dataIndex: 'id_snp',
-                flex: 1
-            },
-            {
-                text: 'Ref',
-                dataIndex: 'reference',
-                flex: 1
-            },
-            {
-                text: 'Alt',
-                dataIndex: 'alternate',
-                flex: 1
-            },
-            {
-                text: 'Gene',
-                dataIndex: 'gene',
-                flex: 1
-            },
-            {
-                text: 'Consequence Type',
-                dataIndex: 'ct',
-                flex: 1
-            },
-            {
-                text: 'Quality',
-                dataIndex: 'quality',
-                flex: 1
-            },
-            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1},
-            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1},
-            {dataIndex: "xref"              , text: 'Xref'              , flex: 1},
-            {dataIndex: "description"       , text: 'Description'       , flex: 1},
-            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1},
-            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1},
-            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1},
-            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1},
-            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1}
+            {dataIndex: 'chromosome'        , text: 'Chromosome'        , flex: 1, emptyCellText:'.'},
+            {dataIndex: 'position'          , text: 'Position'          , flex: 1, emptyCellText:'.'},
+            {dataIndex: 'id_snp'            , text: 'Id'                , flex: 1, emptyCellText:'.'},
+            {dataIndex: 'reference'         , text: 'Ref'               , flex: 1, emptyCellText:'.'},
+            {dataIndex: 'alternate'         , text: 'Alt'               , flex: 1, emptyCellText:'.'},
+            {dataIndex: 'gene'              , text: 'Gene'              , flex: 1, emptyCellText:'.'},
+            {dataIndex: 'ct'                , text: 'Consequence Type'  , flex: 1, emptyCellText:'.'},
+            {dataIndex: 'quality'           , text: 'Quality'           , flex: 1, emptyCellText:'.'},
+            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1, emptyCellText:'.'},
+            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText:'.'},
+            {dataIndex: "xref"              , text: 'Xref'              , flex: 1, emptyCellText:'.' , hidden:true},
+            {dataIndex: "description"       , text: 'Description'       , flex: 1, emptyCellText:'.'},
+            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1, emptyCellText:'.', hidden:true},
+            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1, emptyCellText:'.'},
+            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1, emptyCellText:'.'},
+            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1, emptyCellText:'.'},
+            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1, emptyCellText:'.'}
         ];
 
         _this.modelVC = Ext.define('Variant', {
@@ -784,54 +745,23 @@ PanelsWidget.prototype = {
         ];
         _this.columnsSec = [
             new Ext.grid.RowNumberer({width: 30}),
-            {
-                text: 'Chromosome',
-                dataIndex: 'chromosome',
-                flex: 1
-            },
-            {
-                text: 'Position',
-                dataIndex: 'position',
-                flex: 1
-            },
-            {
-                text: 'SNP Id',
-                dataIndex: 'id_snp',
-                flex: 1
-            },
-            {
-                text: 'Ref',
-                dataIndex: 'reference',
-                flex: 1
-            },
-            {
-                text: 'Alt',
-                dataIndex: 'alternate',
-                flex: 1
-            }, {
-                text: 'Gene',
-                dataIndex: 'gene',
-                flex: 1
-            },
-            {
-                text: 'Conseq. Type',
-                dataIndex: 'ct',
-                flex: 1
-            },
-            {
-                text: 'Quality',
-                dataIndex: 'quality',
-                flex: 1
-            },
-            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1},
-            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1},
-            {dataIndex: "xref"              , text: 'Xref'              , flex: 1},
-            {dataIndex: "description"       , text: 'Description'       , flex: 1},
-            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1},
-            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1},
-            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1},
-            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1},
-            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1}
+            {dataIndex: 'chromosome'        , text: 'Chromosome'        , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'position'          , text: 'Position'          , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'id_snp'            , text: 'SNP Id'            , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'reference'         , text: 'Ref'               , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'alternate'         , text: 'Alt'               , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'gene'              , text: 'Gene'              , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'ct'                , text: 'Conseq. Type'      , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'quality'           , text: 'Quality'           , flex: 1, emptyCellText: '.'},
+            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1, emptyCellText: '.'} ,
+            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText: '.'} ,
+            {dataIndex: "xref"              , text: 'Xref'              , flex: 1, emptyCellText: '.', hidden:true} ,
+            {dataIndex: "description"       , text: 'Description'       , flex: 1, emptyCellText: '.'} ,
+            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1, emptyCellText: '.', hidden:true} ,
+            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1, emptyCellText: '.'} ,
+            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1, emptyCellText: '.'} ,
+            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1, emptyCellText: '.'} ,
+            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1, emptyCellText: '.'}
         ];
 
         _this.modelSec = Ext.define('Variant', {
@@ -905,49 +835,22 @@ PanelsWidget.prototype = {
         ];
         _this.columnsExtra = [
             new Ext.grid.RowNumberer({width: 30}),
-            {
-                text: 'Chromosome',
-                dataIndex: 'chromosome',
-                flex: 1
-            },
-            {
-                text: 'Position',
-                dataIndex: 'position',
-                flex: 1
-            },
-            {
-                text: 'Id',
-                dataIndex: 'id_snp',
-                flex: 1
-            },
-            {
-                text: 'Ref',
-                dataIndex: 'reference',
-                flex: 1
-            },
-            {
-                text: 'Alt',
-                dataIndex: 'alternate',
-                flex: 1
-            }, {
-                text: 'Gene',
-                dataIndex: 'gene',
-                flex: 1
-            },
-            {
-                text: 'Quality',
-                dataIndex: 'quality',
-                flex: 1
-            },
-            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1},
-            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1},
-            {dataIndex: "xref"              , text: 'Xref'              , flex: 1},
-            {dataIndex: "description"       , text: 'Description'       , flex: 1},
-            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1},
-            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1},
-            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1},
-            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1},
-            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1}
+            {dataIndex: 'chromosome'        , text: 'Chromosome'        , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'position'          , text: 'Position'          , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'id_snp'            , text: 'Id'                , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'reference'         , text: 'Ref'               , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'alternate'         , text: 'Alt'               , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'gene'              , text: 'Gene'              , flex: 1, emptyCellText: '.'},
+            {dataIndex: 'quality'           , text: 'Quality'           , flex: 1, emptyCellText: '.'},
+            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1, emptyCellText: '.'},
+            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText: '.'},
+            {dataIndex: "xref"              , text: 'Xref'              , flex: 1, emptyCellText: '.', hidden:true},
+            {dataIndex: "description"       , text: 'Description'       , flex: 1, emptyCellText: '.'},
+            {dataIndex: "omim"              , text: 'OMIM'              , flex: 1, emptyCellText: '.', hidden:true},
+            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1, emptyCellText: '.'},
+            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1, emptyCellText: '.'},
+            {dataIndex: "sift"              , text: 'SIFT'              , flex: 1, emptyCellText: '.'},
+            {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1, emptyCellText: '.'}
         ];
 
         _this.modelExtra = Ext.define('Variant', {
@@ -1095,10 +998,9 @@ PanelsWidget.prototype = {
             var panelVariant;
 
             if ((panelVariant = _this._checkVariant(variant, panel.primVar)) != null) {
-                console.log("ENTRA");
-
 
                 variant.gene = panelVariant.gene;
+                variant.description = panelVariant.primaryHistology;
 //                variant.hgvs_cds = panelVariant.mutationCDS;
 //                variant.hgvs_protein = panelVariant.mutationAA;
 //                variant.description = panelVariant.description;
@@ -1115,6 +1017,7 @@ PanelsWidget.prototype = {
 
 
                 variant.gene = panelVariant.gene;
+                variant.description = panelVariant.primaryHistology;
 //                variant.hgvs_cds = panelVariant.mutationCDS;
 //                variant.hgvs_protein = panelVariant.mutationAA;
 //                variant.description = panelVariant.description;
@@ -1210,6 +1113,9 @@ PanelsWidget.prototype = {
                 }
             )
             ;
+
+
+
 
             for (var i = 0; i < variants.length; i++) {
 
@@ -1390,7 +1296,12 @@ PanelsWidget.prototype = {
     },
     _initializeDiseasePanel: function () {
         var panels = []
-        panels.push(this._createDiseasePanel("Example Panel Ret.", ["Retinitis"], ["Usher syndrome"]));
+
+        for(var i = 0; i < EXAMPLE_PANELS.length; i++){
+        
+            var panel = EXAMPLE_PANELS[i];
+            panels.push(this._createDiseasePanel(panel.name, panel.primaryDiseases,panel.secondaryDiseases));
+        }
 
         if (localStorage.bioinfo_panels_panels) {
             var lsPanels = JSON.parse(localStorage.bioinfo_panels_panels);
@@ -1477,6 +1388,7 @@ PanelsWidget.prototype = {
     },
     _getVariants: function (panel) {
 
+        //debugger
         var variantsPrim = [];
         var variantsSec = [];
 
@@ -1505,7 +1417,7 @@ PanelsWidget.prototype = {
 //            });
 
             for (var i = 0; i < panel.primaryDiseases.length; i++) {
-                var disease = panel.primaryDiseases[i];
+                var disease = panel.primaryDiseases[i].name;
                 console.log(disease);
                 console.log(DB.length);
                 for (var j = 0; j < DB.length; j++) {
@@ -1538,7 +1450,7 @@ PanelsWidget.prototype = {
 //            });
 
         for (var i = 0; i < panel.secondaryDiseases.length; i++) {
-                var disease = panel.secondaryDiseases[i];
+                var disease = panel.secondaryDiseases[i].name;
                 console.log(disease);
                 for (var j = 0; j < DB.length; j++) {
                     var variant = DB[j];

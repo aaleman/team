@@ -105,7 +105,12 @@ Team.prototype = {
         // this.panel = this._createPanel($(this.contentDiv).attr('id'));
 
         /* Job List Widget */
-        this.panelListWidget = this._createPanelsListWidget($(this.sidePanelDiv).attr('id'));
+        this.panelsWidget = new PanelsWidget({
+            targetId: $(this.contentDiv).attr('id'),
+            autoRender: true
+        });
+        
+        this.panelListWidget = this._createPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
 
         var user_panels = [];
 
@@ -125,11 +130,7 @@ Team.prototype = {
         //this.panelListWidget.show();
 
 
-        var panelsWidget = new PanelsWidget({
-            targetId: $(this.contentDiv).attr('id'),
-            autoRender: true
-        });
-        panelsWidget.draw();
+        this.panelsWidget.draw();
 
     },
     _createMenu: function (targetId) {
@@ -164,7 +165,7 @@ Team.prototype = {
         });
         return toolbar;
     },
-    _createPanelsListWidget: function (targetId) {
+    _createPanelsListWidget: function (targetId, teamWidget) {
         var _this = this;
 
         var panelListWidget = new PanelListWidget({
@@ -176,7 +177,8 @@ Team.prototype = {
             'height': 425,
             border: true,
             'mode': 'view',
-            examplePanels: EXAMPLE_PANELS
+            examplePanels: EXAMPLE_PANELS,
+            parent:teamWidget
         });
 
         /**Atach events i listen**/

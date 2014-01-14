@@ -353,6 +353,10 @@ PanelSettingsView.prototype = {
                                 _this.clearSettings();
                                 _this.hide();
 
+                                _this.parent.parent.diseaseStore.add({
+                                    name:name,
+                                    value:name
+                                });
                                 console.log(panel);
 
                             }

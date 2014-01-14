@@ -5175,7 +5175,8 @@ DB = [
         "description": "14",
         "source": "dbSNP_ClinVar",
         "chunkIds": ["MT_12_1k"]
-    },{
+    },
+    {
         "id": "",
         "chromosome": "11",
         "start": 61724448,
@@ -5208,6 +5209,72 @@ DB = [
     }
 ];
 EXAMPLE_PANELS = [
+    {
+        name: "Panel Retinitis Pigmentosa",
+        primaryDiseases: [
+            {
+                name: "Retinitis"
+            }
+        ],
+        secondaryDiseases: [
+            {
+                name: "Usher syndrome" 
+        }
+        ],
+        genes: [
+            { name: "ABCA4"},
+            { name: "BEST1"},
+            { name: "C2ORF71"},
+            { name: "CA4"},
+            { name: "CERKL"},
+            { name: "CNGA1"},
+            { name: "CNGB1"},
+            { name: "CRB1"},
+            { name: "CRX"},
+            { name: "DHDDS"},
+            { name: "EYS"},
+            { name: "FAM161A"},
+            { name: "FSCN2"},
+            { name: "GUCA1B"},
+            { name: "IDH3B"},
+            { name: "IMPDH1"},
+            { name: "IMPG2"},
+            { name: "KLHL7"},
+            { name: "LRAT"},
+            { name: "MERTK"},
+            { name: "NR2E3"},
+            { name: "NRL"},
+            { name: "PDE6A"},
+            { name: "PDE6B"},
+            { name: "PDE6G"},
+            { name: "PRCD"},
+            { name: "PROM1"},
+            { name: "PRPF3"},
+            { name: "PRPF31"},
+            { name: "PRPF6"},
+            { name: "PRPF8"},
+            { name: "PRPH2"},
+            { name: "RDH12"},
+            { name: "RGR"},
+            { name: "RHO"},
+            { name: "RLBP1"},
+            { name: "ROM1"},
+            { name: "RP1"},
+            { name: "RP2"},
+            { name: "RP9"},
+            { name: "RPE65"},
+            { name: "RPGR"},
+            { name: "SAG"},
+            { name: "SEMA4A"},
+            { name: "SNRNP200"},
+            { name: "SPATA7"},
+            { name: "TOPORS"},
+            { name: "TTC8"},
+            { name: "TULP1"},
+            { name: "USH2A"},
+            { name: "ZNF513"}
+        ]
+    },
     {
         name: "Comprehensive Cancer Design",
         primaryDiseases: [
@@ -5794,20 +5861,5 @@ EXAMPLE_PANELS = [
             { name: "ZNF668"},
             { name: "ZRSR2"}
         ]
-    },
-    {
-        name: "Comprehensive Cancer Design 2",
-        primaryDiseases: [
-            {name: "Cancer"}
-        ],
-        secondaryDiseases: [],
-        genes: [
-            { name: "ABCC6"},
-            { name: "ABI1"},
-            { name: "ABL1"},
-            { name: "ZNF668"},
-            { name: "ZRSR2"}
-        ]
     }
-
-];
+]
