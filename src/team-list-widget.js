@@ -1,23 +1,14 @@
-//PanelListWidget.prototype.draw = UserListWidget.prototype.draw;
-//PanelListWidget.prototype.getData = UserListWidget.prototype.getData;
-//PanelListWidget.prototype.getCount = UserListWidget.prototype.getCount;
-
 function PanelListWidget(args) {
     var _this = this;
 
     console.log(args);
     this.data = [];
-
-//    UserListWidget.prototype.constructor.call(this, args);
     this.counter = null;
+    this.allData = [];
 
     //set instantiation args, must be last
     _.extend(this, args);
-
-    this.allData = [];
-}
-;
-
+};
 
 PanelListWidget.prototype = {
     render: function (targetId) {
@@ -44,10 +35,7 @@ PanelListWidget.prototype = {
             }
         });
 
-
         this.rendered = true;
-
-//        this.grid.store.loadData(this.getData());
     },
     _createToolbar: function () {
 
@@ -66,7 +54,6 @@ PanelListWidget.prototype = {
                             _this.settingsView.show();
                         }
                     }
-
                 },
                 {
                     id: this.btnImportSettings,
@@ -204,8 +191,6 @@ PanelListWidget.prototype = {
             this.data.splice(enc, 1);
             localStorage.bioinfo_panels_user_settings = JSON.stringify(this.data);
         }
-
-
     },
     _createExamplePanelsGrid: function () {
 
@@ -248,7 +233,6 @@ PanelListWidget.prototype = {
                                 _this.settingsView.load(_this.examplePanels, panelName, false);
 
                             }
-
                         }
                     ]
 
@@ -258,7 +242,6 @@ PanelListWidget.prototype = {
         });
 
         return newGrid;
-
     },
     _createPanel: function () {
 

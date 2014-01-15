@@ -371,6 +371,14 @@ PanelSettingsView.prototype = {
 
                             }
                         }
+                    },
+                    {
+                        text: 'Close',
+                        id: _this.id + "btnClosePanel",
+                        handler: function () {
+                            _this.clearSettings();
+                            _this.hide();
+                        }
                     }
                 ]
             }
