@@ -344,7 +344,7 @@ PanelsWidget.prototype = {
                                 }
 
                                 var panel = _this._createDiseasePanel(name, pd, sd);
-                                _this._addPanelToForm(panel);
+                                _this.panels = _this._addPanelToForm(panel);
 
                                 _this._clearSettings();
                                 _this.settings.hide();
@@ -427,10 +427,14 @@ PanelsWidget.prototype = {
                 {
                     text: 'Run',
                     handler: function () {
+                        
 
                         _this.dataSec = [];
                         _this.dataPrim = [];
 
+                        _this.primDisGrid.clear();
+                        _this.secDisGrid.clear();
+                        _this.extraGrid.clear();
                         _this.primDisGrid.refresh();
 
 
@@ -453,8 +457,14 @@ PanelsWidget.prototype = {
                                     break;
                                 }
                             }
-
-                            panel = _this._getVariants(panel);
+                            
+                            //for(var i = 0; i< _this.diseaseStore.count(); i++){
+                                //var elem = _this.diseaseStore.getAt(i).raw;
+                                //if (elem.name == panelName) {
+                                    //panel = elem;
+                                    //break;
+                                //}
+                            //}
 
                             fds_vcf.on("success", function (data) {
                                 var variants = _this._parseVcfFile(data);
@@ -520,7 +530,10 @@ PanelsWidget.prototype = {
             {name: "ct"                , type: 'String'},
             {name: "transcript"        , type: 'String'},
             {name: "aaPos"             , type: 'int'}   ,
-            {name: "aaChange"          , type: 'String'}
+            {name: "aaChange"          , type: 'String'},
+            {name: "phenotype"         , type: 'String'},
+            {name: "source"            , type: 'String'},
+            {name: "pvalue"            , type: 'float'}
         ];
         var renderer = function (value) {
             if (value == '') {
@@ -539,13 +552,16 @@ PanelsWidget.prototype = {
             {dataIndex: 'gene'              , text: 'Gene'              , flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: 'ct'                , text: 'Conseq. Type'      , flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: 'quality'           , text: 'Quality'           , flex: 1, emptyCellText: '.', renderer: renderer},
-            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1, emptyCellText: '.', renderer: renderer},
-            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "ensembl_protein"   , text: 'Ensembl protein'   , flex: 1, emptyCellText: '.', renderer: renderer , hidden:true} ,
+            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText: '.', renderer: renderer , hidden:true} ,
             {dataIndex: "xref"              , text: 'Xref'              , flex: 1, emptyCellText: '.', renderer: renderer , hidden: true},
-            {dataIndex: "description"       , text: 'Description'       , flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "description"       , text: 'Description'       , flex: 1, emptyCellText: '.', renderer: renderer , hidden:true} ,
             {dataIndex: "omim"              , text: 'OMIM'              , flex: 1, emptyCellText: '.', renderer: renderer , hidden: true},
-            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1, emptyCellText: '.', renderer: renderer},
-            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "hgvs_cds"          , text: 'Hgvs cds'          , flex: 1, emptyCellText: '.', renderer: renderer , hidden:true} ,
+            {dataIndex: "hgvs_protein"      , text: 'Hgvs protein'      , flex: 1, emptyCellText: '.', renderer: renderer , hidden:true} ,
+            {dataIndex: "phenotype"         , text: 'Phenotype'         , flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "source"            , text: 'Source'            , flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "pvalue"            , text: 'pValue'            , flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "sift"              , text: 'SIFT'              , flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "polyphen"          , text: 'PolyPhen'          , flex: 1, emptyCellText: '.', renderer: renderer}
         ];
@@ -593,40 +609,46 @@ PanelsWidget.prototype = {
             }
         }
     },
-    _getRegion: function (gene) {
+    _getRegions: function (genes) {
 
-        var reg = {};
+        var gene_names =[];    
+        var final_genes = [];
+
+        Ext.each(genes, function(gene, index){
+            gene_names.push(gene.name);
+        });
+        
         CellBaseManager.get({
             host: 'http://ws-beta.bioinfo.cipf.es/cellbase/rest',
             version: 'v3',
             species: 'hsapiens', //TODO multiples species
             category: 'feature',
             subCategory: 'gene',
-            query: gene.name,
+            query: gene_names.join(","),
             resource: 'info',
             params: {
                 include: "chromosome,start,end"
             },
             async: false,
             success: function (response, textStatus, jqXHR) {
-                if (response.response[0].numResults > 0) {
 
-                    reg = {
-                        chr: response.response[0].result[0].chromosome,
-                        start: response.response[0].result[0].start,
-                        end: response.response[0].result[0].end
-
+                for (var i = 0; i < response.response.length; i++) {
+                    if (response.response[i].numResults > 0) {
+                        final_genes.push({
+                            name: response.response[i].id,
+                            chr: response.response[i].result[0].chromosome,
+                            start: response.response[i].result[0].start,
+                            end: response.response[i].result[0].end
+                        });
                     }
-
                 }
-
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('Error loading Gene');
+                console.log('Error loading Genes');
             }
         });
 
-        return reg;
+        return final_genes;
     },
     _parseVcfFile: function (data) {
 
@@ -656,7 +678,7 @@ PanelsWidget.prototype = {
                     }
                     variants.push(
                         {
-                            chromosome: fields[0],
+                            chromosome: fields[0].replace("chrom","").replace("chr","").replace("chr",""),
                             position: parseInt(fields[1]),
                             start: parseInt(fields[1]),//added
                             end: parseInt(fields[1]),//added
@@ -678,7 +700,105 @@ PanelsWidget.prototype = {
         }
         return variants;
     },
-    _filterVariants: function (variants, panel) {
+    _filterVariants: function(variants, panel){
+        var _this = this;
+        console.log(panel);
+
+        var data = [];
+
+        var genes = _this._getRegions(panel.genes);
+        console.log(genes);
+        
+        for(var i=0; i < variants.length;){
+            data = [];
+
+            for(var j = 0; i < variants.length && j < 100; j++, i++){
+                data.push(variants[i]);
+            }
+
+            _this._checkVariantBatch(data, panel.primaryDiseases, _this.dataPrim);
+            _this._checkVariantBatch(data, panel.secondaryDiseases, _this.dataSec);
+            _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
+
+            
+        }
+    
+    },
+    _checkVariantBatch: function(variants, diseases, grid){
+        var _this = this;
+
+        var variantsReg = [];
+        for(var i = 0; i< variants.length; i++){
+            variantsReg.push(variants[i].chromosome + ":" + variants[i].start + "-" + variants[i].end);
+        }
+
+
+        for (var i = 0; i< diseases.length; i++){
+
+            var dis = diseases[i].name;
+            var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
+
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                async:false,
+                success: function(response, textStatus, jqXHR){
+
+                    for(var j=0; j < response.response.length; j++){
+
+                        var elem = response.response[j];
+                        if(elem.numResults > 0){
+                            //console.log(elem);
+                            for (var k = 0; k < elem.numResults; k++){
+                                var aux = elem.result[k]; 
+
+                                var copy = {};
+                                _.extend(copy, variants[j]);
+
+                                //console.log(aux);
+                                copy.gene = aux.associatedGenes;
+                                copy.phenotype = aux.phenotype;
+                                copy.source = aux.source; if(copy.pvalue >= 0){
+                                    copy.pvalue = aux.pValue;
+                                }
+
+
+                                _this._getEffect(copy);
+                                _this._getPolyphenSift(copy);
+                                grid.push(copy);
+                            }
+                        }
+                    }
+
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error loading variants/diseases');
+                }
+            });
+
+
+        }
+        return;
+
+    },
+    _checkVariantGeneBatch: function(variants, genes, grid){
+        var _this = this;
+
+        for (var i = 0; i < variants.length; i++) {
+
+            var variant = variants[i];
+            var panelVariant;
+
+            if (genes.length > 0 && (panelVariant = _this._checkGeneVariant(variant, genes)) != null) {
+                variant.gene = panelVariant.name;
+                _this._getEffect(variant);
+                _this._getPolyphenSift(variant);
+                _this.dataExtra.push(variant);
+            }
+        }
+    },
+    _filterVariants1: function (variants, panel) {
         var _this = this;
 
         for (var i = 0; i < variants.length; i++) {
@@ -922,10 +1042,53 @@ PanelsWidget.prototype = {
         _this._getPolyphenSift(_this.dataSec);
         }
     },
-    _getPolyphenSift: function(data){
+    _getEffect: function(variant){
+    
+        var _this = this;
+        
+        var req = variant.chromosome + ":" + variant.start + ":" + variant.reference + ":" + variant.alternate;
+        var ct = [];
 
-        for(var i = 0; i< data.length; i++){
-            var variant = data[i];
+            $.ajax({
+                url: "http://ws.bioinfo.cipf.es/cellbase/rest/latest/hsa/genomic/variant/" + req + "/consequence_type?of=json",
+                dataType: 'json',
+                async: false,
+                success: function (response, textStatus, jqXHR) {
+
+                    for (var j = 0; j < response.length; j++) {
+                        var elem = response[j];
+                               
+                                if(elem.aaPosition != -1 && elem.transcriptId != "" && elem.aminoacidChange.length >=3 && variant.transcriptId == undefined && variant.aaPos == undefined && variant.aaChange == undefined){
+                                   variant.transcript = elem.transcriptId;
+                                   variant.aaPos = elem.aaPosition;
+                                   variant.aaChange = elem.aminoacidChange;
+                               }
+
+                        //gene.push(elem.geneName);
+                        ct.push(elem.consequenceTypeObo);
+                    }
+
+                    //gene = gene.filter(function (elem, pos, self) {
+                        //return self.indexOf(elem) == pos;
+                    //});
+
+
+                    ct = ct.filter(function (elem, pos, self) {
+                        return self.indexOf(elem) == pos;
+                    })
+
+                    //variant.gene = gene.join(",");
+                    variant.ct = ct.join(",");
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error loading Effect');
+                }
+            });
+
+
+    },
+    _getPolyphenSift: function(variant){
 
             //variant.transcript = "ENST00000378371";
             //variant.aaPos = 1;
@@ -936,13 +1099,13 @@ PanelsWidget.prototype = {
                 //if(variant.aaPos != -1){
 
                 var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/transcript/" + variant.transcript + "/function_prediction?aaPosition=" + variant.aaPos + "&aaChange=" + change;
-                console.log(url);
+                //console.log(url);
                 $.ajax({
                     url: url,
                     dataType: 'json',
                     async: false,
                     success: function (response, textStatus, jqXHR) {
-                        console.log(response);
+                        //console.log(response);
 
                         var res = response.response[0];
 
@@ -963,9 +1126,7 @@ PanelsWidget.prototype = {
                     }
                 });
 
-                console.log(variant);
             }
-        }
     },
     _checkCosmicVariant: function (variant, genes) {
         for (var key in genes) {
@@ -1057,6 +1218,7 @@ PanelsWidget.prototype = {
         localStorage.bioinfo_panels_panels = JSON.stringify(panels);
 
         this.diseaseStore.add(elem);
+        return panels;
     },
     _clearSettings: function () {
         var _this = this;

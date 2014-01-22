@@ -3,6 +3,7 @@ function PanelSettingsView(args) {
     this.id = Utils.genId("PanelSettingsView");
 
     this.data = [];
+    this.diseases = [];
     this.edit = true;
     //set instantiation args, must be last
     _.extend(this, args);
@@ -20,6 +21,11 @@ PanelSettingsView.prototype = {
         this.importView.show();
     },
     show: function (edit) {
+
+        if (this.diseases.length == 0) {
+            this.diseases = this._getDiseases();
+            this.allDiseases.loadData(this.diseases);
+        }
 
         this.edit = (edit == null) ? true : edit;
         if (this.edit) {
@@ -50,10 +56,10 @@ PanelSettingsView.prototype = {
         this.geneModel = Ext.define('GeneModel', {
             extend: 'Ext.data.Model',
             idProperty: 'name',
-            fields: ['name'],
+            fields: ['name']
         });
 
-        this.diseases = this._getDiseases();
+
         this.columns = this._createGridColumns();
         this.columnsGenes = this._createGridColumnsGenes();
     },
@@ -215,7 +221,7 @@ PanelSettingsView.prototype = {
                 height: 20,
                 maxWidth: 300,
                 margin: "0 0 20 0",
-                allowBlank:false
+                allowBlank: false
             });
         this.polyphen = Ext.create('Ext.form.NumberField',
             {
@@ -316,11 +322,11 @@ PanelSettingsView.prototype = {
                             window.setLoading(true);
                             if (_this.edit) {
                                 var name = Ext.getCmp(_this.id + "_panelname").getValue();
-                                if(name == ""){
-                                Ext.MessageBox.alert("Error", "Name is mandatory"); 
+                                if (name == "") {
+                                    Ext.MessageBox.alert("Error", "Name is mandatory");
 
                                 }
-                                else{
+                                else {
                                     var polyphen = Ext.getCmp(_this.id + "_polyphen").getValue();
                                     var sift = Ext.getCmp(_this.id + "_sift").getValue();
                                     var pd = [];
@@ -342,13 +348,14 @@ PanelSettingsView.prototype = {
                                     var panel = {
                                         name: name,
                                         primaryDiseases: pd,
-                                        secondaryDisases: sd,
+                                        secondaryDiseases: sd,
                                         genes: genes,
                                         polyphen: polyphen,
                                         sift: sift
                                     };
 
                                     _this.parent.add(panel);
+                                    console.log(_this.parent);
 
                                     _this.clearSettings();
                                     _this.hide();
@@ -536,7 +543,7 @@ PanelSettingsView.prototype = {
                             _this.diseaseGenes.setLoading(true);
 
                             this.getStore().sort('name', 'ASC');
-                            
+
                             var diseases = data.records;
 
                             for (var i = 0; i < diseases.length; i++) {
@@ -578,7 +585,7 @@ PanelSettingsView.prototype = {
 
 
                             }
-                            
+
 
                             _this.diseaseGenes.grid.getStore().sort('name', 'ASC');
                         }
@@ -708,6 +715,8 @@ PanelSettingsView.prototype = {
 
     },
     _getDiseases: function () {
+
+        console.log("getDis");
         var data = [];
 
         $.ajax({
