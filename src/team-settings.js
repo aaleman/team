@@ -78,7 +78,6 @@ PanelSettingsView.prototype = {
 
         var _this = this;
 
-
         _this.allDiseases.addAll(_this.primDiseases.getData());
         _this.allDiseases.addAll(_this.secDiseases.getData());
 
@@ -715,12 +714,11 @@ PanelSettingsView.prototype = {
 
     },
     _getDiseases: function () {
-
         console.log("getDis");
         var data = [];
-
         $.ajax({
-            url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes",
+            //url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes",
+            url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes&limit=5",
             dataType: 'json',
             async: false,
             success: function (response, textStatus, jqXHR) {

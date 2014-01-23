@@ -104,19 +104,21 @@ Team.prototype = {
         /* Wrap Panel */
         // this.panel = this._createPanel($(this.contentDiv).attr('id'));
 
-        /* Job List Widget */
-        this.panelsWidget = new PanelsWidget({
-            targetId: $(this.contentDiv).attr('id'),
-            autoRender: true
-        });
-        
-        this.panelListWidget = this._createPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
-
         var user_panels = [];
 
         if (localStorage.bioinfo_panels_user_settings != null) {
             user_panels = JSON.parse(localStorage.bioinfo_panels_user_settings);
         }
+
+
+        /* Job List Widget */
+        this.panelsWidget = new PanelsWidget({
+            targetId: $(this.contentDiv).attr('id'),
+            autoRender: true
+        });
+
+        this.panelListWidget = this._createTeamPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
+
 
 //        var auxPanels = [];
 //
@@ -125,7 +127,8 @@ Team.prototype = {
 //                name: "panel_" + i
 //            })
 //        }
-        this.panelListWidget.setAccountData(user_panels);
+//        this.panelListWidget.setAccountData(user_panels);
+        this.panelListWidget.render();
         this.panelListWidget.draw();
         //this.panelListWidget.show();
 
@@ -165,10 +168,16 @@ Team.prototype = {
         });
         return toolbar;
     },
-    _createPanelsListWidget: function (targetId, teamWidget) {
+    _createTeamPanelsListWidget: function (targetId, teamWidget) {
         var _this = this;
 
-        var panelListWidget = new PanelListWidget({
+        var user_panels = [];
+
+        if (localStorage.bioinfo_panels_user_settings != null) {
+            user_panels = JSON.parse(localStorage.bioinfo_panels_user_settings);
+        }
+
+        var panelListWidget = new TeamPanelListWidget({
             'title': 'Settings',
             'pageSize': 7,
             'targetId': targetId,
@@ -178,7 +187,9 @@ Team.prototype = {
             border: true,
             'mode': 'view',
             examplePanels: EXAMPLE_PANELS,
-            parent:teamWidget
+            userPanels: user_panels,
+            parent: teamWidget,
+
         });
 
         /**Atach events i listen**/
@@ -199,21 +210,21 @@ Team.prototype = {
             //suiteId: this.suiteId,
             suiteId: this.suiteId,
             accountData: this.accountData,
-            allowLogin:false,
+            allowLogin: false,
             //handlers: {
-                //'login': function (event) {
-                    //Ext.example.msg('Welcome', 'You logged in');
-                    ////_this.sessionInitiated();
-                //},
-                //'logout': function (event) {
-                    //Ext.example.msg('Good bye', 'You logged out');
-                    ////_this.sessionFinished();
+            //'login': function (event) {
+            //Ext.example.msg('Welcome', 'You logged in');
+            ////_this.sessionInitiated();
+            //},
+            //'logout': function (event) {
+            //Ext.example.msg('Good bye', 'You logged out');
+            ////_this.sessionFinished();
 
-                //},
-                //'account:change': function (event) {
-                    //_this.setAccountData(event.response);
+            //},
+            //'account:change': function (event) {
+            //_this.setAccountData(event.response);
 
-                //}
+            //}
             //}
         });
         headerWidget.draw();
