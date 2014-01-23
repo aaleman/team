@@ -78,7 +78,6 @@ PanelsWidget.prototype = {
         });
 
         return panel;
-
     },
     _createForm: function () {
         var _this = this;
@@ -122,7 +121,6 @@ PanelsWidget.prototype = {
             allowBlank: false
         });
 
-
         var vcf = Ext.create('Ext.form.field.File', {
             id: _this.id + "vcf_file",
             fieldLabel: "Vcf File",
@@ -147,16 +145,12 @@ PanelsWidget.prototype = {
                 {
                     text: 'Run',
                     handler: function () {
-
-
                         _this.dataSec = [];
                         _this.dataPrim = [];
 
                         _this.primDisGrid.clear();
                         _this.secDisGrid.clear();
                         _this.extraGrid.clear();
-                        _this.primDisGrid.refresh();
-
 
                         var form = _this.form.getForm();
                         if (form.isValid()) {
@@ -231,6 +225,7 @@ PanelsWidget.prototype = {
             {name: 'reference', type: 'String'},
             {name: 'alternate', type: 'String'},
             {name: 'gene', type: 'String'},
+
             {name: 'quality', type: 'float'} ,
             {name: 'filter', type: 'String'},
             {name: 'info', type: 'String'},
@@ -410,12 +405,10 @@ PanelsWidget.prototype = {
     },
     _filterVariants: function (variants, panel) {
         var _this = this;
-        console.log(panel);
 
         var data = [];
 
         var genes = _this._getRegions(panel.genes);
-        console.log(genes);
 
         for (var i = 0; i < variants.length;) {
             data = [];
@@ -454,14 +447,13 @@ PanelsWidget.prototype = {
 
                         var elem = response.response[j];
                         if (elem.numResults > 0) {
-                            //console.log(elem);
+
                             for (var k = 0; k < elem.numResults; k++) {
                                 var aux = elem.result[k];
 
                                 var copy = {};
                                 _.extend(copy, variants[j]);
 
-                                //console.log(aux);
                                 copy.gene = aux.associatedGenes;
                                 copy.phenotype = aux.phenotype;
                                 copy.source = aux.source;
@@ -506,9 +498,7 @@ PanelsWidget.prototype = {
         }
     },
     _getEffect: function (variant) {
-
         var _this = this;
-
         var req = variant.chromosome + ":" + variant.start + ":" + variant.reference + ":" + variant.alternate;
         var ct = [];
 
@@ -526,23 +516,14 @@ PanelsWidget.prototype = {
                         variant.aaPos = elem.aaPosition;
                         variant.aaChange = elem.aminoacidChange;
                     }
-
-                    //gene.push(elem.geneName);
                     ct.push(elem.consequenceTypeObo);
                 }
 
-                //gene = gene.filter(function (elem, pos, self) {
-                //return self.indexOf(elem) == pos;
-                //});
-
-
                 ct = ct.filter(function (elem, pos, self) {
                     return self.indexOf(elem) == pos;
-                })
+                });
 
-                //variant.gene = gene.join(",");
                 variant.ct = ct.join(",");
-
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('Error loading Effect');
@@ -553,62 +534,43 @@ PanelsWidget.prototype = {
     },
     _getPolyphenSift: function (variant) {
 
-        //variant.transcript = "ENST00000378371";
-        //variant.aaPos = 1;
-        //variant.aaChange = "L/L";
-
         if (variant.aaPos != undefined && variant.aaPos >= 0) {
             var change = variant.aaChange.split("/")[1];
-            //if(variant.aaPos != -1){
-
             var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/transcript/" + variant.transcript + "/function_prediction?aaPosition=" + variant.aaPos + "&aaChange=" + change;
-            //console.log(url);
+
             $.ajax({
                 url: url,
                 dataType: 'json',
                 async: false,
                 success: function (response, textStatus, jqXHR) {
-                    //console.log(response);
-
                     var res = response.response[0];
-
                     if (res.numResults > 0) {
                         res = res.result[0].aaPositions[variant.aaPos][change];
-
                         if (res != null) {
                             variant.polyphen = res.ps
                             variant.sift = res.ss;
-
                         }
                     }
-
-
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log('Error loading PolyPhen/SIFT');
                 }
             });
-
         }
     },
     _checkGeneVariant: function (variant, genes) {
-
         for (var i = 0; i < genes.length; i++) {
             var gene = genes[i];
             if (gene.chr == variant.chromosome && gene.start <= variant.start && variant.end <= gene.end) {
                 return gene;
-
             }
         }
         return null;
-
-
     },
     _initializeDiseasePanel: function () {  // TODO aaleman: Check this code
         var panels = []
 
         for (var i = 0; i < EXAMPLE_PANELS.length; i++) {
-
             var panel = EXAMPLE_PANELS[i];
             panels.push({
                 panelType: 'example',
@@ -629,51 +591,6 @@ PanelsWidget.prototype = {
                 panels.push(elem);
             }
         }
-
         return panels;
-    },
-    _createDiseasePanel: function (name, primDis, secDis, genes) {
-        return {
-            name: name,
-            primaryDiseases: primDis,
-            secondaryDiseases: secDis,
-            genes: genes
-        };
-    },
-    _addPanelToForm: function (panel) {
-
-        var panels;
-        var elem = {
-            name: panel.name,
-            value: panel.name
-        };
-
-        if (localStorage.bioinfo_panels_panels) {
-            panels = JSON.parse(localStorage.bioinfo_panels_panels);
-        } else {
-            panels = [];
-        }
-        panels.push(panel);
-        localStorage.bioinfo_panels_panels = JSON.stringify(panels);
-
-        this.diseaseStore.add(elem);
-        return panels;
-    },
-    _clearSettings: function () {
-        var _this = this;
-        Ext.getCmp(_this.id + "_panelname").reset();
-
-
-        for (var i = 0; i < _this.thirdGridStore.count(); i++) {
-            _this.firstGridStore.add(_this.thirdGridStore.getAt(i));
-        }
-
-        for (var i = 0; i < _this.secondGridStore.count(); i++) {
-            _this.firstGridStore.add(_this.secondGridStore.getAt(i));
-        }
-        _this.firstGrid.getView().refresh();
-        _this.thirdGridStore.removeAll();
-        _this.secondGridStore.removeAll();
     }
-}
-;
+};

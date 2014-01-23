@@ -2,7 +2,6 @@ function TeamSettingsView(args) {
     _.extend(this, Backbone.Events);
     this.id = Utils.genId("TeamSettingsView");
 
-    this.data = [];
     this.diseases = [];
     this.edit = true;
     //set instantiation args, must be last
@@ -129,9 +128,7 @@ TeamSettingsView.prototype = {
             _this.diseaseGenes.loadData(genes);
 
             _this.show(edit);
-
         }
-
     },
     _createImportPanel: function () {
 
@@ -145,7 +142,6 @@ TeamSettingsView.prototype = {
             allowBlank: false,
             name: 'settings_file'
         });
-
 
         var window = Ext.create('Ext.window.Window', {
                 title: 'Import Settings',
@@ -166,9 +162,7 @@ TeamSettingsView.prototype = {
                     {
                         text: 'Import',
                         handler: function () {
-
                             var file = document.getElementById(settings_file.fileInputEl.id).files[0];
-
                             var fds_file = new FileDataSource(file);
 
                             fds_file.on("success", function (data) {
@@ -196,9 +190,7 @@ TeamSettingsView.prototype = {
         return window;
     },
     _createPanel: function () {
-
         var _this = this;
-
         var filters = {
             ftype: 'filters',
             encode: false,
@@ -298,11 +290,9 @@ TeamSettingsView.prototype = {
                                 items: [
                                     this.diseaseGenes.getPanel()
 //                                    this.secGenes.getPanel()
-
                                 ]
                             }
                         ]
-
                     },
                     this.polyphen,
                     this.sift
@@ -701,7 +691,6 @@ TeamSettingsView.prototype = {
                                 xtype: 'button',
                                 text: 'New Gene',
                                 handler: function () {
-                                    console.log(newGrid.count());
                                     if (_this.edit) {
                                         rowEditing.cancelEdit();
 
@@ -725,14 +714,12 @@ TeamSettingsView.prototype = {
         );
 
         return newGrid;
-
     },
     _getDiseases: function () {
-        console.log("getDis");
+
         var data = [];
         $.ajax({
             url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes",
-//            url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes&limit=5",
             dataType: 'json',
             async: false,
             success: function (response, textStatus, jqXHR) {
@@ -744,15 +731,11 @@ TeamSettingsView.prototype = {
                             name: disease
                         });
                 }
-
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('Error loading Diseases');
-
+                console.log('Error downloading Diseases');
             }
         });
-
         return data;
     }
-}
-;
+};

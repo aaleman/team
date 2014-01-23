@@ -38,7 +38,7 @@ Team.prototype = {
             return;
         }
 
-        console.log("Initializing Panels");
+        console.log("Initializing Team");
         this.targetDiv = $('#' + this.targetId)[0];
         this.div = $('<div id="panels" style="height:100%;position:relative;"></div>')[0];
         $(this.targetDiv).append(this.div);
@@ -90,7 +90,6 @@ Team.prototype = {
             return;
         }
 
-
         /* Header Widget */
         this.headerWidget = this._createHeaderWidget($(this.headerWidgetDiv).attr('id'));
 
@@ -110,32 +109,15 @@ Team.prototype = {
             user_panels = JSON.parse(localStorage.bioinfo_panels_user_settings);
         }
 
-
         /* Job List Widget */
         this.panelsWidget = new PanelsWidget({
             targetId: $(this.contentDiv).attr('id'),
             autoRender: true
         });
         this.panelsWidget.draw();
-
-
         this.panelListWidget = this._createTeamPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
-
-
-//        var auxPanels = [];
-//
-//        for (var i = 0; i < 10; i++) {
-//            auxPanels.push({
-//                name: "panel_" + i
-//            })
-//        }
-//        this.panelListWidget.setAccountData(user_panels);
         this.panelListWidget.render();
         this.panelListWidget.draw();
-        //this.panelListWidget.show();
-
-
-
     },
     _createMenu: function (targetId) {
         var _this = this;
@@ -192,12 +174,6 @@ Team.prototype = {
             parent: teamWidget
 
         });
-
-        /**Atach events i listen**/
-//        panelListWidget.pagedListViewWidget.on('item:click', function (data) {
-//            _this.jobItemClick(data.item);
-//        });
-
         return panelListWidget;
     },
     _createHeaderWidget: function (targetId) {
@@ -231,6 +207,5 @@ Team.prototype = {
         headerWidget.draw();
 
         return headerWidget;
-    },
-
+    }
 };

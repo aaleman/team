@@ -4,8 +4,6 @@ function TeamPanelListWidget(args) {
     console.log(args);
     this.counter = null;
     this.allData = [];
-    this.examplePanels = [];
-//    this.userPanels = [];
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -15,13 +13,10 @@ TeamPanelListWidget.prototype = {
     render: function (targetId) {
         var _this = this;
         this.targetId = (targetId) ? targetId : this.targetId;
-
-
         this.btnNewPanel = this.id + "_btnNewPanel";
         this.btnImportSettings = this.id + "_btnImportSettings";
         this.btnClearSettings = this.id + "_btnNewSettings";
         this.btnSaveSettings = this.id + "_btnSaveSettings";
-
         this.rendered = true;
         this.diseaseStore = Ext.getStore("DiseaseStore");
     },
@@ -59,15 +54,11 @@ TeamPanelListWidget.prototype = {
                     tooltip: 'Save Panels',
                     listeners: {
                         click: function () {
-                            //alert("Under construction!!");
                             var content = JSON.stringify(_this.userPanels, null, '\t');
-                            console.log(content);
-
                             this.getEl().set({
                                 href: 'data:text/json,' + encodeURIComponent(content),
                                 download: "settings" + ".json"
                             });
-
                         }
                     }
                 },
@@ -150,8 +141,6 @@ TeamPanelListWidget.prototype = {
                                         Ext.getStore("DiseaseStore").remove(query.items);
                                         grid.getStore().remove(query.items);
                                         _this._saveToLocalStorage();
-
-
                                     }
                                 });
                             }
@@ -335,11 +324,6 @@ TeamPanelListWidget.prototype.draw = function () {
     });
     this.settingsView.draw();
 
-};
-
-TeamPanelListWidget.prototype.getData = function () {
-    console.log(this.userPanels);
-    return this.userPanels;
 };
 
 TeamPanelListWidget.prototype.show = function () {
