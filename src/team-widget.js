@@ -83,19 +83,21 @@ PanelsWidget.prototype = {
     _createForm: function () {
         var _this = this;
 
-        var data = [];
-        Ext.each(_this.panels, function (panel, index) {
-            data.push({
-                name: panel.name,
-                value: panel.name
-            })
-        });
-
         this.diseaseStore = Ext.create("Ext.data.Store", {
-            fields: ['name', 'value'],
-            data: data,
-            storeId: 'DiseaseStore'
-        });
+                fields: [
+                    {name: 'panelType', type: 'String'},
+                    {name: 'panelId', type: 'int'},
+                    {name: 'name', type: 'String'},
+                    {name: 'value', type: 'String',
+                        convert: function (v, rec) {
+                            return rec.get('panelType') + '_' + rec.get('panelId');
+                        }}
+                ],
+                data: _this.panels,
+                storeId: 'DiseaseStore'
+            }
+        )
+        ;
 
         var genes = Ext.create('Ext.form.field.File', {
             id: _this.id + "gene_list",
@@ -114,7 +116,7 @@ PanelsWidget.prototype = {
             store: this.diseaseStore,
             queryMode: 'local',
             displayField: 'name',
-            valueField: 'name',
+            valueField: 'value',
             value: this.diseaseStore.getAt(0).get('value'),
             editable: false,
             allowBlank: false
@@ -164,25 +166,16 @@ PanelsWidget.prototype = {
 
                             var fds_vcf = new FileDataSource(vcf_file);
 
-                            var panelName = Ext.getCmp(_this.id + "disease").getValue();
-                            var panel;
+                            var panelOpt = Ext.getCmp(_this.id + "disease").getValue();
+                            var panelSplit = panelOpt.split("_");
+                            var panelType = panelSplit[0];
+                            var panelId = panelSplit[1];
 
+                            var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
+                                return (record.get('panelType') == panelType && record.get('panelId') == panelId);
+                            });
 
-                            for (var i = 0; i < _this.panels.length; i++) {
-                                var elem = _this.panels[i];
-                                if (elem.name == panelName) {
-                                    panel = elem;
-                                    break;
-                                }
-                            }
-
-                            //for(var i = 0; i< _this.diseaseStore.count(); i++){
-                            //var elem = _this.diseaseStore.getAt(i).raw;
-                            //if (elem.name == panelName) {
-                            //panel = elem;
-                            //break;
-                            //}
-                            //}
+                            panel = query.getAt(0).raw;
 
                             fds_vcf.on("success", function (data) {
                                 var variants = _this._parseVcfFile(data);
@@ -192,6 +185,14 @@ PanelsWidget.prototype = {
                                 _this.primDisGrid.loadData(_this.dataPrim);
                                 _this.secDisGrid.loadData(_this.dataSec);
                                 _this.extraGrid.loadData(_this.dataExtra);
+
+                                if (_this.primDisGrid.count() > 0) {
+                                    _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
+                                } else if (_this.secDisGrid.count() > 0) {
+                                    _this.tabPanel.setActiveTab(_this.secDisGrid.getPanel());
+                                } else if (_this.extraGrid.count() > 0) {
+                                    _this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
+                                }
 
                                 Ext.getCmp(_this.id + "numRowsLabel").setText(_this.dataPrim.length + " variants");
                                 _this.primDisGrid.setLoading(false);
@@ -426,6 +427,8 @@ PanelsWidget.prototype = {
             _this._checkVariantBatch(data, panel.secondaryDiseases, _this.dataSec);
             _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
         }
+
+
     },
     _checkVariantBatch: function (variants, diseases, grid) {
         var _this = this;
@@ -607,20 +610,23 @@ PanelsWidget.prototype = {
         for (var i = 0; i < EXAMPLE_PANELS.length; i++) {
 
             var panel = EXAMPLE_PANELS[i];
-            panels.push(this._createDiseasePanel(panel.name, panel.primaryDiseases, panel.secondaryDiseases));
-        }
-
-        if (localStorage.bioinfo_panels_panels) {
-            var lsPanels = JSON.parse(localStorage.bioinfo_panels_panels);
-            for (var i = 0; i < lsPanels.length; i++) {
-                panels.push(lsPanels[i]);
-            }
+            panels.push({
+                panelType: 'example',
+                panelId: i,
+                name: panel.name,
+                primaryDiseases: panel.primaryDiseases,
+                secondaryDiseases: panel.secondaryDiseases,
+                genes: panel.genes
+            });
         }
 
         if (localStorage.bioinfo_panels_user_settings) {
             var userDefinedPanels = JSON.parse(localStorage.bioinfo_panels_user_settings);
             for (var i = 0; i < userDefinedPanels.length; i++) {
-                panels.push(userDefinedPanels[i]);
+                var elem = userDefinedPanels[i];
+                elem.panelType = 'user';
+                elem.panelId = i;
+                panels.push(elem);
             }
         }
 
@@ -669,4 +675,5 @@ PanelsWidget.prototype = {
         _this.thirdGridStore.removeAll();
         _this.secondGridStore.removeAll();
     }
-};
+}
+;

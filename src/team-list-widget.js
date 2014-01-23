@@ -5,7 +5,7 @@ function TeamPanelListWidget(args) {
     this.counter = null;
     this.allData = [];
     this.examplePanels = [];
-    this.userPanels = [];
+//    this.userPanels = [];
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -23,6 +23,7 @@ TeamPanelListWidget.prototype = {
         this.btnSaveSettings = this.id + "_btnSaveSettings";
 
         this.rendered = true;
+        this.diseaseStore = Ext.getStore("DiseaseStore");
     },
     _createToolbar: function () {
         var _this = this;
@@ -80,6 +81,9 @@ TeamPanelListWidget.prototype = {
                                 if (e == "yes") {
                                     _this.grid.clear();
                                     delete localStorage.bioinfo_panels_user_settings;
+
+                                    var storeAux = Ext.getStore("DiseaseStore").query("panelType", "user");
+                                    Ext.getStore("DiseaseStore").remove(storeAux.items);
                                 }
                             });
                         }
@@ -95,7 +99,10 @@ TeamPanelListWidget.prototype = {
 
         newGrid.model = Ext.define('PanelSettingsModel', {
             extend: 'Ext.data.Model',
-            fields: ['name']
+            fields: [
+                {name: 'name', type: 'String'},
+                {name: 'panelId', type: 'String'}
+            ]
         });
 
         newGrid.store = Ext.create('Ext.data.Store', {
@@ -123,22 +130,28 @@ TeamPanelListWidget.prototype = {
                             icon: Utils.images.edit,
                             handler: function (grid, rowIndex, colIndex) {
                                 var record = grid.getStore().getAt(rowIndex);
-                                var panelName = record.get("name");
-
-                                console.log(_this.userPanels);
-                                _this.settingsView.load(_this.userPanels, panelName, true);
+                                _this.settingsView.load(record.get('panelType'), record.get('panelId'));
                             }
                         },
                         {
                             icon: Utils.images.del,
                             handler: function (grid, rowIndex, colIndex) {
-
                                 Ext.MessageBox.confirm('Confirm', 'Are you sure you want to remove this panel?', function (e) {
-
                                     if (e == "yes") {
-                                        var record = grid.getStore().getAt(rowIndex);
-                                        _this._removePanel(record);
-                                        grid.getStore().remove(record);
+                                        var rec = grid.getStore().getAt(rowIndex);
+
+                                        var panelType = rec.get('panelType');
+                                        var panelId = rec.get('panelId');
+
+                                        var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
+                                            return (record.get('panelType') == panelType && record.get('panelId') == panelId);
+                                        });
+
+                                        Ext.getStore("DiseaseStore").remove(query.items);
+                                        grid.getStore().remove(query.items);
+                                        _this._saveToLocalStorage();
+
+
                                     }
                                 });
                             }
@@ -150,18 +163,24 @@ TeamPanelListWidget.prototype = {
         });
         return newGrid;
     },
-    _removePanel: function (record) {
-        var enc = -1;
-        for (var i = 0; i < this.userPanels.length; i++) {
-            if (this.userPanels[i].name == record.get("name")) {
-                enc = i;
-                break;
-            }
+    _saveToLocalStorage: function () {
+
+        var aux = [];
+        var copy = {};
+
+        var query = Ext.getStore("DiseaseStore").query("panelType", "user");
+
+        for (var i = 0; i < query.getCount(); i++) {
+            var elem = query.getAt(i);
+
+            _.extend(copy, elem.raw);
+            delete copy.panelId;
+            delete copy.panelType;
+
+            aux.push(copy);
+
         }
-        if (enc >= 0) {
-            this.userPanels.splice(enc, 1);
-            localStorage.bioinfo_panels_user_settings = JSON.stringify(this.userPanels);
-        }
+        localStorage.bioinfo_panels_user_settings = JSON.stringify(aux);
     },
     _createExamplePanelsGrid: function () {
 
@@ -198,8 +217,7 @@ TeamPanelListWidget.prototype = {
                             icon: Utils.images.edit,
                             handler: function (grid, rowIndex, colIndex) {
                                 var record = grid.getStore().getAt(rowIndex);
-                                var panelName = record.get("name");
-                                _this.settingsView.load(_this.examplePanels, panelName, false);
+                                _this.settingsView.load(record.get('panelType'), record.get('panelId'));
 
                             }
                         }
@@ -297,17 +315,18 @@ TeamPanelListWidget.prototype = {
         Ext.getCmp(this.id + "_tabPanel").setActiveTab(this.grid.getPanel());
         localStorage.bioinfo_panels_user_settings = JSON.stringify(this.userPanels);
     }
-};
+}
+;
 
 TeamPanelListWidget.prototype.draw = function () {
-
     var _this = this;
 
     this.bar = _this._createToolbar();
     this.grid = _this._createUserPanelsGrid();
     this.exampleGrid = _this._createExamplePanelsGrid();
     this.panel = _this._createPanel();
-    this.grid.loadData(this.getData());
+    this.grid.loadData(this.diseaseStore.query("panelType", "user").items);
+    this.exampleGrid.loadData(this.diseaseStore.query("panelType", "example").items);
 
 
     this.settingsView = new TeamSettingsView({
@@ -316,17 +335,10 @@ TeamPanelListWidget.prototype.draw = function () {
     });
     this.settingsView.draw();
 
-    // Load example panels
-    var names = [];
-    for (var i = 0; i < this.examplePanels.length; i++) {
-        names.push({
-            name: this.examplePanels[i].name
-        });
-    }
-    this.exampleGrid.loadData(names);
 };
 
 TeamPanelListWidget.prototype.getData = function () {
+    console.log(this.userPanels);
     return this.userPanels;
 };
 

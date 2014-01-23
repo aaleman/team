@@ -90,19 +90,18 @@ TeamSettingsView.prototype = {
         _this.diseaseGenes.clear();
 
     },
-    load: function (panels, panelName, edit) {
+    load: function (panelType, panelId) {
         var _this = this;
 
-        var panel = null;
+        var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
+            return (record.get('panelType') == panelType && record.get('panelId') == panelId);
+        });
 
-        for (var i = 0; i < panels.length; i++) {
-            if (panels[i].name == panelName) {
-                panel = panels[i];
-                break;
-            }
-        }
+        panel = query.getAt(0).raw;
 
         if (panel != null) {
+
+            var edit = panelType == "user";
 
             var primD = [];
             var secD = [];
@@ -130,8 +129,8 @@ TeamSettingsView.prototype = {
             _this.diseaseGenes.loadData(genes);
 
             _this.show(edit);
-        }
 
+        }
 
     },
     _createImportPanel: function () {
@@ -323,7 +322,6 @@ TeamSettingsView.prototype = {
                                 var name = Ext.getCmp(_this.id + "_panelname").getValue();
                                 if (name == "") {
                                     Ext.MessageBox.alert("Error", "Name is mandatory");
-
                                 }
                                 else {
                                     var polyphen = Ext.getCmp(_this.id + "_polyphen").getValue();
@@ -354,16 +352,32 @@ TeamSettingsView.prototype = {
                                     };
 
                                     _this.parent.add(panel);
-                                    console.log(_this.parent);
-
                                     _this.clearSettings();
                                     _this.hide();
 
-                                    _this.parent.parent.diseaseStore.add({
+                                    var storeAux = Ext.getStore("DiseaseStore");
+
+                                    var query = storeAux.query("panelType", "user");
+                                    var max = -1;
+
+                                    for (var i = 0; i < query.getCount(); i++) {
+                                        var elem = query.getAt(i).raw;
+                                        if (elem.panelId > max) {
+                                            max = elem.panelId;
+                                        }
+                                    }
+
+                                    storeAux.add({
+                                        panelType: 'user',
+                                        panelId: max + 1,
                                         name: name,
-                                        value: name
+                                        primaryDiseases: pd,
+                                        secondaryDiseases: sd,
+                                        genes: genes,
+                                        polyphen: polyphen,
+                                        sift: sift
                                     });
-                                    console.log(panel);
+
                                 }
                             }
                             window.setLoading(false);
@@ -717,8 +731,8 @@ TeamSettingsView.prototype = {
         console.log("getDis");
         var data = [];
         $.ajax({
-            //url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes",
-            url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes&limit=5",
+            url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes",
+//            url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes&limit=5",
             dataType: 'json',
             async: false,
             success: function (response, textStatus, jqXHR) {

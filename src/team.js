@@ -116,6 +116,8 @@ Team.prototype = {
             targetId: $(this.contentDiv).attr('id'),
             autoRender: true
         });
+        this.panelsWidget.draw();
+
 
         this.panelListWidget = this._createTeamPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
 
@@ -133,7 +135,6 @@ Team.prototype = {
         //this.panelListWidget.show();
 
 
-        this.panelsWidget.draw();
 
     },
     _createMenu: function (targetId) {
