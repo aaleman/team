@@ -1,6 +1,6 @@
-function PanelSettingsView(args) {
+function TeamSettingsView(args) {
     _.extend(this, Backbone.Events);
-    this.id = Utils.genId("PanelSettingsView");
+    this.id = Utils.genId("TeamSettingsView");
 
     this.data = [];
     this.diseases = [];
@@ -16,7 +16,7 @@ function PanelSettingsView(args) {
     }
 }
 
-PanelSettingsView.prototype = {
+TeamSettingsView.prototype = {
     showImport: function () {
         this.importView.show();
     },

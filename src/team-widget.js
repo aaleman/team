@@ -93,7 +93,8 @@ PanelsWidget.prototype = {
 
         this.diseaseStore = Ext.create("Ext.data.Store", {
             fields: ['name', 'value'],
-            data: data
+            data: data,
+            storeId: 'DiseaseStore'
         });
 
         var genes = Ext.create('Ext.form.field.File', {

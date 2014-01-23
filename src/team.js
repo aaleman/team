@@ -188,7 +188,7 @@ Team.prototype = {
             'mode': 'view',
             examplePanels: EXAMPLE_PANELS,
             userPanels: user_panels,
-            parent: teamWidget,
+            parent: teamWidget
 
         });
 

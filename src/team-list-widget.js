@@ -310,7 +310,7 @@ TeamPanelListWidget.prototype.draw = function () {
     this.grid.loadData(this.getData());
 
 
-    this.settingsView = new PanelSettingsView({
+    this.settingsView = new TeamSettingsView({
         autoRender: true,
         parent: this
     });
