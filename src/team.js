@@ -43,9 +43,7 @@ Team.prototype = {
         this.div = $('<div id="panels" style="height:100%;position:relative;"></div>')[0];
         $(this.targetDiv).append(this.div);
 
-
         this.headerWidgetDiv = $('<div id="header-widget"></div>')[0];
-        //this.headerWidgetDiv = $('<div id="header-widget" style="padding: 25px 0 20px 25px;"><div class="appName">' + this.title + '</div></div>')[0];
 
         $(this.div).append(this.headerWidgetDiv);
         this.menuDiv = $('<div id="menu"></div>')[0];
@@ -133,16 +131,16 @@ Team.prototype = {
                 ,
                 {
                     id: this.id + 'jobsButton',
-                    tooltip: 'Settings',
-                    text: '<span class="emph"> Show settings </span>',
+                    tooltip: 'Panels',
+                    text: '<span class="emph"> Show Panels</span>',
                     enableToggle: true,
                     pressed: false,
                     toggleHandler: function () {
                         if (this.pressed) {
-                            this.setText('<span class="emph"> Hide settings </span>');
+                            this.setText('<span class="emph"> Hide Panles</span>');
                             _this.panelListWidget.show();
                         } else {
-                            this.setText('<span class="emph"> Show settings </span>');
+                            this.setText('<span class="emph"> Show Panels</span>');
                             _this.panelListWidget.hide();
                         }
                     }
@@ -161,7 +159,7 @@ Team.prototype = {
         }
 
         var panelListWidget = new TeamPanelListWidget({
-            'title': 'Settings',
+            'title': 'Panels',
             'pageSize': 7,
             'targetId': targetId,
             'order': 0,
