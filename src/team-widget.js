@@ -435,7 +435,12 @@ PanelsWidget.prototype = {
         for (var i = 0; i < diseases.length; i++) {
 
             var dis = diseases[i].name;
+
+            dis = dis.replace(/ /g, "%20");
+
             var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
+            console.log(url);
+            //debugger
 
             $.ajax({
                 url: url,
@@ -530,7 +535,6 @@ PanelsWidget.prototype = {
             }
         });
 
-
     },
     _getPolyphenSift: function (variant) {
 
@@ -544,7 +548,7 @@ PanelsWidget.prototype = {
                 async: false,
                 success: function (response, textStatus, jqXHR) {
                     var res = response.response[0];
-                    if (res.numResults > 0) {
+                    if (res.numResults > 0 && variant.aaPos in res.result[0].aaPositions && change in res.result[0].aaPositions[variant.aaPos]) {
                         res = res.result[0].aaPositions[variant.aaPos][change];
                         if (res != null) {
                             variant.polyphen = res.ps

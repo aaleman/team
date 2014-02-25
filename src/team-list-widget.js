@@ -286,7 +286,7 @@ TeamPanelListWidget.prototype = {
         var panel = Ext.create('Ext.panel.Panel', {
             id: this.panelId,
             target: this.targetId,
-            title: "Settings",
+            title: "Panels",
             border: this.border,
             width: this.width,
             height: this.height,
