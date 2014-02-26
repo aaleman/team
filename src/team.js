@@ -13,6 +13,7 @@ function Team(args) {
     this.targetId;
     this.width;
     this.height;
+    this.panels; //  = new Panel();
 
 
     //set instantiation args, must be last
@@ -101,21 +102,38 @@ Team.prototype = {
         /* Wrap Panel */
         // this.panel = this._createPanel($(this.contentDiv).attr('id'));
 
-        var user_panels = [];
-
-        if (localStorage.bioinfo_panels_user_settings != null) {
-            user_panels = JSON.parse(localStorage.bioinfo_panels_user_settings);
-        }
-
         /* Job List Widget */
-        this.panelsWidget = new PanelsWidget({
-            targetId: $(this.contentDiv).attr('id'),
-            autoRender: true
-        });
-        this.panelsWidget.draw();
         this.panelListWidget = this._createTeamPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
         this.panelListWidget.render();
         this.panelListWidget.draw();
+
+
+        this.panelsWidget = new PanelsWidget({
+            targetId: $(this.contentDiv).attr('id'),
+            autoRender: true
+//            panels: this.panels
+        });
+        this.panelsWidget.draw();
+
+
+        this.panels = new Panel();
+
+
+        this.panelsWidget.panels = this.panels;
+        this.panelListWidget.panels = this.panels;
+
+
+        this.settingsView = new TeamSettingsView({
+            autoRender: true,
+            panels: this.panels
+            // parent: this.panelListWidget
+        });
+        this.settingsView.draw();
+
+
+        this.panelListWidget.settingsView = this.settingsView;
+
+
     },
     _createMenu: function (targetId) {
         var _this = this;
@@ -154,10 +172,6 @@ Team.prototype = {
 
         var user_panels = [];
 
-        if (localStorage.bioinfo_panels_user_settings != null) {
-            user_panels = JSON.parse(localStorage.bioinfo_panels_user_settings);
-        }
-
         var panelListWidget = new TeamPanelListWidget({
             'title': 'Panels',
             'pageSize': 7,
@@ -167,15 +181,16 @@ Team.prototype = {
             'height': 425,
             border: true,
             'mode': 'view',
-            examplePanels: EXAMPLE_PANELS,
-            userPanels: user_panels,
-            parent: teamWidget
+//            examplePanels: EXAMPLE_PANELS,
+//            userPanels: user_panels,
+            parent: teamWidget,
+            panels: this.panels
+
 
         });
         return panelListWidget;
     },
     _createHeaderWidget: function (targetId) {
-        var _this = this;
         var headerWidget = new HeaderWidget({
             targetId: targetId,
             autoRender: true,
@@ -185,22 +200,7 @@ Team.prototype = {
             //suiteId: this.suiteId,
             suiteId: this.suiteId,
             accountData: this.accountData,
-            allowLogin: false,
-            //handlers: {
-            //'login': function (event) {
-            //Ext.example.msg('Welcome', 'You logged in');
-            ////_this.sessionInitiated();
-            //},
-            //'logout': function (event) {
-            //Ext.example.msg('Good bye', 'You logged out');
-            ////_this.sessionFinished();
-
-            //},
-            //'account:change': function (event) {
-            //_this.setAccountData(event.response);
-
-            //}
-            //}
+            allowLogin: false
         });
         headerWidget.draw();
 

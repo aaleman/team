@@ -167,48 +167,8 @@ TeamSettingsView.prototype = {
 
                             fds_file.on("success", function (data) {
 
-                                var dataObj = JSON.parse(data);
-                                var userDefinedPanels = [];
-                                
-                                if(localStorage.bioinfo_panels_user_settings){
-                                    userDefinedPanels = JSON.parse(localStorage.bioinfo_panels_user_settings);
-                                }
+                                _this.panels.importData(data);
 
-                                var storeAux = Ext.getStore("DiseaseStore");
-
-                                var query = storeAux.query("panelType", "user");
-                                var max = -1;
-
-                                for (var i = 0; i < query.getCount(); i++) {
-                                    var elem = query.getAt(i).raw;
-                                    if (elem.panelId > max) {
-                                        max = elem.panelId;
-                                    }
-                                }
-
-                                for(var i = 0; i< dataObj.length; i++){
-                                    var importPanel = dataObj[i];
-                                    userDefinedPanels.push(importPanel);
-                                    
-                                    _this.parent.grid.add(importPanel);
-                                    
-                                    storeAux.add({
-                                        panelType: 'user',
-                                        panelId: max++,
-                                        name: importPanel.name,
-                                        primaryDiseases: importPanel.primaryDiseases,
-                                        secondaryDiseases: importPanel.secondaryDiseases,
-                                        genes: importPanel.genes,
-                                        polyphen: importPanel.polyphen,
-                                        sift: importPanel.sift
-                                    });
-                                    
-
-                                }
-
-                                //_this.parent.grid.loadData(userDefinedPanels);
-                                localStorage.bioinfo_panels_user_settings = JSON.stringify(userDefinedPanels);
-                                //console.log(userDefinedPanels);
                             });
 
                             fds_file.fetch(true);
@@ -292,11 +252,11 @@ TeamSettingsView.prototype = {
                 //margin: "0 0 20 0"
             });
 
-        this.genesButton = Ext.create('Ext.Button',{
+        this.genesButton = Ext.create('Ext.Button', {
             text: 'Add Genes',
-            scale:'small',
+            scale: 'small',
             margin: '0 0 10 0',
-            handler: function(){
+            handler: function () {
                 var genesPanel = Ext.getCmp(_this.id + '_genes');
                 var genes = genesPanel.getValue().split(",");
                 var wrongGenes = _this._checkWrongGenes(genes);
@@ -308,24 +268,23 @@ TeamSettingsView.prototype = {
                         icon: Ext.MessageBox.WARNING,
                         buttons: Ext.Msg.OK
                     });
-                }else{
-                        _this.diseaseGenes.store.suspendEvents();
-                   
-                    for(var i = 0 ; i < genes.length; i++){
+                } else {
+                    _this.diseaseGenes.store.suspendEvents();
+
+                    for (var i = 0; i < genes.length; i++) {
                         var gene = {
                             name: genes[i]
                         };
                         _this.diseaseGenes.add(gene);
                     }
                     genesPanel.reset();
-                        _this.diseaseGenes.store.resumeEvents();
-                        _this.diseaseGenes.store.fireEvent('refresh');
+                    _this.diseaseGenes.store.resumeEvents();
+                    _this.diseaseGenes.store.fireEvent('refresh');
 
 
                 }
 
 
-            
             }
         });
 
@@ -338,21 +297,20 @@ TeamSettingsView.prototype = {
             //height: 20,
 
             listeners: {
-                change: 
-                    {
-                    buffer:200,
-                    fn:function () {
+                change: {
+                    buffer: 200,
+                    fn: function () {
 
                         var str = Ext.getCmp(_this.id + "searchField").getValue();
                         var st = Ext.getStore("allDiseases")
                         st.clearFilter();
                         st.filter(
                             {
-                            id: 'name',
-                            property: 'name',
-                            value: str,
-                            anyMatch:true
-                        }
+                                id: 'name',
+                                property: 'name',
+                                value: str,
+                                anyMatch: true
+                            }
                         );
                     }
                 }
@@ -370,32 +328,32 @@ TeamSettingsView.prototype = {
         //_this.showMutationsPanel = _this._createShowMutationsPanel();
         //console.log(_this.showGenesPanel);
 
-        var mutationButton = Ext.create('Ext.Button',{
+        var mutationButton = Ext.create('Ext.Button', {
             text: 'Add Mutation',
-            scale:'small',
+            scale: 'small',
             margin: '0 15 10 0',
-            handler: function(){
+            handler: function () {
                 _this.mutationPanel.show();
             }
         });
         //_this.mutationPanel.show();
 
         _this.genesWindow = Ext.create('Ext.window.Window', {
-                //title: 'Show Genes',
-                height: 300,
-                width: 260,
-                modal: true,
-                minimizable: true,
-                closable: false,
-                bodyPadding: 10,
-                listeners: {
-                    minimize: function (win, obj) {
-                        win.hide();
-                    }
-                },
-                items: [
-                    _this.showGenesPanel.getPanel()
-                ]
+            //title: 'Show Genes',
+            height: 300,
+            width: 260,
+            modal: true,
+            minimizable: true,
+            closable: false,
+            bodyPadding: 10,
+            listeners: {
+                minimize: function (win, obj) {
+                    win.hide();
+                }
+            },
+            items: [
+                _this.showGenesPanel.getPanel()
+            ]
         });
 
         var window = Ext.create('Ext.window.Window', {
@@ -421,7 +379,7 @@ TeamSettingsView.prototype = {
                         },
                         items: [
                             {
-                                
+
                                 xtype: 'container',
                                 flex: 1,
                                 layout: {
@@ -432,7 +390,7 @@ TeamSettingsView.prototype = {
                                     this.allDiseases.getPanel(),
                                     searchField
                                 ]
-                        },
+                            },
                             {
                                 xtype: 'container',
                                 flex: 1,
@@ -447,7 +405,8 @@ TeamSettingsView.prototype = {
                                     //this.secDiseases.getPanel()
 
                                 ]
-                            }, {
+                            },
+                            {
                                 xtype: 'container',
                                 //flex: 1,
                                 width: 150,
@@ -494,7 +453,7 @@ TeamSettingsView.prototype = {
                                     }
 
                                     //for (var i = 0; i < _this.secDiseases.count(); i++) {
-                                        //sd.push({name: _this.secDiseases.getAt(i).get("name")});
+                                    //sd.push({name: _this.secDiseases.getAt(i).get("name")});
                                     //}
 
                                     for (var i = 0; i < _this.diseaseGenes.count(); i++) {
@@ -502,6 +461,7 @@ TeamSettingsView.prototype = {
                                     }
 
                                     var panel = {
+                                        panelType: 'user',
                                         name: name,
                                         primaryDiseases: pd,
                                         secondaryDiseases: sd,
@@ -510,32 +470,33 @@ TeamSettingsView.prototype = {
                                         sift: sift
                                     };
 
-                                    _this.parent.add(panel);
+                                    _this.panels.addPanel(panel);
+                                    _this.panels.save();
                                     _this.clearSettings();
                                     _this.hide();
 
-                                    var storeAux = Ext.getStore("DiseaseStore");
-
-                                    var query = storeAux.query("panelType", "user");
-                                    var max = -1;
-
-                                    for (var i = 0; i < query.getCount(); i++) {
-                                        var elem = query.getAt(i).raw;
-                                        if (elem.panelId > max) {
-                                            max = elem.panelId;
-                                        }
-                                    }
-
-                                    storeAux.add({
-                                        panelType: 'user',
-                                        panelId: max + 1,
-                                        name: name,
-                                        primaryDiseases: pd,
-                                        secondaryDiseases: sd,
-                                        genes: genes,
-                                        polyphen: polyphen,
-                                        sift: sift
-                                    });
+//                                    var storeAux = Ext.getStore("DiseaseStore");
+//
+//                                    var query = storeAux.query("panelType", "user");
+//                                    var max = -1;
+//
+//                                    for (var i = 0; i < query.getCount(); i++) {
+//                                        var elem = query.getAt(i).raw;
+//                                        if (elem.panelId > max) {
+//                                            max = elem.panelId;
+//                                        }
+//                                    }
+//
+//                                    storeAux.add({
+//                                        panelType: 'user',
+//                                        panelId: max + 1,
+//                                        name: name,
+//                                        primaryDiseases: pd,
+//                                        secondaryDiseases: sd,
+//                                        genes: genes,
+//                                        polyphen: polyphen,
+//                                        sift: sift
+//                                    });
 
                                 }
                             }
@@ -564,83 +525,83 @@ TeamSettingsView.prototype = {
         );
         return window;
     },
-    _createNewMutationPanel: function(){
-    
+    _createNewMutationPanel: function () {
+
         var _this = this;
 
 
-        _this.chrField = Ext.create('Ext.form.TextField',{
+        _this.chrField = Ext.create('Ext.form.TextField', {
             id: _this.id + "_chr_mutationPanel",
             name: 'chr',
             fieldLabel: 'Chr',
-            labelAlign:'top',
+            labelAlign: 'top',
             allowBlank: false,
             margin: "0 10 0 0",
             listeners: {
                 change: function () {
 
-                //var chr = Ext.getCmp(_this.id + "_chr_mutationPanel").getValue();
-                //var pos = Ext.getCmp(_this.id + "_pos_mutationPanel").getValue();
+                    //var chr = Ext.getCmp(_this.id + "_chr_mutationPanel").getValue();
+                    //var pos = Ext.getCmp(_this.id + "_pos_mutationPanel").getValue();
 
-                //var region = new Region({
+                    //var region = new Region({
                     //chromosome: chr,
                     //start: pos,
                     //end:pos 
-                //});
-                //_this.gv.setRegion(region);
-            }
+                    //});
+                    //_this.gv.setRegion(region);
+                }
             }
         });
-        
-        _this.posField = Ext.create('Ext.form.NumberField',{
+
+        _this.posField = Ext.create('Ext.form.NumberField', {
             id: _this.id + "_pos_mutationPanel",
             name: 'pos',
             fieldLabel: 'Pos',
-            labelAlign:'top',
-            setp:1,
+            labelAlign: 'top',
+            setp: 1,
             minValue: 0,
             allowBlank: false,
             margin: "0 10 0 0",
             listeners: {
                 change: function () {
 
-                //var chr = _this.chrField.getValue();
-                //var pos = _this.posField.getValue();
+                    //var chr = _this.chrField.getValue();
+                    //var pos = _this.posField.getValue();
 
-                //var region = new Region({
+                    //var region = new Region({
                     //chromosome: chr,
                     //start: pos,
                     //end:pos 
-                //});
-                //_this.gv.setRegion(region);
-            }
+                    //});
+                    //_this.gv.setRegion(region);
+                }
             }
 
         });
 
-        var ref = Ext.create('Ext.form.TextField',{
+        var ref = Ext.create('Ext.form.TextField', {
             id: _this.id + "_ref_mutationPanel",
             name: 'ref',
             fieldLabel: 'Ref',
-            labelAlign:'top',
+            labelAlign: 'top',
             allowBlank: false,
             margin: "0 10 0 0",
         });
-        var alt = Ext.create('Ext.form.TextField',{
+        var alt = Ext.create('Ext.form.TextField', {
             id: _this.id + "_alt_mutationPanel",
             name: 'alt',
             fieldLabel: 'Alt',
-            labelAlign:'top',
+            labelAlign: 'top',
             allowBlank: false,
             margin: "0 10 0 0",
         });
 
-        var checkButton = Ext.create('Ext.Button',{
+        var checkButton = Ext.create('Ext.Button', {
             text: 'Check',
             //scale:'small',
             margin: "0 10 0 0",
             height: 22,
-            handler: function(){
+            handler: function () {
 
                 var chr = _this.chrField.getValue();
                 var pos = _this.posField.getValue();
@@ -648,7 +609,7 @@ TeamSettingsView.prototype = {
                 var region = new Region({
                     chromosome: chr,
                     start: pos,
-                    end:pos 
+                    end: pos
                 });
                 _this.gv.setRegion(region);
 
@@ -660,10 +621,8 @@ TeamSettingsView.prototype = {
         this.gvPanel = this._createGenomeViewer();
 
 
-
-
         var window = Ext.create('Ext.window.Window', {
-                //title: 'Show Genes',
+            //title: 'Show Genes',
             height: 600,
             width: 800,
             //modal: true,
@@ -675,29 +634,28 @@ TeamSettingsView.prototype = {
                     win.hide();
                 }
             },
-            layout:{
-                type:'vbox',
+            layout: {
+                type: 'vbox',
                 align: 'stretch'
             },
             items: [
                 {
-                xtype: 'container',
-                //height: 200,
-                //width:"100%",
-                layout:{
-                    type: 'hbox',
-                    align: 'stretch'
-                },
-                items:[_this.chrField,_this.posField,ref, alt, checkButton]
+                    xtype: 'container',
+                    //height: 200,
+                    //width:"100%",
+                    layout: {
+                        type: 'hbox',
+                        align: 'stretch'
+                    },
+                    items: [_this.chrField, _this.posField, ref, alt, checkButton]
 
-            },
-            this.gvPanel
+                },
+                this.gvPanel
             ]
         });
 
         return window;
-    }
-    ,
+    },
 
     _createGenomeViewer: function () {
         var _this = this;
@@ -707,7 +665,7 @@ TeamSettingsView.prototype = {
                 //flex: 8,
                 //height: '100%',
                 border: 1,
-                margin:"50 0 0 0",
+                margin: "50 0 0 0",
                 html: '<div id="' + this.id + 'genomeViewer" style="width:750px;height:600;position:relative;"></div>',
                 listeners: {
                     afterrender: {
@@ -816,8 +774,8 @@ TeamSettingsView.prototype = {
                             genomeViewer.addTrack(this.gene);
                             genomeViewer.addTrack(this.snp);
 
-                            var updateForm = function(){
-                            
+                            var updateForm = function () {
+
                                 var pos = _this.sequence.region.center();
                                 var chr = _this.sequence.region.chromosome;
 
@@ -827,7 +785,7 @@ TeamSettingsView.prototype = {
 
 
                             genomeViewer.on("region:change", updateForm);
-                            genomeViewer.on("region:move",updateForm);
+                            genomeViewer.on("region:move", updateForm);
 
                             _this.gv = genomeViewer;
                         }
@@ -839,7 +797,7 @@ TeamSettingsView.prototype = {
 
         return gvpanel;
     },
-    _createShowGenesPanel: function(){
+    _createShowGenesPanel: function () {
         var _this = this;
 
         var newGrid = new Grid();
@@ -855,34 +813,34 @@ TeamSettingsView.prototype = {
                     direction: 'ASC'
                 }
             ],
-            autoLoad:false
+            autoLoad: false
         });
 
         newGrid.grid = Ext.create('Ext.grid.Panel', {
-            store: newGrid.store,
-            height: 240,
-            columns: [
-                {
-                text: "Name",
-                flex: 1,
-                dataIndex: 'name',
-            }]
-            ,
-        plugins: 'bufferedrenderer',
-        //bbar : {
-            //xtype : 'pagingtoolbar',
-            //displayInfo: true,
-            //store: newGrid.store,
-            //displayMsg : 'Total rows {2}'// defaultvalue = 'Displaying {0} - {1} of {2}'
-        //},
-        //stripeRows: true,
-        title: 'Genes',
-        margins: '0 0 10 0'
-        }
+                store: newGrid.store,
+                height: 240,
+                columns: [
+                    {
+                        text: "Name",
+                        flex: 1,
+                        dataIndex: 'name',
+                    }
+                ],
+                plugins: 'bufferedrenderer',
+                //bbar : {
+                //xtype : 'pagingtoolbar',
+                //displayInfo: true,
+                //store: newGrid.store,
+                //displayMsg : 'Total rows {2}'// defaultvalue = 'Displaying {0} - {1} of {2}'
+                //},
+                //stripeRows: true,
+                title: 'Genes',
+                margins: '0 0 10 0'
+            }
         );
 
         return newGrid;
-        
+
     },
     _createGridColumns: function () {
         var columns = [
@@ -946,7 +904,7 @@ TeamSettingsView.prototype = {
         allDiseases.model = this.diseaseModel;
         allDiseases.store = Ext.create('Ext.data.Store', {
             model: allDiseases.model,
-            storeId:'allDiseases',
+            storeId: 'allDiseases',
             data: data,
             remoteSort: false,
             sorters: [
@@ -964,7 +922,7 @@ TeamSettingsView.prototype = {
 
         var showGenesAction = Ext.create('Ext.Action', {
             text: 'Show Genes',
-            handler: function(widget, evet){
+            handler: function (widget, evet) {
                 var record = allDiseases.grid.getSelectionModel().getSelection()[0];
                 var disName = record.get("name");
 
@@ -1008,7 +966,7 @@ TeamSettingsView.prototype = {
         });
         var showMutationsAction = Ext.create('Ext.Action', {
             text: 'Show Mutations',
-            handler: function(widget, evet){
+            handler: function (widget, evet) {
                 var record = allDiseases.grid.getSelectionModel().getSelection()[0];
                 alert(record.get("name"));
             }
@@ -1076,7 +1034,7 @@ TeamSettingsView.prototype = {
 
         return allDiseases;
     },
-    _createMutationsGrid: function(){
+    _createMutationsGrid: function () {
         var _this = this;
 
         var newGrid = new Grid();
@@ -1085,10 +1043,10 @@ TeamSettingsView.prototype = {
             extend: 'Ext.data.Model',
             //idProperty: 'name',
             fields: [
-                { name:'chr', type:'string'},
-                { name:'pos', type:'int'},
-                { name:'ref', type:'string'},
-                { name:'alt', type:'string'}
+                { name: 'chr', type: 'string'},
+                { name: 'pos', type: 'int'},
+                { name: 'ref', type: 'string'},
+                { name: 'alt', type: 'string'}
             ]
         });
 
@@ -1098,13 +1056,13 @@ TeamSettingsView.prototype = {
             storeId: 'mutationStore'
         });
         var columns = [
-            {text:'Chr', dataIndex:'chr', flex:1, sortable:false},
-            {text:'Pos', dataIndex:'pos', flex:1, sortable:false},
-            {text:'Ref', dataIndex:'ref', flex:1, sortable:false},
-            {text:'Alt', dataIndex:'alt', flex:1, sortable:false}
+            {text: 'Chr', dataIndex: 'chr', flex: 1, sortable: false},
+            {text: 'Pos', dataIndex: 'pos', flex: 1, sortable: false},
+            {text: 'Ref', dataIndex: 'ref', flex: 1, sortable: false},
+            {text: 'Alt', dataIndex: 'alt', flex: 1, sortable: false}
         ];
 
-        newGrid.grid = Ext.create('Ext.grid.Panel',{
+        newGrid.grid = Ext.create('Ext.grid.Panel', {
             title: 'Mutations',
             store: newGrid.store,
             columns: columns,
@@ -1114,8 +1072,7 @@ TeamSettingsView.prototype = {
 
         });
         return newGrid;
-    }
-    ,
+    },
     _createDiseaseSetGrid: function (title, mainGrid, geneGrid, filters, addGenes) {
 
         var _this = this;
@@ -1135,10 +1092,10 @@ TeamSettingsView.prototype = {
         });
 
         newGrid.addGenes = addGenes;
-        
+
         var showGenesAction = Ext.create('Ext.Action', {
             text: 'Show Genes',
-            handler: function(widget, evet){
+            handler: function (widget, evet) {
                 var record = _this.primDiseases.grid.getSelectionModel().getSelection()[0];
                 var disName = record.get("name");
 
@@ -1182,7 +1139,7 @@ TeamSettingsView.prototype = {
         });
         var showMutationsAction = Ext.create('Ext.Action', {
             text: 'Show Mutations',
-            handler: function(widget, evet){
+            handler: function (widget, evet) {
                 var record = allDiseases.grid.getSelectionModel().getSelection()[0];
                 alert(record.get("name"));
             }
@@ -1246,19 +1203,19 @@ TeamSettingsView.prototype = {
 
                             _this.diseaseGenes.grid.getStore().sort('name', 'ASC');
                         },
-                    itemcontextmenu: function (este, record, item, index, e) {
-                        e.stopEvent();
-                        var items = [];
-                        console.log(record)
-                        items.push(showGenesAction);
-                        items.push(showMutationsAction);
-                        //items.push(renameBucketAction);
-                        var contextMenu = Ext.create('Ext.menu.Menu', {
-                            items: items
-                        });
-                        contextMenu.showAt(e.getXY());
-                        return false;
-                    }
+                        itemcontextmenu: function (este, record, item, index, e) {
+                            e.stopEvent();
+                            var items = [];
+                            console.log(record)
+                            items.push(showGenesAction);
+                            items.push(showMutationsAction);
+                            //items.push(renameBucketAction);
+                            var contextMenu = Ext.create('Ext.menu.Menu', {
+                                items: items
+                            });
+                            contextMenu.showAt(e.getXY());
+                            return false;
+                        }
                     }
                 },
                 store: newGrid.store,
@@ -1329,49 +1286,49 @@ TeamSettingsView.prototype = {
                         }
                     },
                     //{
-                        //type: 'plus',
-                        //tooltip: 'Add Gene',
-                        //handler: function (event, toolEl, panel) {
-                            //if (_this.edit) {
-                                //rowEditing.cancelEdit();
+                    //type: 'plus',
+                    //tooltip: 'Add Gene',
+                    //handler: function (event, toolEl, panel) {
+                    //if (_this.edit) {
+                    //rowEditing.cancelEdit();
 
-                                //// Create a record instance through the ModelManager
-                                //var r = Ext.create('GeneModel', {
-                                    //name: 'New Gene'
-                                //});
+                    //// Create a record instance through the ModelManager
+                    //var r = Ext.create('GeneModel', {
+                    //name: 'New Gene'
+                    //});
 
-                                //newGrid.insert(newGrid.count(), r);
-                                //rowEditing.startEdit(newGrid.getAt(newGrid.count() - 1), 0);
+                    //newGrid.insert(newGrid.count(), r);
+                    //rowEditing.startEdit(newGrid.getAt(newGrid.count() - 1), 0);
 
-                            //}
-                        //}
+                    //}
+                    //}
                     //}
                 ],
                 dockedItems: [
                     //{
-                        //xtype: 'toolbar',
-                        //dock: 'bottom',
-                        //items: [
-                            ////'->',
-                            ////{
-                                ////xtype: 'button',
-                                ////text: 'New Gene',
-                                ////handler: function () {
-                                    ////if (_this.edit) {
-                                        ////rowEditing.cancelEdit();
+                    //xtype: 'toolbar',
+                    //dock: 'bottom',
+                    //items: [
+                    ////'->',
+                    ////{
+                    ////xtype: 'button',
+                    ////text: 'New Gene',
+                    ////handler: function () {
+                    ////if (_this.edit) {
+                    ////rowEditing.cancelEdit();
 
-                                        ////// Create a record instance through the ModelManager
-                                        ////var r = Ext.create('GeneModel', {
-                                            ////name: 'New Gene'
-                                        ////});
+                    ////// Create a record instance through the ModelManager
+                    ////var r = Ext.create('GeneModel', {
+                    ////name: 'New Gene'
+                    ////});
 
-                                        ////newGrid.insert(newGrid.count(), r);
-                                        ////rowEditing.startEdit(newGrid.getAt(newGrid.count() - 1), 0);
+                    ////newGrid.insert(newGrid.count(), r);
+                    ////rowEditing.startEdit(newGrid.getAt(newGrid.count() - 1), 0);
 
-                                    ////}
-                                ////}
-                            ////}
-                        //]
+                    ////}
+                    ////}
+                    ////}
+                    //]
                     //}
                 ],
                 plugins: [rowEditing],

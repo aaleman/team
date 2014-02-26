@@ -10,6 +10,7 @@ function PanelsWidget(args) {
     this.targetId;
     this.width;
     this.height;
+    this.panels;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -32,24 +33,34 @@ PanelsWidget.prototype = {
 
         this.panel = this._createPanel(this.targetId);
         this.tabPanel = this._createTabPanel();
-        this.panels = this._initializeDiseasePanel();
+        // this.panels = this._initializeDiseasePanel();
+        this.progress = Ext.create('Ext.ProgressBar', {
+            text: 'Progress',
+            border: 1,
+            margin: 3,
+            height: 20,
+            width: "100%"
+        });
 
         this.form = this._createForm();
         this.primDisGrid = this._createDiseaseGrid("Prim. Diagnosis");
-        this.secDisGrid = this._createDiseaseGrid("Sec. Diagnosis");
+//        this.secDisGrid = this._createDiseaseGrid("Sec. Diagnosis");
         this.extraGrid = this._createDiseaseGrid("Deleterious Variants");
 
         this.panel.add(this.form);
         this.panel.add(this.tabPanel);
+        this.panel.add(this.progress);
+
 
         this.tabPanel.add(this.primDisGrid.getPanel());
-        this.tabPanel.add(this.secDisGrid.getPanel());
+//        this.tabPanel.add(this.secDisGrid.getPanel());
         this.tabPanel.add(this.extraGrid.getPanel());
         this.tabPanel.setActiveTab(this.primDisGrid.getPanel());
 
         this.dataSec = [];
         this.dataPrim = [];
         this.dataExtra = [];
+
     },
     _createPanel: function (targetId) {
         var panel = Ext.create('Ext.panel.Panel', {
@@ -67,6 +78,8 @@ PanelsWidget.prototype = {
         return panel;
     },
     _createTabPanel: function () {
+
+
         var panel = Ext.create('Ext.tab.Panel', {
             title: "Results",
             width: '100%',
@@ -92,7 +105,8 @@ PanelsWidget.prototype = {
                             return rec.get('panelType') + '_' + rec.get('panelId');
                         }}
                 ],
-                data: _this.panels,
+//                data: _this.panels.getData(),
+                data: [],
                 storeId: 'DiseaseStore'
             }
         )
@@ -116,9 +130,10 @@ PanelsWidget.prototype = {
             queryMode: 'local',
             displayField: 'name',
             valueField: 'value',
-            value: this.diseaseStore.getAt(0).get('value'),
+//            value: this.diseaseStore.getAt(0).get('value'),
             editable: false,
-            allowBlank: false
+            allowBlank: false,
+            emptyText: "Select a Panel..."
         });
 
         var vcf = Ext.create('Ext.form.field.File', {
@@ -149,7 +164,7 @@ PanelsWidget.prototype = {
                         _this.dataPrim = [];
 
                         _this.primDisGrid.clear();
-                        _this.secDisGrid.clear();
+//                        _this.secDisGrid.clear();
                         _this.extraGrid.clear();
 
                         var form = _this.form.getForm();
@@ -172,18 +187,21 @@ PanelsWidget.prototype = {
                             panel = query.getAt(0).raw;
 
                             fds_vcf.on("success", function (data) {
+
+                                _this.progress.updateProgress(1, 'Parsing Vcf File');
+
                                 var variants = _this._parseVcfFile(data);
 
                                 _this._filterVariants(variants, panel);
 
                                 _this.primDisGrid.loadData(_this.dataPrim);
-                                _this.secDisGrid.loadData(_this.dataSec);
+//                                _this.secDisGrid.loadData(_this.dataSec);
                                 _this.extraGrid.loadData(_this.dataExtra);
 
                                 if (_this.primDisGrid.count() > 0) {
                                     _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
-                                } else if (_this.secDisGrid.count() > 0) {
-                                    _this.tabPanel.setActiveTab(_this.secDisGrid.getPanel());
+//                                } else if (_this.secDisGrid.count() > 0) {
+//                                    _this.tabPanel.setActiveTab(_this.secDisGrid.getPanel());
                                 } else if (_this.extraGrid.count() > 0) {
                                     _this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
                                 }
@@ -408,7 +426,11 @@ PanelsWidget.prototype = {
 
         var data = [];
 
+        _this.progress.updateProgress(2, 'Retrieving Genes');
+
         var genes = _this._getRegions(panel.genes);
+
+        _this.progress.updateProgress(3, 'Retrieving Disease Info');
 
         for (var i = 0; i < variants.length;) {
             data = [];
@@ -420,6 +442,8 @@ PanelsWidget.prototype = {
             _this._checkVariantBatch(data, panel.secondaryDiseases, _this.dataSec);
             _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
         }
+        _this.progress.updateProgress(5, 'Finish');
+
 
 
     },
@@ -439,7 +463,7 @@ PanelsWidget.prototype = {
             dis = dis.replace(/ /g, "%20");
 
             var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
-            console.log(url);
+//            console.log(url);
             //debugger
 
             $.ajax({
@@ -570,31 +594,5 @@ PanelsWidget.prototype = {
             }
         }
         return null;
-    },
-    _initializeDiseasePanel: function () {  // TODO aaleman: Check this code
-        var panels = []
-
-        for (var i = 0; i < EXAMPLE_PANELS.length; i++) {
-            var panel = EXAMPLE_PANELS[i];
-            panels.push({
-                panelType: 'example',
-                panelId: i,
-                name: panel.name,
-                primaryDiseases: panel.primaryDiseases,
-                secondaryDiseases: panel.secondaryDiseases,
-                genes: panel.genes
-            });
-        }
-
-        if (localStorage.bioinfo_panels_user_settings) {
-            var userDefinedPanels = JSON.parse(localStorage.bioinfo_panels_user_settings);
-            for (var i = 0; i < userDefinedPanels.length; i++) {
-                var elem = userDefinedPanels[i];
-                elem.panelType = 'user';
-                elem.panelId = i;
-                panels.push(elem);
-            }
-        }
-        return panels;
     }
 };

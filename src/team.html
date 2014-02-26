@@ -126,7 +126,7 @@
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/renderers/renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/renderers/feature-renderer.js"></script>
 <script type="text/javascript"
-src="../lib/jsorolla/src/genome-viewer/renderers/feature-cluster-renderer.js"></script>
+        src="../lib/jsorolla/src/genome-viewer/renderers/feature-cluster-renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/renderers/sequence-renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/renderers/histogram-renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/renderers/gene-renderer.js"></script>
@@ -158,6 +158,7 @@ src="../lib/jsorolla/src/genome-viewer/renderers/feature-cluster-renderer.js"></
 <!-- APP ui-widgets-->
 <!-- build:script js -->
 <script type="text/javascript" src="data.js"></script>
+<script type="text/javascript" src="panel.js"></script>
 <script type="text/javascript" src="team-list-widget.js"></script>
 <script type="text/javascript" src="team-settings.js"></script>
 <script type="text/javascript" src="team-widget.js"></script>
@@ -170,8 +171,8 @@ src="../lib/jsorolla/src/genome-viewer/renderers/feature-cluster-renderer.js"></
     Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
     Ext.QuickTips.init();
     Ext.require([
-    'Ext.ux.grid.FiltersFeature',
-    'Ext.ux.data.PagingMemoryProxy'
+        'Ext.ux.grid.FiltersFeature',
+        'Ext.ux.data.PagingMemoryProxy'
 
     ]);
 
@@ -207,7 +208,7 @@ src="../lib/jsorolla/src/genome-viewer/renderers/feature-cluster-renderer.js"></
 </STYLE>
 </head>
 <body>
-    <div id="checkBrowser"></div>
-    <div id="application"></div>
+<div id="checkBrowser"></div>
+<div id="application"></div>
 </body>
 </html>

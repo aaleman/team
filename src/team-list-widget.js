@@ -4,6 +4,7 @@ function TeamPanelListWidget(args) {
     console.log(args);
     this.counter = null;
     this.allData = [];
+    this.panels;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -54,7 +55,7 @@ TeamPanelListWidget.prototype = {
                     tooltip: 'Save Panels',
                     listeners: {
                         click: function () {
-                            var content = JSON.stringify(_this.userPanels, null, '\t');
+                            var content = _this.panels.toJson();
                             this.getEl().set({
                                 href: 'data:text/json,' + encodeURIComponent(content),
                                 download: "settings" + ".json"
@@ -71,10 +72,12 @@ TeamPanelListWidget.prototype = {
                             Ext.MessageBox.confirm('Confirm', 'Are you sure you want to clear the settings and remove all the panels?', function (e) {
                                 if (e == "yes") {
                                     _this.grid.clear();
-                                    delete localStorage.bioinfo_panels_user_settings;
+                                    _this.panels.clear();
 
-                                    var storeAux = Ext.getStore("DiseaseStore").query("panelType", "user");
-                                    Ext.getStore("DiseaseStore").remove(storeAux.items);
+//                                    delete localStorage.bioinfo_panels_user_settings;
+
+//                                    var storeAux = Ext.getStore("DiseaseStore").query("panelType", "user");
+//                                    Ext.getStore("DiseaseStore").remove(storeAux.items);
                                 }
                             });
                         }
@@ -92,12 +95,14 @@ TeamPanelListWidget.prototype = {
             extend: 'Ext.data.Model',
             fields: [
                 {name: 'name', type: 'String'},
-                {name: 'panelId', type: 'String'}
+                {name: 'panelId', type: 'String'},
+                {name: 'panelType', type: 'String'}
             ]
         });
 
         newGrid.store = Ext.create('Ext.data.Store', {
             model: newGrid.model,
+            storeId: 'UserExampleStore',
             sorters: [
                 { property: 'date', direction: 'DESC'}
             ],
@@ -178,11 +183,16 @@ TeamPanelListWidget.prototype = {
 
         newGrid.model = Ext.define('PanelSettingsModel', {
             extend: 'Ext.data.Model',
-            fields: ['name']
+            fields: [
+                {name: 'name', type: 'String'},
+                {name: 'panelId', type: 'String'},
+                {name: 'panelType', type: 'String'}
+            ]
         });
 
         newGrid.store = Ext.create('Ext.data.Store', {
             model: newGrid.model,
+            storeId: 'ExampleStore',
             sorters: [
                 { property: 'date', direction: 'DESC'}
             ],
@@ -277,7 +287,9 @@ TeamPanelListWidget.prototype = {
         tabPanel.add(this.grid.getPanel());
         tabPanel.add(this.exampleGrid.getPanel());
 
-        if (this.userPanels.length == 0) {
+
+//        if (this.userPanels.length == 0) {
+        if (!this.panels || this.panels.isExampleDataEmpty()) {
             tabPanel.setActiveTab(this.exampleGrid.getPanel());
         } else {
             tabPanel.setActiveTab(this.grid.getPanel());
@@ -299,10 +311,11 @@ TeamPanelListWidget.prototype = {
     },
 
     add: function (panel) {
-        this.userPanels.push(panel);
-        this.grid.add({name: panel.name});
+        // this.userPanels.push(panel);
+        this.panels.addPanel(panel);
+//        this.grid.add({name: panel.name});
         Ext.getCmp(this.id + "_tabPanel").setActiveTab(this.grid.getPanel());
-        localStorage.bioinfo_panels_user_settings = JSON.stringify(this.userPanels);
+//        localStorage.bioinfo_panels_user_settings = JSON.stringify(this.userPanels);
     }
 }
 ;
@@ -314,15 +327,15 @@ TeamPanelListWidget.prototype.draw = function () {
     this.grid = _this._createUserPanelsGrid();
     this.exampleGrid = _this._createExamplePanelsGrid();
     this.panel = _this._createPanel();
-    this.grid.loadData(this.diseaseStore.query("panelType", "user").items);
-    this.exampleGrid.loadData(this.diseaseStore.query("panelType", "example").items);
+//    this.grid.loadData(this.diseaseStore.query("panelType", "user").items);
+//    this.exampleGrid.loadData(this.diseaseStore.query("panelType", "example").items);
 
 
-    this.settingsView = new TeamSettingsView({
-        autoRender: true,
-        parent: this
-    });
-    this.settingsView.draw();
+//    this.settingsView = new TeamSettingsView({
+//        autoRender: true,
+//        parent: this
+//    });
+//    this.settingsView.draw();
 
 };
 
