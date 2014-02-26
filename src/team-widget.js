@@ -43,8 +43,8 @@ PanelsWidget.prototype = {
         });
 
         this.form = this._createForm();
-        this.primDisGrid = this._createDiseaseGrid("Prim. Diagnosis");
-//        this.secDisGrid = this._createDiseaseGrid("Sec. Diagnosis");
+        this.primDisGrid = this._createDiseaseGrid("Prim. Diagnostic");
+//        this.secDisGrid = this._createDiseaseGrid("Sec. Diagnostic");
         this.extraGrid = this._createDiseaseGrid("Deleterious Variants");
 
         this.panel.add(this.form);
@@ -443,7 +443,6 @@ PanelsWidget.prototype = {
             _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
         }
         _this.progress.updateProgress(5, 'Finish');
-
 
 
     },
