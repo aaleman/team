@@ -10,7 +10,7 @@ function PanelsWidget(args) {
     this.targetId;
     this.width;
     this.height;
-    this.panels;
+    this.userSettings;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -189,7 +189,7 @@ PanelsWidget.prototype = {
                             var panelType = panelSplit[0];
                             var panelId = panelSplit[1];
 
-                            panel = _this.panels.get(panelType, panelId);
+                            panel = _this.userSettings.get(panelType, panelId);
 
                             fds_vcf.on("success", function (data) {
 
@@ -430,7 +430,7 @@ PanelsWidget.prototype = {
 
         _this.progress.updateProgress(2, 'Retrieving Genes');
 
-        var genes = _this._getRegions(_this.panels.getGenes(panel));
+        var genes = _this._getRegions(_this.userSettings.getGenes(panel));
 
         _this.progress.updateProgress(3, 'Retrieving Disease Info');
 

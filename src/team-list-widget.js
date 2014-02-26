@@ -4,7 +4,7 @@ function TeamPanelListWidget(args) {
     console.log(args);
     this.counter = null;
     this.allData = [];
-    this.panels;
+    this.userSettings;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -55,7 +55,7 @@ TeamPanelListWidget.prototype = {
                     tooltip: 'Save Panels',
                     listeners: {
                         click: function () {
-                            var content = _this.panels.toJson();
+                            var content = _this.userSettings.toJson();
                             this.getEl().set({
                                 href: 'data:text/json,' + encodeURIComponent(content),
                                 download: "settings" + ".json"
@@ -72,7 +72,7 @@ TeamPanelListWidget.prototype = {
                             Ext.MessageBox.confirm('Confirm', 'Are you sure you want to clear the settings and remove all the panels?', function (e) {
                                 if (e == "yes") {
                                     _this.grid.clear();
-                                    _this.panels.clear();
+                                    _this.userSettings.clear();
                                 }
                             });
                         }
@@ -131,8 +131,8 @@ TeamPanelListWidget.prototype = {
                                 Ext.MessageBox.confirm('Confirm', 'Are you sure you want to remove this panel?', function (e) {
                                     if (e == "yes") {
                                         var rec = grid.getStore().getAt(rowIndex);
-                                        _this.panels.remove(rec.raw);
-                                        _this.panels.save();
+                                        _this.userSettings.remove(rec.raw);
+                                        _this.userSettings.save();
                                     }
                                 });
                             }
@@ -254,7 +254,7 @@ TeamPanelListWidget.prototype = {
         tabPanel.add(this.grid.getPanel());
         tabPanel.add(this.exampleGrid.getPanel());
 
-        if (this.panels === undefined || this.panels.isExampleDataEmpty()) {
+        if (this.userSettings === undefined || this.userSettings.isExampleDataEmpty()) {
             tabPanel.setActiveTab(this.exampleGrid.getPanel());
         } else {
             tabPanel.setActiveTab(this.grid.getPanel());
@@ -275,7 +275,7 @@ TeamPanelListWidget.prototype = {
     },
 
     add: function (panel) {
-        this.panels.addPanel(panel);
+        this.userSettings.addPanel(panel);
         Ext.getCmp(this.id + "_tabPanel").setActiveTab(this.grid.getPanel());
 
     }

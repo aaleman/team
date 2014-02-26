@@ -4,6 +4,7 @@ function TeamSettingsView(args) {
 
     this.diseases = [];
     this.edit = true;
+    this.userSettings;
     //set instantiation args, must be last
     _.extend(this, args);
 
@@ -164,7 +165,7 @@ TeamSettingsView.prototype = {
 
                             fds_file.on("success", function (data) {
 
-                                _this.panels.importData(data);
+                                _this.userSettings.importData(data);
 
                             });
 
@@ -442,8 +443,8 @@ TeamSettingsView.prototype = {
                                         sift: sift
                                     };
 
-                                    _this.panels.addPanel(panel);
-                                    _this.panels.save();
+                                    _this.userSettings.addPanel(panel);
+                                    _this.userSettings.save();
                                     _this.clearSettings();
                                     _this.hide();
 

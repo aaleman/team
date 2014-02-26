@@ -112,16 +112,16 @@ Team.prototype = {
         this.panelsWidget.draw();
 
 
-        this.panels = new Panel();
+        this.userSettings = new UserSettings();
 
 
-        this.panelsWidget.panels = this.panels;
-        this.panelListWidget.panels = this.panels;
+        this.panelsWidget.userSettings = this.userSettings;
+        this.panelListWidget.userSettings = this.userSettings;
 
 
         this.settingsView = new TeamSettingsView({
             autoRender: true,
-            panels: this.panels
+            userSettings: this.userSettings
             // parent: this.panelListWidget
         });
         this.settingsView.draw();
