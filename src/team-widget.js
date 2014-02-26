@@ -44,16 +44,13 @@ PanelsWidget.prototype = {
 
         this.form = this._createForm();
         this.primDisGrid = this._createDiseaseGrid("Prim. Diagnostic");
-//        this.secDisGrid = this._createDiseaseGrid("Sec. Diagnostic");
         this.extraGrid = this._createDiseaseGrid("Deleterious Variants");
 
         this.panel.add(this.form);
         this.panel.add(this.tabPanel);
-        this.panel.add(this.progress);
-
+//        this.panel.add(this.progress);
 
         this.tabPanel.add(this.primDisGrid.getPanel());
-//        this.tabPanel.add(this.secDisGrid.getPanel());
         this.tabPanel.add(this.extraGrid.getPanel());
         this.tabPanel.setActiveTab(this.primDisGrid.getPanel());
 
@@ -78,16 +75,29 @@ PanelsWidget.prototype = {
         return panel;
     },
     _createTabPanel: function () {
-
+        var _this = this;
 
         var panel = Ext.create('Ext.tab.Panel', {
             title: "Results",
             width: '100%',
             flex: 3,
-            border: 0,
+            border: 1,
             layout: 'vbox',
+            margin: '0 5 5 5',
             cls: 'ocb-border-top-lightgrey',
-            items: []
+            items: [],
+            bbar: [
+                '->',
+                {
+                    xtype: 'button',
+                    id: _this.id + "_generate_report",
+                    text: 'Generate Report',
+                    disabled: true,
+                    handler: function () {
+                        alert('You clicked the button!');
+                    }
+                }
+            ]
         });
 
         return panel;
@@ -130,7 +140,6 @@ PanelsWidget.prototype = {
             queryMode: 'local',
             displayField: 'name',
             valueField: 'value',
-//            value: this.diseaseStore.getAt(0).get('value'),
             editable: false,
             allowBlank: false,
             emptyText: "Select a Panel..."
@@ -145,86 +154,97 @@ PanelsWidget.prototype = {
             name: 'vcf'
         });
         var form = Ext.create('Ext.form.Panel', {
-            title: "Search",
-            width: "100%",
-            height: 130,
-            bodyPadding: '10 10 0',
-            layout: 'vbox',
-            defaults: {
-                allowBlank: false,
-                msgTarget: 'side',
-                labelWidth: 70
-            },
-            items: [disease, vcf],
-            buttons: [
-                {
-                    text: 'Run',
-                    handler: function () {
-                        _this.dataSec = [];
-                        _this.dataPrim = [];
+                    title: "Search",
+                    width: "100%",
+                    height: 130,
+                    bodyPadding: '10 10 0',
+                    layout: 'vbox',
+                    defaults: {
+                        allowBlank: false,
+                        msgTarget: 'side',
+                        labelWidth: 70
+                    },
+                    margin: '5 5 20 5',
+                    items: [disease, vcf],
+                    buttonAlign: 'left',
+                    buttons: [
+                        {
+                            text: 'Run',
+                            handler: function () {
+                                var button = Ext.getCmp(_this.id + "_generate_report");
+                                button.disable();
 
-                        _this.primDisGrid.clear();
+                                _this.dataSec = [];
+                                _this.dataPrim = [];
+
+                                _this.primDisGrid.clear();
 //                        _this.secDisGrid.clear();
-                        _this.extraGrid.clear();
+                                _this.extraGrid.clear();
 
-                        var form = _this.form.getForm();
-                        if (form.isValid()) {
-                            _this.primDisGrid.setLoading(true);
+                                var form = _this.form.getForm();
+                                if (form.isValid()) {
+                                    _this.primDisGrid.setLoading(true);
 
-                            var vcf_file = document.getElementById(vcf.fileInputEl.id).files[0];
+                                    var vcf_file = document.getElementById(vcf.fileInputEl.id).files[0];
 
-                            var fds_vcf = new FileDataSource(vcf_file);
+                                    var fds_vcf = new FileDataSource(vcf_file);
 
-                            var panelOpt = Ext.getCmp(_this.id + "disease").getValue();
-                            var panelSplit = panelOpt.split("_");
-                            var panelType = panelSplit[0];
-                            var panelId = panelSplit[1];
+                                    var panelOpt = Ext.getCmp(_this.id + "disease").getValue();
+                                    var panelSplit = panelOpt.split("_");
+                                    var panelType = panelSplit[0];
+                                    var panelId = panelSplit[1];
 
-                            var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
-                                return (record.get('panelType') == panelType && record.get('panelId') == panelId);
-                            });
+//                            var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
+//                                return (record.get('panelType') == panelType && record.get('panelId') == panelId);
+//                            });
+//                            panel = query.getAt(0).raw;
+                                    panel = _this.panels.get(panelType, panelId);
 
-                            panel = query.getAt(0).raw;
+                                    fds_vcf.on("success", function (data) {
 
-                            fds_vcf.on("success", function (data) {
+                                        _this.progress.updateProgress(1, 'Parsing Vcf File');
 
-                                _this.progress.updateProgress(1, 'Parsing Vcf File');
+                                        var variants = _this._parseVcfFile(data);
 
-                                var variants = _this._parseVcfFile(data);
+                                        _this._filterVariants(variants, panel);
 
-                                _this._filterVariants(variants, panel);
-
-                                _this.primDisGrid.loadData(_this.dataPrim);
+                                        _this.primDisGrid.loadData(_this.dataPrim);
 //                                _this.secDisGrid.loadData(_this.dataSec);
-                                _this.extraGrid.loadData(_this.dataExtra);
+                                        _this.extraGrid.loadData(_this.dataExtra);
 
-                                if (_this.primDisGrid.count() > 0) {
-                                    _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
+                                        if (_this.primDisGrid.count() > 0) {
+                                            _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
 //                                } else if (_this.secDisGrid.count() > 0) {
 //                                    _this.tabPanel.setActiveTab(_this.secDisGrid.getPanel());
-                                } else if (_this.extraGrid.count() > 0) {
-                                    _this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
+                                        } else if (_this.extraGrid.count() > 0) {
+                                            _this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
+                                        }
+
+                                        Ext.getCmp(_this.id + "numRowsLabel").setText(_this.dataPrim.length + " variants");
+                                        _this.primDisGrid.setLoading(false);
+
+                                        if (_this.primDisGrid.count() > 0 || _this.extraGrid.count() > 0) {
+                                            button.enable();
+                                        }
+
+                                    });
+
+                                    fds_vcf.fetch(true);
                                 }
-
-                                Ext.getCmp(_this.id + "numRowsLabel").setText(_this.dataPrim.length + " variants");
-                                _this.primDisGrid.setLoading(false);
-
-                            });
-
-                            fds_vcf.fetch(true);
+                            }
+                        },
+                        {
+                            text: 'Reset',
+                            handler: function () {
+                                _this.form.getForm().reset();
+                            }
                         }
-                    }
-                },
-                {
-                    text: 'Reset',
-                    handler: function () {
-                        _this.form.getForm().reset();
-                    }
+                    ],
+                    dockedItems: [],
+                    tools: []
                 }
-            ],
-            dockedItems: [],
-            tools: []
-        });
+            )
+            ;
 
         return form;
     },
@@ -428,7 +448,7 @@ PanelsWidget.prototype = {
 
         _this.progress.updateProgress(2, 'Retrieving Genes');
 
-        var genes = _this._getRegions(panel.genes);
+        var genes = _this._getRegions(_this.panels.getGenes(panel));
 
         _this.progress.updateProgress(3, 'Retrieving Disease Info');
 
@@ -438,8 +458,8 @@ PanelsWidget.prototype = {
             for (var j = 0; i < variants.length && j < 100; j++, i++) {
                 data.push(variants[i]);
             }
-            _this._checkVariantBatch(data, panel.primaryDiseases, _this.dataPrim);
-            _this._checkVariantBatch(data, panel.secondaryDiseases, _this.dataSec);
+            _this._checkVariantBatch(data, _this.panels.getPrimaryDiseases(panel), _this.dataPrim);
+//            _this._checkVariantBatch(data, panel.secondaryDiseases, _this.dataSec);
             _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
         }
         _this.progress.updateProgress(5, 'Finish');
@@ -594,4 +614,5 @@ PanelsWidget.prototype = {
         }
         return null;
     }
-};
+}
+;

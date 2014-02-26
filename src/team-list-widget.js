@@ -73,11 +73,6 @@ TeamPanelListWidget.prototype = {
                                 if (e == "yes") {
                                     _this.grid.clear();
                                     _this.panels.clear();
-
-//                                    delete localStorage.bioinfo_panels_user_settings;
-
-//                                    var storeAux = Ext.getStore("DiseaseStore").query("panelType", "user");
-//                                    Ext.getStore("DiseaseStore").remove(storeAux.items);
                                 }
                             });
                         }
@@ -111,6 +106,7 @@ TeamPanelListWidget.prototype = {
 
         newGrid.grid = Ext.create('Ext.grid.Panel', {
             title: 'User-defined',
+            id: "userPanelGrid",
             store: newGrid.store,
             columns: [
                 {
@@ -135,17 +131,8 @@ TeamPanelListWidget.prototype = {
                                 Ext.MessageBox.confirm('Confirm', 'Are you sure you want to remove this panel?', function (e) {
                                     if (e == "yes") {
                                         var rec = grid.getStore().getAt(rowIndex);
-
-                                        var panelType = rec.get('panelType');
-                                        var panelId = rec.get('panelId');
-
-                                        var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
-                                            return (record.get('panelType') == panelType && record.get('panelId') == panelId);
-                                        });
-
-                                        Ext.getStore("DiseaseStore").remove(query.items);
-                                        grid.getStore().remove(query.items);
-                                        _this._saveToLocalStorage();
+                                        _this.panels.remove(rec.raw);
+                                        _this.panels.save();
                                     }
                                 });
                             }
@@ -156,25 +143,6 @@ TeamPanelListWidget.prototype = {
             border: 0
         });
         return newGrid;
-    },
-    _saveToLocalStorage: function () {
-
-        var aux = [];
-        var copy = {};
-
-        var query = Ext.getStore("DiseaseStore").query("panelType", "user");
-
-        for (var i = 0; i < query.getCount(); i++) {
-            var elem = query.getAt(i);
-
-            _.extend(copy, elem.raw);
-            delete copy.panelId;
-            delete copy.panelType;
-
-            aux.push(copy);
-
-        }
-        localStorage.bioinfo_panels_user_settings = JSON.stringify(aux);
     },
     _createExamplePanelsGrid: function () {
 
@@ -268,7 +236,6 @@ TeamPanelListWidget.prototype = {
                 searchField,
                 {
                     id: this.id + 'btnClear',
-//				    iconCls: 'icon-delete',
                     text: 'X',
                     margin: "0 2 0 0",
                     tooltip: 'Clear search box',
@@ -287,9 +254,7 @@ TeamPanelListWidget.prototype = {
         tabPanel.add(this.grid.getPanel());
         tabPanel.add(this.exampleGrid.getPanel());
 
-
-//        if (this.userPanels.length == 0) {
-        if (!this.panels || this.panels.isExampleDataEmpty()) {
+        if (this.panels === undefined || this.panels.isExampleDataEmpty()) {
             tabPanel.setActiveTab(this.exampleGrid.getPanel());
         } else {
             tabPanel.setActiveTab(this.grid.getPanel());
@@ -303,7 +268,6 @@ TeamPanelListWidget.prototype = {
             width: this.width,
             height: this.height,
             border: this.border,
-//            tbar: this.pagBar,
             items: tabPanel
         });
         panel.addDocked(this.bar);
@@ -311,11 +275,9 @@ TeamPanelListWidget.prototype = {
     },
 
     add: function (panel) {
-        // this.userPanels.push(panel);
         this.panels.addPanel(panel);
-//        this.grid.add({name: panel.name});
         Ext.getCmp(this.id + "_tabPanel").setActiveTab(this.grid.getPanel());
-//        localStorage.bioinfo_panels_user_settings = JSON.stringify(this.userPanels);
+
     }
 }
 ;

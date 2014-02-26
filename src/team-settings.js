@@ -452,10 +452,6 @@ TeamSettingsView.prototype = {
                                         pd.push({name: _this.primDiseases.getAt(i).get("name")});
                                     }
 
-                                    //for (var i = 0; i < _this.secDiseases.count(); i++) {
-                                    //sd.push({name: _this.secDiseases.getAt(i).get("name")});
-                                    //}
-
                                     for (var i = 0; i < _this.diseaseGenes.count(); i++) {
                                         genes.push({name: _this.diseaseGenes.getAt(i).get("name")});
                                     }
@@ -474,29 +470,6 @@ TeamSettingsView.prototype = {
                                     _this.panels.save();
                                     _this.clearSettings();
                                     _this.hide();
-
-//                                    var storeAux = Ext.getStore("DiseaseStore");
-//
-//                                    var query = storeAux.query("panelType", "user");
-//                                    var max = -1;
-//
-//                                    for (var i = 0; i < query.getCount(); i++) {
-//                                        var elem = query.getAt(i).raw;
-//                                        if (elem.panelId > max) {
-//                                            max = elem.panelId;
-//                                        }
-//                                    }
-//
-//                                    storeAux.add({
-//                                        panelType: 'user',
-//                                        panelId: max + 1,
-//                                        name: name,
-//                                        primaryDiseases: pd,
-//                                        secondaryDiseases: sd,
-//                                        genes: genes,
-//                                        polyphen: polyphen,
-//                                        sift: sift
-//                                    });
 
                                 }
                             }

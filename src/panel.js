@@ -103,8 +103,7 @@ Panel.prototype = {
         var storeAux = Ext.getStore("DiseaseStore").query("panelType", "user");
         Ext.getStore("DiseaseStore").remove(storeAux.items);
 
-
-//        delete localStorage.bioinfo_panels_user_settings;
+        delete localStorage.bioinfo_panels_user_settings;
     },
     getUserPanels: function () {
 
@@ -129,6 +128,57 @@ Panel.prototype = {
             this.addPanel(jsonData[i]);
         }
         this.save();
+
+    },
+    get: function (panelType, panelId) {
+
+        for (var i = 0; i < this.data.length; i++) {
+            var p = this.data[i];
+            if (p.panelType == panelType && p.panelId == panelId) {
+                return p;
+            }
+        }
+
+        return null;
+
+    },
+    getGenes: function (panel) {
+
+        var p = this.get(panel.panelType, panel.panelId);
+
+        return p.genes;
+
+    },
+    getPrimaryDiseases: function (panel) {
+        var p = this.get(panel.panelType, panel.panelId);
+        return p.primaryDiseases;
+    },
+    remove: function (panel) {
+
+        var elem = -1;
+        for (var i = 0; i < this.data.length; i++) {
+            var p = this.data[i];
+            if (p.panelType == panel.panelType && p.panelId == panel.panelId) {
+                elem = i;
+                break;
+            }
+        }
+
+        if (elem != -1) {
+            this.data.splice(elem, 1);
+            var query = Ext.getStore("UserExampleStore").queryBy(function (record, id) {
+                return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
+            });
+
+            Ext.getStore("UserExampleStore").remove(query.items);
+
+            query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
+                return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
+            });
+            Ext.getStore("DiseaseStore").remove(query.items);
+
+        }
+
 
     }
 

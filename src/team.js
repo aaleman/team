@@ -134,6 +134,8 @@ Team.prototype = {
         this.panelListWidget.settingsView = this.settingsView;
 
 
+
+
     },
     _createMenu: function (targetId) {
         var _this = this;
