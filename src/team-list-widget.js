@@ -289,16 +289,6 @@ TeamPanelListWidget.prototype.draw = function () {
     this.grid = _this._createUserPanelsGrid();
     this.exampleGrid = _this._createExamplePanelsGrid();
     this.panel = _this._createPanel();
-//    this.grid.loadData(this.diseaseStore.query("panelType", "user").items);
-//    this.exampleGrid.loadData(this.diseaseStore.query("panelType", "example").items);
-
-
-//    this.settingsView = new TeamSettingsView({
-//        autoRender: true,
-//        parent: this
-//    });
-//    this.settingsView.draw();
-
 };
 
 TeamPanelListWidget.prototype.show = function () {

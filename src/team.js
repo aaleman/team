@@ -99,9 +99,6 @@ Team.prototype = {
         var topOffset = 80 + $(this.menuDiv).height();
         $(this.wrapDiv).css({height: 'calc(100% - ' + topOffset + 'px)'});
 
-        /* Wrap Panel */
-        // this.panel = this._createPanel($(this.contentDiv).attr('id'));
-
         /* Job List Widget */
         this.panelListWidget = this._createTeamPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
         this.panelListWidget.render();
@@ -111,7 +108,6 @@ Team.prototype = {
         this.panelsWidget = new PanelsWidget({
             targetId: $(this.contentDiv).attr('id'),
             autoRender: true
-//            panels: this.panels
         });
         this.panelsWidget.draw();
 
@@ -130,12 +126,7 @@ Team.prototype = {
         });
         this.settingsView.draw();
 
-
         this.panelListWidget.settingsView = this.settingsView;
-
-
-
-
     },
     _createMenu: function (targetId) {
         var _this = this;
@@ -172,7 +163,6 @@ Team.prototype = {
     _createTeamPanelsListWidget: function (targetId, teamWidget) {
         var _this = this;
 
-        var user_panels = [];
 
         var panelListWidget = new TeamPanelListWidget({
             'title': 'Panels',
@@ -183,8 +173,6 @@ Team.prototype = {
             'height': 425,
             border: true,
             'mode': 'view',
-//            examplePanels: EXAMPLE_PANELS,
-//            userPanels: user_panels,
             parent: teamWidget,
             panels: this.panels
 

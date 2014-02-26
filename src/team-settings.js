@@ -78,14 +78,12 @@ TeamSettingsView.prototype = {
         var _this = this;
 
         _this.allDiseases.addAll(_this.primDiseases.getData());
-        //_this.allDiseases.addAll(_this.secDiseases.getData());
 
         _this.panelName.reset();
         _this.polyphen.reset();
         _this.sift.reset();
         _this.allDiseases.refresh();
         _this.primDiseases.clear();
-        //_this.secDiseases.clear();
         _this.diseaseGenes.clear();
 
     },
@@ -124,7 +122,6 @@ TeamSettingsView.prototype = {
             _this.sift.setValue(panel.sift);
 
             _this.primDiseases.loadData(primD);
-            //_this.secDiseases.loadData(secD);
             _this.diseaseGenes.loadData(genes);
 
             _this.show(edit);
@@ -218,12 +215,7 @@ TeamSettingsView.prototype = {
             {
                 id: _this.id + '_genes',
                 name: 'genes',
-                //fieldLabel: 'New Gene',
                 emptyText: "BRCA2,PPL",
-                //labelAlign:'top',
-                //height: 20,
-                //maxWidth: 300,
-                //margin: "0 0 20 0",
                 allowBlank: true
             });
         this.polyphen = Ext.create('Ext.form.NumberField',
@@ -236,8 +228,6 @@ TeamSettingsView.prototype = {
                 step: 0.01,
                 maxValue: 1,
                 minValue: 0
-
-                //margin: "0 0 20 0"
             });
         this.sift = Ext.create('Ext.form.NumberField',
             {
@@ -249,7 +239,6 @@ TeamSettingsView.prototype = {
                 step: 0.01,
                 maxValue: 1,
                 minValue: 0
-                //margin: "0 0 20 0"
             });
 
         this.genesButton = Ext.create('Ext.Button', {
@@ -280,27 +269,19 @@ TeamSettingsView.prototype = {
                     genesPanel.reset();
                     _this.diseaseGenes.store.resumeEvents();
                     _this.diseaseGenes.store.fireEvent('refresh');
-
-
                 }
-
-
             }
         });
 
         var searchField = Ext.create('Ext.form.field.Text', {
             id: this.id + "searchField",
-            //margin: "0 1 0 0",
             emptyText: 'enter search term',
             enableKeyEvents: true,
             margin: '0 15 10 0',
-            //height: 20,
-
             listeners: {
                 change: {
                     buffer: 200,
                     fn: function () {
-
                         var str = Ext.getCmp(_this.id + "searchField").getValue();
                         var st = Ext.getStore("allDiseases")
                         st.clearFilter();
@@ -321,12 +302,9 @@ TeamSettingsView.prototype = {
         _this.diseaseGenes = _this._createGenesGrid("Genes");
         _this.primDiseases = _this._createDiseaseSetGrid("Primary Disease", _this.allDiseases, _this.diseaseGenes, filters, true);
         _this.mutationsGrid = _this._createMutationsGrid();
-        //_this.secDiseases = _this._createDiseaseSetGrid("Secondary Disease", _this.allDiseases, _this.diseaseGenes, filters, false);
 
         _this.showGenesPanel = _this._createShowGenesPanel();
         _this.mutationPanel = _this._createNewMutationPanel();
-        //_this.showMutationsPanel = _this._createShowMutationsPanel();
-        //console.log(_this.showGenesPanel);
 
         var mutationButton = Ext.create('Ext.Button', {
             text: 'Add Mutation',
@@ -336,7 +314,7 @@ TeamSettingsView.prototype = {
                 _this.mutationPanel.show();
             }
         });
-        //_this.mutationPanel.show();
+//        _this.mutationPanel.show();
 
         _this.genesWindow = Ext.create('Ext.window.Window', {
             //title: 'Show Genes',
@@ -402,13 +380,11 @@ TeamSettingsView.prototype = {
                                     this.primDiseases.getPanel(),
                                     this.mutationsGrid.getPanel(),
                                     mutationButton
-                                    //this.secDiseases.getPanel()
 
                                 ]
                             },
                             {
                                 xtype: 'container',
-                                //flex: 1,
                                 width: 150,
                                 layout: {
                                     type: 'vbox',
@@ -502,7 +478,6 @@ TeamSettingsView.prototype = {
 
         var _this = this;
 
-
         _this.chrField = Ext.create('Ext.form.TextField', {
             id: _this.id + "_chr_mutationPanel",
             name: 'chr',
@@ -512,16 +487,6 @@ TeamSettingsView.prototype = {
             margin: "0 10 0 0",
             listeners: {
                 change: function () {
-
-                    //var chr = Ext.getCmp(_this.id + "_chr_mutationPanel").getValue();
-                    //var pos = Ext.getCmp(_this.id + "_pos_mutationPanel").getValue();
-
-                    //var region = new Region({
-                    //chromosome: chr,
-                    //start: pos,
-                    //end:pos 
-                    //});
-                    //_this.gv.setRegion(region);
                 }
             }
         });
@@ -537,16 +502,6 @@ TeamSettingsView.prototype = {
             margin: "0 10 0 0",
             listeners: {
                 change: function () {
-
-                    //var chr = _this.chrField.getValue();
-                    //var pos = _this.posField.getValue();
-
-                    //var region = new Region({
-                    //chromosome: chr,
-                    //start: pos,
-                    //end:pos 
-                    //});
-                    //_this.gv.setRegion(region);
                 }
             }
 
@@ -558,7 +513,7 @@ TeamSettingsView.prototype = {
             fieldLabel: 'Ref',
             labelAlign: 'top',
             allowBlank: false,
-            margin: "0 10 0 0",
+            margin: "0 10 0 0"
         });
         var alt = Ext.create('Ext.form.TextField', {
             id: _this.id + "_alt_mutationPanel",
@@ -566,7 +521,7 @@ TeamSettingsView.prototype = {
             fieldLabel: 'Alt',
             labelAlign: 'top',
             allowBlank: false,
-            margin: "0 10 0 0",
+            margin: "0 10 0 0"
         });
 
         var checkButton = Ext.create('Ext.Button', {
@@ -589,16 +544,12 @@ TeamSettingsView.prototype = {
 
             }
         });
-        var gvDiv = $('<div id="gv"></div>')[0];
 
         this.gvPanel = this._createGenomeViewer();
 
-
         var window = Ext.create('Ext.window.Window', {
-            //title: 'Show Genes',
             height: 600,
             width: 800,
-            //modal: true,
             minimizable: true,
             closable: false,
             bodyPadding: 10,
@@ -614,8 +565,6 @@ TeamSettingsView.prototype = {
             items: [
                 {
                     xtype: 'container',
-                    //height: 200,
-                    //width:"100%",
                     layout: {
                         type: 'hbox',
                         align: 'stretch'
@@ -634,139 +583,134 @@ TeamSettingsView.prototype = {
         var _this = this;
 
         var gvpanel = Ext.create('Ext.panel.Panel', {
-                //title: 'Genome Viewer',
-                //flex: 8,
-                //height: '100%',
-                border: 1,
-                margin: "50 0 0 0",
-                html: '<div id="' + this.id + 'genomeViewer" style="width:750px;height:600;position:relative;"></div>',
-                listeners: {
-                    afterrender: {
-                        fn: function () {
-                            var w = this.getWidth();
-                            $('#' + _this.id + 'genomeViewer').width(w);
+            border: 1,
+            margin: "50 0 0 0",
+            html: '<div id="' + this.id + 'genomeViewer" style="width:750px;height:600;position:relative;"></div>',
+            listeners: {
+                afterrender: {
+                    fn: function () {
+                        var w = this.getWidth();
+                        $('#' + _this.id + 'genomeViewer').width(w);
 
-                            var region = new Region({
-                                chromosome: "13",
-                                start: 32889611,
-                                end: 32889611
-                            });
+                        var region = new Region({
+                            chromosome: "13",
+                            start: 32889611,
+                            end: 32889611
+                        });
 
 
-                            var genomeViewer = new GenomeViewer({
-                                sidePanel: false,
-                                targetId: _this.id + 'genomeViewer',
-                                autoRender: true,
-                                border: false,
-                                resizable: true,
-                                region: region,
-                                trackListTitle: '',
-                                drawNavigationBar: false,
-                                drawKaryotypePanel: false,
-                                drawChromosomePanel: false,
-                                drawRegionOverviewPanel: false
-                            }); //the div must exist
+                        var genomeViewer = new GenomeViewer({
+                            sidePanel: false,
+                            targetId: _this.id + 'genomeViewer',
+                            autoRender: true,
+                            border: false,
+                            resizable: true,
+                            region: region,
+                            trackListTitle: '',
+                            drawNavigationBar: false,
+                            drawKaryotypePanel: false,
+                            drawChromosomePanel: false,
+                            drawRegionOverviewPanel: false
+                        }); //the div must exist
 
-                            genomeViewer.draw();
+                        genomeViewer.draw();
 
-                            _this.sequence = new SequenceTrack({
-                                targetId: null,
-                                id: 1,
-                                title: 'Sequence',
-                                histogramZoom: 20,
-                                transcriptZoom: 50,
-                                height: 30,
-                                visibleRegionSize: 200,
-                                renderer: new SequenceRenderer(),
+                        _this.sequence = new SequenceTrack({
+                            targetId: null,
+                            id: 1,
+                            title: 'Sequence',
+                            histogramZoom: 20,
+                            transcriptZoom: 50,
+                            height: 30,
+                            visibleRegionSize: 200,
+                            renderer: new SequenceRenderer(),
 
-                                dataAdapter: new SequenceAdapter({
-                                    category: "genomic",
-                                    subCategory: "region",
-                                    resource: "sequence",
-                                    species: genomeViewer.species
+                            dataAdapter: new SequenceAdapter({
+                                category: "genomic",
+                                subCategory: "region",
+                                resource: "sequence",
+                                species: genomeViewer.species
 
-                                })
+                            })
 
-                            });
-                            this.gene = new GeneTrack({
-                                targetId: null,
-                                id: 2,
-                                title: 'Gene',
-                                height: 140,
-                                minHistogramRegionSize: 20000000,
-                                maxLabelRegionSize: 10000000,
-                                minTranscriptRegionSize: 200000,
+                        });
+                        this.gene = new GeneTrack({
+                            targetId: null,
+                            id: 2,
+                            title: 'Gene',
+                            height: 140,
+                            minHistogramRegionSize: 20000000,
+                            maxLabelRegionSize: 10000000,
+                            minTranscriptRegionSize: 200000,
 
-                                renderer: new GeneRenderer(),
+                            renderer: new GeneRenderer(),
 
-                                dataAdapter: new CellBaseAdapter({
-                                    category: "genomic",
-                                    subCategory: "region",
-                                    resource: "gene",
-                                    species: genomeViewer.species,
-                                    params: {
-                                        exclude: 'transcripts.tfbs,transcripts.xrefs,transcripts.exons.sequence'
-                                    },
-                                    cacheConfig: {
-                                        chunkSize: 100000
-                                    },
-                                    filters: {},
-                                    options: {},
-                                    featureConfig: FEATURE_CONFIG.gene
-                                })
-                            });
-                            this.snp = new FeatureTrack({
-                                targetId: null,
-                                id: 4,
-                                title: 'SNP',
+                            dataAdapter: new CellBaseAdapter({
+                                category: "genomic",
+                                subCategory: "region",
+                                resource: "gene",
+                                species: genomeViewer.species,
+                                params: {
+                                    exclude: 'transcripts.tfbs,transcripts.xrefs,transcripts.exons.sequence'
+                                },
+                                cacheConfig: {
+                                    chunkSize: 100000
+                                },
+                                filters: {},
+                                options: {},
+                                featureConfig: FEATURE_CONFIG.gene
+                            })
+                        });
+                        this.snp = new FeatureTrack({
+                            targetId: null,
+                            id: 4,
+                            title: 'SNP',
 
-                                minHistogramRegionSize: 12000,
-                                maxLabelRegionSize: 3000,
-                                featureType: 'SNP',
-                                height: 100,
+                            minHistogramRegionSize: 12000,
+                            maxLabelRegionSize: 3000,
+                            featureType: 'SNP',
+                            height: 100,
 
-                                renderer: new FeatureRenderer(FEATURE_TYPES.snp),
+                            renderer: new FeatureRenderer(FEATURE_TYPES.snp),
 
-                                dataAdapter: new CellBaseAdapter({
-                                    category: "genomic",
-                                    subCategory: "region",
-                                    resource: "snp",
-                                    params: {
-                                        exclude: 'transcriptVariations,xrefs,samples'
-                                    },
-                                    species: genomeViewer.species,
-                                    cacheConfig: {
-                                        chunkSize: 10000
-                                    },
-                                    filters: {},
-                                    options: {}
-                                })
-                            });
+                            dataAdapter: new CellBaseAdapter({
+                                category: "genomic",
+                                subCategory: "region",
+                                resource: "snp",
+                                params: {
+                                    exclude: 'transcriptVariations,xrefs,samples'
+                                },
+                                species: genomeViewer.species,
+                                cacheConfig: {
+                                    chunkSize: 10000
+                                },
+                                filters: {},
+                                options: {}
+                            })
+                        });
 
-                            genomeViewer.addTrack(_this.sequence);
-                            genomeViewer.addTrack(this.gene);
-                            genomeViewer.addTrack(this.snp);
+                        genomeViewer.addTrack(_this.sequence);
+                        genomeViewer.addTrack(this.gene);
+                        genomeViewer.addTrack(this.snp);
 
-                            var updateForm = function () {
+                        var updateForm = function () {
 
-                                var pos = _this.sequence.region.center();
-                                var chr = _this.sequence.region.chromosome;
+                            var pos = _this.sequence.region.center();
+                            var chr = _this.sequence.region.chromosome;
 
-                                _this.chrField.setValue(chr);
-                                _this.posField.setValue(pos);
-                            };
+                            _this.chrField.setValue(chr);
+                            _this.posField.setValue(pos);
+                        };
 
+                        genomeViewer.on("region:change", updateForm);
+                        genomeViewer.on("region:move", updateForm);
 
-                            genomeViewer.on("region:change", updateForm);
-                            genomeViewer.on("region:move", updateForm);
-
-                            _this.gv = genomeViewer;
-                        }
+                        _this.gv = genomeViewer;
                     }
-                },
-                autoRender: true
-            })
-            ;
+                }
+            },
+            autoRender: true
+        });
 
         return gvpanel;
     },
@@ -781,10 +725,7 @@ TeamSettingsView.prototype = {
             storeId: "showGenesStore",
             remoteSort: false,
             sorters: [
-                {
-                    property: 'name',
-                    direction: 'ASC'
-                }
+                {property: 'name', direction: 'ASC'}
             ],
             autoLoad: false
         });
@@ -796,17 +737,10 @@ TeamSettingsView.prototype = {
                     {
                         text: "Name",
                         flex: 1,
-                        dataIndex: 'name',
+                        dataIndex: 'name'
                     }
                 ],
                 plugins: 'bufferedrenderer',
-                //bbar : {
-                //xtype : 'pagingtoolbar',
-                //displayInfo: true,
-                //store: newGrid.store,
-                //displayMsg : 'Total rows {2}'// defaultvalue = 'Displaying {0} - {1} of {2}'
-                //},
-                //stripeRows: true,
                 title: 'Genes',
                 margins: '0 0 10 0'
             }
@@ -823,14 +757,12 @@ TeamSettingsView.prototype = {
                 sortable: true,
                 groupable: true,
                 dataIndex: 'name',
-                filter: {
-                    type: 'string'
-                },
+                filter: {type: 'string'},
                 summaryType: 'count',
                 editor: {
                     allowBlank: false
                 }
-            },
+            }
         ];
         return columns;
     },
@@ -842,9 +774,7 @@ TeamSettingsView.prototype = {
                 sortable: true,
                 groupable: true,
                 dataIndex: 'name',
-                filter: {
-                    type: 'string'
-                },
+                filter: {type: 'string'},
                 summaryType: 'count',
                 editor: {
                     allowBlank: false
@@ -881,14 +811,9 @@ TeamSettingsView.prototype = {
             data: data,
             remoteSort: false,
             sorters: [
-                {
-                    property: 'name',
-                    direction: 'ASC'
-                }
+                {property: 'name', direction: 'ASC'}
             ],
-            proxy: {
-                type: 'memory'
-            },
+            proxy: {type: 'memory'},
             groupField: 'name'
         });
 
@@ -922,19 +847,13 @@ TeamSettingsView.prototype = {
                         }
 
                         _this.genesWindow.setTitle(disName);
-
                         _this.showGenesPanel.add(genes);
-
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         console.log('Error loading Genes');
                     }
                 });
-
-                //debugger
-
                 _this.genesWindow.show();
-
             }
         });
         var showMutationsAction = Ext.create('Ext.Action', {
@@ -965,15 +884,12 @@ TeamSettingsView.prototype = {
                         console.log(record)
                         items.push(showGenesAction);
                         items.push(showMutationsAction);
-                        //items.push(renameBucketAction);
                         var contextMenu = Ext.create('Ext.menu.Menu', {
                             items: items
                         });
                         contextMenu.showAt(e.getXY());
                         return false;
                     }
-
-
                 }
             },
             tools: [
@@ -984,19 +900,15 @@ TeamSettingsView.prototype = {
                         if (_this.edit) {
                             _this.allDiseases.loadData(_this.diseases);
                             _this.primDiseases.removeAll();
-                            //_this.secDiseases.removeAll();
                         }
                     }
                 }
             ],
-            features: [
-                filters
-            ],
+            features: [filters],
             store: allDiseases.store,
             columns: this.columns,
             stripeRows: true,
             title: "Diseases (Drag)",
-            //margins: '0 2 0 0',
             flex: 1,
             height: "80%",
             multiSelect: true,
@@ -1014,7 +926,6 @@ TeamSettingsView.prototype = {
 
         newGrid.model = Ext.define('MutationModel', {
             extend: 'Ext.data.Model',
-            //idProperty: 'name',
             fields: [
                 { name: 'chr', type: 'string'},
                 { name: 'pos', type: 'int'},
@@ -1040,9 +951,7 @@ TeamSettingsView.prototype = {
             store: newGrid.store,
             columns: columns,
             margin: '0 15 10 0',
-            flex: 1,
-            //hideHeaders: true,
-
+            flex: 1
         });
         return newGrid;
     },
@@ -1095,19 +1004,13 @@ TeamSettingsView.prototype = {
                         }
 
                         _this.genesWindow.setTitle(disName);
-
                         _this.showGenesPanel.add(genes);
-
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         console.log('Error loading Genes');
                     }
                 });
-
-                //debugger
-
                 _this.genesWindow.show();
-
             }
         });
         var showMutationsAction = Ext.create('Ext.Action', {
@@ -1127,10 +1030,8 @@ TeamSettingsView.prototype = {
                     },
                     listeners: {
                         drop: function (node, data, dropRec, dropPosition) {
-
                             _this.allDiseases.setLoading(true);
                             _this.primDiseases.setLoading(true);
-                            //_this.secDiseases.setLoading(true);
                             _this.diseaseGenes.setLoading(true);
 
                             this.getStore().sort('name', 'ASC');
@@ -1157,9 +1058,7 @@ TeamSettingsView.prototype = {
                                                 });
                                             }
                                         }
-
                                         _this.diseaseGenes.add(genes);
-
                                     },
                                     error: function (jqXHR, textStatus, errorThrown) {
                                         console.log('Error loading Genes');
@@ -1170,7 +1069,6 @@ TeamSettingsView.prototype = {
                             }
                             _this.allDiseases.setLoading(false);
                             _this.primDiseases.setLoading(false);
-                            //_this.secDiseases.setLoading(false);
                             _this.diseaseGenes.setLoading(false);
 
 
@@ -1257,53 +1155,9 @@ TeamSettingsView.prototype = {
                                 _this.diseaseGenes.removeAll();
                             }
                         }
-                    },
-                    //{
-                    //type: 'plus',
-                    //tooltip: 'Add Gene',
-                    //handler: function (event, toolEl, panel) {
-                    //if (_this.edit) {
-                    //rowEditing.cancelEdit();
-
-                    //// Create a record instance through the ModelManager
-                    //var r = Ext.create('GeneModel', {
-                    //name: 'New Gene'
-                    //});
-
-                    //newGrid.insert(newGrid.count(), r);
-                    //rowEditing.startEdit(newGrid.getAt(newGrid.count() - 1), 0);
-
-                    //}
-                    //}
-                    //}
+                    }
                 ],
-                dockedItems: [
-                    //{
-                    //xtype: 'toolbar',
-                    //dock: 'bottom',
-                    //items: [
-                    ////'->',
-                    ////{
-                    ////xtype: 'button',
-                    ////text: 'New Gene',
-                    ////handler: function () {
-                    ////if (_this.edit) {
-                    ////rowEditing.cancelEdit();
-
-                    ////// Create a record instance through the ModelManager
-                    ////var r = Ext.create('GeneModel', {
-                    ////name: 'New Gene'
-                    ////});
-
-                    ////newGrid.insert(newGrid.count(), r);
-                    ////rowEditing.startEdit(newGrid.getAt(newGrid.count() - 1), 0);
-
-                    ////}
-                    ////}
-                    ////}
-                    //]
-                    //}
-                ],
+                dockedItems: [],
                 plugins: [rowEditing],
                 hideHeaders: true
             }

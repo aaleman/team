@@ -33,7 +33,6 @@ PanelsWidget.prototype = {
 
         this.panel = this._createPanel(this.targetId);
         this.tabPanel = this._createTabPanel();
-        // this.panels = this._initializeDiseasePanel();
         this.progress = Ext.create('Ext.ProgressBar', {
             text: 'Progress',
             border: 1,
@@ -62,7 +61,6 @@ PanelsWidget.prototype = {
     _createPanel: function (targetId) {
         var panel = Ext.create('Ext.panel.Panel', {
             renderTo: targetId,
-            //title  : "Panels",
             width: '100%',
             height: '100%',
             border: 0,
@@ -115,7 +113,6 @@ PanelsWidget.prototype = {
                             return rec.get('panelType') + '_' + rec.get('panelId');
                         }}
                 ],
-//                data: _this.panels.getData(),
                 data: [],
                 storeId: 'DiseaseStore'
             }
@@ -129,7 +126,6 @@ PanelsWidget.prototype = {
             emptyText: 'Select a file',
             allowBlank: false,
             name: 'genes'
-
         });
 
         var disease = Ext.create('Ext.form.field.ComboBox', {
@@ -154,97 +150,87 @@ PanelsWidget.prototype = {
             name: 'vcf'
         });
         var form = Ext.create('Ext.form.Panel', {
-                    title: "Search",
-                    width: "100%",
-                    height: 130,
-                    bodyPadding: '10 10 0',
-                    layout: 'vbox',
-                    defaults: {
-                        allowBlank: false,
-                        msgTarget: 'side',
-                        labelWidth: 70
-                    },
-                    margin: '5 5 20 5',
-                    items: [disease, vcf],
-                    buttonAlign: 'left',
-                    buttons: [
-                        {
-                            text: 'Run',
-                            handler: function () {
-                                var button = Ext.getCmp(_this.id + "_generate_report");
-                                button.disable();
+            title: "Search",
+            width: "100%",
+            height: 130,
+            bodyPadding: '10 10 0',
+            layout: 'vbox',
+            defaults: {
+                allowBlank: false,
+                msgTarget: 'side',
+                labelWidth: 70
+            },
+            margin: '5 5 20 5',
+            items: [disease, vcf],
+            buttonAlign: 'left',
+            buttons: [
+                {
+                    text: 'Run',
+                    handler: function () {
+                        var button = Ext.getCmp(_this.id + "_generate_report");
+                        button.disable();
 
-                                _this.dataSec = [];
-                                _this.dataPrim = [];
+                        _this.dataSec = [];
+                        _this.dataPrim = [];
 
-                                _this.primDisGrid.clear();
-//                        _this.secDisGrid.clear();
-                                _this.extraGrid.clear();
+                        _this.primDisGrid.clear();
+                        _this.extraGrid.clear();
 
-                                var form = _this.form.getForm();
-                                if (form.isValid()) {
-                                    _this.primDisGrid.setLoading(true);
+                        var form = _this.form.getForm();
+                        if (form.isValid()) {
+                            _this.primDisGrid.setLoading(true);
 
-                                    var vcf_file = document.getElementById(vcf.fileInputEl.id).files[0];
+                            var vcf_file = document.getElementById(vcf.fileInputEl.id).files[0];
 
-                                    var fds_vcf = new FileDataSource(vcf_file);
+                            var fds_vcf = new FileDataSource(vcf_file);
 
-                                    var panelOpt = Ext.getCmp(_this.id + "disease").getValue();
-                                    var panelSplit = panelOpt.split("_");
-                                    var panelType = panelSplit[0];
-                                    var panelId = panelSplit[1];
+                            var panelOpt = Ext.getCmp(_this.id + "disease").getValue();
+                            var panelSplit = panelOpt.split("_");
+                            var panelType = panelSplit[0];
+                            var panelId = panelSplit[1];
 
-//                            var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
-//                                return (record.get('panelType') == panelType && record.get('panelId') == panelId);
-//                            });
-//                            panel = query.getAt(0).raw;
-                                    panel = _this.panels.get(panelType, panelId);
+                            panel = _this.panels.get(panelType, panelId);
 
-                                    fds_vcf.on("success", function (data) {
+                            fds_vcf.on("success", function (data) {
 
-                                        _this.progress.updateProgress(1, 'Parsing Vcf File');
+                                _this.progress.updateProgress(1, 'Parsing Vcf File');
 
-                                        var variants = _this._parseVcfFile(data);
+                                var variants = _this._parseVcfFile(data);
 
-                                        _this._filterVariants(variants, panel);
+                                _this._filterVariants(variants, panel);
 
-                                        _this.primDisGrid.loadData(_this.dataPrim);
-//                                _this.secDisGrid.loadData(_this.dataSec);
-                                        _this.extraGrid.loadData(_this.dataExtra);
+                                _this.primDisGrid.loadData(_this.dataPrim);
+                                _this.extraGrid.loadData(_this.dataExtra);
 
-                                        if (_this.primDisGrid.count() > 0) {
-                                            _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
-//                                } else if (_this.secDisGrid.count() > 0) {
-//                                    _this.tabPanel.setActiveTab(_this.secDisGrid.getPanel());
-                                        } else if (_this.extraGrid.count() > 0) {
-                                            _this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
-                                        }
-
-                                        Ext.getCmp(_this.id + "numRowsLabel").setText(_this.dataPrim.length + " variants");
-                                        _this.primDisGrid.setLoading(false);
-
-                                        if (_this.primDisGrid.count() > 0 || _this.extraGrid.count() > 0) {
-                                            button.enable();
-                                        }
-
-                                    });
-
-                                    fds_vcf.fetch(true);
+                                if (_this.primDisGrid.count() > 0) {
+                                    _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
+                                } else if (_this.extraGrid.count() > 0) {
+                                    _this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
                                 }
-                            }
-                        },
-                        {
-                            text: 'Reset',
-                            handler: function () {
-                                _this.form.getForm().reset();
-                            }
+
+                                Ext.getCmp(_this.id + "numRowsLabel").setText(_this.dataPrim.length + " variants");
+                                _this.primDisGrid.setLoading(false);
+
+                                if (_this.primDisGrid.count() > 0 || _this.extraGrid.count() > 0) {
+                                    button.enable();
+                                }
+
+                            });
+
+                            fds_vcf.fetch(true);
                         }
-                    ],
-                    dockedItems: [],
-                    tools: []
+                    }
+                },
+                {
+                    text: 'Reset',
+                    handler: function () {
+                        _this.form.getForm().reset();
+                    }
                 }
-            )
-            ;
+            ],
+            dockedItems: [],
+            tools: []
+        });
 
         return form;
     },
@@ -346,9 +332,7 @@ PanelsWidget.prototype = {
                 }
             ]
         });
-
         return newGrid;
-
     },
     _getRegions: function (genes) {
 
@@ -431,8 +415,6 @@ PanelsWidget.prototype = {
                             info: fields[7], //.replace(/;/gi, "<br>"),
                             format: fields[8],
                             sample: samples
-                            //sampleData: line
-                            //featureType : "vcf"
                         }
                     );
                 }
@@ -459,7 +441,6 @@ PanelsWidget.prototype = {
                 data.push(variants[i]);
             }
             _this._checkVariantBatch(data, _this.panels.getPrimaryDiseases(panel), _this.dataPrim);
-//            _this._checkVariantBatch(data, panel.secondaryDiseases, _this.dataSec);
             _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
         }
         _this.progress.updateProgress(5, 'Finish');
@@ -482,8 +463,6 @@ PanelsWidget.prototype = {
             dis = dis.replace(/ /g, "%20");
 
             var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
-//            console.log(url);
-            //debugger
 
             $.ajax({
                 url: url,
@@ -508,7 +487,6 @@ PanelsWidget.prototype = {
                                 if (copy.pvalue >= 0) {
                                     copy.pvalue = aux.pValue;
                                 }
-
 
                                 _this._getEffect(copy);
                                 _this._getPolyphenSift(copy);
@@ -614,5 +592,4 @@ PanelsWidget.prototype = {
         }
         return null;
     }
-}
-;
+};
