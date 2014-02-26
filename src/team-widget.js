@@ -343,6 +343,8 @@ PanelsWidget.prototype = {
             gene_names.push(gene.name);
         });
 
+        console.log(gene_names);
+
         CellBaseManager.get({
             host: 'http://ws-beta.bioinfo.cipf.es/cellbase/rest',
             version: 'v3',
@@ -357,7 +359,8 @@ PanelsWidget.prototype = {
             async: false,
             success: function (response, textStatus, jqXHR) {
 
-                for (var i = 0; i < response.response.length; i++) {
+
+                for (var i = 0; response.response !== undefined && i < response.response.length; i++) {
                     if (response.response[i].numResults > 0) {
                         final_genes.push({
                             name: response.response[i].id,
@@ -430,7 +433,7 @@ PanelsWidget.prototype = {
 
         _this.progress.updateProgress(2, 'Retrieving Genes');
 
-        var genes = _this._getRegions(_this.userSettings.getGenes(panel));
+        var genes = _this._getRegions(panel.getGenes());
 
         _this.progress.updateProgress(3, 'Retrieving Disease Info');
 
@@ -440,7 +443,8 @@ PanelsWidget.prototype = {
             for (var j = 0; i < variants.length && j < 100; j++, i++) {
                 data.push(variants[i]);
             }
-            _this._checkVariantBatch(data, _this.panels.getPrimaryDiseases(panel), _this.dataPrim);
+
+            _this._checkVariantBatch(data, panel.getDiseases(), _this.dataPrim);
             _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
         }
         _this.progress.updateProgress(5, 'Finish');
@@ -455,7 +459,7 @@ PanelsWidget.prototype = {
             variantsReg.push(variants[i].chromosome + ":" + variants[i].start + "-" + variants[i].end);
         }
 
-
+        console.log("Start Cellbase");
         for (var i = 0; i < diseases.length; i++) {
 
             var dis = diseases[i].name;
@@ -504,8 +508,27 @@ PanelsWidget.prototype = {
 
 
         }
-        return;
 
+        console.log("FIN DISEASES");
+        // User-defined Mutations
+
+
+        for (var i = 0; i < diseases.length; i++) {
+            var dis = diseases[i];
+
+            for (var j = 0; dis.mutations !== undefined && j < dis.mutations.length; j++) {
+                var m = dis.mutations[j];
+
+                for (var k = 0; k < variants.length; k++) {
+                    var v = variants[k];
+                    if (v.chromosome == m.chr && v.start == m.pos && v.reference == m.ref && v.alternate == m.alt) {
+                        v.phenotype = dis.name;
+                        v.source = "user-defined";
+                        grid.push(v);
+                    }
+                }
+            }
+        }
     },
     _checkVariantGeneBatch: function (variants, genes, grid) {
         var _this = this;

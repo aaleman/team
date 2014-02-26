@@ -34,7 +34,7 @@ TeamPanelListWidget.prototype = {
                     listeners: {
                         click: function () {
                             _this.settingsView.clearSettings();
-                            _this.settingsView.show();
+                            _this.settingsView.newPanel();
                         }
                     }
                 },

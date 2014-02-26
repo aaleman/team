@@ -1,3 +1,65 @@
+function Mutation(args) {
+    _.extend(this, Backbone.Events);
+    this.id = Utils.genId("Mutation");
+
+    this.chr;
+    this.pos;
+    this.ref;
+    this.alt;
+
+    _.extend(this, args);
+}
+Mutation.prototype = {
+
+    toJSON: function () {
+        return {
+            chr: this.chr,
+            pos: this.pos,
+            ref: this.ref,
+            alt: this.alt
+        };
+    }
+}
+;
+
+function Disease(args) {
+    _.extend(this, Backbone.Events);
+    this.id = Utils.genId("Disease");
+
+    this.name = "";
+    this.mutations = [];
+    this.genes = [];
+
+    _.extend(this, args);
+
+}
+Disease.prototype = {
+    toJSON: function () {
+        return{
+            name: this.name,
+            mutations: this.mutations,
+            genes: this.genes
+        }
+    },
+    getGenes: function () {
+        return this.genes;
+    },
+    addMutation: function (chr, pos, ref, alt) {
+
+        var m = new Mutation({
+            chr: chr,
+            pos: pos,
+            ref: ref,
+            alt: alt
+        });
+        this.mutations.push(m);
+
+    },
+    getMutations: function () {
+        return this.mutations;
+    }
+}
+
 function Panel(args) {
     _.extend(this, Backbone.Events);
     this.id = Utils.genId("Panel");
@@ -5,9 +67,9 @@ function Panel(args) {
     this.panelType;
     this.panelId;
     this.name;
-    this.primaryDiseases;
-    this.secondaryDiseases;
-    this.genes;
+
+    this.diseases = [];
+    this.extraGenes = [];
 
     _.extend(this, args);
 }
@@ -17,12 +79,82 @@ Panel.prototype = {
             panelType: this.panelType,
             panelId: this.panelId,
             name: this.name,
-            primaryDiseases: this.primaryDiseases,
-            secondaryDiseases: this.secondaryDiseases,
-            genes: this.genes
+//            primaryDiseases: this.primaryDiseases,
+//            secondaryDiseases: this.secondaryDiseases,
+//            genes: this.genes,
+            diseases: this.diseases,
+            extraGenes: this.extraGenes
         }
-    }
+    },
+    getGenes: function () {
 
+        var totalGenes = [];
+
+        for (var i = 0; i < this.diseases.length; i++) {
+            var d = this.diseases[i];
+            for (var j = 0; d.genes !== undefined && j < d.genes.length; j++) {
+                totalGenes.push(d.genes[j]);
+            }
+        }
+
+        for (var i = 0; this.extraGenes !== undefined && i < this.extraGenes.length; i++) {
+            totalGenes.push(this.extraGenes[i]);
+        }
+        console.log(totalGenes);
+        return totalGenes;
+    },
+    getDiseases: function () {
+        return this.diseases;
+    },
+    addDisease: function (dis, updateStore) {
+
+        if (updateStore) {
+            Ext.getStore("PrimDiseaseStore").add(dis);
+        }
+        this.diseases.push(dis);
+    },
+    getDisease: function (disName) {
+        for (var i = 0; i < this.diseases.length; i++) {
+            var d = this.diseases[i];
+            if (d.name == disName) {
+                return d;
+            }
+        }
+
+        return null;
+    },
+    removeDisease: function (disName) {
+        var elem = -1;
+
+        for (var i = 0; i < this.diseases.length; i++) {
+            var d = this.diseases[i];
+            if (d.name == disName) {
+                elem = i;
+                break;
+            }
+        }
+        if (elem != -1) {
+            this.diseases.splice(elem, 1);
+        }
+    },
+    addMutationToDisease: function (disName, chr, pos, ref, alt) {
+
+        var b = false;
+        for (var i = 0; i < this.diseases.length && !b; i++) {
+            var d = this.diseases[i];
+            if (d.name == disName) {
+                d.addMutation(chr, pos, ref, alt);
+                b = true;
+            }
+        }
+        if (!b) {
+            var d = new Disease();
+            d.name = disName;
+            d.addMutation(chr, pos, ref, alt);
+            this.addDisease(d, true);
+        }
+
+    }
 };
 
 function UserSettings(args) {
@@ -33,8 +165,6 @@ function UserSettings(args) {
     this.examples = [];
     this.userDefined = [];
     this.max = 0;
-//    this.numExamples = 0;
-//    this.numUserPanels = 0;
 
     if (EXAMPLE_PANELS) {
         for (var i = 0; i < EXAMPLE_PANELS.length; i++) {
@@ -46,9 +176,10 @@ function UserSettings(args) {
                 name: panel.name,
                 primaryDiseases: panel.primaryDiseases,
                 secondaryDiseases: panel.secondaryDiseases,
-                genes: panel.genes
+                genes: panel.genes,
+                diseases: panel.diseases,
+                extraGenes: panel.extraGenes
             });
-//            this.numExamples++;
         }
     }
 
@@ -60,7 +191,6 @@ function UserSettings(args) {
             elem.panelType = 'user';
             elem.panelId = i;
             this.addPanel(elem);
-//            this.numUserPanels++;
         }
         this.save();
         this.max = i;
@@ -134,21 +264,24 @@ UserSettings.prototype = {
 
     },
     get: function (panelType, panelId) {
-        for (var i = 0; i < this.userDefined.length; i++) {
-            var p = this.userDefined[i];
+
+        var data = [];
+
+        if (panelType == "user") {
+            data = this.userDefined;
+
+        } else if (panelType == "example") {
+            data = this.examples;
+
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            var p = data[i];
             if (p.panelType == panelType && p.panelId == panelId) {
                 return p;
             }
         }
         return null;
-    },
-    getGenes: function (panel) {
-        var p = this.get(panel.panelType, panel.panelId);
-        return p.genes;
-    },
-    getPrimaryDiseases: function (panel) {
-        var p = this.get(panel.panelType, panel.panelId);
-        return p.primaryDiseases;
     },
     remove: function (panel) {
 
