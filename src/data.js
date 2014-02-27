@@ -568,8 +568,8 @@ EXAMPLE_PANELS = [
 //            }
         ],
         "extraGenes": [],
-//        "polyphen": 0.6,
-//        "sift": 0.1
+       "polyphen": 0.6,
+       "sift": 0.1
     },
     {
         name: "Comprehensive Cancer Design",

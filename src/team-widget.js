@@ -43,8 +43,8 @@ PanelsWidget.prototype = {
         });
 
         this.form = this._createForm();
-        this.primDisGrid = this._createDiseaseGrid("Prim. Diagnostic");
-        this.extraGrid = this._createDiseaseGrid("Deleterious Variants");
+        this.primDisGrid = this._createDiseaseGrid("Diagnostic");
+        this.extraGrid = this._createDiseaseGrid("Secondary findings");
 
         this.panel.add(this.form);
         this.panel.add(this.tabPanel);
@@ -322,7 +322,7 @@ PanelsWidget.prototype = {
             {name: 'alternate', type: 'String'},
             {name: 'gene', type: 'String'},
 
-            {name: 'quality', type: 'float'} ,
+            // {name: 'quality', type: 'float'} ,
             {name: 'filter', type: 'String'},
             {name: 'info', type: 'String'},
             {name: 'format', type: 'String'},
@@ -342,8 +342,8 @@ PanelsWidget.prototype = {
             {name: "aaPos", type: 'int'}   ,
             {name: "aaChange", type: 'String'},
             {name: "phenotype", type: 'String'},
-            {name: "source", type: 'String'},
-            {name: "pvalue", type: 'float'}
+            {name: "source", type: 'String'}
+            // {name: "pvalue", type: 'float'}
         ];
         var renderer = function (value) {
             if (value == '') {
@@ -361,7 +361,7 @@ PanelsWidget.prototype = {
             {dataIndex: 'alternate', text: 'Alt', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: 'gene', text: 'Gene', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: 'ct', text: 'Conseq. Type', flex: 1, emptyCellText: '.', renderer: renderer},
-            {dataIndex: 'quality', text: 'Quality', flex: 1, emptyCellText: '.', renderer: renderer},
+            // {dataIndex: 'quality', text: 'Quality', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "ensembl_protein", text: 'Ensembl protein', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "xref", text: 'Xref', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true},
@@ -371,7 +371,7 @@ PanelsWidget.prototype = {
             {dataIndex: "hgvs_protein", text: 'Hgvs protein', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "phenotype", text: 'Phenotype', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "source", text: 'Source', flex: 1, emptyCellText: '.', renderer: renderer},
-            {dataIndex: "pvalue", text: 'pValue', flex: 1, emptyCellText: '.', renderer: renderer},
+            // {dataIndex: "pvalue", text: 'pValue', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "sift", text: 'SIFT', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "polyphen", text: 'PolyPhen', flex: 1, emptyCellText: '.', renderer: renderer}
         ];
@@ -561,12 +561,36 @@ PanelsWidget.prototype = {
                                 copy.gene = aux.associatedGenes;
                                 copy.phenotype = aux.phenotype;
                                 copy.source = aux.source;
-                                if (copy.pvalue >= 0) {
-                                    copy.pvalue = aux.pValue;
-                                }
+                                //if (copy.pvalue >= 0) {
+                                    //copy.pvalue = aux.pValue;
+                                //}
 
                                 _this._getEffect(copy);
                                 _this._getPolyphenSift(copy);
+								
+								
+								var sift = (copy.sift == undefined || copy.sift == null);
+								var polyphen = (copy.polyphen == undefined || copy.polyphen == null);
+				
+								if(!sift){
+									sift = (panel.sift == undefined || panel.sift == null);
+								}
+								if(!polyphen){
+									polyphen = (panel.polyphen == undefined || panel.polyphen == null);
+								}
+
+				                if(!sift){
+				                    sift = (copy.sift <= panel.sift);
+				                }
+
+				                if(!polyphen){
+				                    polyphen = (copy.polyphen >= panel.polyphen);
+				                }
+				
+
+								if(sift && polyphen){
+									_this.dataExtra.push(copy);
+								}
 
 //                                if (panel.polyphen !== undefined && copy.polyphen !== undefined && copy.polyphen >= panel.polyphen &&
 //                                    panel.sift !== undefined && copy.sift != undefined && copy.sift <= panel.sift) {
@@ -619,17 +643,28 @@ PanelsWidget.prototype = {
                 variant.gene = panelVariant.name;
                 _this._getEffect(variant);
                 _this._getPolyphenSift(variant);
+				var sift = (variant.sift == undefined || variant.sift == null);
+				var polyphen = (variant.polyphen == undefined || variant.polyphen == null);
+				
+				if(!sift){
+					sift = (panel.sift == undefined || panel.sift == null);
+				}
+				if(!polyphen){
+					polyphen = (panel.polyphen == undefined || panel.polyphen == null);
+				}
 
+                if(!sift){
+                    sift = (variant.sift <= panel.sift);
+                }
 
-                console.log(variant.sift + " - " + variant.polyphen);
-//                if (variant.sift == null && variant.polyphen == null) {
-                _this.dataExtra.push(variant);
-//                }else if(variant.sift == null && variant.po)
-//
-//                if (variant.sift === undefined || variant.sift == null && (panel.sift !== undefined && variant.sift <= panel.sift)) {
-//                    if (variant.polyphen == undefined || variant.polyphen == null && (panel.polyphen !== undefined && variant.polyphen >= panel.polyphen)) {
-//                    }
-//                }
+                if(!polyphen){
+                    polyphen = (variant.polyphen >= panel.polyphen);
+                }
+				
+
+				if(sift && polyphen){
+					_this.dataExtra.push(variant);
+				}
             }
         }
     },
