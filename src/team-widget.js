@@ -38,7 +38,8 @@ PanelsWidget.prototype = {
             border: 1,
             margin: 3,
             height: 20,
-            width: "100%"
+            width: "100%",
+            animate: true
         });
 
         this.form = this._createForm();
@@ -47,7 +48,7 @@ PanelsWidget.prototype = {
 
         this.panel.add(this.form);
         this.panel.add(this.tabPanel);
-//        this.panel.add(this.progress);
+        this.panel.add(this.progress);
 
         this.tabPanel.add(this.primDisGrid.getPanel());
         this.tabPanel.add(this.extraGrid.getPanel());
@@ -193,7 +194,7 @@ PanelsWidget.prototype = {
 
                             fds_vcf.on("success", function (data) {
 
-                                _this.progress.updateProgress(1, 'Parsing Vcf File');
+                                _this.progress.updateProgress(0.1, 'Parsing Vcf File');
 
                                 var variants = _this._parseVcfFile(data);
 
@@ -431,11 +432,11 @@ PanelsWidget.prototype = {
 
         var data = [];
 
-        _this.progress.updateProgress(2, 'Retrieving Genes');
+        _this.progress.updateProgress(0.2, 'Retrieving Genes');
 
         var genes = _this._getRegions(panel.getGenes());
 
-        _this.progress.updateProgress(3, 'Retrieving Disease Info');
+        _this.progress.updateProgress(.3, 'Retrieving Disease Info');
 
         for (var i = 0; i < variants.length;) {
             data = [];
@@ -447,7 +448,7 @@ PanelsWidget.prototype = {
             _this._checkVariantBatch(data, panel.getDiseases(), _this.dataPrim);
             _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
         }
-        _this.progress.updateProgress(5, 'Finish');
+        _this.progress.updateProgress(1, 'Finish');
 
 
     },

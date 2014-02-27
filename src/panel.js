@@ -70,6 +70,8 @@ function Panel(args) {
 
     this.diseases = [];
     this.extraGenes = [];
+    this.sift;
+    this.polyphen;
 
     _.extend(this, args);
 }
@@ -79,11 +81,10 @@ Panel.prototype = {
             panelType: this.panelType,
             panelId: this.panelId,
             name: this.name,
-//            primaryDiseases: this.primaryDiseases,
-//            secondaryDiseases: this.secondaryDiseases,
-//            genes: this.genes,
             diseases: this.diseases,
-            extraGenes: this.extraGenes
+            extraGenes: this.extraGenes,
+            sift:this.sift,
+
         }
     },
     getGenes: function () {
