@@ -196,6 +196,10 @@ Team.prototype = {
         });
         headerWidget.draw();
 
+
+        // Hide Sign in button
+        $("#" + headerWidget.id + "btnSignin").hide();
+
         return headerWidget;
     }
 };

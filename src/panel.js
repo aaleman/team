@@ -83,8 +83,7 @@ Panel.prototype = {
             name: this.name,
             diseases: this.diseases,
             extraGenes: this.extraGenes,
-            sift:this.sift,
-
+            sift: this.sift
         }
     },
     getGenes: function () {
@@ -155,6 +154,18 @@ Panel.prototype = {
             this.addDisease(d, true);
         }
 
+    },
+    getDiseaseNames: function () {
+
+        var names = [];
+
+        for (var i = 0; i < this.diseases.length; i++) {
+            var d = this.diseases[i];
+            names.push(d.name);
+        }
+
+        return names;
+
     }
 };
 
@@ -179,7 +190,9 @@ function UserSettings(args) {
                 secondaryDiseases: panel.secondaryDiseases,
                 genes: panel.genes,
                 diseases: panel.diseases,
-                extraGenes: panel.extraGenes
+                extraGenes: panel.extraGenes,
+                polyphen: panel.polyphen,
+                sift: panel.sift
             });
         }
     }

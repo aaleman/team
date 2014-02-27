@@ -114,11 +114,7 @@ TeamSettingsView.prototype = {
     load: function (panelType, panelId) {
         var _this = this;
 
-        var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
-            return (record.get('panelType') == panelType && record.get('panelId') == panelId);
-        });
-
-        panel = query.getAt(0).raw;
+        panel = _this.userSettings.get(panelType, panelId);
 
         if (panel != null) {
 
@@ -128,15 +124,11 @@ TeamSettingsView.prototype = {
             var secD = [];
             var genes = [];
 
-            Ext.each(panel.primaryDiseases, function (dis, index) {
+            Ext.each(panel.getDiseases(), function (dis, index) {
                 primD.push({name: dis.name});
             });
-            Ext.each(panel.genes, function (gene, index) {
+            Ext.each(panel.getGenes(), function (gene, index) {
                 genes.push({name: gene.name});
-            });
-
-            Ext.each(panel.secondaryDiseases, function (dis, index) {
-                secD.push({name: dis.name});
             });
 
             _this.clearSettings();
@@ -446,6 +438,9 @@ TeamSettingsView.prototype = {
                             window.setLoading(true);
                             if (_this.edit) {
                                 var name = Ext.getCmp(_this.id + "_panelname").getValue();
+
+                                var panelDise = _this.userSettings.get
+
                                 if (name == "") {
                                     Ext.MessageBox.alert("Error", "Name is mandatory");
                                 }

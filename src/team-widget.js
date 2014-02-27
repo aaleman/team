@@ -77,27 +77,97 @@ PanelsWidget.prototype = {
         var _this = this;
 
         var panel = Ext.create('Ext.tab.Panel', {
-            title: "Results",
-            width: '100%',
-            flex: 3,
-            border: 1,
-            layout: 'vbox',
-            margin: '0 5 5 5',
-            cls: 'ocb-border-top-lightgrey',
-            items: [],
-            bbar: [
-                '->',
-                {
-                    xtype: 'button',
-                    id: _this.id + "_generate_report",
-                    text: 'Generate Report',
-                    disabled: true,
-                    handler: function () {
-                        alert('You clicked the button!');
+                title: "Results",
+                width: '100%',
+                flex: 3,
+                border: 1,
+                layout: 'vbox',
+                margin: '0 5 5 5',
+                cls: 'ocb-border-top-lightgrey',
+                items: [],
+                bbar: [
+                    '->',
+                    {
+                        xtype: 'button',
+                        id: _this.id + "_generate_report",
+                        text: 'Generate Report',
+//                    disabled: true,
+                        handler: function () {
+
+                            var content = $('<div></div>');
+                            var table = $('<table border="1"></table>');
+                            var header = $('<th></th>');
+
+
+                            // _this.primDisGrid.grid.headerCt.items.items[1].dataIndex
+
+                            for (var i = 1; i < _this.primDisGrid.grid.headerCt.items.items.length; i++) {
+                                header.append('<td>' + _this.primDisGrid.grid.headerCt.items.items[i].text + '</td>');
+                            }
+
+                            table.append(header);
+                            for (var i = 0; i < _this.primDisGrid.store.getCount(); i++) {
+                                var record = _this.primDisGrid.store.getAt(i);
+
+                                var row = $('<tr></tr>');
+                                for (var j = 1; j < _this.primDisGrid.grid.headerCt.items.items.length; j++) {
+                                    row.append('<td>' + record.get(_this.primDisGrid.grid.headerCt.items.items[j].dataIndex) + '</td>');
+                                }
+                                table.append(row);
+                            }
+
+                            content.append(table);
+
+
+                            var w = new Ext.create('Ext.window.Window', {
+                                html: content.html()
+                            });
+
+                            w.show();
+
+
+//                        var doc = new jsPDF('p', 'pt', 'a4', true);
+//                        doc.cellInitialize();
+//
+//                        var specialElementHandlers = {
+//                            '#editor': function (element, renderer) {
+//                                return true;
+//                            }
+//                        };
+//
+//
+//                        var grid = _this.primDisGrid.grid;
+//
+//                        var table = $('<table></table>');
+//                        var header = $('<th></th>');
+//
+//                        for (var i = 1; i < grid.columns.length; i++) {
+//                            var colName = grid.columns[i].text;
+//                            console.log(colName);
+//                            header.append('<td>' + colName + '</td>');
+//                        }
+//                        table.append(header);
+//
+//
+//                        var content = $('<div></div>').append(table);
+//                        console.log(content.html());
+//
+//                        $.each(, function (i, row) {
+//                            console.debug(row);
+//                            $.each(row, function (j, cell) {
+//                                doc.cell(10, 50, 120, 50, cell, i);  // 2nd parameter=top margin,1st=left margin 3rd=row cell width 4th=Row height
+//                            })
+//                        })
+//
+//
+//                        doc.save('Test.pdf');
+
+
+                        }
                     }
-                }
-            ]
-        });
+                ]
+            })
+            ;
 
         return panel;
     },
@@ -169,7 +239,7 @@ PanelsWidget.prototype = {
                     text: 'Run',
                     handler: function () {
                         var button = Ext.getCmp(_this.id + "_generate_report");
-                        button.disable();
+//                        button.disable();
 
                         _this.dataSec = [];
                         _this.dataPrim = [];
@@ -213,7 +283,8 @@ PanelsWidget.prototype = {
                                 _this.primDisGrid.setLoading(false);
 
                                 if (_this.primDisGrid.count() > 0 || _this.extraGrid.count() > 0) {
-                                    button.enable();
+//                                    button.enable();
+                                    ;
                                 }
 
                             });
@@ -445,17 +516,18 @@ PanelsWidget.prototype = {
                 data.push(variants[i]);
             }
 
-            _this._checkVariantBatch(data, panel.getDiseases(), _this.dataPrim);
-            _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
+            _this._checkVariantBatch(data, panel, _this.dataPrim);
+            _this._checkVariantGeneBatch(data, genes, panel, _this.dataExtra);
         }
         _this.progress.updateProgress(1, 'Finish');
 
 
     },
-    _checkVariantBatch: function (variants, diseases, grid) {
+    _checkVariantBatch: function (variants, panel, grid) {
         var _this = this;
 
         var variantsReg = [];
+        var diseases = panel.getDiseases();
         for (var i = 0; i < variants.length; i++) {
             variantsReg.push(variants[i].chromosome + ":" + variants[i].start + "-" + variants[i].end);
         }
@@ -495,7 +567,11 @@ PanelsWidget.prototype = {
 
                                 _this._getEffect(copy);
                                 _this._getPolyphenSift(copy);
+
+//                                if (panel.polyphen !== undefined && copy.polyphen !== undefined && copy.polyphen >= panel.polyphen &&
+//                                    panel.sift !== undefined && copy.sift != undefined && copy.sift <= panel.sift) {
                                 grid.push(copy);
+//                                }
                             }
                         }
                     }
@@ -531,7 +607,7 @@ PanelsWidget.prototype = {
             }
         }
     },
-    _checkVariantGeneBatch: function (variants, genes, grid) {
+    _checkVariantGeneBatch: function (variants, genes, panel, grid) {
         var _this = this;
 
         for (var i = 0; i < variants.length; i++) {
@@ -543,7 +619,17 @@ PanelsWidget.prototype = {
                 variant.gene = panelVariant.name;
                 _this._getEffect(variant);
                 _this._getPolyphenSift(variant);
+
+
+                console.log(variant.sift + " - " + variant.polyphen);
+//                if (variant.sift == null && variant.polyphen == null) {
                 _this.dataExtra.push(variant);
+//                }else if(variant.sift == null && variant.po)
+//
+//                if (variant.sift === undefined || variant.sift == null && (panel.sift !== undefined && variant.sift <= panel.sift)) {
+//                    if (variant.polyphen == undefined || variant.polyphen == null && (panel.polyphen !== undefined && variant.polyphen >= panel.polyphen)) {
+//                    }
+//                }
             }
         }
     },
@@ -616,4 +702,5 @@ PanelsWidget.prototype = {
         }
         return null;
     }
-};
+}
+;
