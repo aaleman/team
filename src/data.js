@@ -1,168 +1,457 @@
 EXAMPLE_PANELS = [
     {
         name: "Panel Retinitis Pigmentosa",
-        "primaryDiseases": [
-            {"name": "Ataxia_and_retinitis_pigmentosa_with_isolated_vitamin_e_deficiency"},
-            {"name": "Hypoprebetalipoproteinemia,_acanthocytosis,_retinitis_pigmentosa,_and_pallidal_degeneration"},
-            {"name": "Juvenile_retinitis_pigmentosa,_AIPL1-related"},
-            {"name": "Neuropathy_ataxia_retinitis_pigmentosa_syndrome"},
-            {"name": "POSTERIOR COLUMN ATAXIA WITH RETINITIS PIGMENTOSA"},
-            {"name": "Polyneuropathy, hearing loss, ataxia, retinitis pigmentosa, and cataract"},
-            {"name": "RETINITIS PIGMENTOSA 1"},
-            {"name": "RETINITIS PIGMENTOSA 10"},
-            {"name": "RETINITIS PIGMENTOSA 11"},
-            {"name": "RETINITIS PIGMENTOSA 12"},
-            {"name": "RETINITIS PIGMENTOSA 13"},
-            {"name": "RETINITIS PIGMENTOSA 14"},
-            {"name": "RETINITIS PIGMENTOSA 17"},
-            {"name": "RETINITIS PIGMENTOSA 18"},
-            {"name": "RETINITIS PIGMENTOSA 19"},
-            {"name": "RETINITIS PIGMENTOSA 2"},
-            {"name": "RETINITIS PIGMENTOSA 20"},
-            {"name": "RETINITIS PIGMENTOSA 25"},
-            {"name": "RETINITIS PIGMENTOSA 26"},
-            {"name": "RETINITIS PIGMENTOSA 27"},
-            {"name": "RETINITIS PIGMENTOSA 3"},
-            {"name": "RETINITIS PIGMENTOSA 33"},
-            {"name": "RETINITIS PIGMENTOSA 35"},
-            {"name": "RETINITIS PIGMENTOSA 36"},
-            {"name": "RETINITIS PIGMENTOSA 37"},
-            {"name": "RETINITIS PIGMENTOSA 38"},
-            {"name": "RETINITIS PIGMENTOSA 39"},
-            {"name": "RETINITIS PIGMENTOSA 4"},
-            {"name": "RETINITIS PIGMENTOSA 4, AUTOSOMAL RECESSIVE"},
-            {"name": "RETINITIS PIGMENTOSA 40"},
-            {"name": "RETINITIS PIGMENTOSA 41"},
-            {"name": "RETINITIS PIGMENTOSA 42"},
-            {"name": "RETINITIS PIGMENTOSA 43"},
-            {"name": "RETINITIS PIGMENTOSA 44"},
-            {"name": "RETINITIS PIGMENTOSA 45"},
-            {"name": "RETINITIS PIGMENTOSA 46"},
-            {"name": "RETINITIS PIGMENTOSA 48"},
-            {"name": "RETINITIS PIGMENTOSA 49"},
-            {"name": "RETINITIS PIGMENTOSA 50"},
-            {"name": "RETINITIS PIGMENTOSA 54"},
-            {"name": "RETINITIS PIGMENTOSA 56"},
-            {"name": "RETINITIS PIGMENTOSA 57"},
-            {"name": "RETINITIS PIGMENTOSA 61"},
-            {"name": "RETINITIS PIGMENTOSA 66"},
-            {"name": "RETINITIS PIGMENTOSA 7"},
-            {"name": "RETINITIS PIGMENTOSA 7, DIGENIC"},
-            {"name": "RETINITIS PIGMENTOSA 7, WITH BULL'S-EYE MACULOPATHY"},
-            {"name": "RETINITIS PIGMENTOSA 9"},
-            {"name": "RETINITIS PIGMENTOSA IN CILIOPATHIES, MODIFIER OF"},
-            {"name": "RETINITIS PIGMENTOSA, JUVENILE, SPATA7-RELATED"},
-            {"name": "RETINITIS PIGMENTOSA, X-LINKED, AND SINORESPIRATORY INFECTIONS, WITH DEAFNESS"},
-            {"name": "RETINITIS PUNCTATA ALBESCENS"},
-            {"name": "REtinitis pigmentosa 62"},
-            {"name": "Retinitis Pigmentosa 28"},
-            {"name": "Retinitis pigmentosa"},
-            {"name": "Retinitis pigmentosa 58"},
-            {"name": "Retinitis pigmentosa 59"},
-            {"name": "Retinitis pigmentosa 60"},
-            {"name": "Retinitis pigmentosa autosomal recessive"},
-            {"name": "Retinitis pigmentosa type 1"},
-            {"name": "Retinitis pigmentosa type 12"},
-            {"name": "Retinitis pigmentosa type 2"},
-            {"name": "Retinitis pigmentosa type 35"},
-            {"name": "Retinitis pigmentosa type 39"},
-            {"name": "Retinitis pigmentosa type 4"},
-            {"name": "Retinitis_pigmentosa,_concentric"},
-            {"name": "Retinitis_pigmentosa-deafness_syndrome"},
-            {"name": "Retinitis_pigmentosa_15"},
-            {"name": "Retinitis_pigmentosa_53"},
-            {"name": "Retinitis_pigmentosa_64"},
-            {"name": "Retinitis_pigmentosa_7,_with_bulls-eye_maculopathy"}
+        "diseases": [
+            {
+                "name": "RETINITIS PIGMENTOSA 4",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RHO"
+                    },
+                    {
+                        "name": "RP1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 1",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RP1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 10",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "IMPDH1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 11",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "PRPF31"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 12",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "CRB1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 13",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "PRPF8"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 14",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "TULP1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 17",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "CA4"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 18",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "HPRP3"
+                    },
+                    {
+                        "name": "PRPF3"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 19",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 2",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RP2"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 20",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RPE65"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 25",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "EYS"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 26",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "CERKL"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 27",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "NRL"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 3",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RPGR"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 33",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 35",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "SEMA4A"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 36",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "PRCD"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 37",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "NR2E3"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 38",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "MERTK"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 39",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "USH2A"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 40",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "PDE6B"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 41",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "PROM1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 42",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "KLHL7"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 43",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "PDE6A"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 44",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RGR"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 45",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "CNGB1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 46",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "IDH3B"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 48",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "GUCA1B"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 49",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "CNGA1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 50",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "BEST1"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 54",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "C2orf71"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 56",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "IMPG2"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 57",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "PDE6G"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 61",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 66",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 7",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "PRPH2"
+                    }
+                ]
+            },
+            {
+                "name": "RETINITIS PIGMENTOSA 9",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RP9"
+                    }
+                ]
+            },
+            {
+                "name": "Retinitis Pigmentosa 28",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "Retinitis pigmentosa",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "CRX"
+                    }
+                ]
+            },
+            {
+                "name": "Retinitis pigmentosa 58",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "Retinitis pigmentosa 59",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "Retinitis pigmentosa 60",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "Retinitis pigmentosa type 1",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RP1"
+                    }
+                ]
+            },
+            {
+                "name": "Retinitis pigmentosa type 12",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "CRB1"
+                    }
+                ]
+            },
+            {
+                "name": "Retinitis pigmentosa type 2",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RP2"
+                    }
+                ]
+            },
+            {
+                "name": "Retinitis pigmentosa type 35",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "SEMA4A"
+                    }
+                ]
+            },
+            {
+                "name": "Retinitis pigmentosa type 39",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "USH2A"
+                    }
+                ]
+            },
+            {
+                "name": "Retinitis pigmentosa type 4",
+                "mutations": [],
+                "genes": [
+                    {
+                        "name": "RHO"
+                    }
+                ]
+            },
+            {
+                "name": "Retinitis_pigmentosa_15",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "Retinitis_pigmentosa_53",
+                "mutations": [],
+                "genes": []
+            },
+            {
+                "name": "Retinitis_pigmentosa_64",
+                "mutations": [],
+                "genes": []
+            }
         ],
-        "secondaryDiseases": [
-            {"name": "USHER SYNDROME, TYPE IB"},
-            {"name": "USHER SYNDROME, TYPE IC"},
-            {"name": "USHER SYNDROME, TYPE ID"},
-            {"name": "USHER SYNDROME, TYPE ID/F, DIGENIC"},
-            {"name": "USHER SYNDROME, TYPE IF"},
-            {"name": "USHER SYNDROME, TYPE IG"},
-            {"name": "USHER SYNDROME, TYPE IIA"},
-            {"name": "USHER SYNDROME, TYPE IIC"},
-            {"name": "USHER SYNDROME, TYPE IID"},
-            {"name": "USHER SYNDROME, TYPE IIIA"},
-            {"name": "Usher syndrome 1B"},
-            {"name": "Usher syndrome 1D"},
-            {"name": "Usher syndrome 1F"},
-            {"name": "Usher syndrome 2A"},
-            {"name": "Usher syndrome type 1B"},
-            {"name": "Usher syndrome type 1D"},
-            {"name": "Usher syndrome type 2A"},
-            {"name": "Usher_syndrome,_type_1B"},
-            {"name": "Usher_syndrome,_type_1C"},
-            {"name": "Usher_syndrome,_type_1D"},
-            {"name": "Usher_syndrome,_type_1F"},
-            {"name": "Usher_syndrome,_type_1G"},
-            {"name": "Usher_syndrome,_type_2A"},
-            {"name": "Usher_syndrome,_type_2C"},
-            {"name": "Usher_syndrome,_type_2D"},
-            {"name": "Usher_syndrome,_type_3"},
-            {"name": "Usher_syndrome,_type_3B"}
-        ],
-        "genes": [
-            {"name": "BEST1"},
-            {"name": "C2orf71"},
-            {"name": "CA4"},
-            {"name": "CDH23"},
-            {"name": "CERKL"},
-            {"name": "CLRN1"},
-            {"name": "CNGA1"},
-            {"name": "CNGB1"},
-            {"name": "CRB1"},
-            {"name": "CRX"},
-            {"name": "EYS"},
-            {"name": "GPR98"},
-            {"name": "GUCA1B"},
-            {"name": "HPRP3"},
-            {"name": "IDH3B"},
-            {"name": "IMPDH1"},
-            {"name": "IMPG2"},
-            {"name": "KLHL7"},
-            {"name": "MERTK"},
-            {"name": "MYO7A"},
-            {"name": "NR2E3"},
-            {"name": "NRL"},
-            {"name": "PCDH15"},
-            {"name": "PDE6A"},
-            {"name": "PDE6B"},
-            {"name": "PDE6G"},
-            {"name": "PRCD"},
-            {"name": "PROM1"},
-            {"name": "PRPF3"},
-            {"name": "PRPF31"},
-            {"name": "PRPF8"},
-            {"name": "PRPH2"},
-            {"name": "RDH5"},
-            {"name": "RGR"},
-            {"name": "RHO"},
-            {"name": "RLBP1"},
-            {"name": "RP1"},
-            {"name": "RP2"},
-            {"name": "RP9"},
-            {"name": "RPE65"},
-            {"name": "RPGR"},
-            {"name": "RPGRIP1L"},
-            {"name": "SANS"},
-            {"name": "SEMA4A"},
-            {"name": "SPATA7"},
-            {"name": "TULP1"},
-            {"name": "USH1C"},
-            {"name": "USH1G"},
-            {"name": "USH2A"},
-            {"name": "WHRN"}
-        ]
+        "extraGenes": [],
+//        "polyphen": 0.6,
+//        "sift": 0.1
     },
     {
         name: "Comprehensive Cancer Design",
-        primaryDiseases: [
+        diseases: [
             {name: "Cancer"}
         ],
-        secondaryDiseases: [],
-        genes: [
+        extraGenes: [
             { name: "ABCC6"},
             { name: "ABI1"},
             { name: "ABL1"},

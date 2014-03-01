@@ -10,6 +10,7 @@ function PanelsWidget(args) {
     this.targetId;
     this.width;
     this.height;
+    this.userSettings;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -32,29 +33,37 @@ PanelsWidget.prototype = {
 
         this.panel = this._createPanel(this.targetId);
         this.tabPanel = this._createTabPanel();
-        this.panels = this._initializeDiseasePanel();
+        this.progress = Ext.create('Ext.ProgressBar', {
+            text: 'Progress',
+            border: 1,
+            margin: 3,
+            height: 20,
+            width: "100%",
+            animate: true
+        });
 
         this.form = this._createForm();
-        this.primDisGrid = this._createDiseaseGrid("Prim. Diagnosis");
-        this.secDisGrid = this._createDiseaseGrid("Sec. Diagnosis");
-        this.extraGrid = this._createDiseaseGrid("Deleterious Variants");
+        this.primDisGrid = this._createDiseaseGrid("Diagnostic");
+        this.extraGrid = this._createDiseaseGrid("Secondary findings");
 
         this.panel.add(this.form);
         this.panel.add(this.tabPanel);
+//        this.panel.add(this.progress);
 
         this.tabPanel.add(this.primDisGrid.getPanel());
-        this.tabPanel.add(this.secDisGrid.getPanel());
         this.tabPanel.add(this.extraGrid.getPanel());
         this.tabPanel.setActiveTab(this.primDisGrid.getPanel());
 
         this.dataSec = [];
         this.dataPrim = [];
         this.dataExtra = [];
+
+        this.reportWindow = this._createReportWindow();
+
     },
     _createPanel: function (targetId) {
         var panel = Ext.create('Ext.panel.Panel', {
             renderTo: targetId,
-            //title  : "Panels",
             width: '100%',
             height: '100%',
             border: 0,
@@ -66,16 +75,228 @@ PanelsWidget.prototype = {
 
         return panel;
     },
-    _createTabPanel: function () {
-        var panel = Ext.create('Ext.tab.Panel', {
-            title: "Results",
-            width: '100%',
-            flex: 3,
-            border: 0,
-            layout: 'vbox',
-            cls: 'ocb-border-top-lightgrey',
-            items: []
+    _createReportWindow: function () {
+        var _this = this;
+
+        var title = Ext.create('Ext.form.TextField', {
+            id: _this.id + "_title_report",
+            name: 'title',
+            fieldLabel: 'Title',
+            labelAlign: 'left',
+            allowBlank: false,
         });
+
+        var info = Ext.create('Ext.form.TextArea', {
+            id: _this.id + "_info_report",
+            name: 'info',
+            width: 500,
+            fieldLabel: 'Information',
+            labelAlign: 'left',
+            allowBlank: true,
+        });
+
+        var name = Ext.create('Ext.form.TextField', {
+            id: _this.id + "_name_report",
+            name: 'name',
+            fieldLabel: 'Name',
+            labelAlign: 'left',
+            allowBlank: false,
+        });
+
+        var date = Ext.create('Ext.form.DateField', {
+            id: _this.id + "_date_report",
+            name: 'date',
+            fieldLabel: 'Date',
+            labelAlign: 'left',
+            allowBlank: false,
+            maxValue: new Date(),  // limited to the current date or prior
+            value: new Date()  // defaults to today
+        });
+
+        var comments = Ext.create('Ext.form.TextArea', {
+            id: _this.id + "_comments_report",
+            name: 'comments',
+            width: 500,
+            fieldLabel: 'Comments',
+            labelAlign: 'left',
+            allowBlank: true,
+        });
+
+        var primCheckBox = Ext.create('Ext.form.Checkbox', {
+            boxLabel: 'Diagnostic',
+            name: 'prim',
+            inputValue: true,
+            id: 'prim',
+            checked: true
+        });
+
+        var secCheckBox = Ext.create('Ext.form.Checkbox', {
+            boxLabel: 'Secondary findings',
+            name: 'sec',
+            inputValue: true,
+            id: 'sec',
+            checked: true
+        });
+
+        var form = Ext.create('Ext.form.Panel', {
+            id: _this.id + "_form_report",
+            bodyStyle: 'background:none',
+            bodyPadding: 4,
+            layout: {
+                type: 'vbox'
+            },
+            items: [
+                title,
+                info,
+                {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: 'Data',
+                    items: [
+                        primCheckBox,
+                        secCheckBox
+                    ]
+                },
+                date,
+                name,
+                comments],
+            buttons: [
+                {
+                    text: 'Reset',
+                    handler: function () {
+                        this.up('form').getForm().reset();
+                    }
+                },
+                {
+                    text: 'Generate!!',
+                    formBind: true,
+                    disabled: true,
+                    handler: function () {
+                        var form = this.up('form').getForm();
+                        if (form.isValid()) {
+                            var values = form.getValues();
+                            _this._generateReport(values);
+                            Ext.getCmp(_this.id + "_report_generator_window").hide();
+                        }
+                    }
+                }
+            ]
+        });
+
+        var window = Ext.create('Ext.window.Window', {
+            id: _this.id + "_report_generator_window",
+            title: "Report Generator",
+            height: 380,
+            width: 600,
+            minimizable: true,
+            closable: false,
+            bodyPadding: 10,
+            listeners: {
+                minimize: function (win, obj) {
+                    win.hide();
+                }
+            },
+            items: [form]
+        });
+        return window;
+    },
+    _generateReport: function (values) {
+
+        var _this = this;
+
+        Ext.ux.grid.Printer.printAutomatically = false;
+        var htmlGrid1 = Ext.ux.grid.Printer.print(_this.primDisGrid.grid);
+        var htmlGrid2 = Ext.ux.grid.Printer.print(_this.extraGrid.grid);
+
+        var scriptPath = Ext.Loader.getPath('Ext.ux.grid.Printer');
+        var stylesheetPath = scriptPath.substring(0, scriptPath.indexOf('Printer.js')) + 'gridPrinterCss/print.css';
+
+        var win = window.open('', 'printgrid');
+
+        var style = "<style>" +
+            ".bodyReport {font-family: tahoma, arial, verdana, sans-serif;}" +
+            ".reportTitle {height: 20px;font-size: 20px;text-align: center;padding: 10px 10px 10px 10px;}" +
+            ".gridHeader {height: 30px;}" +
+            ".reportInfo {margin-left:50px;margin-right:50px;margin-top: 20px;margin-bottom:30px;text-indent: 20px;text-align: center;}" +
+            ".gridHeader {padding-left: 100px;margin-top: 20px;margin-bottom: 20px;}" +
+            ".reportGrid{margin-left:50px;margin-right:50px;}" +
+            "td{max-width: 200px;word-wrap:break-word}" +
+            ".reportDate{margin-top: 20px;margin-bottom:20px;margin-left:50px;}" +
+            ".reportDateText{}" +
+            ".reportName{margin-top: 20px;margin-left:50px;}" +
+            ".reportComments{margin-top:20px;margin-left:50px;margin-bottom: 10px;}" +
+            ".reportCommentsText{text-indent: 20px;margin-left:50px;}" +
+            "</style>";
+        //document must be open and closed
+        win.document.open();
+        win.document.write(
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' +
+                '<html class="' + Ext.baseCSSPrefix + 'ux-grid-printer">' +
+                '<head>' +
+                '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />' +
+                '<link href="' + stylesheetPath + '" rel="stylesheet" type="text/css" />' +
+                '<title>Team Report</title>' + style);
+        win.document.write('</head>' +
+            '<body class="' + Ext.baseCSSPrefix + 'ux-grid-printer-body bodyReport">' +
+
+            '<div class="' + Ext.baseCSSPrefix + 'ux-grid-printer-noprint ' + Ext.baseCSSPrefix + 'ux-grid-printer-links">' +
+            '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkprint" href="javascript:void(0);" onclick="window.print();">Print</a>',
+            '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkclose" href="javascript:void(0);" onclick="window.close();">Close</a>' +
+                '</div>'
+        )
+        ;
+        win.document.write('<div class="reportTitle">' + values.title + '</div>')
+        win.document.write('<div class="reportInfo">' + values.info + '</div>')
+        if (values.prim) {
+            win.document.write('<div class="gridHeader">Diagnostic: </div>');
+            win.document.write('<div class="reportGrid">')
+            win.document.write(htmlGrid1);
+            win.document.write('</div>');
+
+        }
+        if (values.sec) {
+            win.document.write('<div class="gridHeader">Secondary findings: </div>');
+            win.document.write('<div class="reportGrid">')
+            win.document.write(htmlGrid2);
+            win.document.write('</div>')
+        }
+
+        win.document.write('<div class="reportDate">Date:  ' + values.date + '</div>')
+        win.document.write('<div class="reportName">Name:  ' + values.name + '</div>')
+        win.document.write('<div class="reportComments">Comments: </div><div class="reportCommentsText">' + values.comments + '</div>')
+        win.document.write('</body></html>');
+        win.document.close();
+
+        if (this.printAutomatically) {
+            win.print();
+        }
+    },
+    _createTabPanel: function () {
+        var _this = this;
+
+        var panel = Ext.create('Ext.tab.Panel', {
+                title: "Results",
+                width: '100%',
+                flex: 3,
+                border: 1,
+                layout: 'vbox',
+                margin: '0 5 5 5',
+                cls: 'ocb-border-top-lightgrey',
+                items: [],
+                bbar: [
+                    '->',
+                    {
+                        xtype: 'button',
+                        id: _this.id + "_generate_report",
+                        text: 'Generate Report',
+                        disabled: true,
+                        handler: function () {
+                            Ext.getCmp(_this.id + "_form_report").getForm().reset();
+                            _this.reportWindow.show();
+                        }
+                    }
+                ]
+            })
+            ;
 
         return panel;
     },
@@ -92,7 +313,7 @@ PanelsWidget.prototype = {
                             return rec.get('panelType') + '_' + rec.get('panelId');
                         }}
                 ],
-                data: _this.panels,
+                data: [],
                 storeId: 'DiseaseStore'
             }
         )
@@ -105,7 +326,6 @@ PanelsWidget.prototype = {
             emptyText: 'Select a file',
             allowBlank: false,
             name: 'genes'
-
         });
 
         var disease = Ext.create('Ext.form.field.ComboBox', {
@@ -116,14 +336,14 @@ PanelsWidget.prototype = {
             queryMode: 'local',
             displayField: 'name',
             valueField: 'value',
-            value: this.diseaseStore.getAt(0).get('value'),
             editable: false,
-            allowBlank: false
+            allowBlank: false,
+            emptyText: "Select a Panel..."
         });
 
         var vcf = Ext.create('Ext.form.field.File', {
             id: _this.id + "vcf_file",
-            fieldLabel: "Vcf File",
+            fieldLabel: "VCF File",
             width: 500,
             emptyText: 'Select a file',
             allowBlank: false,
@@ -140,16 +360,20 @@ PanelsWidget.prototype = {
                 msgTarget: 'side',
                 labelWidth: 70
             },
+            margin: '5 5 20 5',
             items: [disease, vcf],
+            buttonAlign: 'left',
             buttons: [
                 {
                     text: 'Run',
                     handler: function () {
+                        var button = Ext.getCmp(_this.id + "_generate_report");
+                        button.disable();
+
                         _this.dataSec = [];
                         _this.dataPrim = [];
 
                         _this.primDisGrid.clear();
-                        _this.secDisGrid.clear();
                         _this.extraGrid.clear();
 
                         var form = _this.form.getForm();
@@ -165,31 +389,32 @@ PanelsWidget.prototype = {
                             var panelType = panelSplit[0];
                             var panelId = panelSplit[1];
 
-                            var query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
-                                return (record.get('panelType') == panelType && record.get('panelId') == panelId);
-                            });
-
-                            panel = query.getAt(0).raw;
+                            panel = _this.userSettings.get(panelType, panelId);
 
                             fds_vcf.on("success", function (data) {
+
+                                _this.progress.updateProgress(0.1, 'Parsing Vcf File');
+
                                 var variants = _this._parseVcfFile(data);
 
                                 _this._filterVariants(variants, panel);
 
                                 _this.primDisGrid.loadData(_this.dataPrim);
-                                _this.secDisGrid.loadData(_this.dataSec);
                                 _this.extraGrid.loadData(_this.dataExtra);
 
                                 if (_this.primDisGrid.count() > 0) {
                                     _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
-                                } else if (_this.secDisGrid.count() > 0) {
-                                    _this.tabPanel.setActiveTab(_this.secDisGrid.getPanel());
                                 } else if (_this.extraGrid.count() > 0) {
                                     _this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
                                 }
 
                                 Ext.getCmp(_this.id + "numRowsLabel").setText(_this.dataPrim.length + " variants");
                                 _this.primDisGrid.setLoading(false);
+
+                                if (_this.primDisGrid.count() > 0 || _this.extraGrid.count() > 0) {
+                                    button.enable();
+
+                                }
 
                             });
 
@@ -226,7 +451,7 @@ PanelsWidget.prototype = {
             {name: 'alternate', type: 'String'},
             {name: 'gene', type: 'String'},
 
-            {name: 'quality', type: 'float'} ,
+            // {name: 'quality', type: 'float'} ,
             {name: 'filter', type: 'String'},
             {name: 'info', type: 'String'},
             {name: 'format', type: 'String'},
@@ -246,8 +471,8 @@ PanelsWidget.prototype = {
             {name: "aaPos", type: 'int'}   ,
             {name: "aaChange", type: 'String'},
             {name: "phenotype", type: 'String'},
-            {name: "source", type: 'String'},
-            {name: "pvalue", type: 'float'}
+            {name: "source", type: 'String'}
+            // {name: "pvalue", type: 'float'}
         ];
         var renderer = function (value) {
             if (value == '') {
@@ -265,7 +490,7 @@ PanelsWidget.prototype = {
             {dataIndex: 'alternate', text: 'Alt', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: 'gene', text: 'Gene', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: 'ct', text: 'Conseq. Type', flex: 1, emptyCellText: '.', renderer: renderer},
-            {dataIndex: 'quality', text: 'Quality', flex: 1, emptyCellText: '.', renderer: renderer},
+            // {dataIndex: 'quality', text: 'Quality', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "ensembl_protein", text: 'Ensembl protein', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "xref", text: 'Xref', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true},
@@ -275,7 +500,7 @@ PanelsWidget.prototype = {
             {dataIndex: "hgvs_protein", text: 'Hgvs protein', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "phenotype", text: 'Phenotype', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "source", text: 'Source', flex: 1, emptyCellText: '.', renderer: renderer},
-            {dataIndex: "pvalue", text: 'pValue', flex: 1, emptyCellText: '.', renderer: renderer},
+            // {dataIndex: "pvalue", text: 'pValue', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "sift", text: 'SIFT', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "polyphen", text: 'PolyPhen', flex: 1, emptyCellText: '.', renderer: renderer}
         ];
@@ -308,9 +533,7 @@ PanelsWidget.prototype = {
                 }
             ]
         });
-
         return newGrid;
-
     },
     _getRegions: function (genes) {
 
@@ -320,6 +543,8 @@ PanelsWidget.prototype = {
         Ext.each(genes, function (gene, index) {
             gene_names.push(gene.name);
         });
+
+        console.log(gene_names);
 
         CellBaseManager.get({
             host: 'http://ws-beta.bioinfo.cipf.es/cellbase/rest',
@@ -335,7 +560,8 @@ PanelsWidget.prototype = {
             async: false,
             success: function (response, textStatus, jqXHR) {
 
-                for (var i = 0; i < response.response.length; i++) {
+
+                for (var i = 0; response.response !== undefined && i < response.response.length; i++) {
                     if (response.response[i].numResults > 0) {
                         final_genes.push({
                             name: response.response[i].id,
@@ -393,8 +619,6 @@ PanelsWidget.prototype = {
                             info: fields[7], //.replace(/;/gi, "<br>"),
                             format: fields[8],
                             sample: samples
-                            //sampleData: line
-                            //featureType : "vcf"
                         }
                     );
                 }
@@ -408,7 +632,11 @@ PanelsWidget.prototype = {
 
         var data = [];
 
-        var genes = _this._getRegions(panel.genes);
+        _this.progress.updateProgress(0.2, 'Retrieving Genes');
+
+        var genes = _this._getRegions(panel.getGenes());
+
+        _this.progress.updateProgress(.3, 'Retrieving Disease Info');
 
         for (var i = 0; i < variants.length;) {
             data = [];
@@ -416,22 +644,24 @@ PanelsWidget.prototype = {
             for (var j = 0; i < variants.length && j < 100; j++, i++) {
                 data.push(variants[i]);
             }
-            _this._checkVariantBatch(data, panel.primaryDiseases, _this.dataPrim);
-            _this._checkVariantBatch(data, panel.secondaryDiseases, _this.dataSec);
-            _this._checkVariantGeneBatch(data, genes, _this.dataExtra);
+
+            _this._checkVariantBatch(data, panel, _this.dataPrim);
+            _this._checkVariantGeneBatch(data, genes, panel, _this.dataExtra);
         }
+        _this.progress.updateProgress(1, 'Finish');
 
 
     },
-    _checkVariantBatch: function (variants, diseases, grid) {
+    _checkVariantBatch: function (variants, panel, grid) {
         var _this = this;
 
         var variantsReg = [];
+        var diseases = panel.getDiseases();
         for (var i = 0; i < variants.length; i++) {
             variantsReg.push(variants[i].chromosome + ":" + variants[i].start + "-" + variants[i].end);
         }
 
-
+        console.log("Start Cellbase");
         for (var i = 0; i < diseases.length; i++) {
 
             var dis = diseases[i].name;
@@ -439,8 +669,6 @@ PanelsWidget.prototype = {
             dis = dis.replace(/ /g, "%20");
 
             var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
-            console.log(url);
-            //debugger
 
             $.ajax({
                 url: url,
@@ -462,14 +690,41 @@ PanelsWidget.prototype = {
                                 copy.gene = aux.associatedGenes;
                                 copy.phenotype = aux.phenotype;
                                 copy.source = aux.source;
-                                if (copy.pvalue >= 0) {
-                                    copy.pvalue = aux.pValue;
-                                }
-
+                                //if (copy.pvalue >= 0) {
+                                //copy.pvalue = aux.pValue;
+                                //}
 
                                 _this._getEffect(copy);
                                 _this._getPolyphenSift(copy);
+
+
+                                var sift = (copy.sift == undefined || copy.sift == null);
+                                var polyphen = (copy.polyphen == undefined || copy.polyphen == null);
+
+                                if (!sift) {
+                                    sift = (panel.sift == undefined || panel.sift == null);
+                                }
+                                if (!polyphen) {
+                                    polyphen = (panel.polyphen == undefined || panel.polyphen == null);
+                                }
+
+                                if (!sift) {
+                                    sift = (copy.sift <= panel.sift);
+                                }
+
+                                if (!polyphen) {
+                                    polyphen = (copy.polyphen >= panel.polyphen);
+                                }
+
+
+                                if (sift && polyphen) {
+                                    _this.dataExtra.push(copy);
+                                }
+
+//                                if (panel.polyphen !== undefined && copy.polyphen !== undefined && copy.polyphen >= panel.polyphen &&
+//                                    panel.sift !== undefined && copy.sift != undefined && copy.sift <= panel.sift) {
                                 grid.push(copy);
+//                                }
                             }
                         }
                     }
@@ -483,10 +738,29 @@ PanelsWidget.prototype = {
 
 
         }
-        return;
 
+        console.log("FIN DISEASES");
+        // User-defined Mutations
+
+
+        for (var i = 0; i < diseases.length; i++) {
+            var dis = diseases[i];
+
+            for (var j = 0; dis.mutations !== undefined && j < dis.mutations.length; j++) {
+                var m = dis.mutations[j];
+
+                for (var k = 0; k < variants.length; k++) {
+                    var v = variants[k];
+                    if (v.chromosome == m.chr && v.start == m.pos && v.reference == m.ref && v.alternate == m.alt) {
+                        v.phenotype = dis.name;
+                        v.source = "user-defined";
+                        grid.push(v);
+                    }
+                }
+            }
+        }
     },
-    _checkVariantGeneBatch: function (variants, genes, grid) {
+    _checkVariantGeneBatch: function (variants, genes, panel, grid) {
         var _this = this;
 
         for (var i = 0; i < variants.length; i++) {
@@ -498,7 +772,28 @@ PanelsWidget.prototype = {
                 variant.gene = panelVariant.name;
                 _this._getEffect(variant);
                 _this._getPolyphenSift(variant);
-                _this.dataExtra.push(variant);
+                var sift = (variant.sift == undefined || variant.sift == null);
+                var polyphen = (variant.polyphen == undefined || variant.polyphen == null);
+
+                if (!sift) {
+                    sift = (panel.sift == undefined || panel.sift == null);
+                }
+                if (!polyphen) {
+                    polyphen = (panel.polyphen == undefined || panel.polyphen == null);
+                }
+
+                if (!sift) {
+                    sift = (variant.sift <= panel.sift);
+                }
+
+                if (!polyphen) {
+                    polyphen = (variant.polyphen >= panel.polyphen);
+                }
+
+
+                if (sift && polyphen) {
+                    _this.dataExtra.push(variant);
+                }
             }
         }
     },
@@ -570,31 +865,6 @@ PanelsWidget.prototype = {
             }
         }
         return null;
-    },
-    _initializeDiseasePanel: function () {  // TODO aaleman: Check this code
-        var panels = []
-
-        for (var i = 0; i < EXAMPLE_PANELS.length; i++) {
-            var panel = EXAMPLE_PANELS[i];
-            panels.push({
-                panelType: 'example',
-                panelId: i,
-                name: panel.name,
-                primaryDiseases: panel.primaryDiseases,
-                secondaryDiseases: panel.secondaryDiseases,
-                genes: panel.genes
-            });
-        }
-
-        if (localStorage.bioinfo_panels_user_settings) {
-            var userDefinedPanels = JSON.parse(localStorage.bioinfo_panels_user_settings);
-            for (var i = 0; i < userDefinedPanels.length; i++) {
-                var elem = userDefinedPanels[i];
-                elem.panelType = 'user';
-                elem.panelId = i;
-                panels.push(elem);
-            }
-        }
-        return panels;
     }
-};
+}
+;
