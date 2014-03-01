@@ -10,6 +10,7 @@ function PanelsWidget(args) {
     this.targetId;
     this.width;
     this.height;
+    this.userSettings;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -32,39 +33,37 @@ PanelsWidget.prototype = {
 
         this.panel = this._createPanel(this.targetId);
         this.tabPanel = this._createTabPanel();
-        //this.settings = this._createSettings();
-//        this.panelSettings = new PanelSettingsView({
-//            autoRender: true
-//        });
-//        this.panelSettings.draw();
-
-
-        this.panels = this._initializeDiseasePanel();
+        this.progress = Ext.create('Ext.ProgressBar', {
+            text: 'Progress',
+            border: 1,
+            margin: 3,
+            height: 20,
+            width: "100%",
+            animate: true
+        });
 
         this.form = this._createForm();
-        this.grid1 = this._createGridVG();
-        this.grid2 = this._createGridPrimary();
-        this.gridSec = this._createGridSecondary();
-        this.gridExtra = this._createGridExtra();
+        this.primDisGrid = this._createDiseaseGrid("Diagnostic");
+        this.extraGrid = this._createDiseaseGrid("Secondary findings");
 
         this.panel.add(this.form);
         this.panel.add(this.tabPanel);
+//        this.panel.add(this.progress);
 
-        this.tabPanel.add(this.grid2);
-        this.tabPanel.add(this.gridSec);
-        this.tabPanel.add(this.gridExtra);
-        this.tabPanel.setActiveTab(this.grid2);
+        this.tabPanel.add(this.primDisGrid.getPanel());
+        this.tabPanel.add(this.extraGrid.getPanel());
+        this.tabPanel.setActiveTab(this.primDisGrid.getPanel());
 
         this.dataSec = [];
-        this.data2 = [];
+        this.dataPrim = [];
         this.dataExtra = [];
 
-        //this.panelSettings.show();
+        this.reportWindow = this._createReportWindow();
+
     },
     _createPanel: function (targetId) {
         var panel = Ext.create('Ext.panel.Panel', {
             renderTo: targetId,
-            //title: "Panels",
             width: '100%',
             height: '100%',
             border: 0,
@@ -76,319 +75,249 @@ PanelsWidget.prototype = {
 
         return panel;
     },
-    _createTabPanel: function () {
-        var panel = Ext.create('Ext.tab.Panel', {
-            title: "Results",
-            width: '100%',
-            flex: 3,
-            border: 0,
-            layout: 'vbox',
-            cls: 'ocb-border-top-lightgrey',
-            items: []
+    _createReportWindow: function () {
+        var _this = this;
+
+        var title = Ext.create('Ext.form.TextField', {
+            id: _this.id + "_title_report",
+            name: 'title',
+            fieldLabel: 'Title',
+            labelAlign: 'left',
+            allowBlank: false,
         });
 
-        return panel;
+        var info = Ext.create('Ext.form.TextArea', {
+            id: _this.id + "_info_report",
+            name: 'info',
+            width: 500,
+            fieldLabel: 'Information',
+            labelAlign: 'left',
+            allowBlank: true,
+        });
 
+        var name = Ext.create('Ext.form.TextField', {
+            id: _this.id + "_name_report",
+            name: 'name',
+            fieldLabel: 'Name',
+            labelAlign: 'left',
+            allowBlank: false,
+        });
+
+        var date = Ext.create('Ext.form.DateField', {
+            id: _this.id + "_date_report",
+            name: 'date',
+            fieldLabel: 'Date',
+            labelAlign: 'left',
+            allowBlank: false,
+            maxValue: new Date(),  // limited to the current date or prior
+            value: new Date()  // defaults to today
+        });
+
+        var comments = Ext.create('Ext.form.TextArea', {
+            id: _this.id + "_comments_report",
+            name: 'comments',
+            width: 500,
+            fieldLabel: 'Comments',
+            labelAlign: 'left',
+            allowBlank: true,
+        });
+
+        var primCheckBox = Ext.create('Ext.form.Checkbox', {
+            boxLabel: 'Diagnostic',
+            name: 'prim',
+            inputValue: true,
+            id: 'prim',
+            checked: true
+        });
+
+        var secCheckBox = Ext.create('Ext.form.Checkbox', {
+            boxLabel: 'Secondary findings',
+            name: 'sec',
+            inputValue: true,
+            id: 'sec',
+            checked: true
+        });
+
+        var form = Ext.create('Ext.form.Panel', {
+            id: _this.id + "_form_report",
+            bodyStyle: 'background:none',
+            bodyPadding: 4,
+            layout: {
+                type: 'vbox'
+            },
+            items: [
+                title,
+                info,
+                {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: 'Data',
+                    items: [
+                        primCheckBox,
+                        secCheckBox
+                    ]
+                },
+                date,
+                name,
+                comments],
+            buttons: [
+                {
+                    text: 'Reset',
+                    handler: function () {
+                        this.up('form').getForm().reset();
+                    }
+                },
+                {
+                    text: 'Generate!!',
+                    formBind: true,
+                    disabled: true,
+                    handler: function () {
+                        var form = this.up('form').getForm();
+                        if (form.isValid()) {
+                            var values = form.getValues();
+                            _this._generateReport(values);
+                            Ext.getCmp(_this.id + "_report_generator_window").hide();
+                        }
+                    }
+                }
+            ]
+        });
+
+        var window = Ext.create('Ext.window.Window', {
+            id: _this.id + "_report_generator_window",
+            title: "Report Generator",
+            height: 380,
+            width: 600,
+            minimizable: true,
+            closable: false,
+            bodyPadding: 10,
+            listeners: {
+                minimize: function (win, obj) {
+                    win.hide();
+                }
+            },
+            items: [form]
+        });
+        return window;
     },
-    _createSettings: function () {
+    _generateReport: function (values) {
 
         var _this = this;
 
-        Ext.define('DataObject', {
-            extend: 'Ext.data.Model',
-            fields: ['name']
-        });
+        Ext.ux.grid.Printer.printAutomatically = false;
+        var htmlGrid1 = Ext.ux.grid.Printer.print(_this.primDisGrid.grid);
+        var htmlGrid2 = Ext.ux.grid.Printer.print(_this.extraGrid.grid);
 
+        var scriptPath = Ext.Loader.getPath('Ext.ux.grid.Printer');
+        var stylesheetPath = scriptPath.substring(0, scriptPath.indexOf('Printer.js')) + 'gridPrinterCss/print.css';
 
-        var myData = [];
+        var win = window.open('', 'printgrid');
 
-        myData = _this._getDiseases();
+        var style = "<style>" +
+            ".bodyReport {font-family: tahoma, arial, verdana, sans-serif;}" +
+            ".reportTitle {height: 20px;font-size: 20px;text-align: center;padding: 10px 10px 10px 10px;}" +
+            ".gridHeader {height: 30px;}" +
+            ".reportInfo {margin-left:50px;margin-right:50px;margin-top: 20px;margin-bottom:30px;text-indent: 20px;text-align: center;}" +
+            ".gridHeader {padding-left: 100px;margin-top: 20px;margin-bottom: 20px;}" +
+            ".reportGrid{margin-left:50px;margin-right:50px;}" +
+            "td{max-width: 200px;word-wrap:break-word}" +
+            ".reportDate{margin-top: 20px;margin-bottom:20px;margin-left:50px;}" +
+            ".reportDateText{}" +
+            ".reportName{margin-top: 20px;margin-left:50px;}" +
+            ".reportComments{margin-top:20px;margin-left:50px;margin-bottom: 10px;}" +
+            ".reportCommentsText{text-indent: 20px;margin-left:50px;}" +
+            "</style>";
+        //document must be open and closed
+        win.document.open();
+        win.document.write(
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' +
+                '<html class="' + Ext.baseCSSPrefix + 'ux-grid-printer">' +
+                '<head>' +
+                '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />' +
+                '<link href="' + stylesheetPath + '" rel="stylesheet" type="text/css" />' +
+                '<title>Team Report</title>' + style);
+        win.document.write('</head>' +
+            '<body class="' + Ext.baseCSSPrefix + 'ux-grid-printer-body bodyReport">' +
 
+            '<div class="' + Ext.baseCSSPrefix + 'ux-grid-printer-noprint ' + Ext.baseCSSPrefix + 'ux-grid-printer-links">' +
+            '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkprint" href="javascript:void(0);" onclick="window.print();">Print</a>',
+            '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkclose" href="javascript:void(0);" onclick="window.close();">Close</a>' +
+                '</div>'
+        )
+        ;
+        win.document.write('<div class="reportTitle">' + values.title + '</div>')
+        win.document.write('<div class="reportInfo">' + values.info + '</div>')
+        if (values.prim) {
+            win.document.write('<div class="gridHeader">Diagnostic: </div>');
+            win.document.write('<div class="reportGrid">')
+            win.document.write(htmlGrid1);
+            win.document.write('</div>');
 
-        var filters = {
-            ftype: 'filters',
-            encode: false,
-            local: true,
-            filters: [
-                {
-                    type: 'boolean',
-                    dataIndex: 'visible'
-                }
-            ]
-        };
+        }
+        if (values.sec) {
+            win.document.write('<div class="gridHeader">Secondary findings: </div>');
+            win.document.write('<div class="reportGrid">')
+            win.document.write(htmlGrid2);
+            win.document.write('</div>')
+        }
 
+        win.document.write('<div class="reportDate">Date:  ' + values.date + '</div>')
+        win.document.write('<div class="reportName">Name:  ' + values.name + '</div>')
+        win.document.write('<div class="reportComments">Comments: </div><div class="reportCommentsText">' + values.comments + '</div>')
+        win.document.write('</body></html>');
+        win.document.close();
 
-        this.firstGridStore = Ext.create('Ext.data.Store', {
-            model: 'DataObject',
-            data: myData,
-            remoteSort: false,
-            sorters: [
-                {
-                    property: 'name',
-                    direction: 'ASC'
-                }
-            ],
-            groupField: 'name',
-            groupers: {
-                property: "name",
-                getGroupString: function (record) {
-                    return record.get('name')[0];
-                }
-            }
-        });
+        if (this.printAutomatically) {
+            win.print();
+        }
+    },
+    _createTabPanel: function () {
+        var _this = this;
 
-        this.secondGridStore = Ext.create('Ext.data.Store', {
-            model: 'DataObject',
-            remoteSort: false,
-            sorters: [
-                {
-                    property: 'name',
-                    direction: 'ASC'
-                }
-            ]
-        });
-
-        this.thirdGridStore = Ext.create('Ext.data.Store', {
-            model: 'DataObject',
-            remoteSort: false,
-            sorters: [
-                {
-                    property: 'name',
-                    direction: 'ASC'
-                }
-            ]
-        });
-
-        var columns = [
-            {
-                text: "Name",
-                flex: 1,
-                sortable: true,
-                groupable: true,
-                dataIndex: 'name',
-                filter: {
-                    type: 'string'
-                }
-            },
-        ];
-
-        this.firstGrid = Ext.create('Ext.grid.Panel', {
-            viewConfig: {
-                plugins: {
-                    ptype: 'gridviewdragdrop',
-                    dragGroup: 'firstGridDDGroup',
-                    dropGroup: 'secondGridDDGroup'
-                },
-                listeners: {
-                    drop: function (node, data, dropRec, dropPosition) {
-                        _this.firstGridStore.sort('name', 'ASC');
-                    }
-                }
-            },
-            tools: [
-                {
-                    type: 'refresh',
-                    tooltip: 'Settings',
-                    handler: function (event, toolEl, panel) {
-
-                        _this.firstGridStore.loadData(myData);
-                        _this.secondGridStore.removeAll();
-                        _this.thirdGridStore.removeAll();
-
-                    }
-                }
-            ],
-            features: [filters],
-            store: this.firstGridStore,
-            columns: columns,
-            stripeRows: true,
-            title: 'Diseases',
-            margins: '0 2 0 0',
-            flex: 1,
-            multiSelect: true
-        });
-
-        this.secondGrid = Ext.create('Ext.grid.Panel', {
-                viewConfig: {
-                    plugins: {
-                        ptype: 'gridviewdragdrop',
-                        dragGroup: 'secondGridDDGroup',
-                        dropGroup: 'firstGridDDGroup'
-                    },
-                    listeners: {
-                        drop: function (node, data, dropRec, dropPosition) {
-                            _this.secondGridStore.sort('name', 'ASC');
-                        }
-                    }
-                },
-                store: this.secondGridStore,
-                columns: columns,
-                stripeRows: true,
-                title: 'Primary Disease',
-                margins: '0 0 0 3',
-                flex: 1,
-                multiSelect: true,
-                tools: [
+        var panel = Ext.create('Ext.tab.Panel', {
+                title: "Results",
+                width: '100%',
+                flex: 3,
+                border: 1,
+                layout: 'vbox',
+                margin: '0 5 5 5',
+                cls: 'ocb-border-top-lightgrey',
+                items: [],
+                bbar: [
+                    '->',
                     {
-                        type: 'refresh',
-                        tooltip: 'Settings',
-                        handler: function (event, toolEl, panel) {
-                            for (var i = 0; i < _this.secondGridStore.count(); i++) {
-                                _this.firstGridStore.add(_this.secondGridStore.getAt(i));
-                            }
-                            _this.firstGrid.getView().refresh();
-                            _this.secondGridStore.removeAll();
-
+                        xtype: 'button',
+                        id: _this.id + "_generate_report",
+                        text: 'Generate Report',
+                        disabled: true,
+                        handler: function () {
+                            Ext.getCmp(_this.id + "_form_report").getForm().reset();
+                            _this.reportWindow.show();
                         }
                     }
                 ]
-            }
-        )
-        ;
-
-        this.thirdGrid = Ext.create('Ext.grid.Panel', {
-            viewConfig: {
-                plugins: {
-                    ptype: 'gridviewdragdrop',
-                    dragGroup: 'secondGridDDGroup',
-                    dropGroup: 'firstGridDDGroup'
-                },
-                listeners: {
-                    drop: function (node, data, dropRec, dropPosition) {
-                        _this.thirdGridStore.sort('name', 'ASC');
-                    }
-                }
-            },
-            store: this.thirdGridStore,
-            columns: columns,
-            stripeRows: true,
-            title: 'Secondary Disease',
-            margins: '0 0 0 3',
-            flex: 1,
-            multiSelect: true,
-            tools: [
-                {
-                    type: 'refresh',
-                    tooltip: 'Settings',
-                    handler: function (event, toolEl, panel) {
-                        for (var i = 0; i < _this.thirdGridStore.count(); i++) {
-                            _this.firstGridStore.add(_this.thirdGridStore.getAt(i));
-                        }
-                        _this.firstGrid.getView().refresh();
-                        _this.thirdGridStore.removeAll();
-                    }
-                }
-            ]
-        });
-
-        var panelName = Ext.create('Ext.form.TextField',
-            {
-                id: _this.id + '_panelname',
-                name: 'panelname',
-                fieldLabel: 'Name',
-                height: 20,
-                maxWidth: 300,
-                margin: "0 0 20 0"
-            });
-
-        var window = Ext.create('Ext.window.Window', {
-                    title: 'Settings',
-                    height: 600,
-                    width: 800,
-                    layout: {
-                        type: 'vbox',
-                        align: 'stretch',
-                    },
-                    modal: true,
-                    minimizable: true,
-                    closable: false,
-                    bodyPadding: 10,
-                    items: [
-                        panelName,
-                        {
-                            xtype: 'container',
-                            flex: 1,
-                            layout: {
-                                type: 'hbox',
-                                align: 'stretch'
-                            },
-                            items: [
-                                this.firstGrid,
-                                {
-                                    xtype: 'container',
-                                    flex: 1,
-                                    layout: {
-                                        type: 'vbox',
-                                        align: 'stretch'
-                                    },
-                                    items: [
-                                        this.secondGrid,
-                                        this.thirdGrid
-
-                                    ]
-                                }
-                            ]
-
-                        },
-                    ],
-                    listeners: {
-                        minimize: function (win, obj) {
-                            win.hide();
-                        }
-                    },
-                    buttons: [
-                        {
-                            text: 'Add Panel',
-                            handler: function () {
-
-                                var name = Ext.getCmp(_this.id + "_panelname").getValue();
-                                var pd = [];
-                                var sd = [];
-
-                                for (var i = 0; i < _this.secondGridStore.count(); i++) {
-                                    pd.push(_this.secondGridStore.getAt(i).raw.value);
-                                }
-
-                                for (var i = 0; i < _this.thirdGridStore.count(); i++) {
-                                    sd.push(_this.thirdGridStore.getAt(i).raw.value);
-                                }
-
-                                var panel = _this._createDiseasePanel(name, pd, sd);
-                                _this._addPanelToForm(panel);
-
-                                _this._clearSettings();
-                                _this.settings.hide();
-
-                            }
-                        },
-                        {
-                            text: 'Clear',
-                            handler: function () {
-                                _this._clearSettings();
-                            }
-                        }
-                    ]
-                }
-            )
+            })
             ;
-        return window;
+
+        return panel;
     },
     _createForm: function () {
         var _this = this;
 
-        var data = [];
-        Ext.each(_this.panels, function (panel, index) {
-            data.push({
-                name: panel.name,
-                value: panel.name
-            })
-        });
-        console.log(data);
-
         this.diseaseStore = Ext.create("Ext.data.Store", {
-            fields: ['value'],
-            data: data
-        });
+                fields: [
+                    {name: 'panelType', type: 'String'},
+                    {name: 'panelId', type: 'int'},
+                    {name: 'name', type: 'String'},
+                    {name: 'value', type: 'String',
+                        convert: function (v, rec) {
+                            return rec.get('panelType') + '_' + rec.get('panelId');
+                        }}
+                ],
+                data: [],
+                storeId: 'DiseaseStore'
+            }
+        )
+        ;
 
         var genes = Ext.create('Ext.form.field.File', {
             id: _this.id + "gene_list",
@@ -397,7 +326,6 @@ PanelsWidget.prototype = {
             emptyText: 'Select a file',
             allowBlank: false,
             name: 'genes'
-
         });
 
         var disease = Ext.create('Ext.form.field.ComboBox', {
@@ -407,16 +335,15 @@ PanelsWidget.prototype = {
             store: this.diseaseStore,
             queryMode: 'local',
             displayField: 'name',
-            valueField: 'name',
-            value: this.diseaseStore.getAt(0).get('value'),
+            valueField: 'value',
             editable: false,
-            allowBlank: false
+            allowBlank: false,
+            emptyText: "Select a Panel..."
         });
-
 
         var vcf = Ext.create('Ext.form.field.File', {
             id: _this.id + "vcf_file",
-            fieldLabel: "Vcf File",
+            fieldLabel: "VCF File",
             width: 500,
             emptyText: 'Select a file',
             allowBlank: false,
@@ -433,56 +360,61 @@ PanelsWidget.prototype = {
                 msgTarget: 'side',
                 labelWidth: 70
             },
+            margin: '5 5 20 5',
             items: [disease, vcf],
+            buttonAlign: 'left',
             buttons: [
                 {
                     text: 'Run',
                     handler: function () {
+                        var button = Ext.getCmp(_this.id + "_generate_report");
+                        button.disable();
 
-                        _this.data1 = [];
-                        _this.data2 = [];
+                        _this.dataSec = [];
+                        _this.dataPrim = [];
 
-                        _this.storeVC.removeAll();
-                        _this.storeVG.removeAll();
-
-                        _this.grid1.getView().refresh();
-                        _this.grid2.getView().refresh();
-
+                        _this.primDisGrid.clear();
+                        _this.extraGrid.clear();
 
                         var form = _this.form.getForm();
                         if (form.isValid()) {
-                            _this.grid1.setLoading(true);
-                            _this.grid2.setLoading(true);
+                            _this.primDisGrid.setLoading(true);
 
                             var vcf_file = document.getElementById(vcf.fileInputEl.id).files[0];
 
                             var fds_vcf = new FileDataSource(vcf_file);
 
-                            var panelName = Ext.getCmp(_this.id + "disease").getValue();
-                            var panel;
+                            var panelOpt = Ext.getCmp(_this.id + "disease").getValue();
+                            var panelSplit = panelOpt.split("_");
+                            var panelType = panelSplit[0];
+                            var panelId = panelSplit[1];
 
-
-                            for (var i = 0; i < _this.panels.length; i++) {
-                                var elem = _this.panels[i];
-                                if (elem.name == panelName) {
-                                    panel = elem;
-                                    break;
-                                }
-                            }
-
-                            panel = _this._getVariants(panel);
+                            panel = _this.userSettings.get(panelType, panelId);
 
                             fds_vcf.on("success", function (data) {
+
+                                _this.progress.updateProgress(0.1, 'Parsing Vcf File');
+
                                 var variants = _this._parseVcfFile(data);
 
                                 _this._filterVariants(variants, panel);
 
-                                _this.storeVC.loadData(_this.data2);
-                                _this.storeSec.loadData(_this.dataSec);
-                                _this.storeExtra.loadData(_this.dataExtra);
+                                _this.primDisGrid.loadData(_this.dataPrim);
+                                _this.extraGrid.loadData(_this.dataExtra);
 
-                                Ext.getCmp(_this.id + "numRowsLabel").setText(_this.data2.length + " variants");
-                                _this.grid2.setLoading(false);
+                                if (_this.primDisGrid.count() > 0) {
+                                    _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
+                                } else if (_this.extraGrid.count() > 0) {
+                                    _this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
+                                }
+
+                                Ext.getCmp(_this.id + "numRowsLabel").setText(_this.dataPrim.length + " variants");
+                                _this.primDisGrid.setLoading(false);
+
+                                if (_this.primDisGrid.count() > 0 || _this.extraGrid.count() > 0) {
+                                    button.enable();
+
+                                }
 
                             });
 
@@ -503,147 +435,23 @@ PanelsWidget.prototype = {
 
         return form;
     },
-    _createGridVG: function () {
+    _createDiseaseGrid: function (gridName) {
+
+        var newGrid = new Grid();
 
         var groupingFeature = Ext.create('Ext.grid.feature.Grouping', {
             groupHeaderTpl: '{groupField}: {groupValue} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})'
         });
 
-
-        var _this = this;
-
-        _this.attributesVG = [
+        var attributes = [
             {name: 'chromosome', type: 'String'},
-            {name: 'position', type: 'int'},
+            {name: 'position', type: 'int'}   ,
             {name: 'id_snp', type: 'String'},
             {name: 'reference', type: 'String'},
             {name: 'alternate', type: 'String'},
             {name: 'gene', type: 'String'},
-            {name: 'quality', type: 'float'},
-            {name: 'filter', type: 'String'},
-            {name: 'info', type: 'String'},
-            {name: 'format', type: 'String'},
-            {name: 'sample', type: 'String'},
-            {name: 'sampleData', type: 'String'},
-        ];
-        _this.columnsVG = [
-            new Ext.grid.RowNumberer({width: 30}),
-            {
-                text: 'Chromosome',
-                dataIndex: 'chromosome',
-                flex: 1
-            },
-            {
-                text: 'Position',
-                dataIndex: 'position',
-                flex: 1
-            },
-            {
-                text: 'Id',
-                dataIndex: 'id_snp',
-                flex: 1
-            },
-            {
-                text: 'Ref',
-                dataIndex: 'reference',
-                flex: 1
-            },
-            {
-                text: 'Alt',
-                dataIndex: 'alternate',
-                flex: 1
-            },
-            {
-                text: 'Gene',
-                dataIndex: 'gene',
-                flex: 1
-            },
-            {
-                text: 'Quality',
-                dataIndex: 'quality',
-                flex: 1
-            },
-            {
-                text: 'Filter',
-                dataIndex: 'filter',
-                flex: 1
-            },
-            {
-                text: 'Info',
-                dataIndex: 'info',
-                flex: 1
-            },
-            {
-                text: 'Format',
-                dataIndex: 'format',
-                flex: 2
-            },
-            {
-                text: 'Sample(s)',
-                dataIndex: 'sample',
-                flex: 10
-            },
-        ];
 
-        _this.modelVG = Ext.define('Variant', {
-            extend: 'Ext.data.Model',
-            fields: _this.attributesVG
-        });
-
-        _this.storeVG = Ext.create('Ext.data.Store', {
-            model: _this.modelVG,
-            groupField: 'gene',
-            data: [],
-            autoLoad: false
-        });
-
-        var grid = Ext.create('Ext.grid.Panel', {
-            title: 'Prim. Diagnosis',
-            width: '100%',
-            flex: 3,
-            frame: true,
-            store: _this.storeVG,
-            columns: _this.columnsVG,
-            loadMask: true,
-            plugins: 'bufferedrenderer',
-            features: [groupingFeature],
-            dockedItems: [
-
-                {
-                    xtype: 'toolbar',
-                    dock: 'bottom',
-                    items: [
-                        {
-                            xtype: 'tbtext',
-                            id: this.id + "numRowsLabel"
-                        }
-                    ]
-                }
-            ]
-
-
-        });
-
-
-
-        return grid;
-
-    },
-    _createGridPrimary: function () {
-
-        var _this = this;
-
-        var groupingFeature = Ext.create('Ext.grid.feature.Grouping', {
-            groupHeaderTpl: '{groupField}: {groupValue} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})'
-        });
-        _this.attributesVC = [
-            {name: 'chromosome', type: 'String'},
-            {name: 'position', type: 'int'},
-            {name: 'id_snp', type: 'String'},
-            {name: 'reference', type: 'String'},
-            {name: 'alternate', type: 'String'},
-            {name: 'gene', type: 'String'},
-            {name: 'quality', type: 'float'},
+            // {name: 'quality', type: 'float'} ,
             {name: 'filter', type: 'String'},
             {name: 'info', type: 'String'},
             {name: 'format', type: 'String'},
@@ -658,384 +466,118 @@ PanelsWidget.prototype = {
             {name: "hgvs_protein", type: 'String'},
             {name: "sift", type: 'String'},
             {name: "polyphen", type: 'String'},
-            {name: "ct", type: 'String'}
+            {name: "ct", type: 'String'},
+            {name: "transcript", type: 'String'},
+            {name: "aaPos", type: 'int'}   ,
+            {name: "aaChange", type: 'String'},
+            {name: "phenotype", type: 'String'},
+            {name: "source", type: 'String'}
+            // {name: "pvalue", type: 'float'}
         ];
-        _this.columnsVC = [
-            new Ext.grid.RowNumberer({width: 30}),
-            {
-                text: 'Chromosome',
-                dataIndex: 'chromosome',
-                flex: 1
-            },
-            {
-                text: 'Position',
-                dataIndex: 'position',
-                flex: 1
-            },
-            {
-                text: 'Id',
-                dataIndex: 'id_snp',
-                flex: 1
-            },
-            {
-                text: 'Ref',
-                dataIndex: 'reference',
-                flex: 1
-            },
-            {
-                text: 'Alt',
-                dataIndex: 'alternate',
-                flex: 1
-            },
-            {
-                text: 'Gene',
-                dataIndex: 'gene',
-                flex: 1
-            },
-            {
-                text: 'Consequence Type',
-                dataIndex: 'ct',
-                flex: 1
-            },
-            {
-                text: 'Quality',
-                dataIndex: 'quality',
-                flex: 1
-            },
-            {dataIndex: "ensembl_protein", text: 'ensembl_protein', flex: 1},
-            {dataIndex: "reference_mutation", text: 'reference_mutation', flex: 1},
-            {dataIndex: "xref", text: 'xref', flex: 1},
-            {dataIndex: "description", text: 'description', flex: 1},
-            {dataIndex: "omim", text: 'onim', flex: 1},
-            {dataIndex: "hgvs_cds", text: 'hgvs_cds', flex: 1},
-            {dataIndex: "hgvs_protein", text: 'hgvs_protein', flex: 1},
-            {dataIndex: "sift", text: 'sift', flex: 1},
-            {dataIndex: "polyphen", text: 'polyphen', flex: 1}
-        ];
-
-        _this.modelVC = Ext.define('Variant', {
-            extend: 'Ext.data.Model',
-            fields: _this.attributesVC
-        });
-
-        _this.storeVC = Ext.create('Ext.data.Store', {
-            model: _this.modelVC,
-            groupField: 'gene',
-            data: [],
-            autoLoad: false
-        });
-
-        var grid = Ext.create('Ext.grid.Panel', {
-            title: 'Prim. Diagnosis',
-            width: '100%',
-            flex: 3,
-            store: _this.storeVC,
-            columns: _this.columnsVC,
-            loadMask: true,
-            plugins: 'bufferedrenderer',
-            features: [groupingFeature],
-            margin: "0 0 20 0",
-            dockedItems: [
-                {
-                    xtype: 'toolbar',
-                    dock: 'bottom',
-                    items: [
-                        {
-                            xtype: 'tbtext',
-                            id: this.id + "numRowsLabel"
-                        }
-                    ]
-                }
-            ]
-        });
-
-        return grid;
-
-    },
-    _createGridSecondary: function () {
-
-        var _this = this;
-
-        var groupingFeature = Ext.create('Ext.grid.feature.Grouping', {
-            groupHeaderTpl: '{groupField}: {groupValue} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})'
-        });
-        _this.attributesSec = [
-            {name: 'chromosome', type: 'String'},
-            {name: 'position', type: 'int'},
-            {name: 'id_snp', type: 'String'},
-            {name: 'reference', type: 'String'},
-            {name: 'alternate', type: 'String'},
-            {name: 'gene', type: 'String'},
-            {name: 'quality', type: 'float'},
-            {name: 'filter', type: 'String'},
-            {name: 'info', type: 'String'},
-            {name: 'format', type: 'String'},
-            {name: 'sample', type: 'String'},
-            {name: "gene", type: 'String'},
-            {name: "ensembl_protein", type: 'String'},
-            {name: "reference_mutation", type: 'String'},
-            {name: "xref", type: 'String'},
-            {name: "description", type: 'String'},
-            {name: "omim", type: 'String'},
-            {name: "hgvs_cds", type: 'String'},
-            {name: "hgvs_protein", type: 'String'},
-            {name: "sift", type: 'String'},
-            {name: "polyphen", type: 'String'},
-            {name: "ct", type: 'String'}
-        ];
-        _this.columnsSec = [
-            new Ext.grid.RowNumberer({width: 30}),
-            {
-                text: 'Chromosome',
-                dataIndex: 'chromosome',
-                flex: 1
-            },
-            {
-                text: 'Position',
-                dataIndex: 'position',
-                flex: 1
-            },
-            {
-                text: 'Id',
-                dataIndex: 'id_snp',
-                flex: 1
-            },
-            {
-                text: 'Ref',
-                dataIndex: 'reference',
-                flex: 1
-            },
-            {
-                text: 'Alt',
-                dataIndex: 'alternate',
-                flex: 1
-            }, {
-                text: 'Gene',
-                dataIndex: 'gene',
-                flex: 1
-            },
-            {
-                text: 'Consequence Type',
-                dataIndex: 'ct',
-                flex: 1
-            },
-            {
-                text: 'Quality',
-                dataIndex: 'quality',
-                flex: 1
-            },
-            {dataIndex: "ensembl_protein", text: 'ensembl_protein', flex: 1},
-            {dataIndex: "reference_mutation", text: 'reference_mutation', flex: 1},
-            {dataIndex: "xref", text: 'xref', flex: 1},
-            {dataIndex: "description", text: 'description', flex: 1},
-            {dataIndex: "omim", text: 'onim', flex: 1},
-            {dataIndex: "hgvs_cds", text: 'hgvs_cds', flex: 1},
-            {dataIndex: "hgvs_protein", text: 'hgvs_protein', flex: 1},
-            {dataIndex: "sift", text: 'sift', flex: 1},
-            {dataIndex: "polyphen", text: 'polyphen', flex: 1}
-        ];
-
-        _this.modelSec = Ext.define('Variant', {
-            extend: 'Ext.data.Model',
-            fields: _this.attributesSec
-        });
-
-        _this.storeSec = Ext.create('Ext.data.Store', {
-            model: _this.modelSec,
-            groupField: 'gene',
-            data: [],
-            autoLoad: false
-        });
-
-        var grid = Ext.create('Ext.grid.Panel', {
-            title: 'Sec. Diagnosis',
-            width: '100%',
-            flex: 3,
-            store: _this.storeSec,
-            columns: _this.columnsSec,
-            loadMask: true,
-            plugins: 'bufferedrenderer',
-            features: [groupingFeature],
-            margin: "0 0 20 0",
-            dockedItems: [
-                {
-                    xtype: 'toolbar',
-                    dock: 'bottom',
-                    items: [
-                        {
-                            xtype: 'tbtext',
-                            id: this.id + "numRowsLabel"
-                        }
-                    ]
-                }
-            ]
-        });
-
-        return grid;
-
-    },
-    _createGridExtra: function () {
-
-        var _this = this;
-
-        var groupingFeature = Ext.create('Ext.grid.feature.Grouping', {
-            groupHeaderTpl: '{groupField}: {groupValue} ({rows.length} Item{[values.rows.length > 1 ? "s" : ""]})'
-        });
-        _this.attributesExtra = [
-            {name: 'chromosome', type: 'String'},
-            {name: 'position', type: 'int'},
-            {name: 'id_snp', type: 'String'},
-            {name: 'reference', type: 'String'},
-            {name: 'alternate', type: 'String'},
-            {name: 'gene', type: 'String'},
-            {name: 'quality', type: 'float'},
-            {name: 'filter', type: 'String'},
-            {name: 'info', type: 'String'},
-            {name: 'format', type: 'String'},
-            {name: 'sample', type: 'String'},
-            {name: "gene", type: 'String'},
-            {name: "ensembl_protein", type: 'String'},
-            {name: "reference_mutation", type: 'String'},
-            {name: "xref", type: 'String'},
-            {name: "description", type: 'String'},
-            {name: "omim", type: 'String'},
-            {name: "hgvs_cds", type: 'String'},
-            {name: "hgvs_protein", type: 'String'},
-            {name: "sift", type: 'String'},
-            {name: "polyphen", type: 'String'}
-        ];
-        _this.columnsExtra = [
-            new Ext.grid.RowNumberer({width: 30}),
-            {
-                text: 'Chromosome',
-                dataIndex: 'chromosome',
-                flex: 1
-            },
-            {
-                text: 'Position',
-                dataIndex: 'position',
-                flex: 1
-            },
-            {
-                text: 'Id',
-                dataIndex: 'id_snp',
-                flex: 1
-            },
-            {
-                text: 'Ref',
-                dataIndex: 'reference',
-                flex: 1
-            },
-            {
-                text: 'Alt',
-                dataIndex: 'alternate',
-                flex: 1
-            }, {
-                text: 'Gene',
-                dataIndex: 'gene',
-                flex: 1
-            },
-            {
-                text: 'Quality',
-                dataIndex: 'quality',
-                flex: 1
-            },
-            {dataIndex: "ensembl_protein", text: 'ensembl_protein', flex: 1},
-            {dataIndex: "reference_mutation", text: 'reference_mutation', flex: 1},
-            {dataIndex: "xref", text: 'xref', flex: 1},
-            {dataIndex: "description", text: 'description', flex: 1},
-            {dataIndex: "omim", text: 'onim', flex: 1},
-            {dataIndex: "hgvs_cds", text: 'hgvs_cds', flex: 1},
-            {dataIndex: "hgvs_protein", text: 'hgvs_protein', flex: 1},
-            {dataIndex: "sift", text: 'sift', flex: 1},
-            {dataIndex: "polyphen", text: 'polyphen', flex: 1}
-        ];
-
-        _this.modelExtra = Ext.define('Variant', {
-            extend: 'Ext.data.Model',
-            fields: _this.attributesExtra
-        });
-
-        _this.storeExtra = Ext.create('Ext.data.Store', {
-            model: _this.modelExtra,
-            groupField: 'gene',
-            data: [],
-            autoLoad: false
-        });
-
-        var grid = Ext.create('Ext.grid.Panel', {
-            title: 'Deleterious Variants',
-            width: '100%',
-            flex: 3,
-            store: _this.storeExtra,
-            columns: _this.columnsExtra,
-            loadMask: true,
-            plugins: 'bufferedrenderer',
-            features: [groupingFeature],
-            margin: "0 0 20 0",
-            dockedItems: [
-                {
-                    xtype: 'toolbar',
-                    dock: 'bottom',
-                    items: [
-                        {
-                            xtype: 'tbtext',
-                            id: this.id + "numRowsLabel"
-                        }
-                    ]
-                }
-            ]
-        });
-
-        return grid;
-
-    },
-    _getGeneRegions: function () {
-
-        for (var i = 0; i < DB.length; i++) {
-            for (var j = 0; j < DB[i].genes.length; j++) {
-                var reg = this._getRegion(DB[i].genes[i]);
-                DB[i].genes[j].chromosome = reg.chr;
-                DB[i].genes[j].start = reg.start;
-                DB[i].genes[j].end = reg.end;
+        var renderer = function (value) {
+            if (value == '') {
+                return ".";
             }
-        }
-    },
-    _getRegion: function (gene) {
+            return value;
+        };
 
-        var reg = {};
+        var columns = [
+            new Ext.grid.RowNumberer({width: 30}),
+            {dataIndex: 'chromosome', text: 'Chromosome', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: 'position', text: 'Position', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: 'id_snp', text: 'SNP Id', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: 'reference', text: 'Ref', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: 'alternate', text: 'Alt', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: 'gene', text: 'Gene', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: 'ct', text: 'Conseq. Type', flex: 1, emptyCellText: '.', renderer: renderer},
+            // {dataIndex: 'quality', text: 'Quality', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "ensembl_protein", text: 'Ensembl protein', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
+            {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
+            {dataIndex: "xref", text: 'Xref', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true},
+            {dataIndex: "description", text: 'Description', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
+            {dataIndex: "omim", text: 'OMIM', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true},
+            {dataIndex: "hgvs_cds", text: 'Hgvs cds', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
+            {dataIndex: "hgvs_protein", text: 'Hgvs protein', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
+            {dataIndex: "phenotype", text: 'Phenotype', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "source", text: 'Source', flex: 1, emptyCellText: '.', renderer: renderer},
+            // {dataIndex: "pvalue", text: 'pValue', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "sift", text: 'SIFT', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "polyphen", text: 'PolyPhen', flex: 1, emptyCellText: '.', renderer: renderer}
+        ];
+
+        newGrid.createModel('Variant', attributes);
+
+        newGrid.createStore();
+        newGrid.store.group('gene');
+
+        newGrid.grid = Ext.create('Ext.grid.Panel', {
+            title: gridName,
+            width: '100%',
+            flex: 3,
+            store: newGrid.store,
+            columns: columns,
+            loadMask: true,
+            plugins: 'bufferedrenderer',
+            features: [groupingFeature],
+            margin: "0 0 20 0",
+            dockedItems: [
+                {
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: [
+                        {
+                            xtype: 'tbtext',
+                            id: this.id + "numRowsLabel"
+                        }
+                    ]
+                }
+            ]
+        });
+        return newGrid;
+    },
+    _getRegions: function (genes) {
+
+        var gene_names = [];
+        var final_genes = [];
+
+        Ext.each(genes, function (gene, index) {
+            gene_names.push(gene.name);
+        });
+
+        console.log(gene_names);
+
         CellBaseManager.get({
             host: 'http://ws-beta.bioinfo.cipf.es/cellbase/rest',
             version: 'v3',
             species: 'hsapiens', //TODO multiples species
             category: 'feature',
             subCategory: 'gene',
-            query: gene.name,
+            query: gene_names.join(","),
             resource: 'info',
             params: {
                 include: "chromosome,start,end"
             },
             async: false,
             success: function (response, textStatus, jqXHR) {
-                if (response.response[0].numResults > 0) {
 
-                    reg = {
-                        chr: response.response[0].result[0].chromosome,
-                        start: response.response[0].result[0].start,
-                        end: response.response[0].result[0].end
 
+                for (var i = 0; response.response !== undefined && i < response.response.length; i++) {
+                    if (response.response[i].numResults > 0) {
+                        final_genes.push({
+                            name: response.response[i].id,
+                            chr: response.response[i].result[0].chromosome,
+                            start: response.response[i].result[0].start,
+                            end: response.response[i].result[0].end
+                        });
                     }
-
                 }
-
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('Error loading Gene');
-
+                console.log('Error loading Genes');
             }
         });
 
-        return reg;
+        return final_genes;
     },
     _parseVcfFile: function (data) {
 
@@ -1065,7 +607,7 @@ PanelsWidget.prototype = {
                     }
                     variants.push(
                         {
-                            chromosome: fields[0],
+                            chromosome: fields[0].replace("chrom", "").replace("chr", "").replace("chr", ""),
                             position: parseInt(fields[1]),
                             start: parseInt(fields[1]),//added
                             end: parseInt(fields[1]),//added
@@ -1077,8 +619,6 @@ PanelsWidget.prototype = {
                             info: fields[7], //.replace(/;/gi, "<br>"),
                             format: fields[8],
                             sample: samples
-                            //sampleData: line
-                            //featureType : "vcf"
                         }
                     );
                 }
@@ -1090,58 +630,45 @@ PanelsWidget.prototype = {
     _filterVariants: function (variants, panel) {
         var _this = this;
 
-        //debugger
+        var data = [];
+
+        _this.progress.updateProgress(0.2, 'Retrieving Genes');
+
+        var genes = _this._getRegions(panel.getGenes());
+
+        _this.progress.updateProgress(.3, 'Retrieving Disease Info');
+
+        for (var i = 0; i < variants.length;) {
+            data = [];
+
+            for (var j = 0; i < variants.length && j < 100; j++, i++) {
+                data.push(variants[i]);
+            }
+
+            _this._checkVariantBatch(data, panel, _this.dataPrim);
+            _this._checkVariantGeneBatch(data, genes, panel, _this.dataExtra);
+        }
+        _this.progress.updateProgress(1, 'Finish');
+
+
+    },
+    _checkVariantBatch: function (variants, panel, grid) {
+        var _this = this;
+
+        var variantsReg = [];
+        var diseases = panel.getDiseases();
         for (var i = 0; i < variants.length; i++) {
-            var variant = variants[i];
-            var panelVariant;
-
-            if ((panelVariant = _this._checkVariant(variant, panel.primVar)) != null) {
-                console.log("ENTRA");
-
-
-                variant.gene = panelVariant.gene;
-//                variant.hgvs_cds = panelVariant.mutationCDS;
-//                variant.hgvs_protein = panelVariant.mutationAA;
-//                variant.description = panelVariant.description;
-
-                _this.data2.push(variant);
-            }
+            variantsReg.push(variants[i].chromosome + ":" + variants[i].start + "-" + variants[i].end);
         }
 
-        for (var i = 0; i < variants.length && _this.data2.length == 0; i++) {
-            var variant = variants[i];
-            var panelVariant;
+        console.log("Start Cellbase");
+        for (var i = 0; i < diseases.length; i++) {
 
-            if ((panelVariant = _this._checkVariant(variant, panel.secVar)) != null) {
+            var dis = diseases[i].name;
 
+            dis = dis.replace(/ /g, "%20");
 
-                variant.gene = panelVariant.gene;
-//                variant.hgvs_cds = panelVariant.mutationCDS;
-//                variant.hgvs_protein = panelVariant.mutationAA;
-//                variant.description = panelVariant.description;
-
-                _this.dataSec.push(variant);
-            }
-        }
-
-
-//        if (_this.data2.length == 0 && _this.dataSec.length == 0) {
-        if (true) {
-
-            var req = [];
-            var gene = [];
-
-
-            for (var i = 0; i < panel.primVar.length; i++) {
-
-                var variant = panel.primVar[i];
-                req.push(variant.chromosome + ":" + variant.start + "::G");
-            }
-
-            var url = "http://ws.bioinfo.cipf.es/cellbase/rest/latest/hsa/genomic/variant/" + req.join(",") + "/consequence_type?of=json";
-
-            console.log(url);
-
+            var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
 
             $.ajax({
                 url: url,
@@ -1149,472 +676,195 @@ PanelsWidget.prototype = {
                 async: false,
                 success: function (response, textStatus, jqXHR) {
 
-                    for (var j = 0; j < response.length; j++) {
-                        var elem = response[j];
+                    for (var j = 0; j < response.response.length; j++) {
 
-                        if (elem.geneName != "") {
-                            gene.push(elem.geneName);
+                        var elem = response.response[j];
+                        if (elem.numResults > 0) {
+
+                            for (var k = 0; k < elem.numResults; k++) {
+                                var aux = elem.result[k];
+
+                                var copy = {};
+                                _.extend(copy, variants[j]);
+
+                                copy.gene = aux.associatedGenes;
+                                copy.phenotype = aux.phenotype;
+                                copy.source = aux.source;
+                                //if (copy.pvalue >= 0) {
+                                //copy.pvalue = aux.pValue;
+                                //}
+
+                                _this._getEffect(copy);
+                                _this._getPolyphenSift(copy);
+
+
+                                var sift = (copy.sift == undefined || copy.sift == null);
+                                var polyphen = (copy.polyphen == undefined || copy.polyphen == null);
+
+                                if (!sift) {
+                                    sift = (panel.sift == undefined || panel.sift == null);
+                                }
+                                if (!polyphen) {
+                                    polyphen = (panel.polyphen == undefined || panel.polyphen == null);
+                                }
+
+                                if (!sift) {
+                                    sift = (copy.sift <= panel.sift);
+                                }
+
+                                if (!polyphen) {
+                                    polyphen = (copy.polyphen >= panel.polyphen);
+                                }
+
+
+                                if (sift && polyphen) {
+                                    _this.dataExtra.push(copy);
+                                }
+
+//                                if (panel.polyphen !== undefined && copy.polyphen !== undefined && copy.polyphen >= panel.polyphen &&
+//                                    panel.sift !== undefined && copy.sift != undefined && copy.sift <= panel.sift) {
+                                grid.push(copy);
+//                                }
+                            }
                         }
-
-                        gene = gene.filter(function (elem, pos, self) {
-                            return self.indexOf(elem) == pos;
-                        });
-
                     }
+
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log('Error loading Diseases');
-
+                    console.log('Error loading variants/diseases');
                 }
             });
 
-            var final_genes = [];
+
+        }
+
+        console.log("FIN DISEASES");
+        // User-defined Mutations
 
 
-            CellBaseManager.get({
-                    host: 'http://ws-beta.bioinfo.cipf.es/cellbase/rest',
-                    version: 'v3',
-                    species: 'hsapiens', //TODO multiples species
-                    category: 'feature',
-                    subCategory: 'gene',
-                    query: gene.join(","),
-                    resource: 'info',
-                    params: {
-                        include: "chromosome,start,end"
-                    },
-                    async: false,
-                    success: function (response, textStatus, jqXHR) {
+        for (var i = 0; i < diseases.length; i++) {
+            var dis = diseases[i];
 
-                        console.log(response);
-                        for (var i = 0; i < response.response.length; i++) {
+            for (var j = 0; dis.mutations !== undefined && j < dis.mutations.length; j++) {
+                var m = dis.mutations[j];
 
-                            if (response.response[i].numResults > 0) {
-
-                                final_genes.push({
-                                    name: response.response[i].id,
-                                    chr: response.response[i].result[0].chromosome,
-                                    start: response.response[i].result[0].start,
-                                    end: response.response[i].result[0].end
-
-                                });
-                            }
-
-                        }
-
-
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log('Error loading Gene');
-
+                for (var k = 0; k < variants.length; k++) {
+                    var v = variants[k];
+                    if (v.chromosome == m.chr && v.start == m.pos && v.reference == m.ref && v.alternate == m.alt) {
+                        v.phenotype = dis.name;
+                        v.source = "user-defined";
+                        grid.push(v);
                     }
                 }
-            )
-            ;
+            }
+        }
+    },
+    _checkVariantGeneBatch: function (variants, genes, panel, grid) {
+        var _this = this;
 
-            for (var i = 0; i < variants.length; i++) {
+        for (var i = 0; i < variants.length; i++) {
 
-                var variant = variants[i];
-                var panelVariant;
+            var variant = variants[i];
+            var panelVariant;
+
+            if (genes.length > 0 && (panelVariant = _this._checkGeneVariant(variant, genes)) != null) {
+                variant.gene = panelVariant.name;
+                _this._getEffect(variant);
+                _this._getPolyphenSift(variant);
+                var sift = (variant.sift == undefined || variant.sift == null);
+                var polyphen = (variant.polyphen == undefined || variant.polyphen == null);
+
+                if (!sift) {
+                    sift = (panel.sift == undefined || panel.sift == null);
+                }
+                if (!polyphen) {
+                    polyphen = (panel.polyphen == undefined || panel.polyphen == null);
+                }
+
+                if (!sift) {
+                    sift = (variant.sift <= panel.sift);
+                }
+
+                if (!polyphen) {
+                    polyphen = (variant.polyphen >= panel.polyphen);
+                }
 
 
-                if (final_genes.length > 0 && (panelVariant = _this._checkGeneVariant(variant, final_genes)) != null) {
-                    variant.gene = panelVariant.name;
+                if (sift && polyphen) {
                     _this.dataExtra.push(variant);
                 }
             }
         }
+    },
+    _getEffect: function (variant) {
+        var _this = this;
+        var req = variant.chromosome + ":" + variant.start + ":" + variant.reference + ":" + variant.alternate;
+        var ct = [];
 
+        $.ajax({
+            url: "http://ws.bioinfo.cipf.es/cellbase/rest/latest/hsa/genomic/variant/" + req + "/consequence_type?of=json",
+            dataType: 'json',
+            async: false,
+            success: function (response, textStatus, jqXHR) {
 
-        if (_this.data2.length > 0) { // VariantEffect
+                for (var j = 0; j < response.length; j++) {
+                    var elem = response[j];
 
-            var req = [];
+                    if (elem.aaPosition != -1 && elem.transcriptId != "" && elem.aminoacidChange.length >= 3 && variant.transcriptId == undefined && variant.aaPos == undefined && variant.aaChange == undefined) {
+                        variant.transcript = elem.transcriptId;
+                        variant.aaPos = elem.aaPosition;
+                        variant.aaChange = elem.aminoacidChange;
+                    }
+                    ct.push(elem.consequenceTypeObo);
+                }
 
+                ct = ct.filter(function (elem, pos, self) {
+                    return self.indexOf(elem) == pos;
+                });
 
-            for (var i = 0; i < _this.data2.length; i++) {
-                console.log(variant);
-                var variant = _this.data2[i];
-                req.push(variant.chromosome + ":" + variant.start + ":" + variant.reference + ":" + variant.alternate);
+                variant.ct = ct.join(",");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error loading Effect');
             }
+        });
 
-            console.log(req);
+    },
+    _getPolyphenSift: function (variant) {
+
+        if (variant.aaPos != undefined && variant.aaPos >= 0) {
+            var change = variant.aaChange.split("/")[1];
+            var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/transcript/" + variant.transcript + "/function_prediction?aaPosition=" + variant.aaPos + "&aaChange=" + change;
 
             $.ajax({
-                url: "http://ws.bioinfo.cipf.es/cellbase/rest/latest/hsa/genomic/variant/" + req.join(",") + "/consequence_type?of=json",
+                url: url,
                 dataType: 'json',
                 async: false,
                 success: function (response, textStatus, jqXHR) {
-
-
-                    for (var i = 0; i < _this.data2.length; i++) {
-                        var variant = _this.data2[i];
-                        var gene = [];
-                        var ct = [];
-
-                        for (var j = 0; j < response.length; j++) {
-                            var elem = response[j];
-
-                            if (elem.chromosome == variant.chromosome && elem.position == variant.start) {
-                                if (elem.geneName != "") {
-                                    gene.push(elem.geneName);
-                                }
-                                if (elem.consequenceTypeObo != "") {
-                                    ct.push(elem.consequenceTypeObo);
-                                }
-                            }
+                    var res = response.response[0];
+                    if (res.numResults > 0 && variant.aaPos in res.result[0].aaPositions && change in res.result[0].aaPositions[variant.aaPos]) {
+                        res = res.result[0].aaPositions[variant.aaPos][change];
+                        if (res != null) {
+                            variant.polyphen = res.ps
+                            variant.sift = res.ss;
                         }
-
-                        gene = gene.filter(function (elem, pos, self) {
-                            return self.indexOf(elem) == pos;
-                        });
-
-
-                        ct = ct.filter(function (elem, pos, self) {
-                            return self.indexOf(elem) == pos;
-                        })
-
-                        variant.gene = gene.join(",");
-                        variant.ct = ct.join(",");
                     }
-
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    console.log('Error loading Diseases');
-
+                    console.log('Error loading PolyPhen/SIFT');
                 }
             });
-
-
         }
-
-        if (_this.dataSec.length > 0) { // VariantEffect
-
-            var req = [];
-
-            for (var i = 0; i < _this.dataSec.length; i++) {
-                console.log(variant);
-                var variant = _this.dataSec[i];
-                req.push(variant.chromosome + ":" + variant.start + ":" + variant.reference + ":" + variant.alternate);
-            }
-
-            console.log(req);
-
-            $.ajax({
-                url: "http://ws.bioinfo.cipf.es/cellbase/rest/latest/hsa/genomic/variant/" + req.join(",") + "/consequence_type?of=json",
-                dataType: 'json',
-                async: false,
-                success: function (response, textStatus, jqXHR) {
-
-
-                    for (var i = 0; i < _this.dataSec.length; i++) {
-                        var variant = _this.dataSec[i];
-                        var gene = [];
-                        var ct = [];
-
-                        for (var j = 0; j < response.length; j++) {
-                            var elem = response[j];
-
-                            if (elem.chromosome == variant.chromosome && elem.position == variant.start) {
-                                if (elem.geneName != "") {
-                                    gene.push(elem.geneName);
-                                }
-                                if (elem.consequenceTypeObo != "") {
-                                    ct.push(elem.consequenceTypeObo);
-                                }
-                            }
-                        }
-
-                        gene = gene.filter(function (elem, pos, self) {
-                            return self.indexOf(elem) == pos;
-                        });
-
-
-                        ct = ct.filter(function (elem, pos, self) {
-                            return self.indexOf(elem) == pos;
-                        })
-
-                        variant.gene = gene.join(",");
-                        variant.ct = ct.join(",");
-                    }
-
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log('Error loading Diseases');
-
-                }
-            });
-
-
-        }
-
-
-    },
-    _checkCosmicVariant: function (variant, genes) {
-        for (var key in genes) {
-            var gene = genes[key];
-
-            for (var i = 0; i < gene.variants.length; i++) {
-                var geneVariant = gene.variants[i];
-                if (geneVariant.chromosome == variant.chromosome && variant.position == geneVariant.position) {
-                    geneVariant.gene_name = gene.name;
-                    return geneVariant;
-                }
-
-            }
-        }
-        return null;
-
-    },
-    _checkVariant: function (variant, variants) {
-
-        for (var i = 0; i < variants.length; i++) {
-            var aux = variants[i];
-            if (variant.chromosome == aux.chromosome && variant.start == aux.start && variant.end == aux.end) {
-                return aux;
-            }
-        }
-        return null;
-
     },
     _checkGeneVariant: function (variant, genes) {
-
         for (var i = 0; i < genes.length; i++) {
             var gene = genes[i];
             if (gene.chr == variant.chromosome && gene.start <= variant.start && variant.end <= gene.end) {
                 return gene;
-
             }
         }
         return null;
-
-
-    },
-    _initializeDiseasePanel: function () {
-        var panels = []
-        panels.push(this._createDiseasePanel("Example Panel Ret.", ["Retinitis"], ["Usher syndrome"]));
-//        panels.push(this._createDiseasePanel("Example Panel Usher.", ["Usher Syndrome"], ["Retinitis"]));
-
-        if (localStorage.bioinfo_panels_panels) {
-            var lsPanels = JSON.parse(localStorage.bioinfo_panels_panels);
-            for (var i = 0; i < lsPanels.length; i++) {
-                panels.push(lsPanels[i]);
-            }
-        }
-
-        return panels;
-    },
-    _createDiseasePanel: function (name, primDis, secDis, genes) {
-        return {
-            name: name,
-            primaryDiseases: primDis,
-            secondaryDiseases: secDis,
-            genes: genes
-        };
-    },
-    _addPanelToForm: function (panel) {
-
-        var panels;
-        var elem = {
-            name: panel.name,
-            value: panel.name
-        };
-
-        if (localStorage.bioinfo_panels_panels) {
-            panels = JSON.parse(localStorage.bioinfo_panels_panels);
-        } else {
-            panels = [];
-        }
-        panels.push(panel);
-        localStorage.bioinfo_panels_panels = JSON.stringify(panels);
-
-        this.diseaseStore.add(elem);
-    },
-    _clearSettings: function () {
-        var _this = this;
-        Ext.getCmp(_this.id + "_panelname").reset();
-
-
-        for (var i = 0; i < _this.thirdGridStore.count(); i++) {
-            _this.firstGridStore.add(_this.thirdGridStore.getAt(i));
-        }
-
-        for (var i = 0; i < _this.secondGridStore.count(); i++) {
-            _this.firstGridStore.add(_this.secondGridStore.getAt(i));
-        }
-        _this.firstGrid.getView().refresh();
-        _this.thirdGridStore.removeAll();
-        _this.secondGridStore.removeAll();
-    },
-    _getDiseases: function () {
-        var data = [];
-        $.ajax({
-            url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/mutation/diseases",
-            dataType: 'json',
-            async: false,
-            success: function (response, textStatus, jqXHR) {
-                for (var i = 0; i < response.response.result.length; i++) {
-                    data.push(
-                        {
-                            value: response.response.result[i],
-                            name: Utils.formatText(response.response.result[i], "_")
-                        });
-                }
-
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log('Error loading Diseases');
-
-            }
-        });
-
-        return data;
-    },
-    _getVariants: function (panel) {
-
-        var variantsPrim = [];
-        var variantsSec = [];
-
-        var dataSec;
-        var dataPrim;
-        var genes = [];
-
-        //if (panel.primDis != null && panel.primDis.length > 0) {
-//            dataPrim = panel.primDis.join(",");
-//            $.ajax({
-//                url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/mutation/list?disease=" + dataPrim,
-//                dataType: 'json',
-//                async: false,
-//                success: function (response, textStatus, jqXHR) {
-//
-//                    for (var i = 0; i < response.response.result.length; i++) {
-//                        variantsPrim.push(response.response.result[i]);
-//                        genes.push(response.response.result[i].gene);
-//                    }
-//
-//                },
-//                error: function (jqXHR, textStatus, errorThrown) {
-//                    console.log('Error loading Diseases');
-//
-//                }
-//            });
-
-            for (var i = 0; i < panel.primaryDiseases.length; i++) {
-                var disease = panel.primaryDiseases[i];
-                console.log(disease);
-                console.log(DB.length);
-                for (var j = 0; j < DB.length; j++) {
-                    var variant = DB[j];
-
-                    if (variant.primaryHistology.indexOf(disease) != -1) {
-                        variantsPrim.push(variant);
-                    }
-                }
-            }
-
-
-        //}
-
-
-        //if (panel.secDis != null && panel.secDis.length > 0) {
-//            dataSec = panel.secDis.join(",");
-//            $.ajax({
-//                url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/mutation/list?disease=" + dataSec,
-//                dataType: 'json',
-//                async: false,
-//                success: function (response, textStatus, jqXHR) {
-//                    for (var i = 0; i < response.response.result.length; i++) {
-//                        variantsSec.push(response.response.result[i]);
-//                    }
-//                },
-//                error: function (jqXHR, textStatus, errorThrown) {
-//                    console.log('Error loading Diseases');
-//                }
-//            });
-
-        for (var i = 0; i < panel.secondaryDiseases.length; i++) {
-                var disease = panel.secondaryDiseases[i];
-                console.log(disease);
-                for (var j = 0; j < DB.length; j++) {
-                    var variant = DB[j];
-
-                    if (variant.primaryHistology.indexOf(disease) != -1) {
-                        variantsSec.push(variant);
-                    }
-                }
-            }
-
-        //}
-
-        console.log(variantsPrim);
-        console.log(variantsSec);
-
-        panel.primVar = variantsPrim;
-        panel.secVar = variantsSec;
-
-        genes = genes.filter(function (elem, pos, self) {
-            return self.indexOf(elem) == pos;
-        })
-
-        if (genes.length > 0) {
-            Array.prototype.chunk = function (chunkSize) {
-                var array = this;
-                return [].concat.apply([],
-                    array.map(function (elem, i) {
-                        return i % chunkSize ? [] : [array.slice(i, i + chunkSize)];
-                    })
-                );
-            }
-
-            var regions = [];
-
-            var chunks = genes.chunk(200);
-
-            for (var i = 0; i < chunks.length; i++) {
-
-                CellBaseManager.get({
-                    host: 'http://ws-beta.bioinfo.cipf.es/cellbase/rest',
-                    version: 'v3',
-                    species: 'hsapiens', //TODO multiples species
-                    category: 'feature',
-                    subCategory: 'gene',
-                    query: chunks[i].join(","),
-                    resource: 'info',
-                    params: {
-                        include: "chromosome,start,end"
-                    },
-                    async: false,
-                    success: function (response, textStatus, jqXHR) {
-
-                        for (var j = 0; j < response.response.length; j++) {
-
-                            if (response.response[j].numResults > 0) {
-
-                                var reg = {
-                                    name: response.response[j].id,
-                                    chr: response.response[j].result[0].chromosome,
-                                    start: response.response[j].result[0].start,
-                                    end: response.response[j].result[0].end
-
-                                }
-                                regions.push(reg);
-                            }
-
-                        }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        console.log('Error loading Gene');
-                    }
-                });
-
-            }
-
-
-        }
-        panel.genes = regions;
-
-        return panel;
-
     }
-
 }
 ;

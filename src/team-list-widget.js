@@ -1,56 +1,27 @@
-//PanelListWidget.prototype.draw = UserListWidget.prototype.draw;
-//PanelListWidget.prototype.getData = UserListWidget.prototype.getData;
-//PanelListWidget.prototype.getCount = UserListWidget.prototype.getCount;
-
-function PanelListWidget(args) {
+function TeamPanelListWidget(args) {
     var _this = this;
 
     console.log(args);
-    this.data = [];
-
-//    UserListWidget.prototype.constructor.call(this, args);
     this.counter = null;
+    this.allData = [];
+    this.userSettings;
 
     //set instantiation args, must be last
     _.extend(this, args);
+};
 
-    this.allData = [];
-}
-;
-
-
-PanelListWidget.prototype = {
+TeamPanelListWidget.prototype = {
     render: function (targetId) {
         var _this = this;
         this.targetId = (targetId) ? targetId : this.targetId;
-
-
         this.btnNewPanel = this.id + "_btnNewPanel";
         this.btnImportSettings = this.id + "_btnImportSettings";
         this.btnClearSettings = this.id + "_btnNewSettings";
         this.btnSaveSettings = this.id + "_btnSaveSettings";
-
-        this.projectFilterButton = Ext.create("Ext.button.Button", {
-            id: this.btnActivePrjId,
-            iconCls: 'icon-project-all',
-            tooltip: 'Toggle jobs from all projects or active project',
-            enableToggle: true,
-            pressed: false,
-            listeners: {
-                toggle: function () {
-                    _this.selectProjectData();
-                    _this.render();
-                }
-            }
-        });
-
-
         this.rendered = true;
-
-//        this.grid.store.loadData(this.getData());
+        this.diseaseStore = Ext.getStore("DiseaseStore");
     },
     _createToolbar: function () {
-
         var _this = this;
         return  new Ext.create('Ext.toolbar.Toolbar', {
             id: this.id + "settingsBar",
@@ -63,10 +34,9 @@ PanelListWidget.prototype = {
                     listeners: {
                         click: function () {
                             _this.settingsView.clearSettings();
-                            _this.settingsView.show();
+                            _this.settingsView.newPanel();
                         }
                     }
-
                 },
                 {
                     id: this.btnImportSettings,
@@ -79,21 +49,17 @@ PanelListWidget.prototype = {
                     }
                 },
                 {
-                    href: 'none',
                     id: this.btnSaveSettings,
                     text: 'Save Panels',
                     tooltip: 'Save Panels',
                     listeners: {
                         click: function () {
-                            //alert("Under construction!!");
-                            var content = JSON.stringify(_this.data, null, '\t');
-                            console.log(content);
-
-                            this.getEl().set({
-                                href: 'data:text/json,' + encodeURIComponent(content),
-                                download: "settings" + ".json"
-                            });
-
+                            _this.settingsView.showSavePanel();
+//                            var content = _this.userSettings.toJson();
+//                            this.getEl().set({
+//                                href: 'data:text/json,' + encodeURIComponent(content),
+//                                download: "settings" + ".json"
+//                            });
                         }
                     }
                 },
@@ -103,12 +69,10 @@ PanelListWidget.prototype = {
                     tooltip: 'Clear Panels',
                     listeners: {
                         click: function () {
-                            //alert("Under construction!!");
                             Ext.MessageBox.confirm('Confirm', 'Are you sure you want to clear the settings and remove all the panels?', function (e) {
-
                                 if (e == "yes") {
                                     _this.grid.clear();
-                                    delete localStorage.bioinfo_panels_user_settings;
+                                    _this.userSettings.clear();
                                 }
                             });
                         }
@@ -124,20 +88,25 @@ PanelListWidget.prototype = {
 
         newGrid.model = Ext.define('PanelSettingsModel', {
             extend: 'Ext.data.Model',
-            fields: ['name']
+            fields: [
+                {name: 'name', type: 'String'},
+                {name: 'panelId', type: 'String'},
+                {name: 'panelType', type: 'String'}
+            ]
         });
 
         newGrid.store = Ext.create('Ext.data.Store', {
             model: newGrid.model,
+            storeId: 'UserExampleStore',
             sorters: [
                 { property: 'date', direction: 'DESC'}
             ],
             autoLoad: false
-
         });
 
         newGrid.grid = Ext.create('Ext.grid.Panel', {
             title: 'User-defined',
+            id: "userPanelGrid",
             store: newGrid.store,
             columns: [
                 {
@@ -153,59 +122,27 @@ PanelListWidget.prototype = {
                             icon: Utils.images.edit,
                             handler: function (grid, rowIndex, colIndex) {
                                 var record = grid.getStore().getAt(rowIndex);
-                                var panelName = record.get("name");
-
-                                console.log(_this.data);
-                                _this.settingsView.load(_this.data, panelName, true);
-
+                                _this.settingsView.load(record.get('panelType'), record.get('panelId'));
                             }
-
-
                         },
                         {
                             icon: Utils.images.del,
                             handler: function (grid, rowIndex, colIndex) {
-
                                 Ext.MessageBox.confirm('Confirm', 'Are you sure you want to remove this panel?', function (e) {
-
                                     if (e == "yes") {
-                                        var record = grid.getStore().getAt(rowIndex);
-                                        var panelName = record.get("name");
-
-                                        _this._removePanel(record);
-
-                                        grid.getStore().remove(record);
+                                        var rec = grid.getStore().getAt(rowIndex);
+                                        _this.userSettings.remove(rec.raw);
+                                        _this.userSettings.save();
                                     }
                                 });
-
-
                             }
                         }
                     ]
-
                 }
             ],
             border: 0
         });
-
         return newGrid;
-
-    },
-    _removePanel: function (record) {
-
-        var enc = -1;
-        for (var i = 0; i < this.data.length; i++) {
-            if (this.data[i].name == record.get("name")) {
-                enc = i;
-                break;
-            }
-        }
-        if (enc >= 0) {
-            this.data.splice(enc, 1);
-            localStorage.bioinfo_panels_user_settings = JSON.stringify(this.data);
-        }
-
-
     },
     _createExamplePanelsGrid: function () {
 
@@ -214,11 +151,16 @@ PanelListWidget.prototype = {
 
         newGrid.model = Ext.define('PanelSettingsModel', {
             extend: 'Ext.data.Model',
-            fields: ['name']
+            fields: [
+                {name: 'name', type: 'String'},
+                {name: 'panelId', type: 'String'},
+                {name: 'panelType', type: 'String'}
+            ]
         });
 
         newGrid.store = Ext.create('Ext.data.Store', {
             model: newGrid.model,
+            storeId: 'ExampleStore',
             sorters: [
                 { property: 'date', direction: 'DESC'}
             ],
@@ -242,13 +184,9 @@ PanelListWidget.prototype = {
                             icon: Utils.images.edit,
                             handler: function (grid, rowIndex, colIndex) {
                                 var record = grid.getStore().getAt(rowIndex);
-                                var panelName = record.get("name");
-
-
-                                _this.settingsView.load(_this.examplePanels, panelName, false);
+                                _this.settingsView.load(record.get('panelType'), record.get('panelId'));
 
                             }
-
                         }
                     ]
 
@@ -256,9 +194,7 @@ PanelListWidget.prototype = {
             ],
             border: 0
         });
-
         return newGrid;
-
     },
     _createPanel: function () {
 
@@ -272,7 +208,6 @@ PanelListWidget.prototype = {
             enableKeyEvents: true,
             listeners: {
                 change: function () {
-//                _this.setFilter(null);
                 }
             }
         });
@@ -281,8 +216,6 @@ PanelListWidget.prototype = {
             id: this.pagbarId,
             style: 'border: ' + this.border,
             items: [
-//
-//
                 {
                     id: this.id + 'btnSort',
                     iconCls: 'icon-order-desc',
@@ -303,7 +236,6 @@ PanelListWidget.prototype = {
                 searchField,
                 {
                     id: this.id + 'btnClear',
-//							    iconCls: 'icon-delete',
                     text: 'X',
                     margin: "0 2 0 0",
                     tooltip: 'Clear search box',
@@ -322,7 +254,7 @@ PanelListWidget.prototype = {
         tabPanel.add(this.grid.getPanel());
         tabPanel.add(this.exampleGrid.getPanel());
 
-        if (this.data.length == 0) {
+        if (this.userSettings === undefined || this.userSettings.isExampleDataEmpty()) {
             tabPanel.setActiveTab(this.exampleGrid.getPanel());
         } else {
             tabPanel.setActiveTab(this.grid.getPanel());
@@ -331,166 +263,44 @@ PanelListWidget.prototype = {
         var panel = Ext.create('Ext.panel.Panel', {
             id: this.panelId,
             target: this.targetId,
-            title: "Settings",
+            title: "Panels",
             border: this.border,
             width: this.width,
             height: this.height,
             border: this.border,
-//            tbar: this.pagBar,
-//            bodyPadding: 5,
             items: tabPanel
         });
         panel.addDocked(this.bar);
-
         return panel;
-
     },
-    _createNewView: function () {
 
-    },
     add: function (panel) {
-        this.data.push(panel);
-        this.grid.add({name: panel.name});
+        this.userSettings.addPanel(panel);
         Ext.getCmp(this.id + "_tabPanel").setActiveTab(this.grid.getPanel());
 
-        localStorage.bioinfo_panels_user_settings = JSON.stringify(this.data);
-
     }
+}
+;
 
-};
-
-PanelListWidget.prototype.draw = function () {
-
+TeamPanelListWidget.prototype.draw = function () {
     var _this = this;
-
 
     this.bar = _this._createToolbar();
     this.grid = _this._createUserPanelsGrid();
     this.exampleGrid = _this._createExamplePanelsGrid();
     this.panel = _this._createPanel();
-    this.grid.loadData(this.getData());
-
-
-    this.settingsView = new PanelSettingsView({
-        autoRender: true,
-        parent: this
-    });
-    this.settingsView.draw();
-
-    this.newView = _this._createNewView();
-
-
-    // Load example panels
-    var names = [];
-    for (var i = 0; i < this.examplePanels.length; i++) {
-        names.push({
-            name: this.examplePanels[i].name
-        });
-    }
-    this.exampleGrid.loadData(names);
-
-    this.show();
 };
 
-
-PanelListWidget.prototype.getJobCounter = function () {
-    var finished = 0;
-    var visited = 0;
-    var running = 0;
-    var queued = 0;
-    for (var i = 0; i < this.getData().length; i++) {
-        if (this.getData()[i].visites > 0) {
-            visited++;
-        } else {
-            if (this.getData()[i].visites == 0) {
-                finished++;
-            }
-            if (this.getData()[i].visites == -1) {
-                running++;
-            }
-            if (this.getData()[i].visites == -2) {
-                queued++;
-            }
-        }
-    }
-    return {"all": this.getData().length, "visited": visited, "finished": finished, "running": running, "queued": queued};
-};
-/**Filters**/
-//var functionAssertion = function(item){return item.data.visites > 2;};
-
-PanelListWidget.prototype.filter = function (button) {
-    switch (button.id) {
-        case this.btnFinishedId:
-            this.pagedListViewWidget.setFilter(function (item) {
-                return item.data.visites == 0;
-            });
-            break;
-        case this.btnVisitedId:
-            this.pagedListViewWidget.setFilter(function (item) {
-                return item.data.visites > 0;
-            });
-            break;
-        case this.btnRunningId:
-            this.pagedListViewWidget.setFilter(function (item) {
-                return item.data.visites == -1;
-            });
-            break;
-        case this.btnQueuedId:
-            this.pagedListViewWidget.setFilter(function (item) {
-                return item.data.visites == -2;
-            });
-            break;
-        default:
-            this.pagedListViewWidget.setFilter(function (item) {
-                return true;
-            });
-            break;
-    }
-    this.pagedListViewWidget.draw(this.getData());
-};
-PanelListWidget.prototype.selectProjectData = function () {
-    if (!this.projectFilterButton.pressed) {
-        for (var i = 0; i < this.allData.length; i++) {
-            if (this.allData[i].active) {
-                this.data = this.allData[i].jobs;
-                break;
-            }
-        }
-    } else {
-        var allJobs = new Array();
-        for (var i = 0; i < this.allData.length; i++) {
-            if (this.allData[i].jobs != null) {
-                for (var j = 0; j < this.allData[i].jobs.length; j++) {
-
-                    //TODO care with date order
-                    allJobs.push(this.allData[i].jobs[j]);
-                }
-            }
-        }
-        this.data = allJobs;
-    }
-    if (this.data == null) {
-        this.data = [];
-    }
-    this.pagedListViewWidget.draw(this.getData());
-};
-PanelListWidget.prototype.getData = function () {
-    return this.data;
-}
-PanelListWidget.prototype.show = function () {
+TeamPanelListWidget.prototype.show = function () {
     if (!this.panel.rendered) {
         this.panel.render(this.targetId);
     }
     this.panel.show();
 };
-PanelListWidget.prototype.hide = function () {
+
+TeamPanelListWidget.prototype.hide = function () {
     if (!this.panel.rendered) {
         this.panel.render(this.targetId);
     }
     this.panel.hide();
-};
-PanelListWidget.prototype.setAccountData = function (data) {
-
-    this.data = data;
-    this.render();
 };

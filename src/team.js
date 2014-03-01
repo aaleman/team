@@ -5,14 +5,15 @@ function Team(args) {
     this.id = Utils.genId("Team");
 
     //set default args
-    this.suiteId = 61;
-    this.title = 'Team';
-    this.description = 'beta';
-    this.version = '0.0.1';
+    this.suiteId = 86;
+    this.title = 'TEAM';
+    this.description = '';
+    this.version = '1.0.0';
     this.border = true;
     this.targetId;
     this.width;
     this.height;
+    this.panels; //  = new Panel();
 
 
     //set instantiation args, must be last
@@ -38,14 +39,12 @@ Team.prototype = {
             return;
         }
 
-        console.log("Initializing Panels");
+        console.log("Initializing Team");
         this.targetDiv = $('#' + this.targetId)[0];
         this.div = $('<div id="panels" style="height:100%;position:relative;"></div>')[0];
         $(this.targetDiv).append(this.div);
 
-
-//        this.headerWidgetDiv = $('<div id="header-widget"></div>')[0];
-        this.headerWidgetDiv = $('<div id="header-widget" style="padding: 25px 0 20px 25px;"><div class="appName">' + this.title + '</div></div>')[0];
+        this.headerWidgetDiv = $('<div id="header-widget"></div>')[0];
 
         $(this.div).append(this.headerWidgetDiv);
         this.menuDiv = $('<div id="menu"></div>')[0];
@@ -90,9 +89,8 @@ Team.prototype = {
             return;
         }
 
-
         /* Header Widget */
-        // this.headerWidget = this._createHeaderWidget($(this.headerWidgetDiv).attr('id'));
+        this.headerWidget = this._createHeaderWidget($(this.headerWidgetDiv).attr('id'));
 
         /* Header Widget */
         this.menu = this._createMenu($(this.menuDiv).attr('id'));
@@ -101,36 +99,36 @@ Team.prototype = {
         var topOffset = 80 + $(this.menuDiv).height();
         $(this.wrapDiv).css({height: 'calc(100% - ' + topOffset + 'px)'});
 
-        /* Wrap Panel */
-        // this.panel = this._createPanel($(this.contentDiv).attr('id'));
-
         /* Job List Widget */
-        this.panelListWidget = this._createPanelsListWidget($(this.sidePanelDiv).attr('id'));
-
-        var user_panels = [];
-
-        if (localStorage.bioinfo_panels_user_settings != null) {
-            user_panels = JSON.parse(localStorage.bioinfo_panels_user_settings);
-        }
-
-//        var auxPanels = [];
-//
-//        for (var i = 0; i < 10; i++) {
-//            auxPanels.push({
-//                name: "panel_" + i
-//            })
-//        }
-        this.panelListWidget.setAccountData(user_panels);
+        this.panelListWidget = this._createTeamPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
+        this.panelListWidget.render();
         this.panelListWidget.draw();
-        //this.panelListWidget.show();
 
 
-        var panelsWidget = new PanelsWidget({
+        this.panelsWidget = new PanelsWidget({
             targetId: $(this.contentDiv).attr('id'),
             autoRender: true
         });
-        panelsWidget.draw();
+        this.panelsWidget.draw();
 
+
+        this.userSettings = new UserSettings();
+
+
+        this.panelsWidget.userSettings = this.userSettings;
+        this.panelListWidget.userSettings = this.userSettings;
+
+
+        this.settingsView = new TeamSettingsView({
+            autoRender: true,
+            userSettings: this.userSettings
+            // parent: this.panelListWidget
+        });
+        this.settingsView.draw();
+
+        this.panelListWidget.settingsView = this.settingsView;
+
+//        this.settingsView.newPanel();
     },
     _createMenu: function (targetId) {
         var _this = this;
@@ -146,16 +144,16 @@ Team.prototype = {
                 ,
                 {
                     id: this.id + 'jobsButton',
-                    tooltip: 'Settings',
-                    text: '<span class="emph"> Hide settings </span>',
+                    tooltip: 'Panels',
+                    text: '<span class="emph"> Show Panels</span>',
                     enableToggle: true,
-                    pressed: true,
+                    pressed: false,
                     toggleHandler: function () {
                         if (this.pressed) {
-                            this.setText('<span class="emph"> Hide settings </span>');
+                            this.setText('<span class="emph"> Hide Panels</span>');
                             _this.panelListWidget.show();
                         } else {
-                            this.setText('<span class="emph"> Show settings </span>');
+                            this.setText('<span class="emph"> Show Panels</span>');
                             _this.panelListWidget.hide();
                         }
                     }
@@ -164,11 +162,12 @@ Team.prototype = {
         });
         return toolbar;
     },
-    _createPanelsListWidget: function (targetId) {
+    _createTeamPanelsListWidget: function (targetId, teamWidget) {
         var _this = this;
 
-        var panelListWidget = new PanelListWidget({
-            'title': 'Settings',
+
+        var panelListWidget = new TeamPanelListWidget({
+            'title': 'Panels',
             'pageSize': 7,
             'targetId': targetId,
             'order': 0,
@@ -176,16 +175,31 @@ Team.prototype = {
             'height': 425,
             border: true,
             'mode': 'view',
-            examplePanels: EXAMPLE_PANELS
+            parent: teamWidget,
+            panels: this.panels
+
+
         });
-
-        /**Atach events i listen**/
-//        panelListWidget.pagedListViewWidget.on('item:click', function (data) {
-//            _this.jobItemClick(data.item);
-//        });
-
         return panelListWidget;
+    },
+    _createHeaderWidget: function (targetId) {
+        var headerWidget = new HeaderWidget({
+            targetId: targetId,
+            autoRender: true,
+            appname: this.title,
+            description: this.description,
+            version: this.version,
+            //suiteId: this.suiteId,
+            suiteId: this.suiteId,
+            accountData: this.accountData,
+            allowLogin: false
+        });
+        headerWidget.draw();
+
+
+        // Hide Sign in button
+        $("#" + headerWidget.id + "btnSignin").hide();
+
+        return headerWidget;
     }
-
-
 };

@@ -5,7 +5,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
         // Metadata.
         meta: {
-            version: '1.0.0',
+            version: '1.0.1',
             jsorolla: {
                 dir: '/lib/jsorolla/',
                 //genome viewer contains cellbse and utils
@@ -34,7 +34,7 @@ module.exports = function (grunt) {
             build: {
                 src: [
                     'src/data.js',
-                    //'src/settings.js',
+                    'src/panel.js',
                     'src/team-list-widget.js',
                     'src/team-settings.js',
                     'src/team-widget.js',
@@ -59,7 +59,8 @@ module.exports = function (grunt) {
                     {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['vendor/**'], dest: 'build/<%= meta.version %>/' },
                     {   expand: true, cwd: './<%= meta.jsorolla.dir %>', src: ['styles/**'], dest: 'build/<%= meta.version %>/' }, // includes files in path and its subdirs
                     {   expand: true, cwd: './<%= meta.jsorolla.genomeviewer.dir %>', src: ['genome-viewer*.js', 'gv-config.js'], dest: 'build/<%= meta.version %>/' },
-                    {   expand: true, cwd: './<%= meta.jsorolla.opencga.dir %>', src: ['opencga*.js', 'worker*'], dest: 'build/<%= meta.version %>/' }
+                    {   expand: true, cwd: './<%= meta.jsorolla.opencga.dir %>', src: ['opencga*.js', 'worker*'], dest: 'build/<%= meta.version %>/' },
+                    {   expand: true, cwd: './vendor', src: ['ux/**'], dest: 'build/<%= meta.version %>/vendor' }
                 ]
             }
         },
