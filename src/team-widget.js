@@ -48,7 +48,7 @@ PanelsWidget.prototype = {
 
         this.panel.add(this.form);
         this.panel.add(this.tabPanel);
-        this.panel.add(this.progress);
+//        this.panel.add(this.progress);
 
         this.tabPanel.add(this.primDisGrid.getPanel());
         this.tabPanel.add(this.extraGrid.getPanel());
@@ -57,6 +57,8 @@ PanelsWidget.prototype = {
         this.dataSec = [];
         this.dataPrim = [];
         this.dataExtra = [];
+
+        this.reportWindow = this._createReportWindow();
 
     },
     _createPanel: function (targetId) {
@@ -72,6 +74,201 @@ PanelsWidget.prototype = {
         });
 
         return panel;
+    },
+    _createReportWindow: function () {
+        var _this = this;
+
+        var title = Ext.create('Ext.form.TextField', {
+            id: _this.id + "_title_report",
+            name: 'title',
+            fieldLabel: 'Title',
+            labelAlign: 'left',
+            allowBlank: false,
+        });
+
+        var info = Ext.create('Ext.form.TextArea', {
+            id: _this.id + "_info_report",
+            name: 'info',
+            width: 500,
+            fieldLabel: 'Information',
+            labelAlign: 'left',
+            allowBlank: true,
+        });
+
+        var name = Ext.create('Ext.form.TextField', {
+            id: _this.id + "_name_report",
+            name: 'name',
+            fieldLabel: 'Name',
+            labelAlign: 'left',
+            allowBlank: false,
+        });
+
+        var date = Ext.create('Ext.form.DateField', {
+            id: _this.id + "_date_report",
+            name: 'date',
+            fieldLabel: 'Date',
+            labelAlign: 'left',
+            allowBlank: false,
+            maxValue: new Date(),  // limited to the current date or prior
+            value: new Date()  // defaults to today
+        });
+
+        var comments = Ext.create('Ext.form.TextArea', {
+            id: _this.id + "_comments_report",
+            name: 'comments',
+            width: 500,
+            fieldLabel: 'Comments',
+            labelAlign: 'left',
+            allowBlank: true,
+        });
+
+        var primCheckBox = Ext.create('Ext.form.Checkbox', {
+            boxLabel: 'Diagnostic',
+            name: 'prim',
+            inputValue: true,
+            id: 'prim',
+            checked: true
+        });
+
+        var secCheckBox = Ext.create('Ext.form.Checkbox', {
+            boxLabel: 'Secondary findings',
+            name: 'sec',
+            inputValue: true,
+            id: 'sec',
+            checked: true
+        });
+
+        var form = Ext.create('Ext.form.Panel', {
+            id: _this.id + "_form_report",
+            bodyStyle: 'background:none',
+            bodyPadding: 4,
+            layout: {
+                type: 'vbox'
+            },
+            items: [
+                title,
+                info,
+                {
+                    xtype: 'fieldcontainer',
+                    fieldLabel: 'Data',
+                    items: [
+                        primCheckBox,
+                        secCheckBox
+                    ]
+                },
+                date,
+                name,
+                comments],
+            buttons: [
+                {
+                    text: 'Reset',
+                    handler: function () {
+                        this.up('form').getForm().reset();
+                    }
+                },
+                {
+                    text: 'Generate!!',
+                    formBind: true,
+                    disabled: true,
+                    handler: function () {
+                        var form = this.up('form').getForm();
+                        if (form.isValid()) {
+                            var values = form.getValues();
+                            _this._generateReport(values);
+                            Ext.getCmp(_this.id + "_report_generator_window").hide();
+                        }
+                    }
+                }
+            ]
+        });
+
+        var window = Ext.create('Ext.window.Window', {
+            id: _this.id + "_report_generator_window",
+            title: "Report Generator",
+            height: 380,
+            width: 600,
+            minimizable: true,
+            closable: false,
+            bodyPadding: 10,
+            listeners: {
+                minimize: function (win, obj) {
+                    win.hide();
+                }
+            },
+            items: [form]
+        });
+        return window;
+    },
+    _generateReport: function (values) {
+
+        var _this = this;
+
+        Ext.ux.grid.Printer.printAutomatically = false;
+        var htmlGrid1 = Ext.ux.grid.Printer.print(_this.primDisGrid.grid);
+        var htmlGrid2 = Ext.ux.grid.Printer.print(_this.extraGrid.grid);
+
+        var scriptPath = Ext.Loader.getPath('Ext.ux.grid.Printer');
+        var stylesheetPath = scriptPath.substring(0, scriptPath.indexOf('Printer.js')) + 'gridPrinterCss/print.css';
+
+        var win = window.open('', 'printgrid');
+
+        var style = "<style>" +
+            ".bodyReport {font-family: tahoma, arial, verdana, sans-serif;}" +
+            ".reportTitle {height: 20px;font-size: 20px;text-align: center;padding: 10px 10px 10px 10px;}" +
+            ".gridHeader {height: 30px;}" +
+            ".reportInfo {margin-left:50px;margin-right:50px;margin-top: 20px;margin-bottom:30px;text-indent: 20px;text-align: center;}" +
+            ".gridHeader {padding-left: 100px;margin-top: 20px;margin-bottom: 20px;}" +
+            ".reportGrid{margin-left:50px;margin-right:50px;}" +
+            "td{max-width: 200px;word-wrap:break-word}" +
+            ".reportDate{margin-top: 20px;margin-bottom:20px;margin-left:50px;}" +
+            ".reportDateText{}" +
+            ".reportName{margin-top: 20px;margin-left:50px;}" +
+            ".reportComments{margin-top:20px;margin-left:50px;margin-bottom: 10px;}" +
+            ".reportCommentsText{text-indent: 20px;margin-left:50px;}" +
+            "</style>";
+        //document must be open and closed
+        win.document.open();
+        win.document.write(
+            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' +
+                '<html class="' + Ext.baseCSSPrefix + 'ux-grid-printer">' +
+                '<head>' +
+                '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />' +
+                '<link href="' + stylesheetPath + '" rel="stylesheet" type="text/css" />' +
+                '<title>Team Report</title>' + style);
+        win.document.write('</head>' +
+            '<body class="' + Ext.baseCSSPrefix + 'ux-grid-printer-body bodyReport">' +
+
+            '<div class="' + Ext.baseCSSPrefix + 'ux-grid-printer-noprint ' + Ext.baseCSSPrefix + 'ux-grid-printer-links">' +
+            '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkprint" href="javascript:void(0);" onclick="window.print();">Print</a>',
+            '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkclose" href="javascript:void(0);" onclick="window.close();">Close</a>' +
+                '</div>'
+        )
+        ;
+        win.document.write('<div class="reportTitle">' + values.title + '</div>')
+        win.document.write('<div class="reportInfo">' + values.info + '</div>')
+        if (values.prim) {
+            win.document.write('<div class="gridHeader">Diagnostic: </div>');
+            win.document.write('<div class="reportGrid">')
+            win.document.write(htmlGrid1);
+            win.document.write('</div>');
+
+        }
+        if (values.sec) {
+            win.document.write('<div class="gridHeader">Secondary findings: </div>');
+            win.document.write('<div class="reportGrid">')
+            win.document.write(htmlGrid2);
+            win.document.write('</div>')
+        }
+
+        win.document.write('<div class="reportDate">Date:  ' + values.date + '</div>')
+        win.document.write('<div class="reportName">Name:  ' + values.name + '</div>')
+        win.document.write('<div class="reportComments">Comments: </div><div class="reportCommentsText">' + values.comments + '</div>')
+        win.document.write('</body></html>');
+        win.document.close();
+
+        if (this.printAutomatically) {
+            win.print();
+        }
     },
     _createTabPanel: function () {
         var _this = this;
@@ -91,78 +288,10 @@ PanelsWidget.prototype = {
                         xtype: 'button',
                         id: _this.id + "_generate_report",
                         text: 'Generate Report',
-//                    disabled: true,
+                        disabled: true,
                         handler: function () {
-
-                            var content = $('<div></div>');
-                            var table = $('<table border="1"></table>');
-                            var header = $('<th></th>');
-
-
-                            // _this.primDisGrid.grid.headerCt.items.items[1].dataIndex
-
-                            for (var i = 1; i < _this.primDisGrid.grid.headerCt.items.items.length; i++) {
-                                header.append('<td>' + _this.primDisGrid.grid.headerCt.items.items[i].text + '</td>');
-                            }
-
-                            table.append(header);
-                            for (var i = 0; i < _this.primDisGrid.store.getCount(); i++) {
-                                var record = _this.primDisGrid.store.getAt(i);
-
-                                var row = $('<tr></tr>');
-                                for (var j = 1; j < _this.primDisGrid.grid.headerCt.items.items.length; j++) {
-                                    row.append('<td>' + record.get(_this.primDisGrid.grid.headerCt.items.items[j].dataIndex) + '</td>');
-                                }
-                                table.append(row);
-                            }
-
-                            content.append(table);
-
-
-                            var w = new Ext.create('Ext.window.Window', {
-                                html: content.html()
-                            });
-
-                            w.show();
-
-
-//                        var doc = new jsPDF('p', 'pt', 'a4', true);
-//                        doc.cellInitialize();
-//
-//                        var specialElementHandlers = {
-//                            '#editor': function (element, renderer) {
-//                                return true;
-//                            }
-//                        };
-//
-//
-//                        var grid = _this.primDisGrid.grid;
-//
-//                        var table = $('<table></table>');
-//                        var header = $('<th></th>');
-//
-//                        for (var i = 1; i < grid.columns.length; i++) {
-//                            var colName = grid.columns[i].text;
-//                            console.log(colName);
-//                            header.append('<td>' + colName + '</td>');
-//                        }
-//                        table.append(header);
-//
-//
-//                        var content = $('<div></div>').append(table);
-//                        console.log(content.html());
-//
-//                        $.each(, function (i, row) {
-//                            console.debug(row);
-//                            $.each(row, function (j, cell) {
-//                                doc.cell(10, 50, 120, 50, cell, i);  // 2nd parameter=top margin,1st=left margin 3rd=row cell width 4th=Row height
-//                            })
-//                        })
-//
-//
-//                        doc.save('Test.pdf');
-
-
+                            Ext.getCmp(_this.id + "_form_report").getForm().reset();
+                            _this.reportWindow.show();
                         }
                     }
                 ]
@@ -214,7 +343,7 @@ PanelsWidget.prototype = {
 
         var vcf = Ext.create('Ext.form.field.File', {
             id: _this.id + "vcf_file",
-            fieldLabel: "Vcf File",
+            fieldLabel: "VCF File",
             width: 500,
             emptyText: 'Select a file',
             allowBlank: false,
@@ -239,7 +368,7 @@ PanelsWidget.prototype = {
                     text: 'Run',
                     handler: function () {
                         var button = Ext.getCmp(_this.id + "_generate_report");
-//                        button.disable();
+                        button.disable();
 
                         _this.dataSec = [];
                         _this.dataPrim = [];
@@ -283,8 +412,8 @@ PanelsWidget.prototype = {
                                 _this.primDisGrid.setLoading(false);
 
                                 if (_this.primDisGrid.count() > 0 || _this.extraGrid.count() > 0) {
-//                                    button.enable();
-                                    ;
+                                    button.enable();
+
                                 }
 
                             });
@@ -562,35 +691,35 @@ PanelsWidget.prototype = {
                                 copy.phenotype = aux.phenotype;
                                 copy.source = aux.source;
                                 //if (copy.pvalue >= 0) {
-                                    //copy.pvalue = aux.pValue;
+                                //copy.pvalue = aux.pValue;
                                 //}
 
                                 _this._getEffect(copy);
                                 _this._getPolyphenSift(copy);
-								
-								
-								var sift = (copy.sift == undefined || copy.sift == null);
-								var polyphen = (copy.polyphen == undefined || copy.polyphen == null);
-				
-								if(!sift){
-									sift = (panel.sift == undefined || panel.sift == null);
-								}
-								if(!polyphen){
-									polyphen = (panel.polyphen == undefined || panel.polyphen == null);
-								}
 
-				                if(!sift){
-				                    sift = (copy.sift <= panel.sift);
-				                }
 
-				                if(!polyphen){
-				                    polyphen = (copy.polyphen >= panel.polyphen);
-				                }
-				
+                                var sift = (copy.sift == undefined || copy.sift == null);
+                                var polyphen = (copy.polyphen == undefined || copy.polyphen == null);
 
-								if(sift && polyphen){
-									_this.dataExtra.push(copy);
-								}
+                                if (!sift) {
+                                    sift = (panel.sift == undefined || panel.sift == null);
+                                }
+                                if (!polyphen) {
+                                    polyphen = (panel.polyphen == undefined || panel.polyphen == null);
+                                }
+
+                                if (!sift) {
+                                    sift = (copy.sift <= panel.sift);
+                                }
+
+                                if (!polyphen) {
+                                    polyphen = (copy.polyphen >= panel.polyphen);
+                                }
+
+
+                                if (sift && polyphen) {
+                                    _this.dataExtra.push(copy);
+                                }
 
 //                                if (panel.polyphen !== undefined && copy.polyphen !== undefined && copy.polyphen >= panel.polyphen &&
 //                                    panel.sift !== undefined && copy.sift != undefined && copy.sift <= panel.sift) {
@@ -643,28 +772,28 @@ PanelsWidget.prototype = {
                 variant.gene = panelVariant.name;
                 _this._getEffect(variant);
                 _this._getPolyphenSift(variant);
-				var sift = (variant.sift == undefined || variant.sift == null);
-				var polyphen = (variant.polyphen == undefined || variant.polyphen == null);
-				
-				if(!sift){
-					sift = (panel.sift == undefined || panel.sift == null);
-				}
-				if(!polyphen){
-					polyphen = (panel.polyphen == undefined || panel.polyphen == null);
-				}
+                var sift = (variant.sift == undefined || variant.sift == null);
+                var polyphen = (variant.polyphen == undefined || variant.polyphen == null);
 
-                if(!sift){
+                if (!sift) {
+                    sift = (panel.sift == undefined || panel.sift == null);
+                }
+                if (!polyphen) {
+                    polyphen = (panel.polyphen == undefined || panel.polyphen == null);
+                }
+
+                if (!sift) {
                     sift = (variant.sift <= panel.sift);
                 }
 
-                if(!polyphen){
+                if (!polyphen) {
                     polyphen = (variant.polyphen >= panel.polyphen);
                 }
-				
 
-				if(sift && polyphen){
-					_this.dataExtra.push(variant);
-				}
+
+                if (sift && polyphen) {
+                    _this.dataExtra.push(variant);
+                }
             }
         }
     },

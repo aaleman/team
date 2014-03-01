@@ -47,10 +47,7 @@
 <script type="text/javascript" src="../lib/jsorolla/vendor/jquery.mousewheel.min.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/gl-matrix-min.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/vendor/ChemDoodleWeb.js"></script>
-<script type="text/javascript" src="../lib/jspdf.min.js"></script>
-<!--<script type="text/javascript" src="../lib/jsorolla/vendor/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>-->
-
-
+<!--<script type="text/javascript" src="../vendor/jspdf.min.js"></script>-->
 <!--<script type="text/javascript" src="../vendor/genome-viewer-1.0.3.js"></script>-->
 <!--<script type="text/javascript" src="../vendor/opencga-1.0.0.js"></script>-->
 
@@ -123,7 +120,6 @@
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/tracks/gene-track.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/tracks/bam-track.js"></script>
 
-
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/renderers/renderer.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/renderers/feature-renderer.js"></script>
 <script type="text/javascript"
@@ -135,19 +131,13 @@
 
 <script type="text/javascript" src="../lib/jsorolla/src/genome-viewer/genome-viewer.js"></script>
 
-
-<!--<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/opencga-manager.js"></script>-->
-<!--<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/generic-form-panel.js"></script>-->
 <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/user-list-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/check-browser.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/header-widget.js"></script>
-<!--<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/job-list-widget.js"></script>-->
 <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/login-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/opencga-browser-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/paged-view-list-widget.js"></script>
 <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/profile-widget.js"></script>
-<!--<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result2-widget.js"></script>-->
-<!--<script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/result-table.js"></script>-->
 <script type="text/javascript" src="../lib/jsorolla/src/lib/opencga/ui-widgets/upload-widget.js"></script>
 
 <script type="text/javascript">
@@ -159,6 +149,7 @@
 <!-- APP ui-widgets-->
 <!-- build:script js -->
 <script type="text/javascript" src="data.js"></script>
+<script type="text/javascript" src="data.js"></script>
 <script type="text/javascript" src="panel.js"></script>
 <script type="text/javascript" src="team-list-widget.js"></script>
 <script type="text/javascript" src="team-settings.js"></script>
@@ -169,12 +160,14 @@
 
 <script>
     Ext.Loader.setConfig({enabled: true});
-    Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
+    //    Ext.Loader.setPath('Ext.ux', 'http://cdn.sencha.io/ext/gpl/4.2.1/examples/ux');
+    Ext.Loader.setPath('Ext.ux', 'vendor/ux');
     Ext.QuickTips.init();
+
     Ext.require([
         'Ext.ux.grid.FiltersFeature',
-        'Ext.ux.data.PagingMemoryProxy'
-
+        'Ext.ux.data.PagingMemoryProxy',
+        'Ext.ux.grid.Printer'
     ]);
 
     var variant;

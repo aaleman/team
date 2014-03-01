@@ -49,17 +49,17 @@ TeamPanelListWidget.prototype = {
                     }
                 },
                 {
-                    href: 'none',
                     id: this.btnSaveSettings,
                     text: 'Save Panels',
                     tooltip: 'Save Panels',
                     listeners: {
                         click: function () {
-                            var content = _this.userSettings.toJson();
-                            this.getEl().set({
-                                href: 'data:text/json,' + encodeURIComponent(content),
-                                download: "settings" + ".json"
-                            });
+                            _this.settingsView.showSavePanel();
+//                            var content = _this.userSettings.toJson();
+//                            this.getEl().set({
+//                                href: 'data:text/json,' + encodeURIComponent(content),
+//                                download: "settings" + ".json"
+//                            });
                         }
                     }
                 },

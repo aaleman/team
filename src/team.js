@@ -150,7 +150,7 @@ Team.prototype = {
                     pressed: false,
                     toggleHandler: function () {
                         if (this.pressed) {
-                            this.setText('<span class="emph"> Hide Panles</span>');
+                            this.setText('<span class="emph"> Hide Panels</span>');
                             _this.panelListWidget.show();
                         } else {
                             this.setText('<span class="emph"> Show Panels</span>');

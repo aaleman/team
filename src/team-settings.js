@@ -21,6 +21,12 @@ TeamSettingsView.prototype = {
     showImport: function () {
         this.importView.show();
     },
+    showSavePanel: function () {
+
+        var _this = this;
+
+        this.saveView.show();
+    },
     newPanel: function () {
         this.userPanel = new Panel();
 
@@ -91,7 +97,7 @@ TeamSettingsView.prototype = {
         /* Panel */
         this.panel = this._createPanel();
         this.importView = this._createImportPanel();
-
+        this.saveView = this._createSavePanel();
     },
     clearSettings: function () {
 
@@ -202,6 +208,70 @@ TeamSettingsView.prototype = {
 
         return window;
     },
+    _createSavePanel: function () {
+
+        var _this = this;
+
+        var filename = Ext.create('Ext.form.field.Text', {
+            id: _this.id + "_save_settings_file",
+            fieldLabel: "Filename",
+            width: 400,
+            emptyText: 'Select a Filename',
+            allowBlank: false,
+            name: 'filename'
+        });
+
+        var window = Ext.create('Ext.window.Window', {
+                title: 'Save Panels',
+                height: 100,
+                modal: true,
+                minimizable: true,
+                closable: false,
+                bodyPadding: 10,
+                items: [filename],
+                listeners: {
+                    minimize: function (win, obj) {
+                        win.hide();
+                    }
+                },
+                buttons: [
+                    {
+                        text: 'Save',
+                        href: 'none',
+                        handler: function (win) {
+                            var content = _this.userSettings.toJson();
+
+                            var filename = Ext.getCmp(_this.id + "_save_settings_file").getValue();
+                            if (filename == "") {
+                                filename = "Panel Settings";
+                            }
+
+                            this.getEl().set({
+                                href: 'data:text/json,' + encodeURIComponent(content),
+                                download: filename + ".json"
+                            });
+
+                            Ext.getCmp(_this.id + "_save_settings_file").reset();
+                            this.up('.window').hide();
+                            filename.reset();
+
+                        }
+                    },
+                    {
+                        text: 'Close',
+                        handler: function () {
+                            Ext.getCmp(_this.id + "_settings_file").reset();
+                            this.up('.window').hide();
+                            filename.reset();
+                        }
+                    }
+                ]
+            }
+        );
+
+        return window;
+    },
+
     _createPanel: function () {
         var _this = this;
         var filters = {
@@ -359,7 +429,7 @@ TeamSettingsView.prototype = {
         });
 
         var window = Ext.create('Ext.window.Window', {
-                title: 'Settings',
+                title: 'Panel Manager',
                 height: 600,
                 width: 800,
                 layout: {
@@ -518,7 +588,7 @@ TeamSettingsView.prototype = {
 
         });
 
-        var ref = Ext.create('Ext.form.TextField', {
+        _this.refField = Ext.create('Ext.form.TextField', {
             id: _this.id + "_ref_mutationPanel",
             name: 'ref',
             fieldLabel: 'Ref',
@@ -540,7 +610,7 @@ TeamSettingsView.prototype = {
         var diseaseName = Ext.create('Ext.form.TextField', {
             id: _this.id + "_disName_mutationPanel",
             name: 'disname',
-            fieldLabel: 'Dis. Name',
+            fieldLabel: 'Disease Name',
             labelAlign: 'top',
             allowBlank: false,
             maxWidth: 400
@@ -575,42 +645,8 @@ TeamSettingsView.prototype = {
             }
         });
 
-        var addMutation = Ext.create('Ext.Button', {
-            text: "Add mutation",
-            scall: 'small',
-            margin: '17 0 0 20',
-            handler: function () {
-
-                chr = Ext.getCmp(_this.id + "_chr_mutationPanel").getValue();
-                pos = Ext.getCmp(_this.id + "_pos_mutationPanel").getValue();
-                ref = Ext.getCmp(_this.id + "_ref_mutationPanel").getValue();
-                alt = Ext.getCmp(_this.id + "_alt_mutationPanel").getValue();
-                disName = Ext.getCmp(_this.id + "_disName_mutationPanel").getValue();
-
-                _this.userPanel.addMutationToDisease(disName, chr, pos, ref, alt);
-                console.log(_this.userPanel.diseases);
-                window.hide();
-
-                var currentRow = _this.primDiseases.grid.getSelectionModel().getCurrentPosition().row;
-                _this.primDiseases.grid.getSelectionModel().deselectAll();
-                _this.primDiseases.grid.getSelectionModel().select(currentRow);
-            }
-
-        });
-
-        var gene = Ext.create('Ext.form.TextField', {
-            id: _this.id + "_gene_mutationPanel",
-            name: 'Gene',
-            fieldLabel: 'Search by Gene name',
-            labelAlign: 'left',
-            allowBlank: true,
-            //maxWidth: 80,
-            margin: "0 10 0 0"
-        });
-
 
         this.gvPanel = this._createGenomeViewer();
-
 
         var form = Ext.create('Ext.form.Panel', {
             bodyStyle: 'background:none',
@@ -618,7 +654,7 @@ TeamSettingsView.prototype = {
             layout: {
                 type: 'hbox'
             },
-            items: [_this.chrField, _this.posField, ref, alt, diseaseName ],
+            items: [_this.chrField, _this.posField, _this.refField, alt, diseaseName ],
             buttons: [
                 {
                     text: 'Reset',
@@ -663,6 +699,7 @@ TeamSettingsView.prototype = {
             minimizable: true,
             closable: false,
             bodyPadding: 10,
+            modal: true,
             listeners: {
                 minimize: function (win, obj) {
                     win.hide();
@@ -802,9 +839,12 @@ TeamSettingsView.prototype = {
 
                             var pos = _this.sequence.region.center();
                             var chr = _this.sequence.region.chromosome;
+                            var ref = _this.sequence.dataAdapter.getNucleotidByPosition({start: pos, end: pos, chromosome: chr})
 
                             _this.chrField.setValue(chr);
                             _this.posField.setValue(pos);
+                            _this.refField.setValue(ref);
+
                         };
 
                         genomeViewer.on("region:change", updateForm);
@@ -1045,7 +1085,7 @@ TeamSettingsView.prototype = {
                         var items = [];
                         console.log(record)
                         items.push(showGenesAction);
-                        items.push(showMutationsAction);
+//                        items.push(showMutationsAction);
                         var contextMenu = Ext.create('Ext.menu.Menu', {
                             items: items
                         });
