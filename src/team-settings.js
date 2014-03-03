@@ -127,7 +127,6 @@ TeamSettingsView.prototype = {
             var edit = panelType == "user";
 
             var primD = [];
-            var secD = [];
             var genes = [];
 
             Ext.each(panel.getDiseases(), function (dis, index) {
@@ -408,10 +407,8 @@ TeamSettingsView.prototype = {
                 _this.mutationPanel.show();
             }
         });
-//        _this.mutationPanel.show();
 
         _this.genesWindow = Ext.create('Ext.window.Window', {
-            //title: 'Show Genes',
             height: 300,
             width: 260,
             modal: true,
@@ -620,7 +617,6 @@ TeamSettingsView.prototype = {
         var checkButton = Ext.create('Ext.Button', {
             text: 'Check',
             scale: 'small',
-//            margin: "17 0 0 20",
             height: 22,
             handler: function () {
                 var chr = _this.chrField.getValue();
@@ -712,9 +708,6 @@ TeamSettingsView.prototype = {
             items: [
                 form,
                 this.gvPanel
-            ],
-            bbar: [
-
             ]
         });
 
@@ -852,7 +845,6 @@ TeamSettingsView.prototype = {
 
                         _this.gv = genomeViewer;
 
-                        //$(_this.gv.navigationBar.regionHistoryMenu).css("visibility", 'hidden');
                         $(_this.gv.navigationBar.restoreDefaultRegionButton).hide();
                         $(_this.gv.navigationBar.regionHistoryButton).hide();
                         $(_this.gv.navigationBar.speciesButton).hide();
@@ -868,12 +860,6 @@ TeamSettingsView.prototype = {
                         $(_this.gv.navigationBar.autoheightButton).parent().hide();
                         $(_this.gv.navigationBar.compactButton).parent().hide();
 
-                        //$("#regionHistoryButton").hide();
-                        //$("#speciesButton").hide();
-                        //$("#chromosomesButton").hide();
-                        //$("#karyotypeButton").hide();
-                        //$("#chromosomeButton").hide();
-                        //$("#regionButton").hide();
                     }
                 }
             },
@@ -1031,7 +1017,6 @@ TeamSettingsView.prototype = {
                 alert(record.get("name"));
             }
         });
-
 
         allDiseases.grid = Ext.create('Ext.grid.Panel', {
             viewConfig: {
@@ -1312,13 +1297,6 @@ TeamSettingsView.prototype = {
                             contextMenu.showAt(e.getXY());
                             return false;
                         }
-//                        , itemclick: function (dv, record, item, index, e) {
-//                            var selectedRec = dv.getSelectionModel().getSelection()[0];
-//                            var dis = _this.userPanel.getDisease(selectedRec.get("name"));
-//
-//                            Ext.getStore("MutationStore").removeAll();
-//                            Ext.getStore("MutationStore").loadData(dis.getMutations());
-//                        }
                     }
                 },
                 store: newGrid.store,
@@ -1347,10 +1325,7 @@ TeamSettingsView.prototype = {
         );
 
         newGrid.grid.getSelectionModel().on('selectionchange', function (sm, selectedRecord) {
-
-
             if (selectedRecord.length) {
-
                 var selectedRec = selectedRecord[0];
                 var dis = _this.userPanel.getDisease(selectedRec.get("name"));
                 if (dis !== null) {
@@ -1463,8 +1438,6 @@ TeamSettingsView.prototype = {
             }
         });
         return wrongGenes;
-
     }
-
 }
 ;

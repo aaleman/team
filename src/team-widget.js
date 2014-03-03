@@ -54,12 +54,10 @@ PanelsWidget.prototype = {
         this.tabPanel.add(this.extraGrid.getPanel());
         this.tabPanel.setActiveTab(this.primDisGrid.getPanel());
 
-        this.dataSec = [];
         this.dataPrim = [];
         this.dataExtra = [];
 
         this.reportWindow = this._createReportWindow();
-
     },
     _createPanel: function (targetId) {
         var panel = Ext.create('Ext.panel.Panel', {
@@ -83,7 +81,7 @@ PanelsWidget.prototype = {
             name: 'title',
             fieldLabel: 'Title',
             labelAlign: 'left',
-            allowBlank: false,
+            allowBlank: false
         });
 
         var info = Ext.create('Ext.form.TextArea', {
@@ -92,7 +90,7 @@ PanelsWidget.prototype = {
             width: 500,
             fieldLabel: 'Information',
             labelAlign: 'left',
-            allowBlank: true,
+            allowBlank: true
         });
 
         var name = Ext.create('Ext.form.TextField', {
@@ -100,7 +98,7 @@ PanelsWidget.prototype = {
             name: 'name',
             fieldLabel: 'Name',
             labelAlign: 'left',
-            allowBlank: false,
+            allowBlank: false
         });
 
         var date = Ext.create('Ext.form.DateField', {
@@ -119,7 +117,7 @@ PanelsWidget.prototype = {
             width: 500,
             fieldLabel: 'Comments',
             labelAlign: 'left',
-            allowBlank: true,
+            allowBlank: true
         });
 
         var primCheckBox = Ext.create('Ext.form.Checkbox', {
@@ -370,7 +368,6 @@ PanelsWidget.prototype = {
                         var button = Ext.getCmp(_this.id + "_generate_report");
                         button.disable();
 
-                        _this.dataSec = [];
                         _this.dataPrim = [];
 
                         _this.primDisGrid.clear();
@@ -450,8 +447,6 @@ PanelsWidget.prototype = {
             {name: 'reference', type: 'String'},
             {name: 'alternate', type: 'String'},
             {name: 'gene', type: 'String'},
-
-            // {name: 'quality', type: 'float'} ,
             {name: 'filter', type: 'String'},
             {name: 'info', type: 'String'},
             {name: 'format', type: 'String'},
@@ -472,7 +467,6 @@ PanelsWidget.prototype = {
             {name: "aaChange", type: 'String'},
             {name: "phenotype", type: 'String'},
             {name: "source", type: 'String'}
-            // {name: "pvalue", type: 'float'}
         ];
         var renderer = function (value) {
             if (value == '') {
@@ -490,7 +484,6 @@ PanelsWidget.prototype = {
             {dataIndex: 'alternate', text: 'Alt', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: 'gene', text: 'Gene', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: 'ct', text: 'Conseq. Type', flex: 1, emptyCellText: '.', renderer: renderer},
-            // {dataIndex: 'quality', text: 'Quality', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "ensembl_protein", text: 'Ensembl protein', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "reference_mutation", text: 'Reference mutation', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "xref", text: 'Xref', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true},
@@ -500,7 +493,6 @@ PanelsWidget.prototype = {
             {dataIndex: "hgvs_protein", text: 'Hgvs protein', flex: 1, emptyCellText: '.', renderer: renderer, hidden: true} ,
             {dataIndex: "phenotype", text: 'Phenotype', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "source", text: 'Source', flex: 1, emptyCellText: '.', renderer: renderer},
-            // {dataIndex: "pvalue", text: 'pValue', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "sift", text: 'SIFT', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "polyphen", text: 'PolyPhen', flex: 1, emptyCellText: '.', renderer: renderer}
         ];
@@ -544,8 +536,6 @@ PanelsWidget.prototype = {
             gene_names.push(gene.name);
         });
 
-        console.log(gene_names);
-
         CellBaseManager.get({
             host: 'http://ws-beta.bioinfo.cipf.es/cellbase/rest',
             version: 'v3',
@@ -559,8 +549,6 @@ PanelsWidget.prototype = {
             },
             async: false,
             success: function (response, textStatus, jqXHR) {
-
-
                 for (var i = 0; response.response !== undefined && i < response.response.length; i++) {
                     if (response.response[i].numResults > 0) {
                         final_genes.push({
@@ -661,7 +649,6 @@ PanelsWidget.prototype = {
             variantsReg.push(variants[i].chromosome + ":" + variants[i].start + "-" + variants[i].end);
         }
 
-        console.log("Start Cellbase");
         for (var i = 0; i < diseases.length; i++) {
 
             var dis = diseases[i].name;
@@ -690,13 +677,9 @@ PanelsWidget.prototype = {
                                 copy.gene = aux.associatedGenes;
                                 copy.phenotype = aux.phenotype;
                                 copy.source = aux.source;
-                                //if (copy.pvalue >= 0) {
-                                //copy.pvalue = aux.pValue;
-                                //}
 
                                 _this._getEffect(copy);
                                 _this._getPolyphenSift(copy);
-
 
                                 var sift = (copy.sift == undefined || copy.sift == null);
                                 var polyphen = (copy.polyphen == undefined || copy.polyphen == null);
@@ -721,34 +704,23 @@ PanelsWidget.prototype = {
                                     _this.dataExtra.push(copy);
                                 }
 
-//                                if (panel.polyphen !== undefined && copy.polyphen !== undefined && copy.polyphen >= panel.polyphen &&
-//                                    panel.sift !== undefined && copy.sift != undefined && copy.sift <= panel.sift) {
                                 grid.push(copy);
-//                                }
                             }
                         }
                     }
-
-
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log('Error loading variants/diseases');
                 }
             });
-
-
         }
 
-        console.log("FIN DISEASES");
         // User-defined Mutations
-
-
         for (var i = 0; i < diseases.length; i++) {
             var dis = diseases[i];
 
             for (var j = 0; dis.mutations !== undefined && j < dis.mutations.length; j++) {
                 var m = dis.mutations[j];
-
                 for (var k = 0; k < variants.length; k++) {
                     var v = variants[k];
                     if (v.chromosome == m.chr && v.start == m.pos && v.reference == m.ref && v.alternate == m.alt) {
@@ -807,10 +779,8 @@ PanelsWidget.prototype = {
             dataType: 'json',
             async: false,
             success: function (response, textStatus, jqXHR) {
-
                 for (var j = 0; j < response.length; j++) {
                     var elem = response[j];
-
                     if (elem.aaPosition != -1 && elem.transcriptId != "" && elem.aminoacidChange.length >= 3 && variant.transcriptId == undefined && variant.aaPos == undefined && variant.aaChange == undefined) {
                         variant.transcript = elem.transcriptId;
                         variant.aaPos = elem.aaPosition;
@@ -866,5 +836,4 @@ PanelsWidget.prototype = {
         }
         return null;
     }
-}
-;
+};

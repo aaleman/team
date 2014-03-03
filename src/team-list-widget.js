@@ -55,11 +55,6 @@ TeamPanelListWidget.prototype = {
                     listeners: {
                         click: function () {
                             _this.settingsView.showSavePanel();
-//                            var content = _this.userSettings.toJson();
-//                            this.getEl().set({
-//                                href: 'data:text/json,' + encodeURIComponent(content),
-//                                download: "settings" + ".json"
-//                            });
                         }
                     }
                 },
