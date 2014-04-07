@@ -103,6 +103,36 @@ Panel.prototype = {
         console.log(totalGenes);
         return totalGenes;
     },
+    _removeElement: function(array, elem){
+        var enc = function(array, elem){
+            var res = -1;
+            for(var i = 0; i< array.length; i++){
+                if(array[i].name == elem.name){
+                    return i;
+                }
+            }
+            return res;
+        }
+
+        var found = enc(array, elem);
+
+        while (found !== -1) {
+            array.splice(found, 1);
+            found = enc(array, elem);
+        }
+    },
+    removeGene: function(geneName){
+
+        for(var i = 0; i< this.diseases.length; i++){
+            var d = this.diseases[i];
+            if(d.genes !== undefined){
+                this._removeElement(d.genes, {name: geneName});
+            }
+        }
+
+        this._removeElement(this.extraGenes, {name:geneName});
+
+    },
     getDiseases: function () {
         return this.diseases;
     },
@@ -228,6 +258,30 @@ UserSettings.prototype = {
 
         Ext.getStore("UserExampleStore").add(args);
         Ext.getStore("DiseaseStore").add(args);
+    },
+    removePanel: function(panelName){
+
+        var storeAux = Ext.getStore("UserExampleStore").queryBy(function(rec){
+            return rec.data.panelType == "user" && rec.data.name == panelName;
+        });
+
+        Ext.getStore("UserExampleStore").remove(storeAux.items);
+
+        storeAux = Ext.getStore("DiseaseStore").queryBy(function(rec){
+            return rec.data.panelType == "user" && rec.data.name == panelName;
+        });
+
+        Ext.getStore("DiseaseStore").remove(storeAux.items);
+
+
+        for(var i = 0; i< this.userDefined.length; i++){
+            if(this.userDefined[i].panelType == "user" && this.userDefined[i].name == panelName){
+                this.userDefined.slice(i, 0);
+                break;
+            }
+        }
+        console.log(this.userDefined);
+
     },
     save: function () {
         var aux = [];

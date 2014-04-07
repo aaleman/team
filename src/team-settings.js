@@ -6,6 +6,7 @@ function TeamSettingsView(args) {
     this.edit = true;
     this.userSettings;
     this.userPanel;
+    this.action = "new";
     //set instantiation args, must be last
     _.extend(this, args);
 
@@ -38,6 +39,9 @@ TeamSettingsView.prototype = {
         Ext.getCmp(this.id + "btnAddPanel").setVisible(true);
         Ext.getCmp(this.id + "btnClearPanel").setVisible(true);
         Ext.getCmp(this.id + "_panelname").enable();
+        Ext.getCmp(this.id + "btnAddPanel").setText("Add new panel");
+        this.action = "new";
+
 
         Ext.getStore("MutationStore").removeAll();
 
@@ -56,6 +60,8 @@ TeamSettingsView.prototype = {
             Ext.getCmp(this.id + "btnAddPanel").setVisible(true);
             Ext.getCmp(this.id + "btnClearPanel").setVisible(true);
             Ext.getCmp(this.id + "_panelname").enable();
+            Ext.getCmp(this.id + "btnAddPanel").setText("Edit panel");
+            this.action = "edit";
         } else {
             Ext.getCmp(this.id + "btnAddPanel").setVisible(false);
             Ext.getCmp(this.id + "btnClearPanel").setVisible(false);
@@ -117,30 +123,31 @@ TeamSettingsView.prototype = {
         _this.userPanel = new Panel();
 
     },
-    load: function (panelType, panelId) {
+    edit_panel: function (panelType, panelId) {
         var _this = this;
 
-        panel = _this.userSettings.get(panelType, panelId);
+        _this.clearSettings();
+        
+        _this.userPanel = _this.userSettings.get(panelType, panelId);
 
-        if (panel != null) {
+        if (_this.userPanel != null) {
 
             var edit = panelType == "user";
 
             var primD = [];
             var genes = [];
 
-            Ext.each(panel.getDiseases(), function (dis, index) {
+            Ext.each(_this.userPanel.getDiseases(), function (dis, index) {
                 primD.push({name: dis.name});
             });
-            Ext.each(panel.getGenes(), function (gene, index) {
+
+            Ext.each(_this.userPanel.getGenes(), function (gene, index) {
                 genes.push({name: gene.name});
             });
 
-            _this.clearSettings();
-
-            _this.panelName.setValue(panel.name);
-            _this.polyphen.setValue(panel.polyphen);
-            _this.sift.setValue(panel.sift);
+            _this.panelName.setValue(_this.userPanel.name);
+            _this.polyphen.setValue(_this.userPanel.polyphen);
+            _this.sift.setValue(_this.userPanel.sift);
 
             _this.primDiseases.loadData(primD);
             _this.diseaseGenes.loadData(genes);
@@ -502,16 +509,41 @@ TeamSettingsView.prototype = {
                 buttons: [
                     {
                         id: _this.id + "btnAddPanel",
-                        text: 'Add Panel',
+                        text: 'Add new panel',
                         handler: function () {
                             window.setLoading(true);
-                            if (_this.edit) {
+                            if (_this.action == "new") {
                                 var name = Ext.getCmp(_this.id + "_panelname").getValue();
 
                                 if (name == "") {
                                     Ext.MessageBox.alert("Error", "Name is mandatory");
                                 }
                                 else {
+                                    var polyphen = Ext.getCmp(_this.id + "_polyphen").getValue();
+                                    var sift = Ext.getCmp(_this.id + "_sift").getValue();
+
+                                    _this.userPanel.polyphen = polyphen;
+                                    _this.userPanel.sift = sift;
+                                    _this.userPanel.name = name;
+
+                                    _this.userSettings.addPanel(_this.userPanel);
+                                    _this.userSettings.save();
+                                    _this.clearSettings();
+                                    _this.hide();
+                                }
+                            }else if(_this.action == "edit"){
+                           
+                                
+                                var name = Ext.getCmp(_this.id + "_panelname").getValue();
+
+                                if (name == "") {
+                                    Ext.MessageBox.alert("Error", "Name is mandatory");
+                                }
+                                else {
+//                                    _this.userSettings.removePanel(_this.userPanel.name);
+                                    _this.userSettings.remove(_this.userPanel);
+                                    _this.userSettings.save();
+
                                     var polyphen = Ext.getCmp(_this.id + "_polyphen").getValue();
                                     var sift = Ext.getCmp(_this.id + "_sift").getValue();
 
@@ -921,6 +953,7 @@ TeamSettingsView.prototype = {
         return columns;
     },
     _createGridColumnsGenes: function () {
+        var _this= this;
         var columns = [
             {
                 text: "Name",
@@ -940,11 +973,14 @@ TeamSettingsView.prototype = {
                 tdCls: 'delete',
                 items: [
                     {
-                        icon: Utils.images.del,  // Use a URL in the icon config
+                        icon: Utils.images.del,
                         tooltip: 'Delete',
                         handler: function (grid, rowIndex, colIndex) {
                             var rec = grid.getStore().getAt(rowIndex);
                             alert("Delete " + rec.get('name'));
+
+                            _this.userPanel.removeGene(rec.get("name"));
+
                             grid.getStore().removeAt(rowIndex);
                         }
                     }
