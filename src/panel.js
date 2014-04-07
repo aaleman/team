@@ -113,6 +113,10 @@ Panel.prototype = {
         }
         this.diseases.push(dis);
     },
+    addExtraGene: function(gene){
+
+        this.extraGenes.push(gene);
+    },
     getDisease: function (disName) {
         for (var i = 0; i < this.diseases.length; i++) {
             var d = this.diseases[i];

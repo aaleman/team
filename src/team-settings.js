@@ -349,7 +349,9 @@ TeamSettingsView.prototype = {
                         var gene = {
                             name: genes[i]
                         };
+
                         _this.diseaseGenes.add(gene);
+                        _this.userPanel.addExtraGene(gene);
                     }
                     genesPanel.reset();
                     _this.diseaseGenes.store.resumeEvents();
@@ -505,8 +507,6 @@ TeamSettingsView.prototype = {
                             window.setLoading(true);
                             if (_this.edit) {
                                 var name = Ext.getCmp(_this.id + "_panelname").getValue();
-
-                                var panelDise = _this.userSettings.get
 
                                 if (name == "") {
                                     Ext.MessageBox.alert("Error", "Name is mandatory");

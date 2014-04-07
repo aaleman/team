@@ -365,6 +365,7 @@ PanelsWidget.prototype = {
                 {
                     text: 'Run',
                     handler: function () {
+                        _this.tabPanel.setActiveTab(_this.primDisGrid.getPanel());
                         var button = Ext.getCmp(_this.id + "_generate_report");
                         button.disable();
 
@@ -379,7 +380,9 @@ PanelsWidget.prototype = {
 
                             var vcf_file = document.getElementById(vcf.fileInputEl.id).files[0];
 
-                            var fds_vcf = new FileDataSource(vcf_file);
+                            var fds_vcf = new FileDataSource({
+                                file: vcf_file
+                            });
 
                             var panelOpt = Ext.getCmp(_this.id + "disease").getValue();
                             var panelSplit = panelOpt.split("_");
