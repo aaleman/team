@@ -60,7 +60,7 @@ TeamSettingsView.prototype = {
             Ext.getCmp(this.id + "btnAddPanel").setVisible(true);
             Ext.getCmp(this.id + "btnClearPanel").setVisible(true);
             Ext.getCmp(this.id + "_panelname").enable();
-            Ext.getCmp(this.id + "btnAddPanel").setText("Edit panel");
+            Ext.getCmp(this.id + "btnAddPanel").setText("Save");
             this.action = "edit";
         } else {
             Ext.getCmp(this.id + "btnAddPanel").setVisible(false);
@@ -127,7 +127,7 @@ TeamSettingsView.prototype = {
         var _this = this;
 
         _this.clearSettings();
-        
+
         _this.userPanel = _this.userSettings.get(panelType, panelId);
 
         if (_this.userPanel != null) {
@@ -169,48 +169,51 @@ TeamSettingsView.prototype = {
         });
 
         var window = Ext.create('Ext.window.Window', {
-                title: 'Import Settings',
-                height: 100,
-                modal: true,
-                minimizable: true,
-                closable: false,
-                bodyPadding: 10,
-                items: [
-                    settings_file
-                ],
-                listeners: {
-                    minimize: function (win, obj) {
-                        win.hide();
-                    }
-                },
-                buttons: [
-                    {
-                        text: 'Import',
-                        handler: function () {
-                            var file = document.getElementById(settings_file.fileInputEl.id).files[0];
-                            var fds_file = new FileDataSource(file);
-
-                            fds_file.on("success", function (data) {
-
-                                _this.userSettings.importData(data);
-
-                            });
-
-                            fds_file.fetch(true);
-                            this.up('.window').hide();
+                    title: 'Import Settings',
+                    height: 100,
+                    modal: true,
+                    minimizable: true,
+                    closable: false,
+                    bodyPadding: 10,
+                    items: [
+                        settings_file
+                    ],
+                    listeners: {
+                        minimize: function (win, obj) {
+                            win.hide();
                         }
                     },
-                    {
-                        text: 'Close',
-                        handler: function () {
-                            Ext.getCmp(_this.id + "_settings_file").reset();
-                            this.up('.window').hide();
-                            settings_file.reset();
+                    buttons: [
+                        {
+                            text: 'Import',
+                            handler: function () {
+                                var file = document.getElementById(settings_file.fileInputEl.id).files[0];
+                                var fds_file = new FileDataSource({
+                                    file: file
+                                });
+
+                                fds_file.on("success", function (data) {
+
+                                    _this.userSettings.importData(data);
+
+                                });
+
+                                fds_file.fetch(true);
+                                this.up('.window').hide();
+                            }
+                        },
+                        {
+                            text: 'Close',
+                            handler: function () {
+                                Ext.getCmp(_this.id + "_settings_file").reset();
+                                this.up('.window').hide();
+                                settings_file.reset();
+                            }
                         }
-                    }
-                ]
-            }
-        );
+                    ]
+                }
+            )
+            ;
 
         return window;
     },
@@ -531,9 +534,9 @@ TeamSettingsView.prototype = {
                                     _this.clearSettings();
                                     _this.hide();
                                 }
-                            }else if(_this.action == "edit"){
-                           
-                                
+                            } else if (_this.action == "edit") {
+
+
                                 var name = Ext.getCmp(_this.id + "_panelname").getValue();
 
                                 if (name == "") {
@@ -953,7 +956,7 @@ TeamSettingsView.prototype = {
         return columns;
     },
     _createGridColumnsGenes: function () {
-        var _this= this;
+        var _this = this;
         var columns = [
             {
                 text: "Name",
