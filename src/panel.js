@@ -103,11 +103,11 @@ Panel.prototype = {
         console.log(totalGenes);
         return totalGenes;
     },
-    _removeElement: function(array, elem){
-        var enc = function(array, elem){
+    _removeElement: function (array, elem) {
+        var enc = function (array, elem) {
             var res = -1;
-            for(var i = 0; i< array.length; i++){
-                if(array[i].name == elem.name){
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].name == elem.name) {
                     return i;
                 }
             }
@@ -121,16 +121,16 @@ Panel.prototype = {
             found = enc(array, elem);
         }
     },
-    removeGene: function(geneName){
+    removeGene: function (geneName) {
 
-        for(var i = 0; i< this.diseases.length; i++){
+        for (var i = 0; i < this.diseases.length; i++) {
             var d = this.diseases[i];
-            if(d.genes !== undefined){
+            if (d.genes !== undefined) {
                 this._removeElement(d.genes, {name: geneName});
             }
         }
 
-        this._removeElement(this.extraGenes, {name:geneName});
+        this._removeElement(this.extraGenes, {name: geneName});
 
     },
     getDiseases: function () {
@@ -143,7 +143,7 @@ Panel.prototype = {
         }
         this.diseases.push(dis);
     },
-    addExtraGene: function(gene){
+    addExtraGene: function (gene) {
 
         this.extraGenes.push(gene);
     },
@@ -246,10 +246,14 @@ function UserSettings(args) {
 
 
     _.extend(this, args);
+
+
+    this.on(this.handlers);
 }
 UserSettings.prototype = {
 
     addPanel: function (args) { // CHECK MAX
+
 
         args.panelType = "user";
         args.panelId = this.max++;
@@ -258,24 +262,26 @@ UserSettings.prototype = {
 
         Ext.getStore("UserExampleStore").add(args);
         Ext.getStore("DiseaseStore").add(args);
-    },
-    removePanel: function(panelName){
 
-        var storeAux = Ext.getStore("UserExampleStore").queryBy(function(rec){
+//        this.trigger("add:panel", {sender: this, args: args});
+    },
+    removePanel: function (panelName) {
+
+        var storeAux = Ext.getStore("UserExampleStore").queryBy(function (rec) {
             return rec.data.panelType == "user" && rec.data.name == panelName;
         });
 
         Ext.getStore("UserExampleStore").remove(storeAux.items);
 
-        storeAux = Ext.getStore("DiseaseStore").queryBy(function(rec){
+        storeAux = Ext.getStore("DiseaseStore").queryBy(function (rec) {
             return rec.data.panelType == "user" && rec.data.name == panelName;
         });
 
         Ext.getStore("DiseaseStore").remove(storeAux.items);
 
 
-        for(var i = 0; i< this.userDefined.length; i++){
-            if(this.userDefined[i].panelType == "user" && this.userDefined[i].name == panelName){
+        for (var i = 0; i < this.userDefined.length; i++) {
+            if (this.userDefined[i].panelType == "user" && this.userDefined[i].name == panelName) {
                 this.userDefined.slice(i, 0);
                 break;
             }

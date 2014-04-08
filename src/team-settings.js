@@ -23,9 +23,7 @@ TeamSettingsView.prototype = {
         this.importView.show();
     },
     showSavePanel: function () {
-
         var _this = this;
-
         this.saveView.show();
     },
     newPanel: function () {
@@ -46,13 +44,13 @@ TeamSettingsView.prototype = {
         Ext.getStore("MutationStore").removeAll();
 
         this.panel.show();
-
     },
     show: function (edit) {
+        var _this = this;
 
-        if (this.diseases.length == 0) {
-            this.diseases = this._getDiseases();
-            this.allDiseases.loadData(this.diseases);
+        if (_this.diseases.length == 0) {
+            _this.diseases = _this._getDiseases();
+            _this.allDiseases.loadData(_this.diseases);
         }
 
         this.edit = (edit == null) ? true : edit;
@@ -60,7 +58,7 @@ TeamSettingsView.prototype = {
             Ext.getCmp(this.id + "btnAddPanel").setVisible(true);
             Ext.getCmp(this.id + "btnClearPanel").setVisible(true);
             Ext.getCmp(this.id + "_panelname").enable();
-            Ext.getCmp(this.id + "btnAddPanel").setText("Edit panel");
+            Ext.getCmp(this.id + "btnAddPanel").setText("Save");
             this.action = "edit";
         } else {
             Ext.getCmp(this.id + "btnAddPanel").setVisible(false);
@@ -68,7 +66,6 @@ TeamSettingsView.prototype = {
             Ext.getCmp(this.id + "_panelname").disable();
         }
         this.panel.show();
-
     },
     hide: function () {
         this.panel.hide();
@@ -127,7 +124,7 @@ TeamSettingsView.prototype = {
         var _this = this;
 
         _this.clearSettings();
-        
+
         _this.userPanel = _this.userSettings.get(panelType, panelId);
 
         if (_this.userPanel != null) {
@@ -531,9 +528,9 @@ TeamSettingsView.prototype = {
                                     _this.clearSettings();
                                     _this.hide();
                                 }
-                            }else if(_this.action == "edit"){
-                           
-                                
+                            } else if (_this.action == "edit") {
+
+
                                 var name = Ext.getCmp(_this.id + "_panelname").getValue();
 
                                 if (name == "") {
@@ -953,7 +950,7 @@ TeamSettingsView.prototype = {
         return columns;
     },
     _createGridColumnsGenes: function () {
-        var _this= this;
+        var _this = this;
         var columns = [
             {
                 text: "Name",
@@ -1475,5 +1472,4 @@ TeamSettingsView.prototype = {
         });
         return wrongGenes;
     }
-}
-;
+};

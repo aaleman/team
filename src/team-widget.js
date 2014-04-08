@@ -1,8 +1,8 @@
-function PanelsWidget(args) {
+function TeamWidget(args) {
     var _this = this;
     _.extend(this, Backbone.Events);
 
-    this.id = Utils.genId("PanelsWidget");
+    this.id = Utils.genId("TeamWidget");
 
     //set default args
     this.border = true;
@@ -11,6 +11,7 @@ function PanelsWidget(args) {
     this.width;
     this.height;
     this.userSettings;
+    this.sidePanelDiv;
 
     //set instantiation args, must be last
     _.extend(this, args);
@@ -21,15 +22,74 @@ function PanelsWidget(args) {
     }
 }
 
-PanelsWidget.prototype = {
+TeamWidget.prototype = {
     render: function (targetId) {
         var _this = this;
         this.targetId = (targetId) ? targetId : this.targetId;
+
+        this.diseaseStore = Ext.create("Ext.data.Store", {
+            fields: [
+                {name: 'panelType', type: 'String'},
+                {name: 'panelId', type: 'int'},
+                {name: 'name', type: 'String'},
+                {name: 'value', type: 'String',
+                    convert: function (v, rec) {
+                        return rec.get('panelType') + '_' + rec.get('panelId');
+                    }}
+            ],
+            data: [],
+            storeId: 'DiseaseStore'
+        });
+
+        this.userDefinedStore = Ext.create('Ext.data.Store', {
+            fields: [
+                {name: 'name', type: 'String'},
+                {name: 'panelId', type: 'String'},
+                {name: 'panelType', type: 'String'}
+            ],
+            data: [],
+            storeId: 'UserExampleStore'
+        });
+
+        this.exampleStore = Ext.create('Ext.data.Store', {
+            fields: [
+                {name: 'name', type: 'String'},
+                {name: 'panelId', type: 'String'},
+                {name: 'panelType', type: 'String'}
+            ],
+            storeId: 'ExampleStore'
+        });
+
+        this.userSettings = new UserSettings({
+            handlers: {
+                "add:panel": function (e) {
+//                    Ext.getStore("UserExampleStore").add(args);
+//                    Ext.getStore("DiseaseStore").add(args);
+                }
+            }
+
+        });
+
+        this.teamListWidget = new TeamListWidget({
+            'title': 'Panels',
+            'pageSize': 7,
+            'targetId': this.sidePanelDiv,
+            'order': 0,
+            'width': 320,
+            'height': 425,
+            border: true,
+            'mode': 'view',
+            userSettings: this.userSettings
+        });
 
         this.rendered = true;
 
     },
     draw: function () {
+        var _this = this;
+
+        this.teamListWidget.render();
+        this.teamListWidget.draw();
 
         this.panel = this._createPanel(this.targetId);
         this.tabPanel = this._createTabPanel();
@@ -227,18 +287,18 @@ PanelsWidget.prototype = {
         //document must be open and closed
         win.document.open();
         win.document.write(
-            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' +
+                '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' +
                 '<html class="' + Ext.baseCSSPrefix + 'ux-grid-printer">' +
                 '<head>' +
                 '<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />' +
                 '<link href="' + stylesheetPath + '" rel="stylesheet" type="text/css" />' +
                 '<title>Team Report</title>' + style);
         win.document.write('</head>' +
-            '<body class="' + Ext.baseCSSPrefix + 'ux-grid-printer-body bodyReport">' +
+                '<body class="' + Ext.baseCSSPrefix + 'ux-grid-printer-body bodyReport">' +
 
-            '<div class="' + Ext.baseCSSPrefix + 'ux-grid-printer-noprint ' + Ext.baseCSSPrefix + 'ux-grid-printer-links">' +
-            '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkprint" href="javascript:void(0);" onclick="window.print();">Print</a>',
-            '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkclose" href="javascript:void(0);" onclick="window.close();">Close</a>' +
+                '<div class="' + Ext.baseCSSPrefix + 'ux-grid-printer-noprint ' + Ext.baseCSSPrefix + 'ux-grid-printer-links">' +
+                '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkprint" href="javascript:void(0);" onclick="window.print();">Print</a>',
+                '<a class="' + Ext.baseCSSPrefix + 'ux-grid-printer-linkclose" href="javascript:void(0);" onclick="window.close();">Close</a>' +
                 '</div>'
         )
         ;
@@ -301,21 +361,6 @@ PanelsWidget.prototype = {
     _createForm: function () {
         var _this = this;
 
-        this.diseaseStore = Ext.create("Ext.data.Store", {
-                fields: [
-                    {name: 'panelType', type: 'String'},
-                    {name: 'panelId', type: 'int'},
-                    {name: 'name', type: 'String'},
-                    {name: 'value', type: 'String',
-                        convert: function (v, rec) {
-                            return rec.get('panelType') + '_' + rec.get('panelId');
-                        }}
-                ],
-                data: [],
-                storeId: 'DiseaseStore'
-            }
-        )
-        ;
 
         var genes = Ext.create('Ext.form.field.File', {
             id: _this.id + "gene_list",
@@ -622,20 +667,15 @@ PanelsWidget.prototype = {
         var _this = this;
 
         var data = [];
-
         _this.progress.updateProgress(0.2, 'Retrieving Genes');
-
         var genes = _this._getRegions(panel.getGenes());
-
         _this.progress.updateProgress(.3, 'Retrieving Disease Info');
 
         for (var i = 0; i < variants.length;) {
             data = [];
-
             for (var j = 0; i < variants.length && j < 100; j++, i++) {
                 data.push(variants[i]);
             }
-
             _this._checkVariantBatch(data, panel, _this.dataPrim);
             _this._checkVariantGeneBatch(data, genes, panel, _this.dataExtra);
         }
@@ -655,9 +695,7 @@ PanelsWidget.prototype = {
         for (var i = 0; i < diseases.length; i++) {
 
             var dis = diseases[i].name;
-
             dis = dis.replace(/ /g, "%20");
-
             var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
 
             $.ajax({
@@ -693,20 +731,15 @@ PanelsWidget.prototype = {
                                 if (!polyphen) {
                                     polyphen = (panel.polyphen == undefined || panel.polyphen == null);
                                 }
-
                                 if (!sift) {
                                     sift = (copy.sift <= panel.sift);
                                 }
-
                                 if (!polyphen) {
                                     polyphen = (copy.polyphen >= panel.polyphen);
                                 }
-
-
                                 if (sift && polyphen) {
                                     _this.dataExtra.push(copy);
                                 }
-
                                 grid.push(copy);
                             }
                         }
@@ -717,7 +750,6 @@ PanelsWidget.prototype = {
                 }
             });
         }
-
         // User-defined Mutations
         for (var i = 0; i < diseases.length; i++) {
             var dis = diseases[i];
@@ -756,16 +788,12 @@ PanelsWidget.prototype = {
                 if (!polyphen) {
                     polyphen = (panel.polyphen == undefined || panel.polyphen == null);
                 }
-
                 if (!sift) {
                     sift = (variant.sift <= panel.sift);
                 }
-
                 if (!polyphen) {
                     polyphen = (variant.polyphen >= panel.polyphen);
                 }
-
-
                 if (sift && polyphen) {
                     _this.dataExtra.push(variant);
                 }
@@ -838,5 +866,13 @@ PanelsWidget.prototype = {
             }
         }
         return null;
+    },
+    showPanels: function () {
+        var _this = this;
+        _this.teamListWidget.show();
+    },
+    hidePanels: function () {
+        var _this = this;
+        _this.teamListWidget.hide();
     }
 };
