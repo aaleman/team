@@ -27,6 +27,47 @@ TeamWidget.prototype = {
         var _this = this;
         this.targetId = (targetId) ? targetId : this.targetId;
 
+        this.mainStore = Ext.create("Ext.data.Store", {
+            fields: [
+                {name: 'panelType', type: 'String'},
+                {name: 'panelId', type: 'int'},
+                {name: 'name', type: 'String'},
+                {name: 'value', type: 'String',
+                    convert: function (v, rec) {
+                        return rec.get('panelType') + '_' + rec.get('panelId');
+                    }}
+            ],
+            data: [],
+            storeId: 'MainStore'
+        });
+
+        this.mainStore.on('add', function (store, records, successful, eOpts) {
+
+            var disStore = Ext.getStore("DiseaseStore");
+            var exStore = Ext.getStore("ExampleStore");
+            var userStore = Ext.getStore("UserExampleStore");
+
+            for (var i = 0; i < records.length; i++) {
+                var record = records[i];
+
+                disStore.add(record);
+                if (record.get("panelType") == "user") {
+                    console.log("user")
+                    userStore.add(record);
+                } else if (record.get("panelType") == "example") {
+                    console.log("example");
+                    exStore.add(record);
+                }
+            }
+        });
+
+        this.mainStore.on("remove", function (store, record, index, isMove, eOpts) {
+            var disStore = Ext.getStore("DiseaseStore");
+            var userStore = Ext.getStore("UserExampleStore");
+            disStore.remove(record);
+            userStore.remove(record);
+        });
+
         this.diseaseStore = Ext.create("Ext.data.Store", {
             fields: [
                 {name: 'panelType', type: 'String'},
@@ -63,11 +104,16 @@ TeamWidget.prototype = {
         this.userSettings = new UserSettings({
             handlers: {
                 "add:panel": function (e) {
-//                    Ext.getStore("UserExampleStore").add(args);
-//                    Ext.getStore("DiseaseStore").add(args);
+                    Ext.getStore("MainStore").add(e.args);
+                },
+                "remove:panel": function (e) {
+                    var panelName = e.panelName;
+                    var storeAux = Ext.getStore("MainStore").queryBy(function (rec) {
+                        return rec.data.panelType == "user" && rec.data.name == panelName;
+                    });
+                    Ext.getStore("MainStore").remove(storeAux.items);
                 }
             }
-
         });
 
         this.teamListWidget = new TeamListWidget({
@@ -81,6 +127,7 @@ TeamWidget.prototype = {
             'mode': 'view',
             userSettings: this.userSettings
         });
+        this.teamListWidget.render();
 
         this.rendered = true;
 
@@ -88,7 +135,6 @@ TeamWidget.prototype = {
     draw: function () {
         var _this = this;
 
-        this.teamListWidget.render();
         this.teamListWidget.draw();
 
         this.panel = this._createPanel(this.targetId);

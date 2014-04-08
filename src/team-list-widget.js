@@ -20,7 +20,7 @@ TeamListWidget.prototype = {
         this.btnClearSettings = this.id + "_btnNewSettings";
         this.btnSaveSettings = this.id + "_btnSaveSettings";
         this.rendered = true;
-        this.diseaseStore = Ext.getStore("DiseaseStore");
+        this.diseaseStore = Ext.getStore("MainStore");
     },
     _createToolbar: function () {
         var _this = this;

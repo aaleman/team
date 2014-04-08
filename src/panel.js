@@ -260,24 +260,9 @@ UserSettings.prototype = {
 
         this.userDefined.push(new Panel(args));
 
-        Ext.getStore("UserExampleStore").add(args);
-        Ext.getStore("DiseaseStore").add(args);
-
-//        this.trigger("add:panel", {sender: this, args: args});
+        this.trigger("add:panel", {sender: this, args: args});
     },
     removePanel: function (panelName) {
-
-        var storeAux = Ext.getStore("UserExampleStore").queryBy(function (rec) {
-            return rec.data.panelType == "user" && rec.data.name == panelName;
-        });
-
-        Ext.getStore("UserExampleStore").remove(storeAux.items);
-
-        storeAux = Ext.getStore("DiseaseStore").queryBy(function (rec) {
-            return rec.data.panelType == "user" && rec.data.name == panelName;
-        });
-
-        Ext.getStore("DiseaseStore").remove(storeAux.items);
 
 
         for (var i = 0; i < this.userDefined.length; i++) {
@@ -286,8 +271,13 @@ UserSettings.prototype = {
                 break;
             }
         }
-        console.log(this.userDefined);
+        this.trigger("remove:panel",
+            {
+                sender: this,
+                panelName: panelName
 
+            }
+        );
     },
     save: function () {
         var aux = [];
@@ -304,8 +294,7 @@ UserSettings.prototype = {
         args.panelType = "example";
         this.examples.push(new Panel(args));
 
-        Ext.getStore("ExampleStore").add(args);
-        Ext.getStore("DiseaseStore").add(args);
+        Ext.getStore("MainStore").add(args);
 
     },
     getData: function () {
@@ -319,8 +308,8 @@ UserSettings.prototype = {
 
         this.userDefined.splice(0, this.userDefined.length);
 
-        var storeAux = Ext.getStore("DiseaseStore").query("panelType", "user");
-        Ext.getStore("DiseaseStore").remove(storeAux.items);
+        var storeAux = Ext.getStore("MainStore").query("panelType", "user");
+        Ext.getStore("MainStore").remove(storeAux.items);
 
         delete localStorage.bioinfo_panels_user_settings;
     },
@@ -374,16 +363,16 @@ UserSettings.prototype = {
 
         if (elem != -1) {
             this.userDefined.splice(elem, 1);
-            var query = Ext.getStore("UserExampleStore").queryBy(function (record, id) {
+            var query = Ext.getStore("MainStore").queryBy(function (record, id) {
                 return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
             });
 
-            Ext.getStore("UserExampleStore").remove(query.items);
+            Ext.getStore("MainStore").remove(query.items);
 
-            query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
-                return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
-            });
-            Ext.getStore("DiseaseStore").remove(query.items);
+//            query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
+//                return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
+//            });
+//            Ext.getStore("DiseaseStore").remove(query.items);
 
         }
 
