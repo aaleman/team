@@ -180,7 +180,7 @@ TeamPanelListWidget.prototype = {
                             icon: Utils.images.edit,
                             handler: function (grid, rowIndex, colIndex) {
                                 var record = grid.getStore().getAt(rowIndex);
-                                _this.settingsView.load(record.get('panelType'), record.get('panelId'));
+                                _this.settingsView.edit_panel(record.get('panelType'), record.get('panelId'));
 
                             }
                         }
