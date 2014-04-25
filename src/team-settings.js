@@ -185,12 +185,10 @@ TeamSettingsView.prototype = {
                         text: 'Import',
                         handler: function () {
                             var file = document.getElementById(settings_file.fileInputEl.id).files[0];
-                            var fds_file = new FileDataSource(file);
+                            var fds_file = new FileDataSource({file: file});
 
                             fds_file.on("success", function (data) {
-
                                 _this.userSettings.importData(data);
-
                             });
 
                             fds_file.fetch(true);
@@ -577,6 +575,8 @@ TeamSettingsView.prototype = {
                 ]
             }
         );
+        _this.mutationPanel.show();
+
         return window;
     },
     _createNewMutationPanel: function () {
@@ -719,7 +719,7 @@ TeamSettingsView.prototype = {
 
         var window = Ext.create('Ext.window.Window', {
             title: "Add mutation",
-            height: 630,
+            height: 700,
             width: 800,
             minimizable: true,
             closable: false,
@@ -762,6 +762,7 @@ TeamSettingsView.prototype = {
                             end: 32889611
                         });
 
+                        var tracks = [];
 
                         var genomeViewer = new GenomeViewer({
                             sidePanel: false,
@@ -773,8 +774,8 @@ TeamSettingsView.prototype = {
                             trackListTitle: '',
                             drawNavigationBar: true,
                             drawKaryotypePanel: false,
-                            drawChromosomePanel: false,
-                            drawRegionOverviewPanel: false
+                            drawChromosomePanel: false
+//                            drawRegionOverviewPanel: true
                         }); //the div must exist
 
                         genomeViewer.draw();
@@ -798,7 +799,9 @@ TeamSettingsView.prototype = {
                             })
 
                         });
-                        this.gene = new GeneTrack({
+                        tracks.push(_this.sequence);
+
+                        _this.gene = new GeneTrack({
                             targetId: null,
                             id: 2,
                             title: 'Gene',
@@ -825,7 +828,41 @@ TeamSettingsView.prototype = {
                                 featureConfig: FEATURE_CONFIG.gene
                             })
                         });
-                        this.snp = new FeatureTrack({
+                        tracks.push(_this.gene);
+
+                        var renderer = new FeatureRenderer(FEATURE_TYPES.gene);
+                        renderer.on({
+                            'feature:click': function (event) {
+                            }
+                        });
+
+
+                        var gene = new FeatureTrack({
+                            targetId: null,
+                            id: 2,
+//        title: 'Gene',
+                            minHistogramRegionSize: 20000000,
+                            maxLabelRegionSize: 10000000,
+                            height: 100,
+
+                            renderer: renderer,
+
+                            dataAdapter: new CellBaseAdapter({
+                                category: "genomic",
+                                subCategory: "region",
+                                resource: "gene",
+                                params: {
+                                    exclude: 'transcripts'
+                                },
+                                species: genomeViewer.species,
+                                cacheConfig: {
+                                    chunkSize: 100000
+                                }
+                            })
+                        });
+                        genomeViewer.addOverviewTrack(gene);
+
+                        _this.snp = new FeatureTrack({
                             targetId: null,
                             id: 4,
                             title: 'SNP',
@@ -853,9 +890,12 @@ TeamSettingsView.prototype = {
                             })
                         });
 
-                        genomeViewer.addTrack(_this.sequence);
-                        genomeViewer.addTrack(this.gene);
-                        genomeViewer.addTrack(this.snp);
+                        tracks.push(_this.snp);
+                        genomeViewer.addTrack(tracks);
+
+//                        genomeViewer.addTrack(_this.sequence);
+//                        genomeViewer.addTrack(this.gene);
+//                        genomeViewer.addTrack(this.snp);
 
                         var updateForm = function () {
 

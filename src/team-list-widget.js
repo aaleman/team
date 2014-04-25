@@ -1,7 +1,6 @@
 function TeamListWidget(args) {
     var _this = this;
 
-    console.log(args);
     this.counter = null;
     this.allData = [];
     this.userSettings;
@@ -10,7 +9,6 @@ function TeamListWidget(args) {
     //set instantiation args, must be last
     _.extend(this, args);
 };
-
 TeamListWidget.prototype = {
     render: function (targetId) {
         var _this = this;
@@ -272,14 +270,13 @@ TeamListWidget.prototype.draw = function () {
         autoRender: true,
         userSettings: this.userSettings
     });
-
     this.settingsView.draw();
-
 
     this.bar = _this._createToolbar();
     this.grid = _this._createUserPanelsGrid();
     this.exampleGrid = _this._createExamplePanelsGrid();
     this.panel = _this._createPanel();
+
 };
 
 TeamListWidget.prototype.show = function () {

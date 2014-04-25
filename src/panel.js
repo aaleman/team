@@ -10,7 +10,6 @@ function Mutation(args) {
     _.extend(this, args);
 }
 Mutation.prototype = {
-
     toJSON: function () {
         return {
             chr: this.chr,
@@ -19,8 +18,7 @@ Mutation.prototype = {
             alt: this.alt
         };
     }
-}
-;
+};
 
 function Disease(args) {
     _.extend(this, Backbone.Events);
@@ -45,7 +43,6 @@ Disease.prototype = {
         return this.genes;
     },
     addMutation: function (chr, pos, ref, alt) {
-
         var m = new Mutation({
             chr: chr,
             pos: pos,
@@ -53,7 +50,6 @@ Disease.prototype = {
             alt: alt
         });
         this.mutations.push(m);
-
     },
     getMutations: function () {
         return this.mutations;
@@ -87,20 +83,17 @@ Panel.prototype = {
         }
     },
     getGenes: function () {
-
         var totalGenes = [];
-
         for (var i = 0; i < this.diseases.length; i++) {
             var d = this.diseases[i];
             for (var j = 0; d.genes !== undefined && j < d.genes.length; j++) {
                 totalGenes.push(d.genes[j]);
             }
         }
-
         for (var i = 0; this.extraGenes !== undefined && i < this.extraGenes.length; i++) {
             totalGenes.push(this.extraGenes[i]);
         }
-        console.log(totalGenes);
+
         return totalGenes;
     },
     _removeElement: function (array, elem) {
@@ -122,16 +115,13 @@ Panel.prototype = {
         }
     },
     removeGene: function (geneName) {
-
         for (var i = 0; i < this.diseases.length; i++) {
             var d = this.diseases[i];
             if (d.genes !== undefined) {
                 this._removeElement(d.genes, {name: geneName});
             }
         }
-
         this._removeElement(this.extraGenes, {name: geneName});
-
     },
     getDiseases: function () {
         return this.diseases;
@@ -154,7 +144,6 @@ Panel.prototype = {
                 return d;
             }
         }
-
         return null;
     },
     removeDisease: function (disName) {
@@ -206,7 +195,6 @@ Panel.prototype = {
 function UserSettings(args) {
     _.extend(this, Backbone.Events);
 
-    // Default values
     this.id = Utils.genId("UserSettings");
     this.examples = [];
     this.userDefined = [];
@@ -243,18 +231,12 @@ function UserSettings(args) {
         this.save();
         this.max = i;
     }
-
-
     _.extend(this, args);
-
-
     this.on(this.handlers);
 }
 UserSettings.prototype = {
 
     addPanel: function (args) { // CHECK MAX
-
-
         args.panelType = "user";
         args.panelId = this.max++;
 
@@ -263,8 +245,6 @@ UserSettings.prototype = {
         this.trigger("add:panel", {sender: this, args: args});
     },
     removePanel: function (panelName) {
-
-
         for (var i = 0; i < this.userDefined.length; i++) {
             if (this.userDefined[i].panelType == "user" && this.userDefined[i].name == panelName) {
                 this.userDefined.slice(i, 0);
