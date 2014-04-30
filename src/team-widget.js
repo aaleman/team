@@ -139,6 +139,7 @@ TeamWidget.prototype = {
 
         this.panel = this._createPanel(this.targetId);
         this.tabPanel = this._createTabPanel();
+        this.gridEffect = this._createEffectGrid();
         this.progress = Ext.create('Ext.ProgressBar', {
             text: 'Progress',
             border: 1,
@@ -151,9 +152,11 @@ TeamWidget.prototype = {
         this.form = this._createForm();
         this.primDisGrid = this._createDiseaseGrid("Diagnostic");
         this.extraGrid = this._createDiseaseGrid("Secondary findings");
+        this.genomeViewerWindow = this._createGenomeViewerWindow();
 
         this.panel.add(this.form);
         this.panel.add(this.tabPanel);
+        this.panel.add(this.gridEffect);
 //        this.panel.add(this.progress);
 
         this.tabPanel.add(this.primDisGrid.getPanel());
@@ -461,9 +464,13 @@ TeamWidget.prototype = {
                         button.disable();
 
                         _this.dataPrim = [];
+                        _this.dataExtra = [];
+
+                        //_this.tabPanel.setActiveTab(_this.extraGrid.getPanel());
 
                         _this.primDisGrid.clear();
                         _this.extraGrid.clear();
+                        _this.gridEffect.getStore().removeAll();
 
                         var form = _this.form.getForm();
                         if (form.isValid()) {
@@ -528,6 +535,7 @@ TeamWidget.prototype = {
     },
     _createDiseaseGrid: function (gridName) {
 
+        var _this = this;
         var newGrid = new Grid();
 
         var groupingFeature = Ext.create('Ext.grid.feature.Grouping', {
@@ -560,7 +568,8 @@ TeamWidget.prototype = {
             {name: "aaPos", type: 'int'}   ,
             {name: "aaChange", type: 'String'},
             {name: "phenotype", type: 'String'},
-            {name: "source", type: 'String'}
+            {name: "source", type: 'String'},
+            {name: "conservation", type: 'float'},
         ];
         var renderer = function (value) {
             if (value == '') {
@@ -588,7 +597,8 @@ TeamWidget.prototype = {
             {dataIndex: "phenotype", text: 'Phenotype', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "source", text: 'Source', flex: 1, emptyCellText: '.', renderer: renderer},
             {dataIndex: "sift", text: 'SIFT', flex: 1, emptyCellText: '.', renderer: renderer},
-            {dataIndex: "polyphen", text: 'PolyPhen', flex: 1, emptyCellText: '.', renderer: renderer}
+            {dataIndex: "polyphen", text: 'PolyPhen', flex: 1, emptyCellText: '.', renderer: renderer},
+            {dataIndex: "conservation", text: 'Conservation', flex: 1, emptyCellText: '.', renderer: renderer}
         ];
 
         newGrid.createModel('Variant', attributes);
@@ -619,6 +629,25 @@ TeamWidget.prototype = {
                 }
             ]
         });
+
+
+        newGrid.grid.getSelectionModel().on('selectionchange', function (sm, selectedRecord) {
+
+            if (selectedRecord.length) {
+
+                var row = selectedRecord[0].data;
+
+                console.log(row);
+                var chr = row.chromosome;
+                var pos = row.position;
+                var ref = row.reference;
+                var alt = row.alternate;
+
+                _this._updateEffectGrid(chr, pos, ref, alt);
+
+            }
+        });
+
         return newGrid;
     },
     _getRegions: function (genes) {
@@ -714,7 +743,10 @@ TeamWidget.prototype = {
 
         var data = [];
         _this.progress.updateProgress(0.2, 'Retrieving Genes');
-        var genes = _this._getRegions(panel.getGenes());
+        //var genes = _this._getRegions(panel.getGenes());
+        var genes = panel.getGenes();
+        console.log(genes);
+        console.log(panel.getGenes());
         _this.progress.updateProgress(.3, 'Retrieving Disease Info');
 
         for (var i = 0; i < variants.length;) {
@@ -763,10 +795,12 @@ TeamWidget.prototype = {
 
                                 copy.gene = aux.associatedGenes;
                                 copy.phenotype = aux.phenotype;
-                                copy.source = aux.source;
+                                //copy.source = aux.source;
+                                copy.source = _this._parsePhenotypeSource(aux.phenotype, aux.source); 
 
                                 _this._getEffect(copy);
                                 _this._getPolyphenSift(copy);
+                                _this._getConservation(copy);
 
                                 var sift = (copy.sift == undefined || copy.sift == null);
                                 var polyphen = (copy.polyphen == undefined || copy.polyphen == null);
@@ -813,6 +847,39 @@ TeamWidget.prototype = {
             }
         }
     },
+    _generateURL: function(path, text){
+    
+        return "<a href=\"" + path + "\" target=\"_blank\">" + text + "<\a>";
+    },
+    _parsePhenotypeSource: function(phenotype, source){
+        var _this = this;
+    
+        var res = "";
+        switch (source) {
+            case 'OMIM':
+                // http://omim.org/search?index=entry&start=1&limit=10&search=RETINITIS+PIGMENTOSA+4&sort=score+desc%2C+prefix_sort+desc
+                res = _this._generateURL("http://omim.org/search?index=entry&start=1&limit=10&search=" + phenotype + "&sort=score+desc%2C+prefix_sort+desc", source); 
+                break;
+
+            case 'dbSNP_ClinVar':
+                res = _this._generateURL("https://www.ncbi.nlm.nih.gov/clinvar/?term=" + phenotype, source);
+                
+                break;
+
+            case 'Uniprot':
+                res = _this._generateURL("http://www.uniprot.org/uniprot/?query=" + phenotype + "&sort=score", source);
+                
+                break;
+
+            case 'dbGap':
+                res = _this._generateURL("http://www.ncbi.nlm.nih.gov/gap/?term=" + phenotype, source);
+            
+            default:
+                res = source;
+                
+        }
+        return res;
+    },
     _checkVariantGeneBatch: function (variants, genes, panel, grid) {
         var _this = this;
 
@@ -825,6 +892,8 @@ TeamWidget.prototype = {
                 variant.gene = panelVariant.name;
                 _this._getEffect(variant);
                 _this._getPolyphenSift(variant);
+                _this._getConservation(variant);
+                
                 var sift = (variant.sift == undefined || variant.sift == null);
                 var polyphen = (variant.polyphen == undefined || variant.polyphen == null);
 
@@ -904,6 +973,34 @@ TeamWidget.prototype = {
             });
         }
     },
+    _getConservation: function (variant) {
+
+        var chr = variant.chromosome;
+        var start = variant.start;
+        var end = variant.end;
+            var url = "http://ws-beta.bioinfo.cipf.es/cellbase-staging-aleman/rest/v3/hsapiens/genomic/region/" + chr + ":" + start + "-" + end+ "/conserved_region";
+
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                async: false,
+                success: function (response, textStatus, jqXHR) {
+                    if(response.response && response.response.length >0 && response.response[0].numResults > 0){
+                        var data = response.response[0].result;
+                        for(var i = 0; i< data.length; i++){
+                            var elem = data[i];
+                            if(elem.type == "phastCons" && elem.values.length >0){
+                                variant.conservation = elem.values[0];
+                            }
+                        }
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('Error loading PolyPhen/SIFT');
+                }
+            });
+        },
+    
     _checkGeneVariant: function (variant, genes) {
         for (var i = 0; i < genes.length; i++) {
             var gene = genes[i];
@@ -920,5 +1017,488 @@ TeamWidget.prototype = {
     hidePanels: function () {
         var _this = this;
         _this.teamListWidget.hide();
+    },
+    _createEffectGrid: function () {
+
+        var groupingFeature = Ext.create('Ext.grid.feature.Grouping', {
+            groupHeaderTpl: '{groupField}: {groupValue} ({rows.length} Effect{[values.rows.length > 1 ? "s" : ""]})'
+        });
+
+        var xtmplPoly = new Ext.XTemplate(
+            '<tpl if="aminoacidChange">{[this.parseEffect(values)]}<tpl else>.</tpl>  ',
+            {
+                parseEffect: function (value) {
+
+                    if (value.polyphenScore == 0 && value.polyphenEffect == 0) {
+                        return ".";
+                    }
+
+                    var score = value.polyphenScore;
+                    var effect = "";
+                    switch (value.polyphenEffect) {
+                        case 0:
+                            effect = "probably damaging";
+                            break;
+                        case 1:
+                            effect = "possibly damaging";
+                            break;
+                        case 2:
+                            effect = "benign";
+                            break;
+                        case 3:
+                            effect = "unknown";
+                            break;
+
+                        default:
+                            return ".";
+
+                    }
+                    return(score + " - (" + effect + ")");
+                }
+            }
+        );
+        var xtmplSift = new Ext.XTemplate(
+            '<tpl if="aminoacidChange">{[this.parseEffect(values)]}<tpl else>.</tpl>  ',
+            {
+                parseEffect: function (value) {
+
+                    if (value.siftScore == 0 && value.siftEffect == 0) {
+                        return ".";
+                    }
+
+                    var score = value.siftScore;
+                    var effect = "";
+                    switch (value.siftEffect) {
+                        case 0:
+                            effect = "tolerated";
+                            break;
+                        case 1:
+                            effect = "deleterious";
+                            break;
+                        default:
+                            return ".";
+
+                    }
+                    return(score + " - (" + effect + ")");
+                }
+            }
+        );
+        this.stEffect = Ext.create("Ext.data.Store", {
+            groupField: 'featureId',
+            fields: [
+                {name: "featureId", type: "String"},
+                {name: "featureName", type: "String"},
+                {name: "featureType", type: "String"},
+                {name: "featureBiotype", type: "String"},
+                {name: "featureChromosome", type: "String"},
+                {name: "featureStart", type: "int"},
+                {name: "featureEnd", type: "int"},
+                {name: "featureStrand", type: "String"},
+                {name: "snpId", type: "String"},
+                {name: "ancestral", type: "String"},
+                {name: "alternative", type: "String"},
+                {name: "geneId", type: "String"},
+                {name: "transcriptId", type: "String"},
+                {name: "geneName", type: "String"},
+                {name: "consequenceType", type: "String"},
+                {name: "consequenceTypeObo", type: "String"},
+                {name: "consequenceTypeDesc", type: "String"},
+                {name: "consequenceTypeType", type: "String"},
+                {name: "aaPosition", type: "int"},
+                {name: "aminoacidChange", type: "String"},
+                {name: "codonChange", type: "String"},
+                {name: "polyphenScore", type: "float"},
+                {name: "polyphenEffect", type: "float"},
+                {name: "siftScore", type: "float"},
+                {name: "siftEffect", type: "float"},
+
+
+            ],
+            data: [],
+            autoLoad: false,
+            proxy: {type: 'memory'},
+            pageSize: 5
+        });
+
+        var gridEffect = Ext.create('Ext.grid.Panel', {
+            title: 'Variant Effect',
+            width: '100%',
+            flex: 2,
+            store: this.stEffect,
+            loadMask: true,
+            border: 1,
+            titleCollapse: true,
+            collapsible: true,
+            margin: '0 5 5 5',
+            columns: [
+                {xtype: 'rownumberer'},
+                {
+                    text: "Position chr:start:end (strand)",
+                    dataIndex: "featureChromosome",
+                    xtype: "templatecolumn",
+                    tpl: '{featureChromosome}:{featureStart}-{featureEnd} <tpl if="featureStrand == 1">(+)<tpl elseif="featureStrand == -1">(-)</tpl>',
+                    flex: 1
+                },
+                {
+                    text: "SNP Id",
+                    dataIndex: "snpId",
+                    flex: 1
+                },
+                {
+                    text: "Conseq. Type",
+                    dataIndex: "consequenceTypeObo",
+                    xtype: "templatecolumn",
+                    tpl: '{consequenceTypeObo} (<a href="http://www.sequenceontology.org/browser/current_svn/term/{consequenceType}" target="_blank">{consequenceType}</a>)',
+                    flex: 1
+                },
+                {
+                    text: "Aminoacid Change",
+                    xtype: "templatecolumn",
+                    tpl: '<tpl if="aminoacidChange">{aminoacidChange} - {codonChange} ({aaPosition}) <tpl else>.</tpl>  ',
+                    flex: 1
+                },
+                //{
+                    //text: "Polyphen",
+                    //xtype: "templatecolumn",
+                    //dataIndex: "polyphenScore",
+                    //tpl: xtmplPoly,
+                    //flex: 1
+                //},
+                //{
+                    //text: "SIFT",
+                    //xtype: "templatecolumn",
+                    //dataIndex: "siftScore",
+                    //tpl: xtmplSift,
+                    //flex: 1
+                //},
+                {
+                    text: "Gene (EnsemblId)",
+                    dataIndex: "geneName",
+                    xtype: 'templatecolumn',
+                    tpl: '<tpl if="geneName">{geneName} (<a href="http://www.ensembl.org/Homo_sapiens/Location/View?g={geneId}" target="_blank">{geneId}</a>)<tpl else>.</tpl>',
+                    flex: 1
+                },
+                {
+                    text: "Transcript Id",
+                    dataIndex: "transcriptId",
+                    xtype: 'templatecolumn',
+                    tpl: '<a href="http://www.ensembl.org/Homo_sapiens/Location/View?t={transcriptId}" target="_blank">{transcriptId}</a>',
+                    flex: 1
+                },
+                {
+                    text: "Feature Id",
+                    dataIndex: "featureId",
+                    flex: 1
+
+                },
+                {
+                    text: "Feature Name",
+                    dataIndex: "featureName",
+                    flex: 1
+
+                },
+                {
+                    text: "Feature Type",
+                    dataIndex: "featureType",
+                    flex: 1
+
+                },
+                {
+                    text: "Feature Biotype",
+                    dataIndex: "featureBiotype",
+                    flex: 1
+
+                },
+                {
+                    text: "Ancestral",
+                    dataIndex: "ancestral",
+                    hidden: true,
+                    flex: 1
+                },
+                {
+                    text: "Alternative",
+                    dataIndex: "alternative",
+                    hidden: true,
+                    flex: 1
+                }
+            ],
+            viewConfig: {
+                emptyText: 'No records to display'
+            },
+            dockedItems: [
+                {
+                    xtype: 'toolbar',
+                    dock: 'bottom',
+                    items: [
+                        {
+                            xtype: 'tbtext',
+                            id: this.id + "numRowsLabelEffect"
+                        }
+                    ]
+                }
+            ]
+        });
+        return gridEffect
+    },
+    _updateEffectGrid: function (chr, pos, ref, alt) {
+
+        var _this = this;
+        var req = chr + ":" + pos + ":" + ref + ":" + alt;
+        _this.gridEffect.setLoading(true);
+
+        $.ajax({
+            url: "http://ws-beta.bioinfo.cipf.es/cellbase-staging/rest/latest/hsa/genomic/variant/" + req + "/consequence_type?of=json",
+            dataType: 'json',
+            success: function (response, textStatus, jqXHR) {
+                if (response.length > 0) {
+
+                    var data = _this._filterEffectData(response);
+
+                    _this.gridEffect.getStore().loadData(data);
+                    _this.gridEffect.setTitle('Variant Effect - <spap class="info">' + chr + ':' + pos + ' ' + ref + '>' + alt + '</spap>');
+                    Ext.getCmp(_this.id + "numRowsLabelEffect").setText(data.length + " effects");
+
+                } else {
+                    _this.gridEffect.getStore().removeAll();
+                }
+                _this.gridEffect.setLoading(false);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('Error loading Effect');
+                _this.gridEffect.setLoading(false);
+            }
+        });
+    },
+    _filterEffectData: function(data){
+        var _this = this;
+        var res = [];
+
+        var regulatory = {};
+
+        for(var i = 0; i< data.length; i++){
+            var elem = data[i];
+            if(elem.consequenceTypeObo == "coding_sequence_variant" || elem.consequenceTypeObo == "exon_variant" || elem.consequenceTypeObo == "intron_variant"){
+                continue;
+            }else if (elem.consequenceTypeObo == "regulatory_region_variant"){
+                if(!(elem.featureId in regulatory)){
+                    regulatory[elem.featureId] = elem;
+                }
+                continue;
+            }
+
+            res.push(elem);
+        }
+
+        for(var elem in regulatory){
+            res.push(regulatory[elem]);
+        }
+
+        return res;
+    },
+
+    _createGenomeViewerWindow: function () {
+        var _this = this;
+        this.genomeViewer = this._createGenomeViewer();
+
+        var panel = Ext.create('Ext.window.Window', {
+            // title: 'Effect',
+            width: '100%',
+            height: '100%',
+            border: 0,
+            layout: 'hbox',
+            bodyPadding: 20,
+            cls: 'ocb-border-top-lightgrey',
+            items: [this.genomeViewer]
+        });
+        return panel;
+    }
+    ,
+    _createGenomeViewer: function () {
+        var _this = this;
+
+        var rendered = true;
+
+        var gvpanel = Ext.create('Ext.panel.Panel', {
+            title: 'Genome Viewer',
+            flex: 8,
+            height: '100%',
+            border: 1,
+            html: '<div id="' + this.id + 'genomeViewerMain" style="width:750px;height:600;position:relative;"></div>',
+            listeners: {
+                afterlayout: {
+                    fn: function () {
+                        //prevent fires multiple times
+                        if (!rendered) {
+                            return;
+                        }
+                        rendered = false;
+                        var w = this.getWidth();
+                        $('#' + _this.id + 'genomeViewerMain').width(w);
+
+                        var region = new Region({
+                            chromosome: "13",
+                            start: 32889611,
+                            end: 32889611
+                        });
+
+
+                        var genomeViewer = new GenomeViewer({
+                            sidePanel: false,
+                            targetId: _this.id + 'genomeViewerMain',
+                            autoRender: true,
+                            border: false,
+                            resizable: true,
+                            region: region,
+                            trackListTitle: '',
+                            drawNavigationBar: true,
+                            drawKaryotypePanel: false,
+                            drawChromosomePanel: false,
+                            drawRegionOverviewPanel: true,
+                            overviewZoomMultiplier: 50
+                        }); //the div must exist
+
+                        genomeViewer.draw();
+
+
+                        this.sequence = new SequenceTrack({
+                            targetId: null,
+                            id: 1,
+                            title: 'Sequence',
+                            height: 30,
+                            visibleRegionSize: 200,
+                            histogramZoom: 20,
+                            transcriptZoom: 50,
+
+
+                            renderer: new SequenceRenderer(),
+
+                            dataAdapter: new SequenceAdapter({
+                                category: "genomic",
+                                subCategory: "region",
+                                resource: "sequence",
+                                species: genomeViewer.species
+                            })
+                        });
+
+
+                        this.gene = new GeneTrack({
+                            targetId: null,
+                            id: 2,
+                            title: 'Gene',
+                            height: 140,
+                            minHistogramRegionSize: 20000000,
+                            maxLabelRegionSize: 10000000,
+                            minTranscriptRegionSize: 200000,
+                            //featureTypes: FEATURE_TYPES,
+
+                            renderer: new GeneRenderer(),
+
+                            dataAdapter: new CellBaseAdapter({
+                                category: "genomic",
+                                subCategory: "region",
+                                resource: "gene",
+                                species: genomeViewer.species,
+                                params: {
+                                    exclude: 'transcripts.tfbs,transcripts.xrefs,transcripts.exons.sequence'
+                                },
+                                cacheConfig: {
+                                    chunkSize: 50000
+                                },
+                                filters: {},
+                                options: {},
+                                featureConfig: FEATURE_CONFIG.gene
+                            })
+                        });
+
+                        this.snp = new FeatureTrack({
+                            targetId: null,
+                            id: 4,
+                            title: 'SNP',
+                            minHistogramRegionSize: 12000,
+                            maxLabelRegionSize: 3000,
+                            height: 100,
+                            //featureTypes: FEATURE_TYPES,
+
+                            //renderer: new FeatureRenderer('snp'),
+                            renderer: new FeatureRenderer(FEATURE_TYPES.snp),
+
+
+                            dataAdapter: new CellBaseAdapter({
+                                category: "genomic",
+                                subCategory: "region",
+                                resource: "snp",
+                                params: {
+                                    exclude: 'transcriptVariations,xrefs,samples'
+                                },
+                                species: genomeViewer.species,
+                                cacheConfig: {
+                                    chunkSize: 10000
+                                },
+                                filters: {},
+                                options: {},
+                                featureConfig: FEATURE_CONFIG.snp
+                            })
+                        });
+
+
+                        var renderer = new FeatureRenderer(FEATURE_TYPES.gene);
+                        renderer.on({
+                            'feature:click': function (event) {
+                            }
+                        });
+
+
+                        var gene = new FeatureTrack({
+                            targetId: null,
+                            id: 2,
+//        title: 'Gene',
+                            minHistogramRegionSize: 20000000,
+                            maxLabelRegionSize: 10000000,
+                            height: 100,
+
+                            renderer: renderer,
+
+                            dataAdapter: new CellBaseAdapter({
+                                category: "genomic",
+                                subCategory: "region",
+                                resource: "gene",
+                                params: {
+                                    exclude: 'transcripts'
+                                },
+                                species: genomeViewer.species,
+                                cacheConfig: {
+                                    chunkSize: 100000
+                                }
+                            })
+                        });
+                        genomeViewer.addOverviewTrack(gene);
+
+
+                        genomeViewer.addTrack(this.sequence);
+                        genomeViewer.addTrack(this.gene);
+                        genomeViewer.addTrack(this.snp);
+
+                        _this.gv = genomeViewer;
+
+                        $(_this.gv.navigationBar.restoreDefaultRegionButton).hide();
+                        $(_this.gv.navigationBar.regionHistoryButton).hide();
+                        $(_this.gv.navigationBar.speciesButton).hide();
+                        $(_this.gv.navigationBar.chromosomesButton).hide();
+                        $(_this.gv.navigationBar.karyotypeButton).hide();
+                        $(_this.gv.navigationBar.chromosomeButton).hide();
+                        $(_this.gv.navigationBar.regionButton).hide();
+                        $(_this.gv.navigationBar.windowSizeField).parent().hide();
+                        //$(_this.gv.navigationBar.regionField).parent().hide();
+                        //$(_this.gv.navigationBar.goButton).parent().hide();
+                        //$(_this.gv.navigationBar.searchField).parent().hide();
+                        //$(_this.gv.navigationBar.quickSearchButton).parent().hide();
+                        $(_this.gv.navigationBar.autoheightButton).parent().hide();
+                        $(_this.gv.navigationBar.compactButton).parent().hide();
+
+                    }
+                }
+            }
+        });
+        return gvpanel;
     }
 };

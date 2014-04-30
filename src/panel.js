@@ -199,6 +199,9 @@ function UserSettings(args) {
     this.examples = [];
     this.userDefined = [];
     this.max = 0;
+    
+    _.extend(this, args);
+    this.on(this.handlers);
 
     if (EXAMPLE_PANELS) {
         for (var i = 0; i < EXAMPLE_PANELS.length; i++) {
@@ -219,7 +222,7 @@ function UserSettings(args) {
         }
     }
 
-    if (localStorage.bioinfo_panels_user_settings) {
+    if (localStorage.bioinfo_panels_user_settings){
         var userDefinedPanels = JSON.parse(localStorage.bioinfo_panels_user_settings);
 
         for (var i = 0; i < userDefinedPanels.length; i++) {
@@ -231,8 +234,6 @@ function UserSettings(args) {
         this.save();
         this.max = i;
     }
-    _.extend(this, args);
-    this.on(this.handlers);
 }
 UserSettings.prototype = {
 
