@@ -1,16 +1,15 @@
-function TeamPanelListWidget(args) {
+function TeamListWidget(args) {
     var _this = this;
 
-    console.log(args);
     this.counter = null;
     this.allData = [];
     this.userSettings;
+    this.settingsView;
 
     //set instantiation args, must be last
     _.extend(this, args);
 };
-
-TeamPanelListWidget.prototype = {
+TeamListWidget.prototype = {
     render: function (targetId) {
         var _this = this;
         this.targetId = (targetId) ? targetId : this.targetId;
@@ -19,7 +18,7 @@ TeamPanelListWidget.prototype = {
         this.btnClearSettings = this.id + "_btnNewSettings";
         this.btnSaveSettings = this.id + "_btnSaveSettings";
         this.rendered = true;
-        this.diseaseStore = Ext.getStore("DiseaseStore");
+        this.diseaseStore = Ext.getStore("MainStore");
     },
     _createToolbar: function () {
         var _this = this;
@@ -90,14 +89,7 @@ TeamPanelListWidget.prototype = {
             ]
         });
 
-        newGrid.store = Ext.create('Ext.data.Store', {
-            model: newGrid.model,
-            storeId: 'UserExampleStore',
-            sorters: [
-                { property: 'date', direction: 'DESC'}
-            ],
-            autoLoad: false
-        });
+        newGrid.store = Ext.getStore("UserExampleStore");
 
         newGrid.grid = Ext.create('Ext.grid.Panel', {
             title: 'User-defined',
@@ -154,14 +146,7 @@ TeamPanelListWidget.prototype = {
             ]
         });
 
-        newGrid.store = Ext.create('Ext.data.Store', {
-            model: newGrid.model,
-            storeId: 'ExampleStore',
-            sorters: [
-                { property: 'date', direction: 'DESC'}
-            ],
-            autoLoad: false
-        });
+        newGrid.store = Ext.getStore("ExampleStore");
 
         newGrid.grid = Ext.create('Ext.grid.Panel', {
             title: 'Examples',
@@ -278,23 +263,30 @@ TeamPanelListWidget.prototype = {
 }
 ;
 
-TeamPanelListWidget.prototype.draw = function () {
+TeamListWidget.prototype.draw = function () {
     var _this = this;
+
+    this.settingsView = new TeamSettingsView({
+        autoRender: true,
+        userSettings: this.userSettings
+    });
+    this.settingsView.draw();
 
     this.bar = _this._createToolbar();
     this.grid = _this._createUserPanelsGrid();
     this.exampleGrid = _this._createExamplePanelsGrid();
     this.panel = _this._createPanel();
+
 };
 
-TeamPanelListWidget.prototype.show = function () {
+TeamListWidget.prototype.show = function () {
     if (!this.panel.rendered) {
         this.panel.render(this.targetId);
     }
     this.panel.show();
 };
 
-TeamPanelListWidget.prototype.hide = function () {
+TeamListWidget.prototype.hide = function () {
     if (!this.panel.rendered) {
         this.panel.render(this.targetId);
     }

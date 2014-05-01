@@ -99,36 +99,13 @@ Team.prototype = {
         var topOffset = 80 + $(this.menuDiv).height();
         $(this.wrapDiv).css({height: 'calc(100% - ' + topOffset + 'px)'});
 
-        /* Job List Widget */
-        this.panelListWidget = this._createTeamPanelsListWidget($(this.sidePanelDiv).attr('id'), this.panelsWidget);
-        this.panelListWidget.render();
-        this.panelListWidget.draw();
-
-
-        this.panelsWidget = new PanelsWidget({
+        this.teamWidget = new TeamWidget({
             targetId: $(this.contentDiv).attr('id'),
-            autoRender: true
-        });
-        this.panelsWidget.draw();
-
-
-        this.userSettings = new UserSettings();
-
-
-        this.panelsWidget.userSettings = this.userSettings;
-        this.panelListWidget.userSettings = this.userSettings;
-
-
-        this.settingsView = new TeamSettingsView({
             autoRender: true,
-            userSettings: this.userSettings
-            // parent: this.panelListWidget
+            sidePanelDiv: this.sidePanelDiv
         });
-        this.settingsView.draw();
 
-        this.panelListWidget.settingsView = this.settingsView;
-
-//        this.settingsView.newPanel();
+        this.teamWidget.draw();
     },
     _createMenu: function (targetId) {
         var _this = this;
@@ -151,36 +128,16 @@ Team.prototype = {
                     toggleHandler: function () {
                         if (this.pressed) {
                             this.setText('<span class="emph"> Hide Panels</span>');
-                            _this.panelListWidget.show();
+                            _this.teamWidget.showPanels();
                         } else {
                             this.setText('<span class="emph"> Show Panels</span>');
-                            _this.panelListWidget.hide();
+                            _this.teamWidget.hidePanels();
                         }
                     }
                 }
             ]
         });
         return toolbar;
-    },
-    _createTeamPanelsListWidget: function (targetId, teamWidget) {
-        var _this = this;
-
-
-        var panelListWidget = new TeamPanelListWidget({
-            'title': 'Panels',
-            'pageSize': 7,
-            'targetId': targetId,
-            'order': 0,
-            'width': 320,
-            'height': 425,
-            border: true,
-            'mode': 'view',
-            parent: teamWidget,
-            panels: this.panels
-
-
-        });
-        return panelListWidget;
     },
     _createHeaderWidget: function (targetId) {
         var headerWidget = new HeaderWidget({
@@ -195,7 +152,6 @@ Team.prototype = {
             allowLogin: false
         });
         headerWidget.draw();
-
 
         // Hide Sign in button
         $("#" + headerWidget.id + "btnSignin").hide();
