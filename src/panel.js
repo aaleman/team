@@ -6,6 +6,7 @@ function Mutation(args) {
     this.pos;
     this.ref;
     this.alt;
+    this.gene;
 
     _.extend(this, args);
 }
@@ -15,7 +16,8 @@ Mutation.prototype = {
             chr: this.chr,
             pos: this.pos,
             ref: this.ref,
-            alt: this.alt
+            alt: this.alt,
+            gene: this.gene
         };
     }
 };
@@ -42,12 +44,13 @@ Disease.prototype = {
     getGenes: function () {
         return this.genes;
     },
-    addMutation: function (chr, pos, ref, alt) {
+    addMutation: function (chr, pos, ref, alt, gene) {
         var m = new Mutation({
             chr: chr,
             pos: pos,
             ref: ref,
-            alt: alt
+            alt: alt,
+            gene: gene
         });
         this.mutations.push(m);
     },
@@ -160,20 +163,20 @@ Panel.prototype = {
             this.diseases.splice(elem, 1);
         }
     },
-    addMutationToDisease: function (disName, chr, pos, ref, alt) {
+    addMutationToDisease: function (disName, chr, pos, ref, alt, geneName) {
 
         var b = false;
         for (var i = 0; i < this.diseases.length && !b; i++) {
             var d = this.diseases[i];
             if (d.name == disName) {
-                d.addMutation(chr, pos, ref, alt);
+                d.addMutation(chr, pos, ref, alt, geneName);
                 b = true;
             }
         }
         if (!b) {
             var d = new Disease();
             d.name = disName;
-            d.addMutation(chr, pos, ref, alt);
+            d.addMutation(chr, pos, ref, alt, geneName);
             this.addDisease(d, true);
         }
 
@@ -199,7 +202,7 @@ function UserSettings(args) {
     this.examples = [];
     this.userDefined = [];
     this.max = 0;
-    
+
     _.extend(this, args);
     this.on(this.handlers);
 
@@ -222,7 +225,7 @@ function UserSettings(args) {
         }
     }
 
-    if (localStorage.bioinfo_panels_user_settings){
+    if (localStorage.bioinfo_panels_user_settings) {
         var userDefinedPanels = JSON.parse(localStorage.bioinfo_panels_user_settings);
 
         for (var i = 0; i < userDefinedPanels.length; i++) {
@@ -274,9 +277,7 @@ UserSettings.prototype = {
 
         args.panelType = "example";
         this.examples.push(new Panel(args));
-
         Ext.getStore("MainStore").add(args);
-
     },
     getData: function () {
         return this.userDefined;
@@ -320,7 +321,6 @@ UserSettings.prototype = {
 
         } else if (panelType == "example") {
             data = this.examples;
-
         }
 
         for (var i = 0; i < data.length; i++) {
@@ -332,7 +332,6 @@ UserSettings.prototype = {
         return null;
     },
     remove: function (panel) {
-
         var elem = -1;
         for (var i = 0; i < this.userDefined.length; i++) {
             var p = this.userDefined[i];
@@ -341,25 +340,14 @@ UserSettings.prototype = {
                 break;
             }
         }
-
         if (elem != -1) {
             this.userDefined.splice(elem, 1);
             var query = Ext.getStore("MainStore").queryBy(function (record, id) {
                 return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
             });
-
             Ext.getStore("MainStore").remove(query.items);
-
-//            query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
-//                return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
-//            });
-//            Ext.getStore("DiseaseStore").remove(query.items);
-
         }
-
-
     }
-
 }
 ;
 
