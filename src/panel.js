@@ -6,21 +6,21 @@ function Mutation(args) {
     this.pos;
     this.ref;
     this.alt;
+    this.gene;
 
     _.extend(this, args);
 }
 Mutation.prototype = {
-
     toJSON: function () {
         return {
             chr: this.chr,
             pos: this.pos,
             ref: this.ref,
-            alt: this.alt
+            alt: this.alt,
+            gene: this.gene
         };
     }
-}
-;
+};
 
 function Disease(args) {
     _.extend(this, Backbone.Events);
@@ -44,16 +44,15 @@ Disease.prototype = {
     getGenes: function () {
         return this.genes;
     },
-    addMutation: function (chr, pos, ref, alt) {
-
+    addMutation: function (chr, pos, ref, alt, gene) {
         var m = new Mutation({
             chr: chr,
             pos: pos,
             ref: ref,
-            alt: alt
+            alt: alt,
+            gene: gene
         });
         this.mutations.push(m);
-
     },
     getMutations: function () {
         return this.mutations;
@@ -87,21 +86,45 @@ Panel.prototype = {
         }
     },
     getGenes: function () {
-
         var totalGenes = [];
-
         for (var i = 0; i < this.diseases.length; i++) {
             var d = this.diseases[i];
             for (var j = 0; d.genes !== undefined && j < d.genes.length; j++) {
                 totalGenes.push(d.genes[j]);
             }
         }
-
         for (var i = 0; this.extraGenes !== undefined && i < this.extraGenes.length; i++) {
             totalGenes.push(this.extraGenes[i]);
         }
-        console.log(totalGenes);
+
         return totalGenes;
+    },
+    _removeElement: function (array, elem) {
+        var enc = function (array, elem) {
+            var res = -1;
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].name == elem.name) {
+                    return i;
+                }
+            }
+            return res;
+        }
+
+        var found = enc(array, elem);
+
+        while (found !== -1) {
+            array.splice(found, 1);
+            found = enc(array, elem);
+        }
+    },
+    removeGene: function (geneName) {
+        for (var i = 0; i < this.diseases.length; i++) {
+            var d = this.diseases[i];
+            if (d.genes !== undefined) {
+                this._removeElement(d.genes, {name: geneName});
+            }
+        }
+        this._removeElement(this.extraGenes, {name: geneName});
     },
     getDiseases: function () {
         return this.diseases;
@@ -113,6 +136,10 @@ Panel.prototype = {
         }
         this.diseases.push(dis);
     },
+    addExtraGene: function (gene) {
+
+        this.extraGenes.push(gene);
+    },
     getDisease: function (disName) {
         for (var i = 0; i < this.diseases.length; i++) {
             var d = this.diseases[i];
@@ -120,7 +147,6 @@ Panel.prototype = {
                 return d;
             }
         }
-
         return null;
     },
     removeDisease: function (disName) {
@@ -137,20 +163,20 @@ Panel.prototype = {
             this.diseases.splice(elem, 1);
         }
     },
-    addMutationToDisease: function (disName, chr, pos, ref, alt) {
+    addMutationToDisease: function (disName, chr, pos, ref, alt, geneName) {
 
         var b = false;
         for (var i = 0; i < this.diseases.length && !b; i++) {
             var d = this.diseases[i];
             if (d.name == disName) {
-                d.addMutation(chr, pos, ref, alt);
+                d.addMutation(chr, pos, ref, alt, geneName);
                 b = true;
             }
         }
         if (!b) {
             var d = new Disease();
             d.name = disName;
-            d.addMutation(chr, pos, ref, alt);
+            d.addMutation(chr, pos, ref, alt, geneName);
             this.addDisease(d, true);
         }
 
@@ -172,11 +198,13 @@ Panel.prototype = {
 function UserSettings(args) {
     _.extend(this, Backbone.Events);
 
-    // Default values
     this.id = Utils.genId("UserSettings");
     this.examples = [];
     this.userDefined = [];
     this.max = 0;
+
+    _.extend(this, args);
+    this.on(this.handlers);
 
     if (EXAMPLE_PANELS) {
         for (var i = 0; i < EXAMPLE_PANELS.length; i++) {
@@ -209,21 +237,31 @@ function UserSettings(args) {
         this.save();
         this.max = i;
     }
-
-
-    _.extend(this, args);
 }
 UserSettings.prototype = {
 
     addPanel: function (args) { // CHECK MAX
-
         args.panelType = "user";
         args.panelId = this.max++;
 
         this.userDefined.push(new Panel(args));
 
-        Ext.getStore("UserExampleStore").add(args);
-        Ext.getStore("DiseaseStore").add(args);
+        this.trigger("add:panel", {sender: this, args: args});
+    },
+    removePanel: function (panelName) {
+        for (var i = 0; i < this.userDefined.length; i++) {
+            if (this.userDefined[i].panelType == "user" && this.userDefined[i].name == panelName) {
+                this.userDefined.slice(i, 0);
+                break;
+            }
+        }
+        this.trigger("remove:panel",
+            {
+                sender: this,
+                panelName: panelName
+
+            }
+        );
     },
     save: function () {
         var aux = [];
@@ -239,10 +277,7 @@ UserSettings.prototype = {
 
         args.panelType = "example";
         this.examples.push(new Panel(args));
-
-        Ext.getStore("ExampleStore").add(args);
-        Ext.getStore("DiseaseStore").add(args);
-
+        Ext.getStore("MainStore").add(args);
     },
     getData: function () {
         return this.userDefined;
@@ -255,8 +290,8 @@ UserSettings.prototype = {
 
         this.userDefined.splice(0, this.userDefined.length);
 
-        var storeAux = Ext.getStore("DiseaseStore").query("panelType", "user");
-        Ext.getStore("DiseaseStore").remove(storeAux.items);
+        var storeAux = Ext.getStore("MainStore").query("panelType", "user");
+        Ext.getStore("MainStore").remove(storeAux.items);
 
         delete localStorage.bioinfo_panels_user_settings;
     },
@@ -286,7 +321,6 @@ UserSettings.prototype = {
 
         } else if (panelType == "example") {
             data = this.examples;
-
         }
 
         for (var i = 0; i < data.length; i++) {
@@ -298,7 +332,6 @@ UserSettings.prototype = {
         return null;
     },
     remove: function (panel) {
-
         var elem = -1;
         for (var i = 0; i < this.userDefined.length; i++) {
             var p = this.userDefined[i];
@@ -307,25 +340,14 @@ UserSettings.prototype = {
                 break;
             }
         }
-
         if (elem != -1) {
             this.userDefined.splice(elem, 1);
-            var query = Ext.getStore("UserExampleStore").queryBy(function (record, id) {
+            var query = Ext.getStore("MainStore").queryBy(function (record, id) {
                 return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
             });
-
-            Ext.getStore("UserExampleStore").remove(query.items);
-
-            query = Ext.getStore("DiseaseStore").queryBy(function (record, id) {
-                return (record.get('panelType') == panel.panelType && record.get('panelId') == panel.panelId);
-            });
-            Ext.getStore("DiseaseStore").remove(query.items);
-
+            Ext.getStore("MainStore").remove(query.items);
         }
-
-
     }
-
 }
 ;
 
