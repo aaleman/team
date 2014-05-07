@@ -408,17 +408,17 @@ TeamWidget.prototype = {
 
         var style = "<style>" +
             ".bodyReport {font-family: tahoma, arial, verdana, sans-serif;}" +
-            ".reportTitle {height: 20px;font-size: 20px;text-align: center;padding: 10px 10px 10px 10px;}" +
+            ".reportTitle {height: 50px;font-size: 40px;text-align: center;padding: 10px 10px 10px 10px;}" +
             ".gridHeader {height: 30px;}" +
-            ".reportInfo {margin-left:50px;margin-right:50px;margin-top: 20px;margin-bottom:30px;text-indent: 20px;text-align: center;}" +
+".reportInfo { margin-left:50px; margin-right:50px; margin-top: 20px; margin-bottom:30px; padding-top: 20px; padding-bottom:20px; text-align: center; border-style:solid; border-width:1px; }" +
             ".gridHeader {padding-left: 100px;margin-top: 20px;margin-bottom: 20px;}" +
             ".reportGrid{margin-left:50px;margin-right:50px;}" +
             "td{max-width: 200px;word-wrap:break-word}" +
             ".reportDate{margin-top: 20px;margin-bottom:20px;margin-left:50px;}" +
             ".reportDateText{}" +
             ".reportName{margin-top: 20px;margin-left:50px;}" +
-            ".reportComments{margin-top:20px;margin-left:50px;margin-bottom: 10px;}" +
-            ".reportCommentsText{text-indent: 20px;margin-left:50px;}" +
+            ".reportCommentsText{margin-left:50px; margin-right:50px; margin-top: 20px; margin-bottom:30px; padding-top: 20px; padding-bottom:20px; text-align: center; border-style:solid; border-width:1px;}" +
+            ".reportComments{margin-top:20px;text-indent: 20px;margin-left:50px;}" +
             "</style>";
         //document must be open and closed
         win.document.open();
@@ -439,6 +439,8 @@ TeamWidget.prototype = {
         )
         ;
         win.document.write('<div class="reportTitle">' + values.title + '</div>')
+        win.document.write('<div class="reportDate">Date:  ' + values.date + '</div>')
+        win.document.write('<div class="reportName">Name:  ' + values.name + '</div>')
         win.document.write('<div class="reportInfo">' + values.info + '</div>')
         if (values.prim) {
             win.document.write('<div class="gridHeader">Diagnostic: </div>');
@@ -458,8 +460,6 @@ TeamWidget.prototype = {
         win.document.write('<div class="reportGrid">')
         win.document.write(htmlGrid3);
         win.document.write('</div>')
-        win.document.write('<div class="reportDate">Date:  ' + values.date + '</div>')
-        win.document.write('<div class="reportName">Name:  ' + values.name + '</div>')
         win.document.write('<div class="reportComments">Comments: </div><div class="reportCommentsText">' + values.comments + '</div>')
         win.document.write('</body></html>');
         win.document.close();
