@@ -104,7 +104,7 @@ module.exports = function (grunt) {
             dist: {
                 files: [
                     {
-                        src: ['<%= def.build %>/<%= def.name %>/team.html'],
+                        src: ['<%= def.build %>/team.html'],
                         dest: '<%= def.build %>/index.html'}
                 ]
             }

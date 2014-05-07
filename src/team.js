@@ -8,7 +8,7 @@ function Team(args) {
     this.suiteId = 86;
     this.title = 'TEAM';
     this.description = '';
-    this.version = '1.0.0';
+    this.version = '1.0.2';
     this.border = true;
     this.targetId;
     this.width;
