@@ -1071,7 +1071,6 @@ TeamSettingsView.prototype = {
                         _this.geneRO = new FeatureTrack({
                             targetId: null,
                             id: 2,
-//        title: 'Gene',
                             minHistogramRegionSize: 20000000,
                             maxLabelRegionSize: 10000000,
                             height: 100,
@@ -1172,7 +1171,7 @@ TeamSettingsView.prototype = {
     },
     _updateGeneName: function (chr, pos, ref) {
         var _this = this;
-        var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + chr + ":" + pos + "-" + (pos + 1) + "/gene?include=name";
+        var url = CELLBASE_HOST + "/v3/hsapiens/genomic/region/" + chr + ":" + pos + "-" + (pos + 1) + "/gene?include=name";
 
         $.ajax({
             url: url,
@@ -1312,7 +1311,7 @@ TeamSettingsView.prototype = {
 
                 _this.showGenesPanel.clear();
 
-                var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?phenotype=" + disName + "";
+                var url = CELLBASE_HOST + "/v3/hsapiens/feature/snp/phenotypes?phenotype=" + disName + "";
                 url = url.replace(/ /g, "%20");
 
                 $.ajax({
@@ -1351,7 +1350,7 @@ TeamSettingsView.prototype = {
 
                 _this.mutationPhenotypeGrid.clear();
 
-                var url = "http://ws-beta.bioinfo.cipf.es/cellbase-staging-aleman/rest/v3/hsapiens/genomic/variant/" + disName + "/phenotype?limit=100"
+                var url = CELLBASE_HOST + "/v3/hsapiens/genomic/variant/" + disName + "/phenotype?limit=100"
                 url = url.replace(/ /g, "%20");
 
                 console.log(url);
@@ -1542,7 +1541,7 @@ TeamSettingsView.prototype = {
 
                 _this.showGenesPanel.clear();
 
-                var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?phenotype=" + disName + "";
+                var url = CELLBASE_HOST + "/v3/hsapiens/feature/snp/phenotypes?phenotype=" + disName + "";
                 url = url.replace(/ /g, "%20");
 
                 $.ajax({
@@ -1622,7 +1621,7 @@ TeamSettingsView.prototype = {
                                 var genes = [];
                                 var genes2 = [];
 
-                                var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?phenotype=" + disName;
+                                var url = CELLBASE_HOST + "/v3/hsapiens/feature/snp/phenotypes?phenotype=" + disName;
                                 console.log(url);
 
                                 $.ajax({
@@ -1776,7 +1775,7 @@ TeamSettingsView.prototype = {
 
         var data = [];
         $.ajax({
-            url: "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes",
+            url: CELLBASE_HOST + "/v3/hsapiens/feature/snp/phenotypes?exclude=associatedGenes",
             dataType: 'json',
             async: false,
             success: function (response, textStatus, jqXHR) {
@@ -1798,7 +1797,7 @@ TeamSettingsView.prototype = {
     _retrieveInfo: function (geneNames, getWrong) {
 
         var genes = [];
-        var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/gene/" + geneNames.join(",") + "/info?include=chromosome,start,end";
+        var url = CELLBASE_HOST + "/v3/hsapiens/feature/gene/" + geneNames.join(",") + "/info?include=chromosome,start,end";
         console.log(url);
 
         $.ajax({

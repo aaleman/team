@@ -354,10 +354,8 @@ TeamWidget.prototype = {
         Ext.getStore("MutationReportStore").suspendEvents();
         for (var i = 0; i < panel.diseases.length; i++) {
             var disName = panel.diseases[i].name;
-            var url = "http://ws-beta.bioinfo.cipf.es/cellbase-staging-aleman/rest/v3/hsapiens/genomic/variant/" + disName + "/phenotype?limit=100"
+            var url = CELLBASE_HOST + "/v3/hsapiens/genomic/variant/" + disName + "/phenotype?limit=100"
             url = url.replace(/ /g, "%20");
-
-            console.log(url);
 
             $.ajax({
                 url: url,
@@ -386,7 +384,6 @@ TeamWidget.prototype = {
                     source: "user",
                     phenotype: disName
                 };
-                console.log(dis);
 
                 Ext.getStore("MutationReportStore").add(dis);
 
@@ -818,7 +815,7 @@ TeamWidget.prototype = {
 
             var dis = diseases[i].name;
             dis = dis.replace(/ /g, "%20");
-            var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
+            var url = CELLBASE_HOST + "/v3/hsapiens/genomic/region/" + variantsReg.join(",") + "/snp?phenotype=" + dis;
 
             $.ajax({
                 url: url,
@@ -986,7 +983,7 @@ TeamWidget.prototype = {
 
         if (variant.aaPos != undefined && variant.aaPos >= 0) {
             var change = variant.aaChange.split("/")[1];
-            var url = "http://ws-beta.bioinfo.cipf.es/cellbase/rest/v3/hsapiens/feature/transcript/" + variant.transcript + "/function_prediction?aaPosition=" + variant.aaPos + "&aaChange=" + change;
+            var url = CELLBASE_HOST + "/v3/hsapiens/feature/transcript/" + variant.transcript + "/function_prediction?aaPosition=" + variant.aaPos + "&aaChange=" + change;
 
             $.ajax({
                 url: url,
@@ -1013,7 +1010,7 @@ TeamWidget.prototype = {
         var chr = variant.chromosome;
         var start = variant.start;
         var end = variant.end;
-        var url = "http://ws-beta.bioinfo.cipf.es/cellbase-staging-aleman/rest/v3/hsapiens/genomic/region/" + chr + ":" + start + "-" + end + "/conserved_region";
+        var url = CELLBASE_HOST + "/v3/hsapiens/genomic/region/" + chr + ":" + start + "-" + end + "/conserved_region";
 
         $.ajax({
             url: url,
@@ -1205,7 +1202,7 @@ TeamWidget.prototype = {
         _this.gridEffect.setLoading(true);
 
         $.ajax({
-            url: "http://ws-beta.bioinfo.cipf.es/cellbase-staging/rest/latest/hsa/genomic/variant/" + req + "/consequence_type?of=json",
+            url: "http://ws.bioinfo.cipf.es/cellbase/rest/latest/hsa/genomic/variant/" + req + "/consequence_type?of=json",
             dataType: 'json',
             success: function (response, textStatus, jqXHR) {
                 if (response.length > 0) {
