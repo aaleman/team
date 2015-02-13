@@ -35,7 +35,7 @@ function Disease(args) {
 }
 Disease.prototype = {
     toJSON: function () {
-        return{
+        return {
             name: this.name,
             mutations: this.mutations,
             genes: this.genes
@@ -202,6 +202,7 @@ function UserSettings(args) {
     this.examples = [];
     this.userDefined = [];
     this.max = 0;
+    this.changed = 0;
 
     _.extend(this, args);
     this.on(this.handlers);
@@ -225,8 +226,8 @@ function UserSettings(args) {
         }
     }
 
-    if (localStorage.bioinfo_panels_user_settings) {
-        var userDefinedPanels = JSON.parse(localStorage.bioinfo_panels_user_settings);
+    if (localStorage.bioinfo_team_user_settings) {
+        var userDefinedPanels = JSON.parse(localStorage.bioinfo_team_user_settings);
 
         for (var i = 0; i < userDefinedPanels.length; i++) {
             var elem = userDefinedPanels[i];
@@ -246,7 +247,7 @@ UserSettings.prototype = {
 
         this.userDefined.push(new Panel(args));
 
-        this.trigger("add:panel", {sender: this, args: args});
+        //this.trigger("add:panel", {sender: this, args: args});
     },
     removePanel: function (panelName) {
         for (var i = 0; i < this.userDefined.length; i++) {
@@ -271,13 +272,13 @@ UserSettings.prototype = {
                 aux.push(this.userDefined[i]);
             }
         }
-        localStorage.bioinfo_panels_user_settings = JSON.stringify(aux);
+        localStorage.bioinfo_team_user_settings = JSON.stringify(aux);
     },
     addExamplePanel: function (args) {
 
         args.panelType = "example";
         this.examples.push(new Panel(args));
-        Ext.getStore("MainStore").add(args);
+        //Ext.getStore("MainStore").add(args);
     },
     getData: function () {
         return this.userDefined;
@@ -290,14 +291,35 @@ UserSettings.prototype = {
 
         this.userDefined.splice(0, this.userDefined.length);
 
-        var storeAux = Ext.getStore("MainStore").query("panelType", "user");
-        Ext.getStore("MainStore").remove(storeAux.items);
+        //var storeAux = Ext.getStore("MainStore").query("panelType", "user");
+        //Ext.getStore("MainStore").remove(storeAux.items);
 
-        delete localStorage.bioinfo_panels_user_settings;
+        delete localStorage.bioinfo_team_user_settings;
     },
     getUserPanels: function () {
 
         return this.userDefined;
+
+    },
+    getUserPanelsJson: function () {
+        var res = [];
+        for (var i = 0; i < this.userDefined.length; i++) {
+            var obj = this.userDefined[i];
+            res.push(obj.toJSON());
+        }
+        return res;
+    },
+    getExamplePanels: function () {
+        return this.examples;
+    },
+    getExamplePanelsJson: function () {
+
+        var res = [];
+        for (var i = 0; i < this.examples.length; i++) {
+            var obj = this.examples[i];
+            res.push(obj.toJSON());
+        }
+        return res;
 
     },
     toJson: function () {

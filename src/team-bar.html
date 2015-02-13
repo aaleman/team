@@ -1,0 +1,69 @@
+<polymer-element name="team-bar">
+    <template>
+        <link rel="stylesheet" href="../lib/jsorolla/src/lib/components/jso-style.css">
+        <style>
+            :host {
+                display: block;
+                position: relative;
+                box-sizing: border-box;
+                background-color: #FFFFFF;
+                border-bottom: 1px solid #D9D9D9;
+
+                height: 30px;
+                padding: 4px 0;
+            }
+
+            #bar {
+                width: 860px;
+            }
+
+            div.dropdown > div.button::after {
+                content: '\f0d7';
+            }
+        </style>
+        <div id="bar" horizontal layout flex>
+            <div class="dropdown" style="margin-left: 10px">
+                <div tabindex="-1" id="panelButton" class="button" style="border-width:0;">
+                    Panels
+                </div>
+                <ul id="panelMenu" on-click="{{handleClick}}">
+                    <li hidden?="{{lite == 'true'}}" data-value="panel-show">Show panels</li>
+                    <li hidden?="{{lite == 'true'}}" data-value="panel-new">New panel</li>
+                    <li hidden?="{{lite == 'true'}}" data-value="panel-import">Import panel</li>
+                    <li hidden?="{{lite == 'true'}}" data-value="panel-export">Export panel</li>
+                    <li hidden?="{{lite == 'true'}}" data-value="panel-clear">Clear panels</li>
+                </ul>
+            </div>
+
+            <div class="dropdown" style="margin-left: 10px">
+                <div tabindex="-1" id="exampleButton" class="button" style="border-width:0;">
+                    Examples
+                </div>
+                <ul id="exampleMenu" on-click="{{handleClick}}">
+                    <li hidden?="{{lite == 'true'}}" data-value="example-show">Show Example panels</li>
+                    <li hidden?="{{lite == 'true'}}" data-value="example-download">Download Example Data</li>
+                </ul>
+            </div>
+
+        </div>
+    </template>
+    <script>
+        Polymer({
+            created: function () {
+                this.lite = "false";
+            },
+            ready: function () {
+            },
+            handleClick: function (e) {
+                if ('value' in e.target.dataset) {
+                    this.fire(e.target.dataset.value, e.target.dataset);
+                }
+            },
+            handleConfigureClick: function (e) {
+                this.fire('configure');
+            },
+            columnsChange: function (attributes) {
+            }
+        });
+    </script>
+</polymer-element>

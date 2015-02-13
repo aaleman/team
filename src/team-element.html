@@ -90,7 +90,12 @@
 
 <script src="../lib/jsorolla/src/genome-viewer/genome-viewer.js"></script>
 
+<script src="panel.js"></script>
+
+
 <link rel="import" href="team-home.html">
+<link rel="import" href="team-bar.html">
+<link rel="import" href="team-show-panel.html">
 <link rel="import" href="team-search-element.html">
 
 <polymer-element name="team-element">
@@ -101,49 +106,102 @@
                 position: relative;
                 cursor: default;
                 font-size: 13px;
+                height: 100%;
             }
 
             .content {
                 background-color: #435f7a;
                 position: relative;
-                /*min-height: calc(100vh - 160px);*/
+                min-height: calc(100vh - 160px);
             }
 
-            .content > * {
-                min-height: calc(100vh - 160px);
+            .link > a {
+                color: #CCCCCC;
+                text-decoration: none;
+            }
+
+            .link > a:visited {
+                color: #CCCCCC;
+            }
+
+            .link:hover, .link > a:hover {
+                color: #FFFFFF;
             }
 
             jso-project-browser {
                 height: calc(100vh - 160px);
             }
+
+            /*Right Side*/
+            .right-side {
+                top: 94px;
+                right: 0px;
+                position: absolute;
+
+            }
+
         </style>
         <jso-header id="jsoHeader"
-                    on-session-change="{{handleSessionChange}}"
+                    on-logout="{{handleLogout}}"
                     selectedOption="{{selectedOption}}"
                     userData="{{userData}}"
                     showJobs="false"
                     options="{{options}}"
                     allowLogin="false"
-                    helpLink="https://github.com/babelomics/team/wiki"
-                    tutorialLink="https://github.com/babelomics/team/wiki/Tutorial"
-                    hideHomeLink="true">
-            <span class="title">Team</span>
-            <img class="description" src="http://bioinfo.cipf.es/bierwiki/lib/tpl/arctic/images/logobier.jpg"
-                 height="35px"/>
+                    jobItem="{{jobItem}}"
+                >
+            <span class="title">TEAM</span>
+            <span class="description">1.1.0</span>
+
+            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+                <div class="link">
+                    <a href="https://github.com/babelomics/team/wiki" target="_blank">
+                        <font-awesome icon="book"></font-awesome>
+                        &nbsp; Documentation
+                    </a>
+                </div>
+                <div class="link">
+                    <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
+                        <font-awesome icon="list-alt"></font-awesome>
+                        &nbsp; Tutorial
+                    </a>
+                </div>
+                <div class="link">
+                    <a href="https://github.com/babelomics/team" target="_blank">
+                        <font-awesome icon="github"></font-awesome>
+                        &nbsp; Source Code
+                    </a>
+                </div>
+            </jso-help-menu>
         </jso-header>
+
         <div class="content">
+            <team-bar
+                    on-panel-show="{{handlePanelShow}}"
+                    on-panel-export="{{handlePanelExport}}"
+                    on-panel-import="{{handlePanelImport}}"
+                    on-panel-clear="{{handlePanelClear}}"
+                    on-example-show="{{handleExamplePanelShow}}"
+                    ></team-bar>
+
             <team-search-element></team-search-element>
-            <!--<template if="{{ selectedOption == 'home' || selectedOption == 'none' || selectedOption == ''}}">-->
-            <!--<team-home></team-home>-->
-            <!--</template>-->
-            <!--<jso-job-no-ready hidden?="{{selectedOption != 'jobNoReady' }}" jobItem="{{jobItem}}"></jso-job-no-ready>-->
-            <!--<template if="{{selectedOption == 'jobReady' }}">-->
-            <!--<jso-variant-component jobItem="{{jobItem}}"></jso-variant-component>-->
-            <!--</template>-->
-            <!--<template if="{{selectedOption == 'projects'}}">-->
-            <!--<jso-project-browser userData="{{userData}}" selectedStudy="{{selectedStudy}}" studies="{{studies}}"-->
-            <!--selectedProject="{{selectedProject}}"></jso-project-browser>-->
-            <!--</template>-->
+            <div class="right-side">
+                <team-show-panel
+                        id="teamShowPanel"
+                        hidden?="{{hideUserPanel}}"
+                        hideFlag="{{hideUserPanel}}"
+                        userSettings="{{userSettings}}">
+                </team-show-panel>
+
+                <team-show-panel
+                        id="teamShowExamplePanel"
+                        hidden?="{{hideExamplePanel}}"
+                        hideFlag="{{hideExamplePanel}}"
+                        userSettings="{{userSettings}}"
+                        example="true">
+                </team-show-panel>
+
+            </div>
         </div>
         <jso-footer>
             BierApp: created by Computational Genomics Department
@@ -155,19 +213,80 @@
     </template>
     <script>
         Polymer({
+            hideUserPanel: false,
+            hideExamplePanel: false,
             allowedTools: null,
+            userSettings: null,
             created: function () {
                 this.selectedOption = 'home';
                 this.showJobs = false;
                 this.userData = {};
-//                this.allowedTools = ["opencga-storage.sh"];
 
-//                this.selectedProject;
-//                this.selectedStudy;
-//                this.studies;
-//                this.options = this.getOptions();
+            },
+            ready: function () {
+                this.userSettings = new UserSettings();
+                console.log(this.userSettings);
+            },
+            handlePanelShow: function (e) {
+                console.log("Panel Show");
+                this.hideUserPanel = false;
+            },
+            handleExamplePanelShow: function (e) {
+                console.log("Panel Show");
+                this.hideExamplePanel = false;
+            },
+            userSettingsChanged: function (oldValue, newValue) {
+                console.log("cambia user Settings");
+            },
+            observe: {
+                'userSettings.userDefined': 'userSettingsChanged'
+            },
+            handlePanelExport: function (e) {
+                var content = this.userSettings.toJson();
 
-            }
+                var blob = new Blob([content], {type: "application/json"});
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = "panels.json";
+                var fileName = window.prompt("Please enter file name", "panels.json")
+                if (fileName != null && fileName != "") {
+                    link.download = fileName;
+                }
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                link.dispatchEvent(event);
+            },
+            handlePanelImport: function (e) {
+                var me = this;
+                var input = document.createElement('input');
+                input.setAttribute("type", "file");
+                input.addEventListener("change", function (e) {
+                    var file = e.currentTarget.files[0];
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onload = function (evt) {
+                            me.userSettings.importData(evt.target.result);
+                        };
+                        reader.readAsText(file);
+                        e.currentTarget.value = null;
+                    }
+                });
+                var event = new MouseEvent('click', {
+                    'view': window,
+                    'bubbles': true,
+                    'cancelable': true
+                });
+                input.dispatchEvent(event);
+            },
+            handlePanelClear: function (e) {
+                if (confirm('All changes will be lost. Are you sure?')) {
+                    this.userSettings.clear();
+                }
+            },
         });
     </script>
 </polymer-element>
