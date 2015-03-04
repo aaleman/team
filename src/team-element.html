@@ -5,7 +5,6 @@
 <link rel="import" href="../bower_components/core-ajax/core-ajax.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 
-
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
@@ -96,6 +95,7 @@
 <link rel="import" href="team-home.html">
 <link rel="import" href="team-bar.html">
 <link rel="import" href="team-show-panel.html">
+<link rel="import" href="team-new-panel.html">
 <link rel="import" href="team-search-element.html">
 
 <polymer-element name="team-element">
@@ -106,7 +106,6 @@
                 position: relative;
                 cursor: default;
                 font-size: 13px;
-                height: 100%;
             }
 
             .content {
@@ -140,6 +139,17 @@
 
             }
 
+            team-new-panel {
+                min-width: 800px;
+                position: absolute;
+                top: 0px;
+                bottom: 30px;
+                overflow-y: scroll;
+                left: 0;
+                right: 0;
+                padding: 20px 40px;
+            }
+
         </style>
         <jso-header id="jsoHeader"
                     on-logout="{{handleLogout}}"
@@ -147,9 +157,10 @@
                     userData="{{userData}}"
                     showJobs="false"
                     options="{{options}}"
-                    allowLogin="false"
-                    jobItem="{{jobItem}}"
-                >
+                    studies="{{studies}}"
+                    selectedStudy="{{selectedStudy}}"
+                    allowedTools="{{allowedTools}}"
+                    jobItem="{{jobItem}}">
             <span class="title">TEAM</span>
             <span class="description">1.1.0</span>
 
@@ -182,6 +193,7 @@
                     on-panel-import="{{handlePanelImport}}"
                     on-panel-clear="{{handlePanelClear}}"
                     on-example-show="{{handleExamplePanelShow}}"
+                    on-panel-new="{{handlePanelNew}}"
                     ></team-bar>
 
             <team-search-element></team-search-element>
@@ -190,7 +202,9 @@
                         id="teamShowPanel"
                         hidden?="{{hideUserPanel}}"
                         hideFlag="{{hideUserPanel}}"
-                        userSettings="{{userSettings}}">
+                        userSettings="{{userSettings}}"
+                        example="false"
+                        >
                 </team-show-panel>
 
                 <team-show-panel
@@ -202,6 +216,13 @@
                 </team-show-panel>
 
             </div>
+
+            <template if="{{selectedMenu == 'newpanel'}}">
+                <team-new-panel
+                        selectedOption="{{selectedMenu}}"
+                        ></team-new-panel>
+
+            </template>
         </div>
         <jso-footer>
             BierApp: created by Computational Genomics Department
@@ -217,10 +238,23 @@
             hideExamplePanel: false,
             allowedTools: null,
             userSettings: null,
+            selectedMenu: 'newpanel',
             created: function () {
                 this.selectedOption = 'home';
                 this.showJobs = false;
-                this.userData = {};
+                this.studies;
+
+//                this.selectedOption = 'projects';
+
+                this.userData;
+                this.selectedProject;
+                this.selectedStudy;
+                this.studies;
+
+                this.allowedTools = ['team'];
+//                this.allowedTools = ['aaa']
+
+                this.saveInProgress = false;
 
             },
             ready: function () {
@@ -286,6 +320,34 @@
                 if (confirm('All changes will be lost. Are you sure?')) {
                     this.userSettings.clear();
                 }
+            }, handlePanelNew: function (e) {
+                console.log("NEW PANEL!!!")
+                this.selectedMenu = 'newpanel';
+            }, userDataChanged: function (oldValue, newValue) {
+                var me = this;
+                this.selectedProject = this.userData.projects[0];
+
+                OpencgaManager.projects.studies({
+                    id: this.selectedProject.id,
+                    query: {
+                        sid: Cookies("bioinfo_sid")
+                    },
+                    request: {
+                        //method: 'POST',
+                        success: function (response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                me.studies = response.response[0].result;
+                                me.selectedStudy = me.studies[0];
+                            } else {
+                                console.log(response.error);
+                                console.log(response.response[0].errorMsg);
+                            }
+                        },
+                        error: function () {
+                            console.log('Server error, try again later.');
+                        }
+                    }
+                })
             },
         });
     </script>

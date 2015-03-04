@@ -63,8 +63,10 @@
                     <template id="actionsCT">
                         <td>
                             <show-button></show-button>
-                            <edit-button></edit-button>
-                            <remove-button></remove-button>
+                            <template if="{{!args.example}}">
+                                <edit-button></edit-button>
+                                <remove-button></remove-button>
+                            </template>
 
                         </td>
                     </template>
@@ -85,6 +87,8 @@
                 this.displayProperty = '';
                 this.downX;
                 this.downY;
+//                this.example = false;
+
 
             },
             ready: function () {
@@ -99,9 +103,13 @@
                 ];
 
                 this.args = {
-                    handleRemovePanel: this.handleRemovePanel
+                    handleRemovePanel: this.handleRemovePanel,
+                    example: this.example
                 }
 
+            },
+            domReady: function () {
+                console.log("example: " + this.example);
             },
             userSettingsChanged: function (oldValue, newValue) {
 
