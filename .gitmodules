@@ -1,0 +1,3 @@
+[submodule "team-web/lib/jsorolla"]
+	path = team-web/lib/jsorolla
+	url = git@github.com:opencb/jsorolla.git
