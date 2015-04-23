@@ -2,6 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Team</title>
     <!--Fonts-->
     <link href='src/fonts/fonts.css' rel='stylesheet' type='text/css'>
@@ -16,13 +19,26 @@
     <!--Config-->
     <script src="src/t-config.js"></script>
 
+    <!--Fonts-->
+    <link href='src/fonts/fonts.css' rel='stylesheet' type='text/css'>
+    <link href='bower_components/fontawesome/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+    <link href='lib/jsorolla/src/lib/components/jso-global.css' rel='stylesheet' type='text/css'>
+    <link href='lib/jsorolla/src/lib/components/jso-form.css' rel='stylesheet' type='text/css'>
+
+
+    <!--Web Components-->
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="bower_components/polymer/polymer.html">
+    <link rel="import" href="bower_components/layout/layout.html">
+    <script src="bower_components/bowser/bowser.min.js"></script>
+
 
     <!-- External -->
     <script src="bower_components/cookies-js/dist/cookies.min.js"></script>
-    <script src="bower_components/crypto-js-evanvosberg/build/components/core-min.js"></script>
-    <script src="bower_components/crypto-js-evanvosberg/build/components/sha1-min.js"></script>
-    <!--<script src="bower_components/highcharts-release/adapters/standalone-framework.js"></script>-->
-    <!--<script src="bower_components/highcharts-release/highcharts.js"></script>-->
+    <script src="bower_components/crypto-js-evanvosberg/core.js"></script>
+    <script src="bower_components/crypto-js-evanvosberg/sha1.js"></script>
+    <script src="bower_components/highcharts-release/adapters/standalone-framework.js"></script>
+    <script src="bower_components/highcharts-release/highcharts.js"></script>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/underscore/underscore-min.js"></script>
@@ -30,7 +46,6 @@
     <script src="bower_components/qtip2/jquery.qtip.min.js"></script>
 
     <link rel="stylesheet" href="bower_components/qtip2/jquery.qtip.css">
-
 
     <!--Internal-->
     <link rel="stylesheet" href="lib/jsorolla/styles/fonts/fonts.css">
@@ -59,11 +74,8 @@
 <team-element></team-element>
 
 <script>
-    var team;
-    window.addEventListener('polymer-ready', function (debuggere) {
-        console.log('polymer-ready');
-        team = document.querySelector('team-element');
-    });
+    var team = document.querySelector('team-element');
+
 </script>
 </body>
 </html>

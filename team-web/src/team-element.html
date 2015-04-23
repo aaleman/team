@@ -1,354 +1,530 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/polymer-fontawesome/polymer-fontawesome.html">
-<link rel="import" href="../bower_components/sortable-table/sortable-table.html">
-<link rel="import" href="../bower_components/core-list/core-list.html">
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
-<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
-
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-project-browser.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-bioformat.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-job-no-ready.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/variant/jso-variant-component.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-sortable-table-ajax.html">
-
-<!-- Genome --viewer-->
-<script src="../lib/jsorolla/src/lib/svg.js"></script>
-<script src="../lib/jsorolla/src/lib/utils.js"></script>
-
-<script src="../lib/jsorolla/src/genome-viewer/gv-config.js"></script>
-
-<script src="../lib/jsorolla/src/lib/widgets/ux-window.js"></script>
-
-<script src="../lib/jsorolla/src/lib/widgets/feature/info/info-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/info/gene-info-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/info/protein-info-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/info/snp-info-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/info/transcript-info-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/info/vcf-variant-info-widget.js"></script>
-
-<script src="../lib/jsorolla/src/lib/cellbase-manager.js"></script>
-
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/cellbase-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/sequence-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/opencga-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/bam-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/feature-data-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/vcf-data-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/gff2-data-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/gff3-data-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/bed-data-adapter.js"></script>
-<script src="../lib/jsorolla/src/lib/data-adapter/feature/das-adapter.js"></script>
-
-<script src="../lib/jsorolla/src/lib/data-source/data-source.js"></script>
-<script src="../lib/jsorolla/src/lib/data-source/string-data-source.js"></script>
-<script src="../lib/jsorolla/src/lib/data-source/file-data-source.js"></script>
-
-<script src="../lib/jsorolla/src/lib/region.js"></script>
-<script src="../lib/jsorolla/src/lib/feature-binary-search-tree.js"></script>
-<script src="../lib/jsorolla/src/lib/cache/file-feature-cache.js"></script>
-<script src="../lib/jsorolla/src/lib/cache/bam-cache.js"></script>
-
-<script src="../lib/jsorolla/src/lib/cache/memory-store.js"></script>
-<script src="../lib/jsorolla/src/lib/cache/indexedDB-store.js"></script>
-<script src="../lib/jsorolla/src/lib/cache/feature-chunk-cache.js"></script>
-
-<script src="../lib/jsorolla/src/lib/widgets/feature/file/url-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/file/file-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/file/vcf-file-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/file/gff-file-widget.js"></script>
-<script src="../lib/jsorolla/src/lib/widgets/feature/file/bed-file-widget.js"></script>
-
-
-<script src="../lib/jsorolla/src/genome-viewer/navigation-bar.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/chromosome-panel.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/karyotype-panel.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/tracks/tracklist-panel.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/status-bar.js"></script>
-
-
-<script src="../lib/jsorolla/src/genome-viewer/tracks/track.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/tracks/feature-track.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/tracks/sequence-track.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/tracks/gene-track.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/tracks/bam-track.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/tracks/alignment-track.js"></script>
-
-
-<script src="../lib/jsorolla/src/genome-viewer/renderers/renderer.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/renderers/feature-renderer.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/renderers/sequence-renderer.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/renderers/feature-cluster-renderer.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/renderers/histogram-renderer.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/renderers/gene-renderer.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/renderers/bam-renderer.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/renderers/vcf-multisample-renderer.js"></script>
-<script src="../lib/jsorolla/src/genome-viewer/renderers/alignment-renderer.js"></script>
-
-
-<script src="../lib/jsorolla/src/genome-viewer/genome-viewer.js"></script>
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-help-menu.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-upload-variant-file.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-study.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-project.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/folder/jso-opencga-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/variant/jso-variant-browser.html">
 
 <script src="panel.js"></script>
 
-
 <link rel="import" href="team-home.html">
-<link rel="import" href="team-bar.html">
-<link rel="import" href="team-show-panel.html">
-<link rel="import" href="team-new-panel.html">
-<link rel="import" href="team-search-element.html">
+<link rel="import" href="team-panel-manager.html">
 
-<polymer-element name="team-element">
+<!--<link rel="import" href="team-home.html">-->
+<!--<link rel="import" href="team-bar.html">-->
+<!--<link rel="import" href="team-show-panel.html">-->
+<!--<link rel="import" href="team-new-panel.html">-->
+<!--<link rel="import" href="team-search-element.html">-->
+
+
+<dom-module id="team-element">
+    <style>
+
+
+        :host {
+            display: block;
+            position: relative;
+            cursor: default;
+            font-size: 13px;
+        }
+
+        .menu > div {
+            margin-left: 10px;
+            cursor: pointer;
+            text-align: center;
+            padding: 0 5px;
+        }
+
+        .menu > div:hover {
+            color: #FFFFFF;
+        }
+
+        #content {
+        }
+
+        jso-dashboard {
+            height: calc(100vh - 60px);
+        }
+
+/*        jso-variant-browser {
+            height: calc(100vh - 60px);
+        }*/
+
+        jso-opencga-browser {
+            top: 60px;
+        }
+
+
+    </style>
     <template>
-        <style>
-            :host {
-                display: block;
-                position: relative;
-                cursor: default;
-                font-size: 13px;
-            }
-
-            .content {
-                background-color: #435f7a;
-                position: relative;
-                min-height: calc(100vh - 160px);
-            }
-
-            .link > a {
-                color: #CCCCCC;
-                text-decoration: none;
-            }
-
-            .link > a:visited {
-                color: #CCCCCC;
-            }
-
-            .link:hover, .link > a:hover {
-                color: #FFFFFF;
-            }
-
-            jso-project-browser {
-                height: calc(100vh - 160px);
-            }
-
-            /*Right Side*/
-            .right-side {
-                top: 94px;
-                right: 0px;
-                position: absolute;
-
-            }
-
-            team-new-panel {
-                min-width: 800px;
-                position: absolute;
-                top: 0px;
-                bottom: 30px;
-                overflow-y: scroll;
-                left: 0;
-                right: 0;
-                padding: 20px 40px;
-            }
-
-        </style>
         <jso-header id="jsoHeader"
-                    on-logout="{{handleLogout}}"
-                    selectedOption="{{selectedOption}}"
-                    userData="{{userData}}"
-                    showJobs="false"
-                    options="{{options}}"
-                    studies="{{studies}}"
-                    selectedStudy="{{selectedStudy}}"
-                    allowedTools="{{allowedTools}}"
-                    jobItem="{{jobItem}}">
+                    selected-option="{{selectedOption}}"
+                    user-data="{{userData}}"
+                    on-login="handleLogin"
+                    on-logout="handleLogout"
+                    show-menu-on-login>
+             <span class="icon">
+                    <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
+            </span>
             <span class="title">TEAM</span>
-            <span class="description">1.1.0</span>
+            <span class="description"></span>
+
+            <div class="menu horizontal layout">
+                <div on-click="handleToggleCreateProject">
+                    New Project
+                </div>
+
+                <div on-click="handleToggleCreateStudy">
+                    New Study
+                </div>
+                <div on-click="handleToggleUpload">
+                    Upload
+                </div>
+                <div on-click="handleToggleBrowser">
+                    Browse
+                </div>
+                <div on-click="handleTogglePanelManager">
+                   Panel Manager 
+                </div>
+            </div>
 
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
-                <div class="link">
-                    <a href="https://github.com/babelomics/team/wiki" target="_blank">
-                        <font-awesome icon="book"></font-awesome>
-                        &nbsp; Documentation
-                    </a>
-                </div>
-                <div class="link">
-                    <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
-                        <font-awesome icon="list-alt"></font-awesome>
-                        &nbsp; Tutorial
-                    </a>
-                </div>
-                <div class="link">
-                    <a href="https://github.com/babelomics/team" target="_blank">
-                        <font-awesome icon="github"></font-awesome>
-                        &nbsp; Source Code
-                    </a>
-                </div>
+                <a href="https://github.com/babelomics/team/wiki" target="_blank">
+                    <i class="fa fa-book"></i>
+                    &nbsp; Documentation
+                </a>
+                <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
+                    <i class="fa fa-compass"></i>
+                    &nbsp; Tutorial
+                </a>
+                <a href="https://github.com/babelomics/team/" target="_blank">
+                    <i class="fa fa-github"></i>
+                    &nbsp; Source code
+                </a>
             </jso-help-menu>
         </jso-header>
 
-        <div class="content">
-            <team-bar
-                    on-panel-show="{{handlePanelShow}}"
-                    on-panel-export="{{handlePanelExport}}"
-                    on-panel-import="{{handlePanelImport}}"
-                    on-panel-clear="{{handlePanelClear}}"
-                    on-example-show="{{handleExamplePanelShow}}"
-                    on-panel-new="{{handlePanelNew}}"
-                    ></team-bar>
+        <div id="content">
+            <team-home></team-home>
+            <jso-opencga-create-study
+                    id="createStudy"
+                    hidden$="{{createStudyHidden}}"
+                    on-close="handleCloseCreateStudy"
+                    projects="{{projects}}">
+            </jso-opencga-create-study>
 
-            <team-search-element></team-search-element>
-            <div class="right-side">
-                <team-show-panel
-                        id="teamShowPanel"
-                        hidden?="{{hideUserPanel}}"
-                        hideFlag="{{hideUserPanel}}"
-                        userSettings="{{userSettings}}"
-                        example="false"
-                        >
-                </team-show-panel>
+            <jso-opencga-create-project
+                    id="createStudy"
+                    hidden$="{{createProjectHidden}}"
+                    on-close="handleCloseCreateProject"
+                    projects="{{projects}}">
+            </jso-opencga-create-project>
 
-                <team-show-panel
-                        id="teamShowExamplePanel"
-                        hidden?="{{hideExamplePanel}}"
-                        hideFlag="{{hideExamplePanel}}"
-                        userSettings="{{userSettings}}"
-                        example="true">
-                </team-show-panel>
+            <jso-upload-variant-file
+                    id="upload"
+                    hidden$="{{uploadHidden}}"
+                    on-close="handleCloseUpload"
+                    projects="{{projects}}"></jso-upload-variant-file>
 
-            </div>
+            <jso-opencga-browser
+                    id="browser"
+                    hidden$="{{browserHidden}}"
+                    on-fileselect="handleFileSelect"
+                    projects="{{projects}}"></jso-opencga-browser>
 
-            <template if="{{selectedMenu == 'newpanel'}}">
-                <team-new-panel
-                        selectedOption="{{selectedMenu}}"
-                        ></team-new-panel>
-
-            </template>
+            <team-panel-manager
+                    id="upload"
+                    hidden$="{{panelManagerHidden}}"
+                    on-close="handleClosePanelManager"></team-panel-manager>
         </div>
-        <jso-footer>
-            BierApp: created by Computational Genomics Department
-            <br>
-            Principe Felipe Research Center
-            <br>
-            2015
-        </jso-footer>
+
+        <!--<jso-header id="jsoHeader"-->
+                    <!--on-logout="{{handleLogout}}"-->
+                    <!--selectedOption="{{selectedOption}}"-->
+                    <!--userData="{{userData}}"-->
+                    <!--showJobs="false"-->
+                    <!--options="{{options}}"-->
+                    <!--studies="{{studies}}"-->
+                    <!--selectedStudy="{{selectedStudy}}"-->
+                    <!--allowedTools="{{allowedTools}}"-->
+                    <!--jobItem="{{jobItem}}">-->
+            <!--<span class="title">TEAM</span>-->
+            <!--<span class="description">1.1.0</span>-->
+
+            <!--<jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">-->
+                <!--<div class="link">-->
+                    <!--<a href="https://github.com/babelomics/team/wiki" target="_blank">-->
+                        <!--<font-awesome icon="book"></font-awesome>-->
+                        <!--&nbsp; Documentation-->
+                    <!--</a>-->
+                <!--</div>-->
+                <!--<div class="link">-->
+                    <!--<a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">-->
+                        <!--<font-awesome icon="list-alt"></font-awesome>-->
+                        <!--&nbsp; Tutorial-->
+                    <!--</a>-->
+                <!--</div>-->
+                <!--<div class="link">-->
+                    <!--<a href="https://github.com/babelomics/team" target="_blank">-->
+                        <!--<font-awesome icon="github"></font-awesome>-->
+                        <!--&nbsp; Source Code-->
+                    <!--</a>-->
+                <!--</div>-->
+            <!--</jso-help-menu>-->
+        <!--</jso-header>-->
+
+        <!--<div class="content">-->
+            <!--<team-bar-->
+                    <!--on-panel-show="{{handlePanelShow}}"-->
+                    <!--on-panel-export="{{handlePanelExport}}"-->
+                    <!--on-panel-import="{{handlePanelImport}}"-->
+                    <!--on-panel-clear="{{handlePanelClear}}"-->
+                    <!--on-example-show="{{handleExamplePanelShow}}"-->
+                    <!--on-panel-new="{{handlePanelNew}}"-->
+                    <!--</team-bar> -->
+
+            <!--<team-search-element></team-search-element>-->
+            <!--<div class="right-side">-->
+                <!--<team-show-panel-->
+                        <!--id="teamShowPanel"-->
+                        <!--hidden?="{{hideUserPanel}}"-->
+                        <!--hideFlag="{{hideUserPanel}}"-->
+                        <!--userSettings="{{userSettings}}"-->
+                        <!--example="false"-->
+                        <!-->-->
+                <!--</team-show-panel>-->
+
+                <!--<team-show-panel-->
+                        <!--id="teamShowExamplePanel"-->
+                        <!--hidden?="{{hideExamplePanel}}"-->
+                        <!--hideFlag="{{hideExamplePanel}}"-->
+                        <!--userSettings="{{userSettings}}"-->
+                        <!--example="true">-->
+                <!--</team-show-panel>-->
+
+            <!--</div>-->
+
+            <!--<template if="{{selectedMenu == 'newpanel'}}">-->
+                <!--<team-new-panel-->
+                        <!--selectedOption="{{selectedMenu}}"-->
+                        <!--</team-new-panel>-->
+
+            <!--</template>-->
+        <!--</div>-->
+        <!--<jso-footer>-->
+            <!--BierApp: created by Computational Genomics Department-->
+            <!--<br>-->
+            <!--Principe Felipe Research Center-->
+            <!--<br>-->
+            <!--2015-->
+        <!--</jso-footer>-->
+
     </template>
-    <script>
-        Polymer({
-            hideUserPanel: false,
-            hideExamplePanel: false,
-            allowedTools: null,
-            userSettings: null,
-            selectedMenu: 'newpanel',
-            created: function () {
-                this.selectedOption = 'home';
-                this.showJobs = false;
-                this.studies;
-
-//                this.selectedOption = 'projects';
-
-                this.userData;
-                this.selectedProject;
-                this.selectedStudy;
-                this.studies;
-
-                this.allowedTools = ['team'];
-//                this.allowedTools = ['aaa']
-
-                this.saveInProgress = false;
-
+</dom-module>
+<script>
+    Polymer({
+        is: 'team-element',
+        properties: {
+            selectedOption: {
+                type: String,
+                value: "home",
+                notify: true,
+                reflectToAttribute: true,
+                observer: 'selectedOptionChanged'
             },
-            ready: function () {
-                this.userSettings = new UserSettings();
-                console.log(this.userSettings);
+            userData: {
+                type: Object,
+                notify: true,
+                observer: 'userDataChanged'
             },
-            handlePanelShow: function (e) {
-                console.log("Panel Show");
-                this.hideUserPanel = false;
+            projects: {
+                type: Array,
+                notify: true
             },
-            handleExamplePanelShow: function (e) {
-                console.log("Panel Show");
-                this.hideExamplePanel = false;
-            },
-            userSettingsChanged: function (oldValue, newValue) {
-                console.log("cambia user Settings");
-            },
-            observe: {
-                'userSettings.userDefined': 'userSettingsChanged'
-            },
-            handlePanelExport: function (e) {
-                var content = this.userSettings.toJson();
-
-                var blob = new Blob([content], {type: "application/json"});
-                var url = URL.createObjectURL(blob);
-                var link = document.createElement('a');
-                link.href = url;
-                link.download = "panels.json";
-                var fileName = window.prompt("Please enter file name", "panels.json")
-                if (fileName != null && fileName != "") {
-                    link.download = fileName;
+            allowedTools: {
+                type: Array,
+                value: function () {
+                    return ["opencga-storage.sh"];
                 }
-                var event = new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                link.dispatchEvent(event);
             },
-            handlePanelImport: function (e) {
-                var me = this;
-                var input = document.createElement('input');
-                input.setAttribute("type", "file");
-                input.addEventListener("change", function (e) {
-                    var file = e.currentTarget.files[0];
-                    if (file) {
-                        var reader = new FileReader();
-                        reader.onload = function (evt) {
-                            me.userSettings.importData(evt.target.result);
-                        };
-                        reader.readAsText(file);
-                        e.currentTarget.value = null;
-                    }
-                });
-                var event = new MouseEvent('click', {
-                    'view': window,
-                    'bubbles': true,
-                    'cancelable': true
-                });
-                input.dispatchEvent(event);
+            browserHidden: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true
             },
-            handlePanelClear: function (e) {
-                if (confirm('All changes will be lost. Are you sure?')) {
-                    this.userSettings.clear();
+            uploadHidden: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true
+            },
+            createStudyHidden: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true
+            },
+            createProjectHidden: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true
+            },
+            panelManagerHidden: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true
+            }
+        },
+        ready: function () {
+        },
+        selectedOptionChanged: function (neo, old) {
+            var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
+            for (var i = 0; i < menuItems.length; i++) {
+                var item = menuItems[i];
+                var currentItemValue = item.getAttribute("menu-option");
+                if (neo == currentItemValue) {
+                    item.removeAttribute("hidden");
+                } else {
+                    item.setAttribute('hidden', '');
                 }
-            }, handlePanelNew: function (e) {
-                console.log("NEW PANEL!!!")
-                this.selectedMenu = 'newpanel';
-            }, userDataChanged: function (oldValue, newValue) {
-                var me = this;
-                this.selectedProject = this.userData.projects[0];
+            }
+        },
+        handleMenu: function (e) {
+            var option = e.currentTarget.dataset['option'];
+            this.setMenu(option);
+        },
+        setMenu: function (option) {
+            if (option) {
+                this.selectedOption = option;
+            }
+        },
 
+        handleToggleBrowser: function (e) {
+            this.browserHidden = !this.browserHidden;
+        },
+        handleCloseBrowser: function (e) {
+            this.browserHidden = true;
+        },
+
+        handleCloseUpload: function (e) {
+            this.uploadHidden = true;
+        },
+        handleClosePanelManager: function (e) {
+            this.panelManagerHidden = true;
+        },
+        handleToggleUpload: function (e) {
+            this.uploadHidden = !this.uploadHidden;
+        },
+        handleCloseCreateStudy: function (e) {
+            this.createStudyHidden = true;
+        },
+        handleToggleCreateStudy: function (e) {
+            this.createStudyHidden = !this.createStudyHidden;
+        },
+        handleCloseCreateProject: function (e) {
+            this.createProjectHidden = true;
+        },
+        handleToggleCreateProject: function (e) {
+            this.createProjectHidden = !this.createProjectHidden;
+        },
+        handleTogglePanelManager: function (e) {
+            this.panelManagerHidden = !this.panelManagerHidden;
+        },
+
+        computeFooter: function (selectedOption) {
+            return selectedOption == 'dashboard' || selectedOption == 'variantbrowser';
+        },
+        handleFileSelect: function (e) {
+            console.log("file");
+            console.log(e.detail);
+            var file = e.detail;
+            if (file.index && file.index.status == 'READY') {
+                this.$.variantBrowser.file = file;
+                this.setMenu('variantbrowser');
+                this.handleCloseBrowser();
+
+            }
+        },
+        handleLogin: function () {
+//            this.browserHidden = false;
+            this.selectedOption = "home";
+        },
+        handleLogout: function () {
+            this.browserHidden = true;
+        },
+
+//            created: function () {
+//                this.selectedOption = '';
+//                this.showJobs = false;
+//                this.userData;
+//                this.allowedTools = ["opencga-storage.sh"];
+//
+//                this.isLogged;
+//                this.selectedProject;
+//                this.selectedStudy;
+//                this.studies;
+//            },
+        userDataChanged: function (neo, old) {
+            var me = this;
+            if (this.userData) {
+                var projectIds = [];
+                for (var i = 0; i < this.userData.projects.length; i++) {
+                    var p = this.userData.projects[i];
+                    projectIds.push(p.id);
+                }
+                var projects = [];
                 OpencgaManager.projects.studies({
-                    id: this.selectedProject.id,
+                    id: projectIds.join(','),
                     query: {
                         sid: Cookies("bioinfo_sid")
                     },
                     request: {
-                        //method: 'POST',
                         success: function (response) {
                             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                                me.studies = response.response[0].result;
-                                me.selectedStudy = me.studies[0];
+                                for (var i = 0; i < response.response.length; i++) {
+                                    var r = response.response[i];
+                                    me.userData.projects[i].studies = r.result;
+                                    projects.push(me.userData.projects[i]);
+                                }
+                                /* update projects property*/
+                                me.projects = projects;
                             } else {
                                 console.log(response.error);
                                 console.log(response.response[0].errorMsg);
                             }
+                            me.loading = false;
                         },
                         error: function () {
                             console.log('Server error, try again later.');
+                            me.loading = false;
                         }
                     }
-                })
-            },
-        });
-    </script>
-</polymer-element>
+                });
+            } else {
+                console.log("no user data")
+                this.browserHidden = true;
+            }
+        },
+        annonymousLogin: function () {
+            this.$.jsoHeader.anonymousSign();
+        }
+
+
+//        hideUserPanel: false,
+//        hideExamplePanel: false,
+//        allowedTools: null,
+//        userSettings: null,
+//        selectedMenu: 'newpanel',
+//        created: function () {
+//            this.selectedOption = 'home';
+//            this.showJobs = false;
+//            this.studies;
+//
+////                this.selectedOption = 'projects';
+//
+//            this.userData;
+//            this.selectedProject;
+//            this.selectedStudy;
+//            this.studies;
+//
+//            this.allowedTools = ['team'];
+////                this.allowedTools = ['aaa']
+//
+//            this.saveInProgress = false;
+//
+//        },
+//        ready: function () {
+//            this.userSettings = new UserSettings();
+//            console.log(this.userSettings);
+//        },
+//        handlePanelShow: function (e) {
+//            console.log("Panel Show");
+//            this.hideUserPanel = false;
+//        },
+//        handleExamplePanelShow: function (e) {
+//            console.log("Panel Show");
+//            this.hideExamplePanel = false;
+//        },
+//        userSettingsChanged: function (oldValue, newValue) {
+//            console.log("cambia user Settings");
+//        },
+//        observe: {
+//            'userSettings.userDefined': 'userSettingsChanged'
+//        },
+//        handlePanelExport: function (e) {
+//            var content = this.userSettings.toJson();
+//
+//            var blob = new Blob([content], {type: "application/json"});
+//            var url = URL.createObjectURL(blob);
+//            var link = document.createElement('a');
+//            link.href = url;
+//            link.download = "panels.json";
+//            var fileName = window.prompt("Please enter file name", "panels.json")
+//            if (fileName != null && fileName != "") {
+//                link.download = fileName;
+//            }
+//            var event = new MouseEvent('click', {
+//                'view': window,
+//                'bubbles': true,
+//                'cancelable': true
+//            });
+//            link.dispatchEvent(event);
+//        },
+//        handlePanelImport: function (e) {
+//            var me = this;
+//            var input = document.createElement('input');
+//            input.setAttribute("type", "file");
+//            input.addEventListener("change", function (e) {
+//                var file = e.currentTarget.files[0];
+//                if (file) {
+//                    var reader = new FileReader();
+//                    reader.onload = function (evt) {
+//                        me.userSettings.importData(evt.target.result);
+//                    };
+//                    reader.readAsText(file);
+//                    e.currentTarget.value = null;
+//                }
+//            });
+//            var event = new MouseEvent('click', {
+//                'view': window,
+//                'bubbles': true,
+//                'cancelable': true
+//            });
+//            input.dispatchEvent(event);
+//        },
+//        handlePanelClear: function (e) {
+//            if (confirm('All changes will be lost. Are you sure?')) {
+//                this.userSettings.clear();
+//            }
+//        }, handlePanelNew: function (e) {
+//            console.log("NEW PANEL!!!")
+//            this.selectedMenu = 'newpanel';
+//        }, userDataChanged: function (oldValue, newValue) {
+//            var me = this;
+//            this.selectedProject = this.userData.projects[0];
+//
+//            OpencgaManager.projects.studies({
+//                id: this.selectedProject.id,
+//                query: {
+//                    sid: Cookies("bioinfo_sid")
+//                },
+//                request: {
+//                    //method: 'POST',
+//                    success: function (response) {
+//                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+//                            me.studies = response.response[0].result;
+//                            me.selectedStudy = me.studies[0];
+//                        } else {
+//                            console.log(response.error);
+//                            console.log(response.response[0].errorMsg);
+//                        }
+//                    },
+//                    error: function () {
+//                        console.log('Server error, try again later.');
+//                    }
+//                }
+//            })
+//        },
+    });
+</script>
