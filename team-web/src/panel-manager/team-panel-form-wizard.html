@@ -1,0 +1,99 @@
+<link rel="import" href="../../lib/jsorolla/src/lib/components/table/jso-table.html">
+<link rel="import" href="team-panel-wizard-gene-step.html">
+<link rel="import" href="team-panel-wizard-disease-step.html">
+<link rel="import" href="team-panel-wizard-mutation-step.html">
+
+<dom-module id="team-panel-form-wizard">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        #wizard {
+            width: 900px;
+            height: 600px;
+
+            margin: 50px auto 0;
+            border: solid white 1px;
+            background-color: white;
+
+        }
+
+        #wizard-bottom {
+            height: 30px;
+            background-color: lightgrey;
+
+        }
+
+        /*team-panel-wizard-gene-step {*/
+        /*height: 800px;*/
+        /*}*/
+
+    </style>
+    <template>
+        <div id="wizard" class="vertical layout ">
+            <div id="wizard-content" flex>
+
+                <team-panel-wizard-disease-step step-number="1"
+                                                hidden$={{handleHiddenStep1(step)}}></team-panel-wizard-disease-step>
+                <team-panel-wizard-gene-step step-number="2"
+                                             hidden$={{handleHiddenStep2(step)}}></team-panel-wizard-gene-step>
+                <team-panel-wizard-mutation-step step-number="3"
+                                                 hidden$={{handleHiddenStep3(step)}}></team-panel-wizard-mutation-step>
+
+            </div>
+            <div id="wizard-bottom" class="horizontal layout end-justified">
+                <div class="jso-btn jso-btn-shdw" on-click="handlePrevStepButton">Prev</div>
+                <div class="jso-btn jso-btn-shdw" on-click="handleNextStepButton">Next</div>
+            </div>
+
+        </div>
+
+    </template>
+
+</dom-module>
+<script>
+    Polymer({
+        is: "team-panel-form-wizard",
+        properties: {
+            step: {
+                type: Number,
+                value: 2
+            },
+            maxSteps: {
+                type: Number,
+                value: 3
+            },
+
+        },
+        ready: function () {
+        },
+
+        handleHiddenStep1: function (step) {
+            return step != 1;
+        },
+        handleHiddenStep2: function (step) {
+            return step != 2;
+        },
+        handleHiddenStep3: function (step) {
+            return step != 3;
+        },
+        collapseMenu: function (menuHidden, searchingFlag) {
+            return menuHidden || searchingFlag;
+        },
+        hideProjectList: function (menuHidden, searchingFlag) {
+            return menuHidden || searchingFlag;
+        }
+        , handlePrevStepButton: function (e) {
+            this.step = (this.step <= 1) ? 1 : this.step - 1;
+            console.log(this.step);
+        },
+        handleNextStepButton: function (e) {
+            this.step = (this.step >= this.maxSteps) ? this.maxSteps : this.step + 1;
+            console.log(this.step);
+        }
+
+    });
+</script>

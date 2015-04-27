@@ -1,0 +1,45 @@
+<dom-module id="team-panel-wizard-mutation-step"></dom-module>
+<style>
+    :host {
+        display: block;
+        position: relative;
+        box-sizing: border-box;
+        height: 100%;
+
+    }
+
+    .step-title {
+        height: 50px;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 50px;
+        font-size: 16pt;
+    }
+
+
+</style>
+<template>
+    <div class="vertical layout">
+        <div class="step-title">
+            Step <span>{{stepNumber}}</span>: Mutations
+        </div>
+        <div class="step-content horizontal layout">
+
+        </div>
+    </div>
+</template>
+
+<script>
+    Polymer({
+        is: "team-panel-wizard-mutation-step",
+        properties: {
+            stepNumber: {
+                type: Number,
+                value: 0
+            }
+        },
+        ready: function () {
+
+        }
+    });
+</script>

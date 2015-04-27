@@ -6,12 +6,11 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-study.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-project.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/folder/jso-opencga-browser.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/variant/jso-variant-browser.html">
 
 <script src="panel.js"></script>
 
 <link rel="import" href="team-home.html">
-<link rel="import" href="team-panel-manager.html">
+<link rel="import" href="panel-manager/team-panel-form-wizard.html">
 
 <!--<link rel="import" href="team-home.html">-->
 <!--<link rel="import" href="team-bar.html">-->
@@ -49,10 +48,6 @@
             height: calc(100vh - 60px);
         }
 
-/*        jso-variant-browser {
-            height: calc(100vh - 60px);
-        }*/
-
         jso-opencga-browser {
             top: 60px;
         }
@@ -86,8 +81,8 @@
                 <div on-click="handleToggleBrowser">
                     Browse
                 </div>
-                <div on-click="handleTogglePanelManager">
-                   Panel Manager 
+                <div on-click="handleTogglePanelFormWizard">
+                    New Panel
                 </div>
             </div>
 
@@ -108,7 +103,7 @@
         </jso-header>
 
         <div id="content">
-            <team-home></team-home>
+            <!--<team-home></team-home>-->
             <jso-opencga-create-study
                     id="createStudy"
                     hidden$="{{createStudyHidden}}"
@@ -127,7 +122,8 @@
                     id="upload"
                     hidden$="{{uploadHidden}}"
                     on-close="handleCloseUpload"
-                    projects="{{projects}}"></jso-upload-variant-file>
+                    projects="{{projects}}"
+                    disable-index></jso-upload-variant-file>
 
             <jso-opencga-browser
                     id="browser"
@@ -135,91 +131,57 @@
                     on-fileselect="handleFileSelect"
                     projects="{{projects}}"></jso-opencga-browser>
 
-            <team-panel-manager
-                    id="upload"
-                    hidden$="{{panelManagerHidden}}"
-                    on-close="handleClosePanelManager"></team-panel-manager>
+            <team-panel-form-wizard
+                    id="newPanel"
+                    hidden$="{{panelFormWizardHidden}}"
+                    on-close="handleClosePanelFormWizard"></team-panel-form-wizard>
         </div>
 
-        <!--<jso-header id="jsoHeader"-->
-                    <!--on-logout="{{handleLogout}}"-->
-                    <!--selectedOption="{{selectedOption}}"-->
-                    <!--userData="{{userData}}"-->
-                    <!--showJobs="false"-->
-                    <!--options="{{options}}"-->
-                    <!--studies="{{studies}}"-->
-                    <!--selectedStudy="{{selectedStudy}}"-->
-                    <!--allowedTools="{{allowedTools}}"-->
-                    <!--jobItem="{{jobItem}}">-->
-            <!--<span class="title">TEAM</span>-->
-            <!--<span class="description">1.1.0</span>-->
-
-            <!--<jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">-->
-                <!--<div class="link">-->
-                    <!--<a href="https://github.com/babelomics/team/wiki" target="_blank">-->
-                        <!--<font-awesome icon="book"></font-awesome>-->
-                        <!--&nbsp; Documentation-->
-                    <!--</a>-->
-                <!--</div>-->
-                <!--<div class="link">-->
-                    <!--<a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">-->
-                        <!--<font-awesome icon="list-alt"></font-awesome>-->
-                        <!--&nbsp; Tutorial-->
-                    <!--</a>-->
-                <!--</div>-->
-                <!--<div class="link">-->
-                    <!--<a href="https://github.com/babelomics/team" target="_blank">-->
-                        <!--<font-awesome icon="github"></font-awesome>-->
-                        <!--&nbsp; Source Code-->
-                    <!--</a>-->
-                <!--</div>-->
-            <!--</jso-help-menu>-->
-        <!--</jso-header>-->
 
         <!--<div class="content">-->
-            <!--<team-bar-->
-                    <!--on-panel-show="{{handlePanelShow}}"-->
-                    <!--on-panel-export="{{handlePanelExport}}"-->
-                    <!--on-panel-import="{{handlePanelImport}}"-->
-                    <!--on-panel-clear="{{handlePanelClear}}"-->
-                    <!--on-example-show="{{handleExamplePanelShow}}"-->
-                    <!--on-panel-new="{{handlePanelNew}}"-->
-                    <!--</team-bar> -->
+        <!--<team-bar-->
+        <!--on-panel-show="{{handlePanelShow}}"-->
+        <!--on-panel-export="{{handlePanelExport}}"-->
+        <!--on-panel-import="{{handlePanelImport}}"-->
+        <!--on-panel-clear="{{handlePanelClear}}"-->
+        <!--on-example-show="{{handleExamplePanelShow}}"-->
+        <!--on-panel-new="{{handlePanelNew}}"-->
+        <!--</team-bar> -->
 
-            <!--<team-search-element></team-search-element>-->
-            <!--<div class="right-side">-->
-                <!--<team-show-panel-->
-                        <!--id="teamShowPanel"-->
-                        <!--hidden?="{{hideUserPanel}}"-->
-                        <!--hideFlag="{{hideUserPanel}}"-->
-                        <!--userSettings="{{userSettings}}"-->
-                        <!--example="false"-->
-                        <!-->-->
-                <!--</team-show-panel>-->
+        <!--<team-search-element></team-search-element>-->
+        <!--<div class="right-side">-->
+        <!--<team-show-panel-->
+        <!--id="teamShowPanel"-->
+        <!--hidden?="{{hideUserPanel}}"-->
+        <!--hideFlag="{{hideUserPanel}}"-->
+        <!--userSettings="{{userSettings}}"-->
+        <!--example="false"-->
+        <!-->-->
+        <!--</team-show-panel>-->
 
-                <!--<team-show-panel-->
-                        <!--id="teamShowExamplePanel"-->
-                        <!--hidden?="{{hideExamplePanel}}"-->
-                        <!--hideFlag="{{hideExamplePanel}}"-->
-                        <!--userSettings="{{userSettings}}"-->
-                        <!--example="true">-->
-                <!--</team-show-panel>-->
+        <!--<team-show-panel-->
+        <!--id="teamShowExamplePanel"-->
+        <!--hidden?="{{hideExamplePanel}}"-->
+        <!--hideFlag="{{hideExamplePanel}}"-->
+        <!--userSettings="{{userSettings}}"-->
+        <!--example="true">-->
+        <!--</team-show-panel>-->
 
-            <!--</div>-->
+        <!--</div>-->
 
-            <!--<template if="{{selectedMenu == 'newpanel'}}">-->
-                <!--<team-new-panel-->
-                        <!--selectedOption="{{selectedMenu}}"-->
-                        <!--</team-new-panel>-->
+        <!--<template if="{{selectedMenu == 'newpanel'}}">-->
+        <!--<team-new-panel-->
+        <!--selectedOption="{{selectedMenu}}"-->
+        <!--</team-new-panel>-->
 
-            <!--</template>-->
+        <!--</template>-->
         <!--</div>-->
         <!--<jso-footer>-->
-            <!--BierApp: created by Computational Genomics Department-->
-            <!--<br>-->
-            <!--Principe Felipe Research Center-->
-            <!--<br>-->
-            <!--2015-->
+        <!--TEAM: created by Computational Genomics Department-->
+        <!--<br>-->
+        <!--Principe Felipe Research Center-->
+        <!--<br>-->
+        <!--2015-->
         <!--</jso-footer>-->
 
     </template>
@@ -270,7 +232,7 @@
                 value: true,
                 reflectToAttribute: true
             },
-            panelManagerHidden: {
+            panelFormWizardHidden: {
                 type: Boolean,
                 value: true,
                 reflectToAttribute: true
@@ -310,8 +272,8 @@
         handleCloseUpload: function (e) {
             this.uploadHidden = true;
         },
-        handleClosePanelManager: function (e) {
-            this.panelManagerHidden = true;
+        handleClosePanelFormWizard: function (e) {
+            this.panelFormWizardHidden = true;
         },
         handleToggleUpload: function (e) {
             this.uploadHidden = !this.uploadHidden;
@@ -328,8 +290,8 @@
         handleToggleCreateProject: function (e) {
             this.createProjectHidden = !this.createProjectHidden;
         },
-        handleTogglePanelManager: function (e) {
-            this.panelManagerHidden = !this.panelManagerHidden;
+        handleTogglePanelFormWizard: function (e) {
+            this.panelFormWizardHidden = !this.panelFormWizardHidden;
         },
 
         computeFooter: function (selectedOption) {
@@ -340,9 +302,9 @@
             console.log(e.detail);
             var file = e.detail;
             if (file.index && file.index.status == 'READY') {
-                this.$.variantBrowser.file = file;
-                this.setMenu('variantbrowser');
-                this.handleCloseBrowser();
+                // this.$.variantBrowser.file = file;
+                // this.setMenu('variantbrowser');
+                // this.handleCloseBrowser();
 
             }
         },

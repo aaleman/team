@@ -1,0 +1,219 @@
+<dom-module id="team-panel-wizard-gene-step"></dom-module>
+<style>
+    :host {
+        display: block;
+        position: relative;
+        box-sizing: border-box;
+        height: 100%;
+
+    }
+
+    .step-title {
+        height: 50px;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 50px;
+        font-size: 16pt;
+    }
+
+    #genes-tab {
+        height: 80%;
+        width: 50%;
+    }
+
+    #genes-list {
+        height: 80%;
+        width: 50%;
+    }
+
+    /*#geneTable {*/
+    /*height: 300px;*/
+    /*width: 400px;*/
+    /**/
+    /*}*/
+
+    .genes-tab-container-elem {
+        margin: 20px;
+    }
+
+    .step-content {
+        height: calc(100% - 50px);
+    }
+</style>
+<template>
+    <div class="vertical layout">
+        <div class="step-title">
+            Step <span>{{stepNumber}}</span>: Genes
+        </div>
+        <div class="step-content horizontal layout">
+            <div id="genes-tab" flex>
+                <div id="genes-tab-menu" class="horizontal layout">
+                    <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneText">TEXT</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneBed">BED</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="handleClickGenePanel">PANEL</div>
+                </div>
+                <div id="genes-tab-container">
+                    <div id="gene-tab-config-text" class="genes-tab-container-elem"
+                         hidden$={{handleHiddenGeneText(geneTab)}}>
+                                    <textarea class="jso" name="geneTextArea" id="geneTextArea" rows="3"
+                                              placeholder="BRCA2,PPL"></textarea>
+
+                        <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneTextAreaButton">Add
+                            Genes
+                        </div>
+                    </div>
+                    <div id="gene-tab-config-bed" class="genes-tab-container-elem"
+                         hidden$={{handleHiddenGeneBed(geneTab)}}>
+                        <input type="file" id="geneBedFileInput">
+
+                        <div class="jso-btn jso-btn-shdw" on-click="handleGenesImportBed">
+                                        <span>Import!!<span>
+                        </div>
+                        <br>
+                    </div>
+                    <div id="gene-tab-config-panel"
+                         hidden$={{handleHiddenGenePanel(geneTab)}}>PANEL
+                    </div>
+                </div>
+            </div>
+            <div id="genes-list" flex>
+                <jso-table id="geneTable" columns="{{geneColumns}}" data="{{geneData}}"></jso-table>
+                <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneListClear">Clear</div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    Polymer({
+        is: "team-panel-wizard-gene-step",
+        properties: {
+            stepNumber: {
+                type: Number,
+                value: 0
+            },
+            geneTab: {
+                type: String,
+                value: ''
+            },
+            geneColumns: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            geneData: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            }
+
+        },
+        ready: function () {
+            this.geneTab = 'bed';
+            this.geneColumns = [
+                {name: 'gene', title: 'Gene'},
+                {name: 'chr', title: 'CHR', defaultValue: '.'},
+                {name: 'start', title: 'Start', defaultValue: '.'},
+                {name: 'end', title: 'End', defaultValue: '.'}
+            ];
+
+            // Example Data
+
+            var exampleData = []
+            for (var i = 1; i <= 10; i++) {
+                exampleData.push({gene: 'Gene' + i});
+            }
+
+            this.geneData = exampleData;
+
+        },
+        handleGenesImportBed: function (e) {
+
+            var me = this;
+            var bed_file = this.$.geneBedFileInput.files[0];
+
+            if (bed_file != null) {
+
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var data = e.target.result;
+                    var lines = data.split("\n");
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i];
+                        if (line.indexOf("#") < 0 && line != '') {
+                            var fields = line.split("\t");
+                            var chr = fields[0];
+                            var start = fields[1];
+                            var end = fields[2];
+
+                            var gene = {
+                                gene: chr + ":" + start + "-" + end,
+                                chr: chr,
+                                start: start,
+                                end: end
+                            }
+
+                            me.geneData.push(gene);
+
+
+                        }
+                    }
+
+                    me.$.geneTable.update(me.geneData);
+
+
+                };
+
+                reader.readAsText(bed_file);
+
+            }
+
+        },
+        handleHiddenGeneText: function (geneTab) {
+            return geneTab != 'text';
+        },
+
+        handleHiddenGeneBed: function (geneTab) {
+            return geneTab != 'bed';
+        },
+        handleHiddenGenePanel: function (geneTab) {
+            return geneTab != 'panel';
+        },
+        handleClickGeneText: function (e) {
+            this.geneTab = 'text';
+        },
+        handleClickGeneBed: function (e) {
+            this.geneTab = 'bed';
+        },
+        handleClickGenePanel: function (e) {
+            this.geneTab = 'panel';
+        },
+        handleClickGeneTextAreaButton: function (e) {
+
+            var textAreaValue = this.$.geneTextArea.value;
+            var splits = textAreaValue.split(",");
+            var genes = [];
+            for (var i = 0; i < splits.length; i++) {
+                var geneName = splits[i];
+
+                if (geneName != '') {
+                    genes.push({
+                        gene: geneName
+                    });
+                }
+            }
+            for (var i = 0; i < genes.length; i++) {
+                this.geneData.push(genes[i]);
+            }
+            this.$.geneTable.update(this.geneData);
+            this.$.geneTextArea.value = '';
+        },
+        handleClickGeneListClear: function (e) {
+            this.geneData = [];
+        }
+
+    });
+</script>
