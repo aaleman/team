@@ -9,16 +9,11 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-        }
-
-        #wizard {
             width: 900px;
             height: 600px;
-
             margin: 50px auto 0;
             border: solid white 1px;
             background-color: white;
-
         }
 
         #wizard-bottom {
@@ -33,23 +28,21 @@
 
     </style>
     <template>
-        <div id="wizard" class="vertical layout ">
-            <div id="wizard-content" flex>
+        <div id="wizard-content" flex>
 
-                <team-panel-wizard-disease-step step-number="1"
-                                                hidden$={{handleHiddenStep1(step)}}></team-panel-wizard-disease-step>
-                <team-panel-wizard-gene-step step-number="2"
-                                             hidden$={{handleHiddenStep2(step)}}></team-panel-wizard-gene-step>
-                <team-panel-wizard-mutation-step step-number="3"
-                                                 hidden$={{handleHiddenStep3(step)}}></team-panel-wizard-mutation-step>
-
-            </div>
-            <div id="wizard-bottom" class="horizontal layout end-justified">
-                <div class="jso-btn jso-btn-shdw" on-click="handlePrevStepButton">Prev</div>
-                <div class="jso-btn jso-btn-shdw" on-click="handleNextStepButton">Next</div>
-            </div>
+            <team-panel-wizard-disease-step step-number="1" id="step1"
+                                            hidden$={{handleHiddenStep1(step)}}></team-panel-wizard-disease-step>
+            <team-panel-wizard-gene-step step-number="2"
+                                         hidden$={{handleHiddenStep2(step)}}></team-panel-wizard-gene-step>
+            <team-panel-wizard-mutation-step step-number="3"
+                                             hidden$={{handleHiddenStep3(step)}}></team-panel-wizard-mutation-step>
 
         </div>
+        <div id="wizard-bottom" class="horizontal layout end-justified">
+            <div class="jso-btn jso-btn-shdw" on-click="handlePrevStepButton">Prev</div>
+            <div class="jso-btn jso-btn-shdw" on-click="handleNextStepButton">Next</div>
+        </div>
+
 
     </template>
 
@@ -60,7 +53,7 @@
         properties: {
             step: {
                 type: Number,
-                value: 2
+                value: 1
             },
             maxSteps: {
                 type: Number,

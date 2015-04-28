@@ -5,6 +5,7 @@
         position: relative;
         box-sizing: border-box;
         height: 100%;
+        width: 100%;
 
     }
 
@@ -16,6 +17,10 @@
         font-size: 16pt;
     }
 
+    .left, .right {
+        width: 50%;
+    }
+
 
 </style>
 <template>
@@ -24,7 +29,12 @@
             Step <span>{{stepNumber}}</span>: Diseases
         </div>
         <div class="step-content horizontal layout">
-
+            <div class="left">
+                <jso-table id="allDiseases" columns="{{allDiseasesColumns}}" data="{{allDiseasesData}}"
+                           selected="{{selected}}" selectable searchable></jso-table>
+            </div>
+            <div class="right">
+            </div>
         </div>
     </div>
 </template>
@@ -36,10 +46,70 @@
             stepNumber: {
                 type: Number,
                 value: 0
+            },
+            allDiseasesColumns: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            allDiseasesColumns: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            selected: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                notify: true,
+                observer: 'handleSelectedRows'
             }
         },
         ready: function () {
+            this.allDiseasesColumns = [
+                {name: 'name', title: 'Name'}
+            ];
 
+
+            // Example Data
+
+            var allDiseases = [];
+
+//            $.ajax({
+//                url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+//                dataType: 'json',
+//                async: false,
+//                success: function (response, textStatus, jqXHR) {
+//                    try {
+//                        var data = response.response[0].result;
+//
+//                        for (var i = 0; i < data.length; i++) {
+//                            var elem = data[i];
+//                            allDiseases.push({
+//                                name: elem.phenotype,
+//                                genes: elem.associatedGenes
+//                            });
+//                        }
+//                    } catch (e) {
+//
+//                    }
+//                }
+//            })
+
+            for (var i = 1; i <= 10; i++) {
+                allDiseases.push({name: 'Disease' + i});
+            }
+
+            this.allDiseasesData = allDiseases;
+        },
+        handleSelectedRows: function (neo, old) {
+            console.log("DISEASES");
+            console.log(neo);
+            return neo;
         }
-    });
+    })
+    ;
 </script>

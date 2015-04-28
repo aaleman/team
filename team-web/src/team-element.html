@@ -5,7 +5,7 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-upload-variant-file.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-study.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-project.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/folder/jso-opencga-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
 
 <script src="panel.js"></script>
 
@@ -21,13 +21,12 @@
 
 <dom-module id="team-element">
     <style>
-
-
         :host {
             display: block;
             position: relative;
             cursor: default;
             font-size: 13px;
+            background-color: inherit;
         }
 
         .menu > div {
@@ -37,21 +36,26 @@
             padding: 0 5px;
         }
 
-        .menu > div:hover {
-            color: #FFFFFF;
+        jso-header {
+            z-index: 2;
         }
 
         #content {
+            z-index: 1;
+            background-color: inherit;
         }
 
-        jso-dashboard {
-            height: calc(100vh - 60px);
-        }
+        /*jso-dashboard {*/
+        /*height: calc(100vh - 60px);*/
+        /*}*/
+
+        /*jso-variant-browser {*/
+        /*height: calc(100vh - 60px);*/
+        /*}*/
 
         jso-opencga-browser {
             top: 60px;
         }
-
 
     </style>
     <template>
@@ -103,7 +107,7 @@
         </jso-header>
 
         <div id="content">
-            <!--<team-home></team-home>-->
+            <team-home hidden$="{{homeHidden}}"></team-home>
             <jso-opencga-create-study
                     id="createStudy"
                     hidden$="{{createStudyHidden}}"
@@ -155,8 +159,8 @@
         <!--hidden?="{{hideUserPanel}}"-->
         <!--hideFlag="{{hideUserPanel}}"-->
         <!--userSettings="{{userSettings}}"-->
-        <!--example="false"-->
-        <!-->-->
+        <!--example="false">-->
+        <!---->
         <!--</team-show-panel>-->
 
         <!--<team-show-panel-->
@@ -236,6 +240,11 @@
                 type: Boolean,
                 value: true,
                 reflectToAttribute: true
+            },
+            homeHidden: {
+                type: Boolean,
+                value: false
+
             }
         },
         ready: function () {
@@ -310,7 +319,10 @@
         },
         handleLogin: function () {
 //            this.browserHidden = false;
-            this.selectedOption = "home";
+//            this.selectedOption = "home";
+            this.homeHidden = true;
+            this.browserHidden = false;
+
         },
         handleLogout: function () {
             this.browserHidden = true;
