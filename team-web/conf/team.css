@@ -43,6 +43,14 @@ jso-help-menu {
     background-color: #204854;
 }
 
+
+jso-panel > .header{
+    background-color: #225e71;
+    color: #FFFFFF;
+
+}
+
+jso-panel,
 jso-login,
 jso-signup,
 jso-profile,
