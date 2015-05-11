@@ -34,7 +34,7 @@
         </div>
         <div class="step-content horizontal layout">
             <div class="left">
-                <jso-table id="allDiseases" columns="{{diseaseColumns}}" data="{{allDiseasesData}}"
+                <jso-table id="allDiseases" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}"
                            selected="{{currentSelectedDiseasesData}}" enable-select enable-filter></jso-table>
             </div>
             <div class="jso-btn jso-btn-shdw" on-click="handleAddSelected">Add Selected</div>
@@ -97,11 +97,9 @@
 
             var me = this;
             if (localStorage.bioinfo_team_diseases) {
-                console.log("accediendo a localStorage");
                 this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
 
             } else {
-                console.log("Llamando a WS")
                 $.ajax({
                     url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     dataType: 'json',
@@ -128,14 +126,14 @@
                             }
 
                             diseases.sort(function (a, b) {
-                                return a.phenotype.toLowerCase().localeCompare(b.phenotype.toLowerCase());
-                            })
+                                return a.phenotype.localeCompare(b.phenotype);
+                            });
 
 
                             if (diseases.length > 0) {
+                                me.allDiseasesData = diseases;
                                 localStorage.bioinfo_team_diseases = JSON.stringify(diseases);
                             }
-
 
                         } catch (e) {
 
@@ -144,6 +142,12 @@
                 });
 
             }
+            this.allDiseaseColumns = [
+                {name: 'phenotype', title: 'Phenotype', type: 'text'},
+                {
+                    name: 'source', title: 'Source', type: 'select', options: ["clinvar", "gwas"], width: '40px'
+                }
+            ];
             this.diseaseColumns = [
                 {name: 'phenotype', title: 'Phenotype', type: 'text'},
                 {
@@ -161,7 +165,10 @@
             var newDiseases = this.selectedDiseasesData;
             for (var i = 0; i < this.currentSelectedDiseasesData.length; i++) {
                 var row = this.currentSelectedDiseasesData[i];
-                newDiseases.push(row);
+
+                if(!this.$.selectedDiseases.contains(row)){
+                    newDiseases.push(row);
+                }
             }
 
             this.$.selectedDiseases.update(newDiseases)
