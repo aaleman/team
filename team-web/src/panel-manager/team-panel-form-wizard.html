@@ -22,18 +22,40 @@
 
         }
 
-        /*team-panel-wizard-gene-step {*/
-        /*height: 800px;*/
-        /*}*/
+        .step-title {
+            height: 50px;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 50px;
+            font-size: 16pt;
+        }
 
     </style>
     <template>
         <div id="wizard-content" flex>
 
-            <team-panel-wizard-disease-step step-number="1" id="step1"
-                                            hidden$={{handleHiddenStep1(step)}}
-                                            form-data={{formData}}
-                    ></team-panel-wizard-disease-step>
+            <div class="step vertical layout" hidden$="{{handleHiddenStep1(step)}}" id="step1">
+                <div class="step-title">
+                    Step <span>{{stepNumber}}</span>: Diseases
+                </div>
+                <div class="step-content horizontal layout">
+                    <div class="left">
+                        <jso-table id="allDiseases" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}"
+                                   selected="{{currentSelectedDiseasesData}}" enable-select enable-filter></jso-table>
+                    </div>
+                    <div class="jso-btn jso-btn-shdw" on-click="handleAddSelectedDiseases">Add Selected</div>
+                    <div class="right">
+                        <jso-table id="selectedDiseases" columns="{{diseaseColumns}}"
+                                   data="{{formData.diseases}}"></jso-table>
+
+                    </div>
+                </div>
+            </div>
+
+            <!--<team-panel-wizard-disease-step step-number="1" id="step1"-->
+            <!--hidden$={{handleHiddenStep1(step)}}-->
+            <!--form-data={{formData}}-->
+            ></team-panel-wizard-disease-step>
             <team-panel-wizard-gene-step step-number="2" id="step2"
                                          hidden$={{handleHiddenStep2(step)}}
                                          form-data="{{formData}}"
@@ -59,7 +81,7 @@
         properties: {
             step: {
                 type: Number,
-                value: 2
+                value: 1
             },
             maxSteps: {
                 type: Number,
@@ -71,10 +93,104 @@
                     return {};
                 },
                 notify: true
-            }
+            },
+            diseaseColumns: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            selectedDiseases: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                notify: true,
+                observer: 'handleSelectedRows'
+            },
+            currentSelectedDiseasesData: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            }, selectedDiseasesData: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            associatedGenes: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
         },
         ready: function () {
             this.formData = new Panel();
+
+
+            var me = this;
+            if (localStorage.bioinfo_team_diseases) {
+                this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
+
+            } else {
+                $.ajax({
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    dataType: 'json',
+                    async: false,
+                    success: function (response, textStatus, jqXHR) {
+                        try {
+                            var data = response.response;
+                            var clinvar = data[0].result;
+                            var gwas = data[1].result;
+
+                            var diseases = [];
+
+                            for (var i = 0; i < 100; i++) {
+//                            for (var i = 0; i < clinvar.length; i++) {
+                                var dis = clinvar[i];
+                                dis.source = "clinvar";
+                                diseases.push(dis);
+                            }
+                            for (var i = 0; i < 100; i++) {
+//                            for (var i = 0; i < gwas.length; i++) {
+                                var dis = gwas[i];
+                                dis.source = "gwas";
+                                diseases.push(dis);
+                            }
+
+                            diseases.sort(function (a, b) {
+                                return a.phenotype.localeCompare(b.phenotype);
+                            });
+
+
+                            if (diseases.length > 0) {
+                                me.allDiseasesData = diseases;
+                                localStorage.bioinfo_team_diseases = JSON.stringify(diseases);
+                            }
+
+                        } catch (e) {
+
+                        }
+                    }
+                });
+
+            }
+            this.allDiseaseColumns = [
+                {name: 'phenotype', title: 'Phenotype', type: 'text'},
+                {
+                    name: 'source', title: 'Source', type: 'select', options: ["clinvar", "gwas"], width: '40px'
+                }
+            ];
+            this.diseaseColumns = [
+                {name: 'phenotype', title: 'Phenotype', type: 'text'},
+                {
+                    name: 'source', title: 'Source', type: 'select', options: ["clinvar", "gwas"], width: '40px'
+                },
+                {name: '', title: '', type: 'action'}
+            ];
+
         },
 
         handleHiddenStep1: function (step) {
@@ -99,6 +215,40 @@
         handleNextStepButton: function (e) {
             this.step = (this.step >= this.maxSteps) ? this.maxSteps : this.step + 1;
             console.log(this.step);
+        },
+        handleSelectedRows: function (neo, old) {
+            return neo;
+        },
+        handleAddSelectedDiseases: function () {
+
+            for (var i = 0; i < this.currentSelectedDiseasesData.length; i++) {
+                var row = this.currentSelectedDiseasesData[i];
+
+                if (!this.formData.containsDisease(row)) {
+                    this.formData.addDisease(row);
+
+                    if (row.associatedGenes.length > 0) {
+                        for (var j = 0; j < row.associatedGenes.length; j++) {
+                            var elem = row.associatedGenes[j];
+                            if (elem.indexOf(",") >= 0) {
+                                var splits = elem.split(",");
+                                for (var k = 0; k < splits.length; k++) {
+                                    var gene = splits[k];
+                                    this.formData.addGene({
+                                        name: gene
+                                    });
+                                }
+                            } else {
+                                this.formData.addGene({
+                                    name: elem
+                                })
+                            }
+                        }
+                        this.notifyPath("formData.modCount", this.formData.modCount);
+                    }
+                }
+            }
+            this.$.selectedDiseases.refresh();
         }
     });
 </script>
