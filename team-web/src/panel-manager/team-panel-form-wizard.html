@@ -1,7 +1,4 @@
 <link rel="import" href="../../lib/jsorolla/src/lib/components/table/jso-table.html">
-<link rel="import" href="team-panel-wizard-gene-step.html">
-<link rel="import" href="team-panel-wizard-disease-step.html">
-<link rel="import" href="team-panel-wizard-mutation-step.html">
 
 <dom-module id="team-panel-form-wizard">
     <style>
@@ -61,6 +58,17 @@
         .mutations-tab-container-elem {
             margin: 20px;
         }
+
+        .disease-left, .disease-right {
+            width: 40%;
+            height: 80%;
+
+            margin: 0 auto;
+        }
+
+        #addDiseaseBtn {
+            margin-top: 5px;
+        }
     </style>
     <template>
         <div id="wizard-content" flex>
@@ -70,15 +78,19 @@
                     Step 1: Diseases
                 </div>
                 <div class="step-content horizontal layout">
-                    <div class="left">
+                    <div class="disease-left ">
                         <jso-table id="allDiseases" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}"
                                    selected="{{currentSelectedDiseasesData}}" enable-select enable-filter></jso-table>
+                        <div id="addDiseaseBtn" class="jso-btn jso-btn-shdw" on-click="handleAddSelectedDiseases">Add
+                            Selected
+                        </div>
                     </div>
-                    <div class="jso-btn jso-btn-shdw" on-click="handleAddSelectedDiseases">Add Selected</div>
-                    <div class="right">
+                    <div class="disease-right">
                         <jso-table id="selectedDiseases" columns="{{diseaseColumns}}"
                                    data="{{formData.diseases}}"></jso-table>
-
+                        <div id="clearDiseasesBtn" class="jso-btn jso-btn-shdw" on-click="handleClearSelectedDiseases">
+                            Clear
+                        </div>
                     </div>
                 </div>
             </div>
@@ -455,7 +467,9 @@
             }
             this.$.selectedDiseases.refresh();
         },
-
+        handleClearSelectedDiseases: function () {
+            this.formData.clearDiseases();
+        },
         handleGenesImportBed: function (e) {
 
             var me = this;
@@ -648,6 +662,7 @@
         handleClickMutationListClear: function (e) {
             this.formData.clearMutations();
         },
+
         handleMutationAdd: function (e) {
 
             var chr = this.$.mutationGVChr.value;
