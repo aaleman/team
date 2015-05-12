@@ -31,11 +31,17 @@
         <div id="wizard-content" flex>
 
             <team-panel-wizard-disease-step step-number="1" id="step1"
-                                            hidden$={{handleHiddenStep1(step)}}></team-panel-wizard-disease-step>
-            <team-panel-wizard-gene-step step-number="2"
-                                         hidden$={{handleHiddenStep2(step)}}></team-panel-wizard-gene-step>
-            <team-panel-wizard-mutation-step step-number="3"
-                                             hidden$={{handleHiddenStep3(step)}}></team-panel-wizard-mutation-step>
+                                            hidden$={{handleHiddenStep1(step)}}
+                                            form-data={{formData}}
+                    ></team-panel-wizard-disease-step>
+            <team-panel-wizard-gene-step step-number="2" id="step2"
+                                         hidden$={{handleHiddenStep2(step)}}
+                                         form-data="{{formData}}"
+                    ></team-panel-wizard-gene-step>
+            <team-panel-wizard-mutation-step step-number="3" id="step3"
+                                             hidden$={{handleHiddenStep3(step)}}
+                                             form-data="{{formData}}"
+                    ></team-panel-wizard-mutation-step>
 
         </div>
         <div id="wizard-bottom" class="horizontal layout end-justified">
@@ -53,14 +59,22 @@
         properties: {
             step: {
                 type: Number,
-                value: 3
+                value: 2
             },
             maxSteps: {
                 type: Number,
                 value: 3
+            },
+            formData: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
             }
         },
         ready: function () {
+            this.formData = new Panel();
         },
 
         handleHiddenStep1: function (step) {
@@ -77,8 +91,8 @@
         },
         hideProjectList: function (menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
-        }
-        , handlePrevStepButton: function (e) {
+        },
+        handlePrevStepButton: function (e) {
             this.step = (this.step <= 1) ? 1 : this.step - 1;
             console.log(this.step);
         },
@@ -86,6 +100,5 @@
             this.step = (this.step >= this.maxSteps) ? this.maxSteps : this.step + 1;
             console.log(this.step);
         }
-
     });
 </script>

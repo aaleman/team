@@ -26,12 +26,6 @@
         width: 50%;
     }
 
-    /*#geneTable {*/
-    /*height: 300px;*/
-    /*width: 400px;*/
-    /**/
-    /*}*/
-
     .genes-tab-container-elem {
         margin: 20px;
     }
@@ -77,7 +71,7 @@
                 </div>
             </div>
             <div id="genes-list" flex>
-                <jso-table id="geneTable" columns="{{geneColumns}}" data="{{geneData}}"></jso-table>
+                <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}"></jso-table>
                 <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneListClear">Clear</div>
             </div>
         </div>
@@ -102,42 +96,40 @@
                     return [];
                 }
             },
-            geneData: {
-                type: Array,
+            formData: {
+                type: Object,
                 value: function () {
-                    return [];
+                    return {};
                 }
+            },
+            notify: true
+        },
+        observers: ["handleUpdatedGenes(formData.modCount)"],
+        handleUpdatedGenes: function (neo, old, path) {
+            if (neo) {
+                this.$.geneTable.refresh();
             }
-
         },
         ready: function () {
-            this.geneTab = 'bed';
+            this.geneTab = 'text';
             this.geneColumns = [
-                {name: 'gene', title: 'Gene'},
+                {name: 'name', title: 'Name'},
                 {name: 'chr', title: 'CHR', defaultValue: '.'},
                 {name: 'start', title: 'Start', defaultValue: '.'},
-                {name: 'end', title: 'End', defaultValue: '.'}
+                {name: 'end', title: 'End', defaultValue: '.'},
+                {name: "", type: 'action'}
             ];
 
-            // Example Data
 
-            var exampleData = []
-            for (var i = 1; i <= 10; i++) {
-                exampleData.push({gene: 'Gene' + i});
-            }
-
-            this.geneData = exampleData;
-
-        },
+            this.$.geneTextArea.value = "a,b,c,d,e,f,g"
+        }
+        ,
         handleGenesImportBed: function (e) {
 
             var me = this;
             var bed_file = this.$.geneBedFileInput.files[0];
-
             if (bed_file != null) {
-
                 var reader = new FileReader();
-
                 reader.onload = function (e) {
                     var data = e.target.result;
                     var lines = data.split("\n");
@@ -150,47 +142,46 @@
                             var end = fields[2];
 
                             var gene = {
-                                gene: chr + ":" + start + "-" + end,
+                                name: chr + ":" + start + "-" + end,
                                 chr: chr,
                                 start: start,
                                 end: end
-                            }
+                            };
 
-                            me.geneData.push(gene);
-
-
+                            me.formData.addGene(gene);
                         }
                     }
-
-                    me.$.geneTable.update(me.geneData);
-
-
+                    me.$.geneTable.refresh();
                 };
-
                 reader.readAsText(bed_file);
-
             }
-
-        },
+        }
+        ,
         handleHiddenGeneText: function (geneTab) {
             return geneTab != 'text';
-        },
+        }
+        ,
 
         handleHiddenGeneBed: function (geneTab) {
             return geneTab != 'bed';
-        },
+        }
+        ,
         handleHiddenGenePanel: function (geneTab) {
             return geneTab != 'panel';
-        },
+        }
+        ,
         handleClickGeneText: function (e) {
             this.geneTab = 'text';
-        },
+        }
+        ,
         handleClickGeneBed: function (e) {
             this.geneTab = 'bed';
-        },
+        }
+        ,
         handleClickGenePanel: function (e) {
             this.geneTab = 'panel';
-        },
+        }
+        ,
         handleClickGeneTextAreaButton: function (e) {
 
             var textAreaValue = this.$.geneTextArea.value;
@@ -200,20 +191,22 @@
                 var geneName = splits[i];
 
                 if (geneName != '') {
-                    genes.push({
-                        gene: geneName
-                    });
+
+                    this.formData.addGene({
+                        name: geneName
+                    })
                 }
             }
-            for (var i = 0; i < genes.length; i++) {
-                this.geneData.push(genes[i]);
-            }
-            this.$.geneTable.update(this.geneData);
+            this.$.geneTable.update(this.formData.genes);
             this.$.geneTextArea.value = '';
-        },
+        }
+        ,
         handleClickGeneListClear: function (e) {
-            this.geneData = [];
+
+            this.formData.clearGenes();
+            this.$.geneTable.update(this.formData.genes);
         }
 
-    });
+    })
+    ;
 </script>

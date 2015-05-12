@@ -40,7 +40,7 @@
             <div class="jso-btn jso-btn-shdw" on-click="handleAddSelected">Add Selected</div>
             <div class="right">
                 <jso-table id="selectedDiseases" columns="{{diseaseColumns}}"
-                           data="{{selectedDiseasesData}}"></jso-table>
+                           data="{{formData.diseases}}"></jso-table>
 
             </div>
         </div>
@@ -91,6 +91,13 @@
                 value: function () {
                     return {};
                 }
+            },
+            formData: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
             }
         },
         ready: function () {
@@ -153,7 +160,7 @@
                 {
                     name: 'source', title: 'Source', type: 'select', options: ["clinvar", "gwas"], width: '40px'
                 },
-                {name: '', title: '', type:'action'}
+                {name: '', title: '', type: 'action'}
             ];
 
         },
@@ -162,16 +169,34 @@
         },
         handleAddSelected: function () {
 
-            var newDiseases = this.selectedDiseasesData;
             for (var i = 0; i < this.currentSelectedDiseasesData.length; i++) {
                 var row = this.currentSelectedDiseasesData[i];
 
-                if(!this.$.selectedDiseases.contains(row)){
-                    newDiseases.push(row);
+                if (!this.formData.containsDisease(row)) {
+                    this.formData.addDisease(row);
+
+                    if (row.associatedGenes.length > 0) {
+                        for (var j = 0; j < row.associatedGenes.length; j++) {
+                            var elem = row.associatedGenes[j];
+                            if (elem.indexOf(",") >= 0) {
+                                var splits = elem.split(",");
+                                for (var k = 0; k < splits.length; k++) {
+                                    var gene = splits[k];
+                                    this.formData.addGene({
+                                        name: gene
+                                    });
+                                }
+                            } else {
+                                this.formData.addGene({
+                                    name: elem
+                                })
+                            }
+                        }
+                        this.notifyPath("formData.modCount", this.formData.modCount);
+                    }
                 }
             }
-
-            this.$.selectedDiseases.update(newDiseases)
+            this.$.selectedDiseases.refresh();
         }
     })
     ;

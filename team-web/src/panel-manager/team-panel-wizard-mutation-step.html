@@ -5,7 +5,6 @@
         position: relative;
         box-sizing: border-box;
         height: 100%;
-
     }
 
     .step-title {
@@ -55,38 +54,37 @@
                             <div class="horizontal layout">
                                 <div>
                                     <label for="">Chr</label>
-                                    <input type="text"/>
+                                    <input type="text" name="mutationGVChr" id="mutationGVChr"/>
                                 </div>
                                 <div>
                                     <label for="">Pos</label>
-                                    <input type="text"/>
+                                    <input type="text" name="mutationGVPos" id="mutationGVPos"/>
                                 </div>
                                 <div>
                                     <label for="">Ref</label>
-                                    <input type="text"/>
+                                    <input type="text" name="mutationGVRef" id="mutationGVRef"/>
                                 </div>
                                 <div>
                                     <label for="">Alt</label>
-                                    <input type="text"/>
+                                    <input type="text" name="mutationGVAlt" id="mutationGVAlt"/>
                                 </div>
                                 <div>
                                     <label for="">Phe</label>
-                                    <input type="text"/>
+                                    <input type="text" name="mutationGVPhe" id="mutationGVPhe"/>
                                 </div>
                             </div>
-                        <div class="jso-btn jso-btn-shdw" on-click="handleMutationAdd">
-                            <span>Add!!</span>
+                            <div class="jso-btn jso-btn-shdw" on-click="handleMutationAdd">
+                                <span>Add!!</span>
+                            </div>
+
                         </div>
-                            
-                        </div>
-                        <div>
-                            GViewer
-                        </div>
+                        <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
                     </div>
                     <div id="mutation-tab-config-vcf" class="mutations-tab-container-elem"
                          hidden$={{handleHiddenMutationVCF(mutationTab)}}>
-                        
+
                         <input type="file" id="mutationVCFFileInput">
+
                         <div class="jso-btn jso-btn-shdw" on-click="handleMutationImportVCF">
                             <span>Import!!</span>
                         </div>
@@ -103,14 +101,16 @@
                             </select>
                         </div>
 
-                        
+
                         <div>
                             <label for="">Ignore first line (header):</label>
-                            <input type="checkbox" name="mutationCSVHeader" id="mutationCSVHeader" value="ignore" checked/>
+                            <input type="checkbox" name="mutationCSVHeader" id="mutationCSVHeader" value="ignore"
+                                   checked/>
                         </div>
 
 
                         <input type="file" id="mutationCSVFileInput">
+
                         <div class="jso-btn jso-btn-shdw" on-click="handleMutationImportCSV">
                             <span>Import!!</span>
                         </div>
@@ -121,7 +121,7 @@
                 </div>
             </div>
             <div id="mutations-list" flex>
-                <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{mutationData}}"></jso-table>
+                <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}"></jso-table>
                 <div class="jso-btn jso-btn-shdw" on-click="handleClickMutationListClear">Clear</div>
             </div>
         </div>
@@ -147,8 +147,15 @@
             },
             mutationData: {
                 type: Array,
-                value: function(){
-                return [];}
+                value: function () {
+                    return [];
+                }
+            },
+            formData: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
             }
         },
         handleClickMutationGV: function (e) {
@@ -178,15 +185,15 @@
         ready: function () {
             this.mutationTab = 'gv';
 
-            this.mutationColumns = [ 
-            { name:'chr', title:'Chr'},
-            { name:'pos', title:'Pos'},
-            { name:'ref', title:'Ref'},
-                { name:'alt', title:'Alt'},
-                { name:'phe', title:'Phenotype'},
+            this.mutationColumns = [
+                {name: 'chr', title: 'Chr', width: 40},
+                {name: 'pos', title: 'Pos'},
+                {name: 'ref', title: 'Ref', width: 70},
+                {name: 'alt', title: 'Alt', width: 70},
+                {name: 'phe', title: 'Phenotype'},
             ];
         },
-        handleMutationImportVCF: function(e){
+        handleMutationImportVCF: function (e) {
 
             var me = this;
             var vcf_file = this.$.mutationVCFFileInput.files[0];
@@ -211,14 +218,14 @@
                                 chr: chr,
                                 pos: pos,
                                 ref: ref,
-                                alt:alt
+                                alt: alt
                             }
-                            me.mutationData.push(mut);
+                            me.formData.addMutation(mut);
 
                         }
                     }
 
-                    me.$.mutationTable.update(me.mutationData);
+                    me.$.mutationTable.refresh();
 
                 };
 
@@ -227,7 +234,7 @@
             }
 
         },
-        handleMutationImportCSV: function(e){
+        handleMutationImportCSV: function (e) {
 
             var me = this;
             var csv_file = this.$.mutationCSVFileInput.files[0];
@@ -235,13 +242,13 @@
             if (csv_file != null) {
 
                 var reader = new FileReader();
-                var separator =this.$.mutationCSVSeparator.selectedOptions[0].value;
+                var separator = this.$.mutationCSVSeparator.selectedOptions[0].value;
                 var ignoreHeader = this.$.mutationCSVHeader.checked;
 
                 reader.onload = function (e) {
                     var data = e.target.result;
                     var lines = data.split("\n");
-                    var i = ignoreHeader? 1: 0;
+                    var i = ignoreHeader ? 1 : 0;
 
                     for (; i < lines.length; i++) {
                         var line = lines[i];
@@ -257,23 +264,47 @@
                                 chr: chr,
                                 pos: pos,
                                 ref: ref,
-                                alt:alt,
-                                phe:phe
-                                
+                                alt: alt,
+                                phe: phe
+
                             }
-                            me.mutationData.push(mut);
+                            me.formData.addMutation(mut);
                         }
                     }
-                    me.$.mutationTable.update(me.mutationData);
+                    me.$.mutationTable.refresh();
                 };
                 reader.readAsText(csv_file);
             }
         },
         handleClickMutationListClear: function (e) {
-            this.mutationData = [];
+            this.formData.clearMutations();
         },
-        handleMutationAdd: function(e){
-        debugger
+        handleMutationAdd: function (e) {
+
+            var chr = this.$.mutationGVChr.value;
+            var pos = this.$.mutationGVPos.value;
+            var ref = this.$.mutationGVRef.value;
+            var alt = this.$.mutationGVAlt.value;
+            var phe = this.$.mutationGVPhe.value;
+
+            var mut = {
+                chr: chr,
+                pos: pos,
+                ref: ref,
+                alt: alt,
+                phe: phe
+
+            }
+            this.formData.addMutation(mut);
+            this.$.mutationTable.refresh();
+
+
+            this.$.mutationGVChr.value = "";
+            this.$.mutationGVPos.value = "";
+            this.$.mutationGVRef.value = "";
+            this.$.mutationGVAlt.value = "";
+            this.$.mutationGVPhe.value = "";
+
         }
 
 
