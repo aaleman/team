@@ -86,7 +86,7 @@
                         </div>
                     </div>
                     <div class="disease-right">
-                        <jso-table id="selectedDiseases" columns="{{diseaseColumns}}"
+                        <jso-table id="selectedDiseases" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease"
                                    data="{{formData.diseases}}"></jso-table>
                         <div id="clearDiseasesBtn" class="jso-btn jso-btn-shdw" on-click="handleClearSelectedDiseases">
                             Clear
@@ -235,6 +235,36 @@
                 </div>
             </div>
 
+            <div class="step vertical layout" id="step4" hidden$={{handleHiddenStep4(step)}}>
+                <div class="step-title">
+                    Step 4: Panel Info
+                </div>
+                <div class="step-content vertical layout">
+
+                    <div>
+                        <label for="">Name:</label>
+                        <input type="text" value="{{formData.name::input}}"/>
+                    </div>
+
+                    <div>
+                        <label for="">Author</label>
+                        <input type="text" value="{{formData.author::input}}"/>
+                    </div>
+
+                    <div>
+                        <label for="">Date</label>
+                        <input type="date" value="{{formData.date::input}}"/>
+                    </div>
+
+                    <div>
+                        <label for="">Description</label>
+                        <textarea name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
+                    </div>
+
+                        <div class="jso-btn jso-btn-shdw" on-click="handleClickSavePanel">Save!!</div>
+                </div>
+            </div>
+
         </div>
         <div id="wizard-bottom" class="horizontal layout end-justified">
             <div class="jso-btn jso-btn-shdw" on-click="handlePrevStepButton">Prev</div>
@@ -248,11 +278,11 @@
         properties: {
             step: {
                 type: Number,
-                value: 1
+                value: 4
             },
             maxSteps: {
                 type: Number,
-                value: 3
+                value: 4
             },
             formData: {
                 type: Object,
@@ -320,16 +350,27 @@
             }
         },
 
-        observers: ["handleUpdatedGenes(formData.modCount)"],
+        observers: [
+            "handleUpdatedGenes(formData.modCount)",
+            "handleUpdatedSelectedDiseases(formData.diseases.splices)"
+        ],
+        handleUpdatedSelectedDiseases: function (neo, old, path) {
+
+        },
         handleUpdatedGenes: function (neo, old, path) {
             if (neo) {
                 this.$.geneTable.refresh();
             }
         },
+        handleRemoveDisease: function (e) {
+            var disease = e.detail.row;
+            this.formData.removeGenesFromDisease(disease);
+
+        },
         ready: function () {
             var me = this;
 
-            this.formData = new Panel();
+            this.formData = new Panel({polymer: this});
 
             if (localStorage.bioinfo_team_diseases) {
                 this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
@@ -380,15 +421,15 @@
             this.allDiseaseColumns = [
                 {name: 'phenotype', title: 'Phenotype', type: 'text'},
                 {
-                    name: 'source', title: 'Source', type: 'select', options: ["clinvar", "gwas"], width: '40px'
+                    name: 'source', title: 'Source', type: 'select', options: ["clinvar", "gwas"], width: 100
                 }
             ];
             this.diseaseColumns = [
                 {name: 'phenotype', title: 'Phenotype', type: 'text'},
                 {
-                    name: 'source', title: 'Source', type: 'select', options: ["clinvar", "gwas"], width: '40px'
+                    name: 'source', title: 'Source', type: 'select', options: ["clinvar", "gwas"], width: 100
                 },
-                {name: '', title: '', type: 'action'}
+                {name: '', title: '', type: 'action', width: 30}
             ];
             this.geneTab = 'text';
             this.geneColumns = [
@@ -396,7 +437,7 @@
                 {name: 'chr', title: 'CHR', defaultValue: '.'},
                 {name: 'start', title: 'Start', defaultValue: '.'},
                 {name: 'end', title: 'End', defaultValue: '.'},
-                {name: "", type: 'action'}
+                {name: '', title: '', type: 'action', width: 30}
             ];
 
             this.mutationColumns = [
@@ -405,6 +446,7 @@
                 {name: 'ref', title: 'Ref', width: 70},
                 {name: 'alt', title: 'Alt', width: 70},
                 {name: 'phe', title: 'Phenotype'},
+                {name: '', title: '', type: 'action', width: 30}
             ];
 
 
@@ -418,6 +460,9 @@
         },
         handleHiddenStep3: function (step) {
             return step != 3;
+        },
+        handleHiddenStep4: function (step) {
+            return step != 4;
         },
         collapseMenu: function (menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
@@ -444,28 +489,8 @@
                 if (!this.formData.containsDisease(row)) {
                     this.formData.addDisease(row);
 
-                    if (row.associatedGenes.length > 0) {
-                        for (var j = 0; j < row.associatedGenes.length; j++) {
-                            var elem = row.associatedGenes[j];
-                            if (elem.indexOf(",") >= 0) {
-                                var splits = elem.split(",");
-                                for (var k = 0; k < splits.length; k++) {
-                                    var gene = splits[k];
-                                    this.formData.addGene({
-                                        name: gene
-                                    });
-                                }
-                            } else {
-                                this.formData.addGene({
-                                    name: elem
-                                })
-                            }
-                        }
-                        this.notifyPath("formData.modCount", this.formData.modCount);
-                    }
                 }
             }
-            this.$.selectedDiseases.refresh();
         },
         handleClearSelectedDiseases: function () {
             this.formData.clearDiseases();
@@ -497,7 +522,6 @@
                             me.formData.addGene(gene);
                         }
                     }
-                    me.$.geneTable.refresh();
                 };
                 reader.readAsText(bed_file);
             }
@@ -537,20 +561,17 @@
                 var geneName = splits[i];
 
                 if (geneName != '') {
-
                     this.formData.addGene({
                         name: geneName
                     })
                 }
             }
-            this.$.geneTable.update(this.formData.genes);
             this.$.geneTextArea.value = '';
         }
         ,
         handleClickGeneListClear: function (e) {
 
             this.formData.clearGenes();
-            this.$.geneTable.update(this.formData.genes);
         },
         handleClickMutationGV: function (e) {
             this.mutationTab = 'gv';
@@ -601,14 +622,13 @@
                                 chr: chr,
                                 pos: pos,
                                 ref: ref,
-                                alt: alt
+                                alt: alt,
+                                phe: "TODO"
                             }
                             me.formData.addMutation(mut);
 
                         }
                     }
-
-                    me.$.mutationTable.refresh();
 
                 };
 
@@ -654,7 +674,6 @@
                             me.formData.addMutation(mut);
                         }
                     }
-                    me.$.mutationTable.refresh();
                 };
                 reader.readAsText(csv_file);
             }
@@ -680,15 +699,18 @@
 
             }
             this.formData.addMutation(mut);
-            this.$.mutationTable.refresh();
 
+             this.$.mutationGVChr.value = "";
+             this.$.mutationGVPos.value = "";
+             this.$.mutationGVRef.value = "";
+             this.$.mutationGVAlt.value = "";
+             this.$.mutationGVPhe.value = "";
 
-            this.$.mutationGVChr.value = "";
-            this.$.mutationGVPos.value = "";
-            this.$.mutationGVRef.value = "";
-            this.$.mutationGVAlt.value = "";
-            this.$.mutationGVPhe.value = "";
-
+        },
+        handleClickSavePanel: function(e){
+            if(confirm("Are you sure?")){
+            
+            }
         }
     });
 </script>
