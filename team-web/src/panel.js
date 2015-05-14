@@ -18,7 +18,7 @@ function Panel(args) {
 Panel.prototype = {
     _incModCount: function () {
         this.modCount++;
-        console.log("Modificado panel");
+        //console.log("Panel changed!!");
     },
     addDisease: function (disease) {
         if (!this.containsDisease(disease)) {
@@ -85,7 +85,6 @@ Panel.prototype = {
         if (auxGene) {
             auxGene.count++;
             this.polymer.notifyPath('formData.genes', this.genes);
-            console.log(auxGene.count);
         } else {
             gene.count = 1;
             this.polymer.push('formData.genes', gene);
@@ -161,6 +160,21 @@ Panel.prototype = {
                 this.polymer.splice('formData.genes', index, 1);
             }
             this._incModCount();
+        }
+    },
+    toJSON: function () {
+        return {
+            id: this.id,
+            name: this.name,
+            author: this.author,
+            description: this.description,
+            date: this.date,
+            disease: this.diseases,
+            version: this.version,
+            archived: this.archived,
+            diseases: this.diseases,
+            genes: this.genes,
+            mutations: this.mutations
         }
     }
 };

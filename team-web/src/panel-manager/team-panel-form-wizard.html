@@ -62,7 +62,6 @@
         .disease-left, .disease-right {
             width: 40%;
             height: 80%;
-
             margin: 0 auto;
         }
 
@@ -261,7 +260,7 @@
                         <textarea name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
                     </div>
 
-                        <div class="jso-btn jso-btn-shdw" on-click="handleClickSavePanel">Save!!</div>
+                    <div class="jso-btn jso-btn-shdw" on-click="handleClickSavePanel">Save!!</div>
                 </div>
             </div>
 
@@ -276,9 +275,15 @@
     Polymer({
         is: "team-panel-form-wizard",
         properties: {
+            userData: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
             step: {
                 type: Number,
-                value: 4
+                value: 1
             },
             maxSteps: {
                 type: Number,
@@ -349,7 +354,6 @@
                 }
             }
         },
-
         observers: [
             "handleUpdatedGenes(formData.modCount)",
             "handleUpdatedSelectedDiseases(formData.diseases.splices)"
@@ -371,8 +375,10 @@
             var me = this;
 
             this.formData = new Panel({polymer: this});
+            this.$.allDiseases.setLoading(true);
 
             if (localStorage.bioinfo_team_diseases) {
+
                 this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
 
             } else {
@@ -389,13 +395,13 @@
                             var diseases = [];
 
                             for (var i = 0; i < 100; i++) {
-//                            for (var i = 0; i < clinvar.length; i++) {
+                                //for (var i = 0; i < clinvar.length; i++) {
                                 var dis = clinvar[i];
                                 dis.source = "clinvar";
                                 diseases.push(dis);
                             }
                             for (var i = 0; i < 100; i++) {
-//                            for (var i = 0; i < gwas.length; i++) {
+                                //for (var i = 0; i < gwas.length; i++) {
                                 var dis = gwas[i];
                                 dis.source = "gwas";
                                 diseases.push(dis);
@@ -411,13 +417,17 @@
                                 localStorage.bioinfo_team_diseases = JSON.stringify(diseases);
                             }
 
+
                         } catch (e) {
 
                         }
+
                     }
                 });
 
             }
+            this.$.allDiseases.setLoading(false);
+
             this.allDiseaseColumns = [
                 {name: 'phenotype', title: 'Phenotype', type: 'text'},
                 {
@@ -434,7 +444,7 @@
             this.geneTab = 'text';
             this.geneColumns = [
                 {name: 'name', title: 'Name'},
-                {name: 'chr', title: 'CHR', defaultValue: '.'},
+                {name: 'chr', title: 'Chr', defaultValue: '.'},
                 {name: 'start', title: 'Start', defaultValue: '.'},
                 {name: 'end', title: 'End', defaultValue: '.'},
                 {name: '', title: '', type: 'action', width: 30}
@@ -448,41 +458,48 @@
                 {name: 'phe', title: 'Phenotype'},
                 {name: '', title: '', type: 'action', width: 30}
             ];
-
-
         },
-
         handleHiddenStep1: function (step) {
             return step != 1;
-        },
+        }
+        ,
         handleHiddenStep2: function (step) {
             return step != 2;
-        },
+        }
+        ,
         handleHiddenStep3: function (step) {
             return step != 3;
-        },
+        }
+        ,
         handleHiddenStep4: function (step) {
             return step != 4;
-        },
+        }
+        ,
         collapseMenu: function (menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
-        },
+        }
+        ,
         hideProjectList: function (menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
-        },
+        }
+        ,
         handlePrevStepButton: function (e) {
             this.step = (this.step <= 1) ? 1 : this.step - 1;
             console.log(this.step);
-        },
+        }
+        ,
         handleNextStepButton: function (e) {
             this.step = (this.step >= this.maxSteps) ? this.maxSteps : this.step + 1;
             console.log(this.step);
-        },
+        }
+        ,
         handleSelectedRows: function (neo, old) {
             return neo;
-        },
+        }
+        ,
         handleAddSelectedDiseases: function () {
 
+            this.$.selectedDiseases.setLoading(true);
             for (var i = 0; i < this.currentSelectedDiseasesData.length; i++) {
                 var row = this.currentSelectedDiseasesData[i];
 
@@ -491,10 +508,13 @@
 
                 }
             }
-        },
+            this.$.selectedDiseases.setLoading(false);
+        }
+        ,
         handleClearSelectedDiseases: function () {
             this.formData.clearDiseases();
-        },
+        }
+        ,
         handleGenesImportBed: function (e) {
 
             var me = this;
@@ -531,7 +551,6 @@
             return geneTab != 'text';
         }
         ,
-
         handleHiddenGeneBed: function (geneTab) {
             return geneTab != 'bed';
         }
@@ -572,31 +591,40 @@
         handleClickGeneListClear: function (e) {
 
             this.formData.clearGenes();
-        },
+        }
+        ,
         handleClickMutationGV: function (e) {
             this.mutationTab = 'gv';
-        },
+        }
+        ,
         handleClickMutationVCF: function (e) {
             this.mutationTab = 'vcf';
-        },
+        }
+        ,
         handleClickMutationCSV: function (e) {
             this.mutationTab = 'csv';
-        },
+        }
+        ,
         handleClickMutationPanel: function (e) {
             this.mutationTab = 'panel';
-        },
+        }
+        ,
         handleHiddenMutationGV: function (mutationTab) {
             return mutationTab != 'gv';
-        },
+        }
+        ,
         handleHiddenMutationVCF: function (mutationTab) {
             return mutationTab != 'vcf';
-        },
+        }
+        ,
         handleHiddenMutationCSV: function (mutationTab) {
             return mutationTab != 'csv';
-        },
+        }
+        ,
         handleHiddenMutationPanel: function (mutationTab) {
             return mutationTab != 'panel';
-        },
+        }
+        ,
         handleMutationImportVCF: function (e) {
 
             var me = this;
@@ -629,14 +657,11 @@
 
                         }
                     }
-
                 };
-
                 reader.readAsText(vcf_file);
-
             }
-
-        },
+        }
+        ,
         handleMutationImportCSV: function (e) {
 
             var me = this;
@@ -677,11 +702,12 @@
                 };
                 reader.readAsText(csv_file);
             }
-        },
+        }
+        ,
         handleClickMutationListClear: function (e) {
             this.formData.clearMutations();
-        },
-
+        }
+        ,
         handleMutationAdd: function (e) {
 
             var chr = this.$.mutationGVChr.value;
@@ -700,17 +726,140 @@
             }
             this.formData.addMutation(mut);
 
-             this.$.mutationGVChr.value = "";
-             this.$.mutationGVPos.value = "";
-             this.$.mutationGVRef.value = "";
-             this.$.mutationGVAlt.value = "";
-             this.$.mutationGVPhe.value = "";
+            this.$.mutationGVChr.value = "";
+            this.$.mutationGVPos.value = "";
+            this.$.mutationGVRef.value = "";
+            this.$.mutationGVAlt.value = "";
+            this.$.mutationGVPhe.value = "";
 
-        },
-        handleClickSavePanel: function(e){
-            if(confirm("Are you sure?")){
-            
-            }
         }
-    });
+        ,
+        handleClickSavePanel: function (e) {
+//            if (confirm("Are you sure?")) {
+
+            var metaProject = null;
+            var metaStudy = null;
+
+            for (var i = 0; metaProject == null && i < this.userData.projects.length; i++) {
+                var proj = this.userData.projects[i];
+                if (proj.name === ".meta") {
+                    metaProject = proj;
+                    for (var j = 0; metaStudy == null && j < metaProject.studies.length; j++) {
+                        var stu = metaProject.studies[j];
+                        if (stu.name === ".meta") {
+                            metaStudy = stu;
+                        }
+                    }
+                }
+            }
+
+            if (metaProject != null && metaStudy != null) {
+                var teamConfigFolder = this._getTEAMConfigFolder(metaStudy.id);
+                if (teamConfigFolder == null) {
+                    teamConfigFolder = this._createTEAMConfigFolder(metaStudy.id);
+                }
+                var content = pako.gzip(JSON.stringify(this.formData), {to: 'string'});
+                this.uploadFile(content, "panel_" + Date.now() + ".js", metaStudy.id);
+            }
+
+//            }
+        },
+        _getTEAMConfigFolder: function (studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.search({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    studyId: studyId,
+                    name: '.team_config'
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+//                                me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+//                            me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        _createTEAMConfigFolder: function (studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.createFolder({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    folder: '.team_config',
+                    studyId: studyId
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+//                                me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+//                             me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        uploadFile: function (fileContent, fileName, studyId) {
+            var url = OpencgaManager.files.upload({
+                query: {
+                    sid: Cookies("bioinfo_sid")
+                },
+                request: {
+                    url: true
+                }
+            });
+
+            var blob = new Blob([fileContent], {type: 'text/plain'});
+
+            var formData = new FormData();
+            var userId = Cookies("bioinfo_user");
+            var studyId = studyId;
+            var relativeFilePath = '.team_config/' + fileName;
+            var fileFormat = 'GZIP';
+            var bioFormat = 'NONE';
+            var description = '';
+            var chunkId = 0;
+
+            formData.append('chunk_content', blob);
+            formData.append('chunk_id', chunkId);
+            formData.append('chunk_size', blob.size);
+            /*formData.append('chunk_hash', hash);*/
+            formData.append("filename", fileName);
+            formData.append('userId', userId);
+            formData.append('studyId', studyId);
+            formData.append('relativeFilePath', relativeFilePath);
+            /*formData.append('chunk_gzip', );*/
+
+            formData.append("last_chunk", true);
+            formData.append("total_size", blob.size);
+            formData.append("fileFormat", fileFormat);
+            formData.append("bioFormat", bioFormat);
+            formData.append("description", description);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, false);
+            xhr.onloadend = function (e) {
+                console.log('upload Done!');
+
+            };
+            xhr.send(formData);
+        }
+    })
+    ;
 </script>
