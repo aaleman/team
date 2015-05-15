@@ -63,7 +63,7 @@
                     on-logout="handleLogout"
                     show-menu-on-login>
              <span class="icon">
-                    <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
+                    <img src="./images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
             </span>
             <span class="title">TEAM</span>
             <span class="description"></span>
@@ -83,7 +83,7 @@
                     Browse
                 </div>
                 <!--<div on-click="handleTogglePanelManager">-->
-                    <!--Panel Manager-->
+                <!--Panel Manager-->
                 <!--</div>-->
             </div>
 
@@ -235,7 +235,7 @@
             },
             panelManagerHidden: {
                 type: Boolean,
-                value: false
+                value: true
 //                reflectToAttribute: true
             },
             homeHidden: {
@@ -299,9 +299,9 @@
         handleToggleCreateProject: function (e) {
             this.createProjectHidden = !this.createProjectHidden;
         },
-        handleTogglePanelManager: function (e) {
-            this.panelManagerHidden = !this.panelManagerHidden;
-        },
+//        handleTogglePanelManager: function (e) {
+//            this.panelManagerHidden = !this.panelManagerHidden;
+//        },
 
         computeFooter: function (selectedOption) {
             return selectedOption == 'dashboard' || selectedOption == 'variantbrowser';
@@ -322,10 +322,13 @@
 //            this.selectedOption = "home";
             this.homeHidden = true;
             this.browserHidden = true;
+            this.panelManagerHidden = false;
 
         },
         handleLogout: function () {
             this.browserHidden = true;
+            this.panelManagerHidden = true;
+
         },
 
 //            created: function () {
