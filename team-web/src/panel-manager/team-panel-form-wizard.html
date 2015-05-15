@@ -740,34 +740,22 @@
         }
         ,
         handleClickSavePanel: function (e) {
-//            if (confirm("Are you sure?")) {
-
-//            var metaProject = null;
-//            var metaStudy = null;
-//
-//            for (var i = 0; metaProject == null && i < this.userData.projects.length; i++) {
-//                var proj = this.userData.projects[i];
-//                if (proj.name === ".meta") {
-//                    metaProject = proj;
-//                    for (var j = 0; metaStudy == null && j < metaProject.studies.length; j++) {
-//                        var stu = metaProject.studies[j];
-//                        if (stu.name === ".meta") {
-//                            metaStudy = stu;
-//                        }
-//                    }
-//                }
-//            }
-//
-            if (this.metaStudy && this.teamConfigFolder) {
-
-
-                var content = pako.gzip(JSON.stringify(this.formData), {to: 'string'});
-                var separator = "#-#";
-                var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived;
-                this.uploadFile(content, fileName, this.metaStudy.id);
+            if (this.formData.name == "") {
+                alert("The Panel name is mandatory!!");
+                return;
             }
+            if (confirm("Are you sure?")) {
 
-//            }
+                if (this.metaStudy && this.teamConfigFolder) {
+
+
+                    var content = pako.gzip(JSON.stringify(this.formData), {to: 'string'});
+                    var separator = "#-#";
+                    var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived;
+                    this.uploadFile(content, fileName, this.metaStudy.id);
+                }
+
+            }
         },
         uploadFile: function (fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({

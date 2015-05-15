@@ -93,7 +93,7 @@
                 <div class="jso jso-btn" on-click="toggleNewPanel">New Panel</div>
             </div>
             <div id="panel-list" hidden$="{{hidePanelList(menuHidden)}}">
-                <template is="dom-repeat" items="{{panels}}">
+                <template is="dom-repeat" items="{{panels}}" filter="isPanel">
                     <div class="panel-element" data-row="{{item}}" on-click="handlePanelClick">
                         <span>{{item.name}}</span>&nbsp;(<span>{{item.version}}</span>)
                         <i class="fa fa-remove" on-click="handlePanelRemove"></i>
@@ -324,20 +324,26 @@
 
         },
         _deletePanel: function (file) {
-            OpencgaManager.files.delete({
-                id: file.id,
-                query: {
-                    sid: Cookies('bioinfo_sid')
-                },
-                request: {
-                    async: false,
-                    success: function (response) {
+            if (confirm("Are you sure?")) {
+
+                OpencgaManager.files.delete({
+                    id: file.id,
+                    query: {
+                        sid: Cookies('bioinfo_sid')
                     },
-                    error: function () {
+                    request: {
+                        async: false,
+                        success: function (response) {
+                        },
+                        error: function () {
 //                            me.message = 'Server error, try again later.';
+                        }
                     }
-                }
-            });
+                });
+            }
+        },
+        isPanel: function (item) {
+            return item.file.name.indexOf("panel") == 0;
         }
     });
 </script>
