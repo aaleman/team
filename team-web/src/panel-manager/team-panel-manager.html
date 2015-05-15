@@ -1,0 +1,343 @@
+<link rel="import" href="team-panel-form-wizard.html">
+
+<dom-module id="team-panel-manager">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        #menu {
+            z-index: 3;
+            position: absolute;
+            box-sizing: border-box;
+            left: 0;
+            top: 50px;
+            bottom: 0;
+            width: 250px;
+            height: 800px;
+            padding: 10px;
+            border-width: 1px 1px 0 0;
+            border-style: solid;
+            border-color: rgba(120, 120, 120, 0.4);
+            transition: left 0.2s;
+            background-color: inherit;
+        }
+
+        #menu[collapsed] {
+            left: -250px !important;
+        }
+
+        #panel-list {
+            box-sizing: border-box;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        #menu-button {
+            font-size: 24px;
+            z-index: 3;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        #menu-button:after {
+            font-family: FontAwesome;
+            content: '\f0c9';
+        }
+
+        #loading {
+            position: absolute;
+            font-size: 20px;
+            z-index: 3;
+            top: 10px;
+            right: 30px;
+            font-weight: lighter;
+        }
+
+        .panel-element {
+            padding: 5px;
+        }
+
+        .panel-element:hover {
+            cursor: pointer;
+            background-color: #ebebeb;
+        }
+
+        #panelContainer {
+            height: 600px;
+        }
+
+        team-panel-form-wizard {
+            position: absolute;
+            top: 0;
+
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+        }
+    </style>
+    <template>
+        <div id="menu-button" class="jso-color-main-1h" on-click="handleHideMenu"></div>
+
+        <div id="loading"
+             hidden$="{{!loading}}">
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+            Loading...
+        </div>
+
+        <div id="menu" class="jso-bgcolor-main-3 jso-shadow" collapsed$="{{collapseMenu(menuHidden)}}">
+            <div id="button-bar" class="horizontal layout">
+                <div class="jso jso-btn" on-click="toggleNewPanel">New Panel</div>
+            </div>
+            <div id="panel-list" hidden$="{{hidePanelList(menuHidden)}}">
+                <template is="dom-repeat" items="{{panels}}">
+                    <div class="panel-element" data-row="{{item}}" on-click="handlePanelClick">
+                        <span>{{item.name}}</span>&nbsp;(<span>{{item.version}}</span>)
+                        <i class="fa fa-remove" on-click="handlePanelRemove"></i>
+                    </div>
+                </template>
+            </div>
+            <!--<div id="numPanels">Total: <span>{{computeNumPanels(panels)}}</span></div>-->
+        </div>
+
+        <team-panel-form-wizard
+                id="newPanel"
+                hidden$="{{panelFormWizardHidden}}"
+                meta-study="{{metaStudy}}"
+                team-config-folder="{{teamConfigFolder}}">
+        </team-panel-form-wizard>
+        <!--on-close="handleClosePanelFormWizard"-->
+
+    </template>
+
+</dom-module>
+<script>
+    Polymer({
+        is: "team-panel-manager",
+        properties: {
+            menuHidden: {
+                type: Boolean,
+                value: false
+            },
+            loading: {
+                type: Boolean,
+                value: false
+            },
+            userData: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: 'userDataChanged'
+            },
+            panels: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            projects: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                observer: 'projectsChanged'
+            },
+            metaStudy: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            panelFormWizardHidden: {
+                type: Boolean,
+                value: true
+            },
+            teamConfigFolder: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            }
+        },
+        collapseMenu: function (menuHidden, searchingFlag) {
+            return menuHidden || searchingFlag;
+        },
+        hidePanelList: function (menuHidden, searchingFlag) {
+            return menuHidden || searchingFlag;
+        },
+        userDataChanged: function (neo, old) {
+        },
+        projectsChanged: function (neo, old) {
+
+            if (neo.length > 0) {
+                var projects = neo;
+
+                var metaProject = null;
+                var metaStudy = null;
+
+                for (var i = 0; metaProject == null && projects && i < projects.length; i++) {
+                    var proj = projects[i];
+                    if (proj.name === ".meta") {
+                        metaProject = proj;
+                        for (var j = 0; metaStudy == null && metaProject.studies && j < metaProject.studies.length; j++) {
+                            var stu = metaProject.studies[j];
+                            if (stu.name === ".meta") {
+                                metaStudy = stu;
+                            }
+                        }
+                    }
+                }
+
+                if (metaProject != null && metaStudy != null) {
+                    var teamConfigFolder = this._getTEAMConfigFolder(metaStudy.id);
+                    if (teamConfigFolder == null) {
+                        teamConfigFolder = this._createTEAMConfigFolder(metaStudy.id);
+
+                    }
+                    this.metaStudy = metaStudy;
+                    this.teamConfigFolder = teamConfigFolder;
+
+                    this.panels = this._getPanelFiles(metaStudy, teamConfigFolder);
+                }
+
+            }
+
+        },
+        _getPanelFiles: function (study, folder) {
+            var me = this;
+            var panels = [];
+            var separator = "#-#";
+            OpencgaManager.files.list({
+                id: folder.id,
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    studyId: study.id
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            var data = response.response[0].result;
+
+                            for (var i = 0; i < data.length; i++) {
+                                var file = data[i];
+                                var fileName = file.name;
+                                var splits = fileName.split(separator);
+                                var panelName = splits[1];
+                                var version = splits[2];
+                                var archived = splits[3];
+
+                                var panel = {
+                                    name: panelName,
+                                    version: version,
+                                    archived: archived,
+                                    file: file
+                                };
+
+                                panels.push(panel);
+                            }
+
+                        } else {
+                            me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+                        me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return panels
+        },
+        _getTEAMConfigFolder: function (studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.search({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    studyId: studyId,
+                    name: '.team_config'
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+//                                me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+//                            me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        _createTEAMConfigFolder: function (studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.createFolder({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    folder: '.team_config',
+                    studyId: studyId
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+//                                me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+//                             me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        handleHideMenu: function () {
+            this.menuHidden = !this.menuHidden;
+        },
+        computeNumPanels: function (panels) {
+            return panels.length;
+        },
+        toggleNewPanel: function (neo, old) {
+            this.panelFormWizardHidden = !this.panelFormWizardHidden;
+        },
+        handlePanelClick: function (e) {
+            var currentTarget = e.currentTarget;
+            var panelFileInfo = currentTarget.dataRow;
+            console.log(panelFileInfo);
+        },
+        handlePanelRemove: function (e) {
+            var panel = e.target.parentElement.dataRow;
+            this._deletePanel(panel.file);
+
+        },
+        _deletePanel: function (file) {
+            OpencgaManager.files.delete({
+                id: file.id,
+                query: {
+                    sid: Cookies('bioinfo_sid')
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                    },
+                    error: function () {
+//                            me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+        }
+    });
+</script>

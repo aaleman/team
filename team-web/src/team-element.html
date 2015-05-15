@@ -12,6 +12,7 @@
 <script src="panel.js"></script>
 
 <link rel="import" href="team-home.html">
+<link rel="import" href="panel-manager/team-panel-manager.html">
 <link rel="import" href="panel-manager/team-panel-form-wizard.html">
 
 <dom-module id="team-element">
@@ -81,9 +82,9 @@
                 <div on-click="handleToggleBrowser">
                     Browse
                 </div>
-                <div on-click="handleTogglePanelFormWizard">
-                    New Panel
-                </div>
+                <!--<div on-click="handleTogglePanelManager">-->
+                    <!--Panel Manager-->
+                <!--</div>-->
             </div>
 
             <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
@@ -131,12 +132,12 @@
                     on-fileselect="handleFileSelect"
                     projects="{{projects}}"></jso-opencga-browser>
 
-            <team-panel-form-wizard
-                    id="newPanel"
-                    hidden$="{{panelFormWizardHidden}}"
-                    on-close="handleClosePanelFormWizard"
+            <team-panel-manager
+                    id="panelManager"
+                    hidden$="{{panelManagerHidden}}"
                     user-data="{{userData}}"
-                    ></team-panel-form-wizard>
+                    projects="{{projects}}"
+                    ></team-panel-manager>
         </div>
 
 
@@ -232,7 +233,7 @@
                 value: true,
                 reflectToAttribute: true
             },
-            panelFormWizardHidden: {
+            panelManagerHidden: {
                 type: Boolean,
                 value: false
 //                reflectToAttribute: true
@@ -280,8 +281,8 @@
         handleCloseUpload: function (e) {
             this.uploadHidden = true;
         },
-        handleClosePanelFormWizard: function (e) {
-            this.panelFormWizardHidden = true;
+        handleClosePanelManager: function (e) {
+            this.panelManagerHidden = true;
         },
         handleToggleUpload: function (e) {
             this.uploadHidden = !this.uploadHidden;
@@ -298,8 +299,8 @@
         handleToggleCreateProject: function (e) {
             this.createProjectHidden = !this.createProjectHidden;
         },
-        handleTogglePanelFormWizard: function (e) {
-            this.panelFormWizardHidden = !this.panelFormWizardHidden;
+        handleTogglePanelManager: function (e) {
+            this.panelManagerHidden = !this.panelManagerHidden;
         },
 
         computeFooter: function (selectedOption) {

@@ -10,7 +10,6 @@
             height: 600px;
             margin: 50px auto 0;
             border: solid white 1px;
-            background-color: white;
         }
 
         #wizard-bottom {
@@ -275,12 +274,6 @@
     Polymer({
         is: "team-panel-form-wizard",
         properties: {
-            userData: {
-                type: Object,
-                value: function () {
-                    return {};
-                }
-            },
             step: {
                 type: Number,
                 value: 1
@@ -351,6 +344,18 @@
                 type: Array,
                 value: function () {
                     return [];
+                }
+            },
+            metaStudy: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            teamConfigFolder: {
+                type: Object,
+                value: function () {
+                    return {};
                 }
             }
         },
@@ -737,83 +742,32 @@
         handleClickSavePanel: function (e) {
 //            if (confirm("Are you sure?")) {
 
-            var metaProject = null;
-            var metaStudy = null;
+//            var metaProject = null;
+//            var metaStudy = null;
+//
+//            for (var i = 0; metaProject == null && i < this.userData.projects.length; i++) {
+//                var proj = this.userData.projects[i];
+//                if (proj.name === ".meta") {
+//                    metaProject = proj;
+//                    for (var j = 0; metaStudy == null && j < metaProject.studies.length; j++) {
+//                        var stu = metaProject.studies[j];
+//                        if (stu.name === ".meta") {
+//                            metaStudy = stu;
+//                        }
+//                    }
+//                }
+//            }
+//
+            if (this.metaStudy && this.teamConfigFolder) {
 
-            for (var i = 0; metaProject == null && i < this.userData.projects.length; i++) {
-                var proj = this.userData.projects[i];
-                if (proj.name === ".meta") {
-                    metaProject = proj;
-                    for (var j = 0; metaStudy == null && j < metaProject.studies.length; j++) {
-                        var stu = metaProject.studies[j];
-                        if (stu.name === ".meta") {
-                            metaStudy = stu;
-                        }
-                    }
-                }
-            }
 
-            if (metaProject != null && metaStudy != null) {
-                var teamConfigFolder = this._getTEAMConfigFolder(metaStudy.id);
-                if (teamConfigFolder == null) {
-                    teamConfigFolder = this._createTEAMConfigFolder(metaStudy.id);
-                }
                 var content = pako.gzip(JSON.stringify(this.formData), {to: 'string'});
-                this.uploadFile(content, "panel_" + Date.now() + ".js", metaStudy.id);
+                var separator = "#-#";
+                var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived;
+                this.uploadFile(content, fileName, this.metaStudy.id);
             }
 
 //            }
-        },
-        _getTEAMConfigFolder: function (studyId) {
-            var me = this;
-            var folder;
-            OpencgaManager.files.search({
-                query: {
-                    sid: Cookies('bioinfo_sid'),
-                    studyId: studyId,
-                    name: '.team_config'
-                },
-                request: {
-                    async: false,
-                    success: function (response) {
-                        console.log(response);
-                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                            folder = response.response[0].result[0];
-                        } else {
-//                                me.message = response.response[0].errorMsg;
-                        }
-                    },
-                    error: function () {
-//                            me.message = 'Server error, try again later.';
-                    }
-                }
-            });
-            return folder;
-        },
-        _createTEAMConfigFolder: function (studyId) {
-            var me = this;
-            var folder;
-            OpencgaManager.files.createFolder({
-                query: {
-                    sid: Cookies('bioinfo_sid'),
-                    folder: '.team_config',
-                    studyId: studyId
-                },
-                request: {
-                    async: false,
-                    success: function (response) {
-                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                            folder = response.response[0].result[0];
-                        } else {
-//                                me.message = response.response[0].errorMsg;
-                        }
-                    },
-                    error: function () {
-//                             me.message = 'Server error, try again later.';
-                    }
-                }
-            });
-            return folder;
         },
         uploadFile: function (fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({
