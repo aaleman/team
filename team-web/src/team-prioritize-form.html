@@ -1,0 +1,204 @@
+<dom-module id="team-prioritize-form">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            /*width: 900px;*/
+            /*height: 600px;*/
+            margin: 50px auto 0;
+            border: solid white 1px;
+            background-color: inherit;
+            padding: 30px 100px;
+            width: 800px;
+
+            box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 25px;
+        }
+
+        .icon {
+            font-size: 50px;
+        }
+
+        .message {
+            margin-top: 20px;
+        }
+
+        .close {
+            position: absolute;
+            margin: 15px;
+            font-size: 18px;
+            top: 0;
+            right: 0;
+        }
+
+        .close:hover {
+            color: orangered;
+        }
+
+        .jso-formbox {
+            /*width:500px;*/
+        }
+
+        .selbox {
+            box-sizing: border-box;
+            background-color: #FFF;
+            height: 150px;
+            overflow-y: auto;
+            border: 1px solid #d3d3d3;
+        }
+
+        .panel-item {
+            padding: 2px 5px;
+        }
+
+        .panel-item {
+            color: #555;
+        }
+
+        .panel-item:hover {
+            background-color: #eee;
+        }
+
+        .panel-item[data-checked] {
+            background-color: #ddd;
+        }
+
+        label.jso {
+            display: block;
+        }
+
+        .panelform {
+            margin-bottom: 10px;
+        }
+
+        jso-opencga-browser {
+            position: relative;
+            /*width: 500px;*/
+            height: 300px;
+        }
+
+    </style>
+    <template>
+
+        <div class="close" on-click="handleClose">
+            <i class="fa fa-times"></i>
+        </div>
+        <div class="title">
+            <div>
+                Prioritize
+            </div>
+        </div>
+        <form id="form">
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    File
+                </div>
+                <div class="jso-formcontent">Select a file</div>
+            </div>
+            <!--on-fileselect="handleFileSelect"-->
+            <jso-opencga-browser
+                    id="browser"
+                    projects="{{projects}}"></jso-opencga-browser>
+
+            <div class="jso panelform">
+                <div class="jso">Panels:</div>
+                <div class="selbox" id="panelSelector">
+                    <template is="dom-repeat" items="{{panels}}" filter="isPanel">
+                        <div class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
+                            <span>{{item.name}}</span></div>
+                    </template>
+                </div>
+            </div>
+
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">Prioritization info</div>
+                <div class="jso-formcontent">
+                    <label class="jso">Phenotype:</label>
+                    <input class="jso" type="text"/>
+
+                </div>
+            </div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">Job information</div>
+                <div class="jso-formcontent">
+                    <!--<label>Output folder</label>-->
+                    <!--<jso-project-browser-window id="outdir" studies="{{studies}}" selectedStudy="{{selectedStudy}}"-->
+                    <!--selectionMode="folder" showBrowser="false"></jso-project-browser-window>-->
+                    <!--<br>-->
+                    <label class="jso">Job name</label>
+                    <input class="jso" type="text" id="jobName" value="{{jobName}}" required>
+                    <label class="jso">Description</label>
+                    <textarea class="jso" value="{{description}}" required></textarea>
+                </div>
+            </div>
+
+            <div class="jso-btn jso-btn-shdw" on-click="handleForm">Run!</div>
+
+        </form>
+
+
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "team-prioritize-form",
+        properties: {
+            panels: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                observer: 'handlePanelsChanged'
+            },
+            projects: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            selectedPanel: {
+                type: Object,
+                value: function () {
+                    return [];
+                },
+                observer: 'handleSelectedPanelChanged'
+            }
+        },
+        handlePanelsChanged: function (neo, old) {
+//            debugger
+        }
+        ,
+        isPanel: function (item) {
+            return item.file.name.indexOf("panel") == 0;
+        }
+        ,
+        handleForm: function (e) {
+            alert("RUN!!!");
+        }
+        ,
+        handleClose: function (e) {
+            this.fire('close');
+        },
+        handlePanelClick: function (e) {
+            var sel = this.querySelectorAll('.panel-item');
+            for (var i = 0; i < sel.length; i++) {
+                var el = sel[i];
+                el.removeAttribute('data-checked');
+            }
+            this.selectedPanel = e.currentTarget.dataset.file;
+            e.currentTarget.setAttribute('data-checked', '')
+
+        },
+        handleSelectedPanelChanged: function (neo, old) {
+            console.log(this.selectedPanel);
+        }
+    })
+    ;
+</script>

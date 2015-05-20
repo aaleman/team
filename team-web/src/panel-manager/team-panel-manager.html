@@ -146,8 +146,7 @@
                 type: Array,
                 value: function () {
                     return [];
-                },
-                observer: 'projectsChanged'
+                }
             },
             metaStudy: {
                 type: Object,
@@ -179,139 +178,6 @@
             return menuHidden || searchingFlag;
         },
         userDataChanged: function (neo, old) {
-        },
-        projectsChanged: function (neo, old) {
-
-            if (neo.length > 0) {
-                var projects = neo;
-
-                var metaProject = null;
-                var metaStudy = null;
-
-                for (var i = 0; metaProject == null && projects && i < projects.length; i++) {
-                    var proj = projects[i];
-                    if (proj.name === ".meta") {
-                        metaProject = proj;
-                        for (var j = 0; metaStudy == null && metaProject.studies && j < metaProject.studies.length; j++) {
-                            var stu = metaProject.studies[j];
-                            if (stu.name === ".meta") {
-                                metaStudy = stu;
-                            }
-                        }
-                    }
-                }
-
-                if (metaProject != null && metaStudy != null) {
-                    var teamConfigFolder = this._getTEAMConfigFolder(metaStudy.id);
-                    if (teamConfigFolder == null) {
-                        teamConfigFolder = this._createTEAMConfigFolder(metaStudy.id);
-
-                    }
-                    this.metaStudy = metaStudy;
-                    this.teamConfigFolder = teamConfigFolder;
-
-                    this.panels = this._getPanelFiles(metaStudy, teamConfigFolder);
-                }
-
-            }
-
-        },
-        _getPanelFiles: function (study, folder) {
-            var me = this;
-            var panels = [];
-            var separator = "#-#";
-            OpencgaManager.files.list({
-                id: folder.id,
-                query: {
-                    sid: Cookies('bioinfo_sid'),
-                    studyId: study.id
-                },
-                request: {
-                    async: false,
-                    success: function (response) {
-                        console.log(response);
-                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                            var data = response.response[0].result;
-
-                            for (var i = 0; i < data.length; i++) {
-                                var file = data[i];
-                                var fileName = file.name;
-                                var splits = fileName.split(separator);
-                                var panelName = splits[1];
-                                var version = splits[2];
-                                var archived = splits[3];
-
-                                var panel = {
-                                    name: panelName,
-                                    version: version,
-                                    archived: archived,
-                                    file: file
-                                };
-
-                                panels.push(panel);
-                            }
-
-                        } else {
-                            me.message = response.response[0].errorMsg;
-                        }
-                    },
-                    error: function () {
-                        me.message = 'Server error, try again later.';
-                    }
-                }
-            });
-            return panels
-        },
-        _getTEAMConfigFolder: function (studyId) {
-            var me = this;
-            var folder;
-            OpencgaManager.files.search({
-                query: {
-                    sid: Cookies('bioinfo_sid'),
-                    studyId: studyId,
-                    name: '.team_config'
-                },
-                request: {
-                    async: false,
-                    success: function (response) {
-                        console.log(response);
-                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                            folder = response.response[0].result[0];
-                        } else {
-//                                me.message = response.response[0].errorMsg;
-                        }
-                    },
-                    error: function () {
-//                            me.message = 'Server error, try again later.';
-                    }
-                }
-            });
-            return folder;
-        },
-        _createTEAMConfigFolder: function (studyId) {
-            var me = this;
-            var folder;
-            OpencgaManager.files.createFolder({
-                query: {
-                    sid: Cookies('bioinfo_sid'),
-                    folder: '.team_config',
-                    studyId: studyId
-                },
-                request: {
-                    async: false,
-                    success: function (response) {
-                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                            folder = response.response[0].result[0];
-                        } else {
-//                                me.message = response.response[0].errorMsg;
-                        }
-                    },
-                    error: function () {
-//                             me.message = 'Server error, try again later.';
-                    }
-                }
-            });
-            return folder;
         },
         handleHideMenu: function () {
             this.menuHidden = !this.menuHidden;

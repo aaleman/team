@@ -43,8 +43,7 @@ jso-help-menu {
     background-color: #204854;
 }
 
-
-jso-panel > .header{
+jso-panel > .header {
     background-color: #225e71;
     color: #FFFFFF;
 
@@ -61,6 +60,7 @@ jso-opencga-create-study,
 jso-opencga-create-project,
 team-panel-form-wizard,
 team-panel-manager,
+team-prioritize-form,
 jso-upload-variant-file {
     background-color: #fafafa;
     color: #222;
