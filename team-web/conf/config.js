@@ -1,5 +1,7 @@
-CELLBASE_VERSION = "v3";
 CELLBASE_HOST = "http://www.ebi.ac.uk/cellbase/webservices/rest"
+CELLBASE_HOST = "http://bioinfo.hpc.cam.ac.uk/cellbase/webservices/rest";
+CELLBASE_VERSION = "v3";
+
 OPENCGA_HOST = "http://test.babelomics.org/opencga/rest";
 
 //EXAMPLE_PANELS = [

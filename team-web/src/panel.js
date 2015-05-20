@@ -11,9 +11,11 @@ function Panel(args) {
     this.disease = "";
     this.version = 1;
     this.archived = false;
+    this.polymer;
+
+    _.extend(this, args);
 
     this.modCount = 0;
-    this.polymer = args.polymer;
 };
 Panel.prototype = {
     _incModCount: function () {
@@ -21,6 +23,7 @@ Panel.prototype = {
         //console.log("Panel changed!!");
     },
     addDisease: function (disease) {
+        var me = this;
         if (!this.containsDisease(disease)) {
             delete disease._filtered
             this.polymer.push('formData.diseases', disease)
@@ -43,6 +46,42 @@ Panel.prototype = {
                     }
                 }
             }
+
+            if (disease.source == "clinvar") {
+
+                CellBaseManager.get({
+                    host: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest",
+                    species: 'hsapiens',
+                    category: 'feature',
+                    subCategory: 'clinical',
+                    resource: 'all',
+                    async: false,
+                    params: {
+                        source: 'clinvar',
+                        phenotype: disease.phenotype,
+                        exclude: "annot,clinvarSet"
+                    },
+                    success: function (data) {
+                        if (data.response && data.response.length > 0) {
+                            var result = data.response[0].result;
+                            for (var i = 0; i < result.length; i++) {
+                                var row = result[i];
+                                var mut = {
+
+                                    chr: row.chromosome,
+                                    pos: row.start,
+                                    ref: row.reference,
+                                    alt: row.alternate,
+                                    phe: disease.phenotype
+                                }
+                                me.addMutation(mut);
+
+                            }
+                        }
+                    }
+                });
+            }
+
             this._incModCount();
         }
     },
@@ -65,6 +104,7 @@ Panel.prototype = {
         for (var i = 0; i < this.diseases.length; i++) {
             var disease = this.diseases[i];
             this.removeGenesFromDisease(disease);
+            this.removeMutationsFromDisease(disease);
         }
         this.diseases = [];
         this.polymer.notifyPath('formData.diseases', this.diseases);
@@ -141,6 +181,17 @@ Panel.prototype = {
             }
         }
 
+    },
+    removeMutationsFromDisease: function (disease) {
+        var mutations = [];
+        for (var i = 0; i < this.mutations.length; i++) {
+            var mutation = this.mutations[i];
+            if (mutation.phe !== disease.phenotype) {
+                mutations.push(mutation);
+
+            }
+        }
+        this.polymer.set('formData.mutations', mutations);
     },
     removeGene: function (gene) {
         var index = -1;

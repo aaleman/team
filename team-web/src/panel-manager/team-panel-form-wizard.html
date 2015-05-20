@@ -155,7 +155,7 @@
                             <div id="mutation-tab-config-gv" class="mutations-tab-container-elem vertical layout"
                                  hidden$={{handleHiddenMutationGV(mutationTab)}}>
                                 <div class="vertical layout">
-                                    <div class="horizontal layout">
+                                    <div class="vertical layout">
                                         <div>
                                             <label for="">Chr</label>
                                             <input type="text" name="mutationGVChr" id="mutationGVChr"/>
@@ -174,7 +174,13 @@
                                         </div>
                                         <div>
                                             <label for="">Phe</label>
-                                            <input type="text" name="mutationGVPhe" id="mutationGVPhe"/>
+                                            <input type="text" name="mutationGVPhe" id="mutationGVPhe"
+                                                   list="dataListPhe"/>
+                                            <datalist id="dataListPhe">
+                                                <template is="dom-repeat" items="{{allDiseasesData}}">
+                                                    <option value="{{item.phenotype}}">{{item.phenotype}}</option>
+                                                </template>
+                                            </datalist>
                                         </div>
                                     </div>
                                     <div class="jso-btn jso-btn-shdw" on-click="handleMutationAdd">
@@ -357,11 +363,25 @@
                 value: function () {
                     return {};
                 }
+            },
+            showPanel: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: 'handleShowPanel'
+            },
+            dataListPhenotype: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
             }
         },
         observers: [
             "handleUpdatedGenes(formData.modCount)",
-            "handleUpdatedSelectedDiseases(formData.diseases.splices)"
+            "handleUpdatedSelectedDiseases(formData.diseases.splices)",
+            "handleUpdatedMutations(formData.mutations.splices)"
         ],
         handleUpdatedSelectedDiseases: function (neo, old, path) {
 
@@ -374,12 +394,17 @@
         handleRemoveDisease: function (e) {
             var disease = e.detail.row;
             this.formData.removeGenesFromDisease(disease);
+            this.formData.removeMutationsFromDisease(disease);
 
         },
         ready: function () {
             var me = this;
 
-            this.formData = new Panel({polymer: this});
+            var lastQuery = '';
+
+            this.formData = new Panel();
+            this.formData.polymer = this;
+
             this.$.allDiseases.setLoading(true);
 
             if (localStorage.bioinfo_team_diseases) {
@@ -463,10 +488,36 @@
                 {name: 'phe', title: 'Phenotype'},
                 {name: '', title: '', type: 'action', width: 30}
             ];
+
+
+//            this.$.mutationGVPhe.addEventListener('keyup', function (event) {
+//                        var query = this.value.toUpperCase();
+//                        if (query.length > 2 && lastQuery !== query && event.which !== 13) {
+//                            me._setQuickSearchMenu(query);
+//                            lastQuery = query;
+//                        }
+//                    }
+//            );
+        },
+        _setQuickSearchMenu: function (query) {
+
+
+            this.dataListPhenotype = [];
+//            this.splice('dataListPhenotype',0,this.dataListPhenotype.length);
+            for (var i = 0; i < this.allDiseasesData.length; i++) {
+                var row = this.allDiseasesData[i];
+                var disName = row.phenotype.toUpperCase();
+                if (disName.indexOf(query) >= 0) {
+                    this.push('dataListPhenotype', row);
+                }
+
+            }
+            console.log(this.dataListPhenotype);
         },
         handleHiddenStep1: function (step) {
             return step != 1;
         }
+
         ,
         handleHiddenStep2: function (step) {
             return step != 2;
@@ -495,7 +546,6 @@
         ,
         handleNextStepButton: function (e) {
             this.step = (this.step >= this.maxSteps) ? this.maxSteps : this.step + 1;
-            console.log(this.step);
         }
         ,
         handleSelectedRows: function (neo, old) {
@@ -504,16 +554,19 @@
         ,
         handleAddSelectedDiseases: function () {
 
+            var me = this;
             this.$.selectedDiseases.setLoading(true);
-            for (var i = 0; i < this.currentSelectedDiseasesData.length; i++) {
-                var row = this.currentSelectedDiseasesData[i];
+            setTimeout(function () {
+                for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
+                    var row = me.currentSelectedDiseasesData[i];
 
-                if (!this.formData.containsDisease(row)) {
-                    this.formData.addDisease(row);
+                    if (!me.formData.containsDisease(row)) {
+                        me.formData.addDisease(row);
 
+                    }
                 }
-            }
-            this.$.selectedDiseases.setLoading(false);
+                me.$.selectedDiseases.setLoading(false);
+            }, 50)
         }
         ,
         handleClearSelectedDiseases: function () {
@@ -756,7 +809,8 @@
                 }
 
             }
-        },
+        }
+        ,
         uploadFile: function (fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({
                 query: {
@@ -801,6 +855,17 @@
 
             };
             xhr.send(formData);
+        }
+        ,
+        handleShowPanel: function (neo, old) {
+            if (neo.id) {
+
+                this.formData = new Panel(neo);
+                this.formData.polymer = this;
+            }
+        },
+        handleUpdatedMutations: function (neo, old) {
+            console.log("updated mutations")
         }
     })
     ;

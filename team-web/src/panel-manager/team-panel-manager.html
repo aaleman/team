@@ -108,7 +108,9 @@
                 id="newPanel"
                 hidden$="{{panelFormWizardHidden}}"
                 meta-study="{{metaStudy}}"
-                team-config-folder="{{teamConfigFolder}}">
+                team-config-folder="{{teamConfigFolder}}"
+                show-form="{{panelData"
+                >
         </team-panel-form-wizard>
         <!--on-close="handleClosePanelFormWizard"-->
 
@@ -158,6 +160,12 @@
                 value: true
             },
             teamConfigFolder: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            panelData: {
                 type: Object,
                 value: function () {
                     return {};
@@ -316,8 +324,33 @@
         },
         handlePanelClick: function (e) {
             var currentTarget = e.currentTarget;
-            var panelFileInfo = currentTarget.dataRow;
-            console.log(panelFileInfo);
+            var file = currentTarget.dataRow.file;
+
+            var content = this._getFileContent(file);
+            var panel = JSON.parse(pako.ungzip(content, {to: 'string'}));
+
+            this.$.newPanel.showPanel = panel;
+
+            this.panelFormWizardHidden = false;
+        },
+        _getFileContent: function (file) {
+            var content;
+            OpencgaManager.files.content({
+                id: file.id,
+                query: {
+                    sid: Cookies('bioinfo_sid')
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        content = response;
+                    },
+                    error: function () {
+//                            me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return content;
         },
         handlePanelRemove: function (e) {
             var panel = e.target.parentElement.dataRow;
