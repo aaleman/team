@@ -2,7 +2,7 @@ package org.babelomics.team.lib.io;
 
 import org.opencb.biodata.formats.variant.io.VariantReader;
 import org.opencb.biodata.models.variant.Variant;
-import org.opencb.opencga.lib.auth.OpenCGACredentials;
+import org.opencb.opencga.core.auth.OpenCGACredentials;
 import org.opencb.opencga.storage.core.variant.adaptors.VariantDBAdaptor;
 import org.opencb.opencga.storage.mongodb.utils.MongoCredentials;
 import org.opencb.opencga.storage.mongodb.variant.VariantMongoDBAdaptor;

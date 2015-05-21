@@ -12,7 +12,7 @@ import org.opencb.biodata.tools.variant.tasks.VariantRunner;
 import org.opencb.commons.containers.list.SortedList;
 import org.opencb.commons.run.Runner;
 import org.opencb.commons.run.Task;
-import org.opencb.opencga.lib.auth.OpenCGACredentials;
+import org.opencb.opencga.core.auth.OpenCGACredentials;
 import org.opencb.opencga.storage.mongodb.utils.MongoCredentials;
 
 import java.io.FileInputStream;
@@ -34,8 +34,6 @@ public class TeamMain {
         Properties properties = new Properties();
         properties.load(new InputStreamReader(new FileInputStream("team.credentials")));
         OpenCGACredentials credentials = new MongoCredentials(properties);
-
-        System.out.println("properties = " + properties);
 
         VariantReader reader = new TeamVariantMongoReader(credentials);
 
