@@ -152,43 +152,6 @@
                     ></team-prioritize-form>
         </div>
 
-
-        <!--<div class="content">-->
-        <!--<team-bar-->
-        <!--on-panel-show="{{handlePanelShow}}"-->
-        <!--on-panel-export="{{handlePanelExport}}"-->
-        <!--on-panel-import="{{handlePanelImport}}"-->
-        <!--on-panel-clear="{{handlePanelClear}}"-->
-        <!--on-example-show="{{handleExamplePanelShow}}"-->
-        <!--on-panel-new="{{handlePanelNew}}"-->
-        <!--</team-bar> -->
-
-        <!--<team-search-element></team-search-element>-->
-        <!--<div class="right-side">-->
-        <!--<team-show-panel-->
-        <!--id="teamShowPanel"-->
-        <!--hidden?="{{hideUserPanel}}"-->
-        <!--hideFlag="{{hideUserPanel}}"-->
-        <!--userSettings="{{userSettings}}"-->
-        <!--example="false">-->
-        <!---->
-        <!--</team-show-panel>-->
-
-        <!--<team-show-panel-->
-        <!--id="teamShowExamplePanel"-->
-        <!--hidden?="{{hideExamplePanel}}"-->
-        <!--hideFlag="{{hideExamplePanel}}"-->
-        <!--userSettings="{{userSettings}}"-->
-        <!--example="true">-->
-        <!--</team-show-panel>-->
-
-        <!--</div>-->
-
-        <!--<template if="{{selectedMenu == 'newpanel'}}">-->
-        <!--<team-new-panel-->
-        <!--selectedOption="{{selectedMenu}}"-->
-        <!--</team-new-panel>-->
-
         <jso-footer hidden$="{{computeFooter(selectedOption)}}">
             TEAM: created by Computational Genomics Department
             <br>
@@ -249,7 +212,6 @@
             panelManagerHidden: {
                 type: Boolean,
                 value: true
-//                reflectToAttribute: true
             },
             homeHidden: {
                 type: Boolean,

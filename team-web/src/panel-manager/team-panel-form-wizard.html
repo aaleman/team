@@ -381,7 +381,7 @@
         observers: [
             "handleUpdatedGenes(formData.modCount)",
             "handleUpdatedSelectedDiseases(formData.diseases.splices)",
-            "handleUpdatedMutations(formData.mutations.splices)"
+//            "handleUpdatedMutations(formData.mutations.splices)"
         ],
         handleUpdatedSelectedDiseases: function (neo, old, path) {
 
@@ -863,9 +863,6 @@
                 this.formData = new Panel(neo);
                 this.formData.polymer = this;
             }
-        },
-        handleUpdatedMutations: function (neo, old) {
-            console.log("updated mutations")
         }
     })
     ;
