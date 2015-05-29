@@ -9,7 +9,7 @@
         }
 
         #menu {
-            z-index: 3;
+            /*z-index: 3;*/
             position: absolute;
             box-sizing: border-box;
             left: 0;
@@ -79,6 +79,14 @@
             margin: 0 auto;
             z-index: 10;
         }
+
+        #newPanelContainer {
+            width: 900px;
+            height: 600px;
+            /*margin: 50px auto 0;*/
+            /*border: solid white 1px;*/
+
+        }
     </style>
     <template>
         <div id="menu-button" class="jso-color-main-1h" on-click="handleHideMenu"></div>
@@ -90,28 +98,46 @@
         </div>
 
         <div id="menu" class="jso-bgcolor-main-3 jso-shadow" collapsed$="{{collapseMenu(menuHidden)}}">
-            <div id="button-bar" class="horizontal layout">
+            <div id="button-bar" class="horizontal layout around-justified">
                 <div class="jso jso-btn" on-click="toggleNewPanel">New Panel</div>
+                <div class="jso jso-btn self-end" on-click="toggleArchivedCurrentPanels"
+                     hidden$="{{visiblePanelsHidden}}">View
+                    Archived
+                </div>
+                <div class="jso jso-btn" on-click="toggleArchivedCurrentPanels" hidden$="{{!visiblePanelsHidden}}">View
+                    Current
+                </div>
             </div>
             <div id="panel-list" hidden$="{{hidePanelList(menuHidden)}}">
-                <template is="dom-repeat" items="{{panels}}" filter="isPanel">
-                    <div class="panel-element" data-row="{{item}}" on-click="handlePanelClick">
-                        <span>{{item.name}}</span>&nbsp;(<span>{{item.version}}</span>)
-                        <i class="fa fa-remove" on-click="handlePanelRemove"></i>
-                    </div>
-                </template>
+
+                <div hidden$="{{visiblePanelsHidden}}">
+                    <template is="dom-repeat" items="{{panels}}" filter="isPanel">
+                        <div class="panel-element" data-row="{{item}}" on-click="handlePanelClick">
+                            <span>{{item.name}}</span>&nbsp;(<span>{{item.version}}</span>)
+                            <i class="fa fa-remove" on-click="handlePanelRemove"></i>
+                        </div>
+                    </template>
+                </div>
+                <div hidden$="{{!visiblePanelsHidden}}">archived</div>
             </div>
             <!--<div id="numPanels">Total: <span>{{computeNumPanels(panels)}}</span></div>-->
         </div>
 
-        <team-panel-form-wizard
-                id="newPanel"
-                hidden$="{{panelFormWizardHidden}}"
-                meta-study="{{metaStudy}}"
-                team-config-folder="{{teamConfigFolder}}"
-                show-form="{{panelData"
-                >
-        </team-panel-form-wizard>
+
+        <jso-panel modal closable hidden$="{{panelFormWizardHidden}}" id="newPanelContainer">
+            <div class="header">new Panel</div>
+
+            <div class="container">
+                <team-panel-form-wizard
+                        id="newPanel"
+
+                        meta-study="{{metaStudy}}"
+                        team-config-folder="{{teamConfigFolder}}"
+                        show-form="{{panelData"
+                        >
+                </team-panel-form-wizard>
+            </div>
+        </jso-panel>
         <!--on-close="handleClosePanelFormWizard"-->
 
     </template>
@@ -169,7 +195,12 @@
                 value: function () {
                     return {};
                 }
+            },
+            visiblePanelsHidden: {
+                type: Boolean,
+                value: false
             }
+
         },
         collapseMenu: function (menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
@@ -193,7 +224,9 @@
             var file = currentTarget.dataRow.file;
 
             var content = this._getFileContent(file);
-            var panel = JSON.parse(pako.ungzip(content, {to: 'string'}));
+
+//            var panel = JSON.parse(pako.inflate(content, {to: 'string'}));
+            var panel = content;
 
             this.$.newPanel.showPanel = panel;
 
@@ -244,6 +277,9 @@
         },
         isPanel: function (item) {
             return item.file.name.indexOf("panel") == 0;
+        },
+        toggleArchivedCurrentPanels: function (e) {
+            this.visiblePanelsHidden = !this.visiblePanelsHidden;
         }
     });
 </script>

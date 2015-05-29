@@ -220,7 +220,7 @@ Panel.prototype = {
             author: this.author,
             description: this.description,
             date: this.date,
-            disease: this.diseases,
+            disease: this.disease,
             version: this.version,
             archived: this.archived,
             diseases: this.diseases,

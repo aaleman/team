@@ -36,6 +36,11 @@ public class TeamVariantGeneRegionFilter extends VariantFilter {
         }
     }
 
+    public TeamVariantGeneRegionFilter(List<Region> regionList) {
+        super();
+        this.regionList = regionList;
+    }
+
     @Override
     public boolean apply(Variant variant) {
         for (Region r : regionList) {

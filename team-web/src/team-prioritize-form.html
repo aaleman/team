@@ -80,6 +80,8 @@
             position: relative;
             /*width: 500px;*/
             height: 300px;
+            border: 1px solid rgba(130, 130, 130, 0.4);
+
         }
 
     </style>
@@ -104,7 +106,9 @@
             <!--on-fileselect="handleFileSelect"-->
             <jso-opencga-browser
                     id="browser"
-                    projects="{{projects}}"></jso-opencga-browser>
+                    projects="{{projects}}"
+                    bioformats="{{bioformats}}"
+                    ></jso-opencga-browser>
 
             <div class="jso panelform">
                 <div class="jso">Panels:</div>
@@ -169,6 +173,12 @@
                     return [];
                 },
                 observer: 'handleSelectedPanelChanged'
+            },
+            bioformats: {
+                type: Array,
+                value: function () {
+                    return ["VARIANT"];
+                }
             }
         },
         handlePanelsChanged: function (neo, old) {

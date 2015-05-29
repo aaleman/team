@@ -7,6 +7,7 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-study.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-project.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
 
@@ -45,9 +46,9 @@
             background-color: inherit;
         }
 
-        jso-opencga-browser {
-            top: 60px;
-        }
+        /*jso-opencga-browser {*/
+        /*top: 60px;*/
+        /*}*/
 
         team-prioritize-form {
             /*position: absolute;*/
@@ -55,6 +56,26 @@
             height: 800px;
             /*width: 600px;*/
             overflow-y: auto;
+        }
+
+        #browserpanel {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            height: 600px;
+            width: 550px;
+            box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.30);
+        }
+
+        #jobBrowserPanel {
+            position: absolute;
+            top: 60px;
+            right: 0;
+
+            height: 600px;
+            width: 550px;
+
+            box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.30);
         }
 
     </style>
@@ -72,22 +93,24 @@
             <span class="description"></span>
 
             <div class="menu horizontal layout">
-                <div on-click="handleToggleCreateProject">
-                    New Project
-                </div>
-
-                <div on-click="handleToggleCreateStudy">
-                    New Study
-                </div>
-                <div on-click="handleToggleUpload">
-                    Upload
-                </div>
+                <!--<div on-click="handleToggleCreateProject">-->
+                <!--New Project-->
+                <!--</div>-->
+                <!--<div on-click="handleToggleCreateStudy">-->
+                <!--New Study-->
+                <!--</div>-->
+                <!--<div on-click="handleToggleUpload">-->
+                <!--Upload-->
+                <!--</div>-->
                 <div on-click="handleToggleBrowser">
-                    Browse
+                    Browse files
                 </div>
 
                 <div on-click="handleTogglePrioritize">
-                    Prioritize!
+                    Prioritize
+                </div>
+                <div on-click="handleToggleJobBrowser">
+                    Results!
                 </div>
             </div>
 
@@ -130,17 +153,32 @@
                     projects="{{projects}}"
                     disable-index></jso-upload-variant-file>
 
-            <jso-opencga-browser
-                    id="browser"
-                    hidden$="{{browserHidden}}"
-                    on-fileselect="handleFileSelect"
-                    projects="{{projects}}"></jso-opencga-browser>
+            <jso-panel hidden$="{{browserHidden}}" id="browserpanel">
+                <div class="header">Browser</div>
+                <jso-opencga-browser class="container"
+                                     id="browser"
+                                     on-fileselect="handleFileSelect"
+                                     projects="{{projects}}"
+                                     bioformats="{{bioformats}}"
+                        ></jso-opencga-browser>
+            </jso-panel>
+
+            <jso-panel hidden$="{{jobBrowserHidden}}" id="jobBrowserPanel">
+                <div class="header">Analysis Browser</div>
+                <jso-opencga-job-browser class="container"
+                                         id="jobBrowser"
+                                         on-fileselect="handleFileSelect"
+                                         projects="{{projects}}"
+                                         allowed-tools="{{allowedTools}}"
+                        ></jso-opencga-job-browser>
+            </jso-panel>
 
             <team-panel-manager
                     id="panelManager"
                     hidden$="{{panelManagerHidden}}"
                     user-data="{{userData}}"
                     projects="{{projects}}"
+                    meta-study="{{metaStudy}}"
                     panels="{{panels}}"
                     ></team-panel-manager>
 
@@ -183,12 +221,6 @@
                 notify: true,
                 observer: 'projectsChanged'
             },
-            allowedTools: {
-                type: Array,
-                value: function () {
-                    return ["opencga-storage.sh"];
-                }
-            },
             browserHidden: {
                 type: Boolean,
                 value: true,
@@ -228,6 +260,22 @@
                     return [];
                 },
                 notify: true
+            },
+            jobBrowserHidden: {
+                type: Boolean,
+                value: false
+            },
+            allowedTools: {
+                type: Array,
+                value: function () {
+                    return ["opencga-storage.sh"];
+                }
+            },
+            bioformats: {
+                type: Array,
+                value: function () {
+                    return ["VARIANT"];
+                }
             }
         },
         ready: function () {
@@ -258,6 +306,7 @@
         },
 
         handleToggleBrowser: function (e) {
+            this.jobBrowserHidden = !this.jobBrowserHidden;
             this.browserHidden = !this.browserHidden;
         },
         handleCloseBrowser: function (e) {
@@ -285,50 +334,36 @@
         handleToggleCreateProject: function (e) {
             this.createProjectHidden = !this.createProjectHidden;
         },
-//        handleTogglePanelManager: function (e) {
-//            this.panelManagerHidden = !this.panelManagerHidden;
-//        },
-
+        handleToggleJobBrowser: function (e) {
+            this.browserHidden = !this.browserHidden;
+            this.jobBrowserHidden = !this.jobBrowserHidden;
+        },
         computeFooter: function (selectedOption) {
             return selectedOption == 'dashboard' || selectedOption == 'variantbrowser';
         },
         handleFileSelect: function (e) {
-            console.log("file");
-            console.log(e.detail);
             var file = e.detail;
-            if (file.index && file.index.status == 'READY') {
-                // this.$.variantBrowser.file = file;
-                // this.setMenu('variantbrowser');
-                // this.handleCloseBrowser();
-
-            }
+            console.log(file);
         },
         handleLogin: function () {
-//            this.browserHidden = false;
 //            this.selectedOption = "home";
             this.homeHidden = true;
             this.browserHidden = true;
+            this.jobBrowserHidden = false;
+
+//            this.browserHidden = false;
             this.panelManagerHidden = false;
 
         },
         handleLogout: function () {
             this.browserHidden = true;
             this.panelManagerHidden = true;
+
+            this.jobBrowserHidden = true;
+
             this.homeHidden = false;
 
         },
-
-//            created: function () {
-//                this.selectedOption = '';
-//                this.showJobs = false;
-//                this.userData;
-//                this.allowedTools = ["opencga-storage.sh"];
-//
-//                this.isLogged;
-//                this.selectedProject;
-//                this.selectedStudy;
-//                this.studies;
-//            },
         userDataChanged: function (neo, old) {
             var me = this;
             if (this.userData) {
