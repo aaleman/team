@@ -112,13 +112,17 @@
 
                 <div hidden$="{{visiblePanelsHidden}}">
                     <template is="dom-repeat" items="{{panels}}" filter="isPanel">
+                        <!--<div class="panel-element" data-row="{{item}}">-->
                         <div class="panel-element" data-row="{{item}}" on-click="handlePanelClick">
-                            <span>{{item.name}}</span>&nbsp;(<span>{{item.version}}</span>)
+                            <span>{{item.name}}</span>&nbsp;(<span>{{item.version}}</span>)(<span>{{item.archived}}</span>)
                             <i class="fa fa-remove" on-click="handlePanelRemove"></i>
+                            <i class="fa fa-eye-slash" on-click="handlePanelArchive"></i>
                         </div>
                     </template>
                 </div>
-                <div hidden$="{{!visiblePanelsHidden}}">archived</div>
+                <div hidden$="{{!visiblePanelsHidden}}">
+
+                </div>
             </div>
             <!--<div id="numPanels">Total: <span>{{computeNumPanels(panels)}}</span></div>-->
         </div>
@@ -202,6 +206,9 @@
             }
 
         },
+        created: function () {
+            this.separator = "#-#";
+        },
         collapseMenu: function (menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
         },
@@ -242,6 +249,7 @@
                 request: {
                     async: false,
                     success: function (response) {
+                        debugger
                         content = response;
                     },
                     error: function () {
@@ -254,7 +262,35 @@
         handlePanelRemove: function (e) {
             var panel = e.target.parentElement.dataRow;
             this._deletePanel(panel.file);
+        },
+        handlePanelArchive: function (e) {
+            var panel = e.target.parentElement.dataRow;
+            this._archivePanel(panel.file);
+        },
+        _archivePanel: function (file) {
 
+            var panelSplits = file.name.split(this.separator);
+
+            panelSplits[3] = "true";
+
+            var newName = panelSplits.join(this.separator);
+
+
+            OpencgaManager.files.modify({
+                id: file.id,
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    rename: newName
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                    },
+                    error: function () {
+//                            me.message = 'Server error, try again later.';
+                    }
+                }
+            });
         },
         _deletePanel: function (file) {
             if (confirm("Are you sure?")) {

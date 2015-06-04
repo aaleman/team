@@ -4,8 +4,8 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-help-menu.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-upload-variant-file.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-study.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-project.html">
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-study.html">-->
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-project.html">-->
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
@@ -274,7 +274,7 @@
             bioformats: {
                 type: Array,
                 value: function () {
-                    return ["VARIANT"];
+                    return ["VARIANT", "NONE"];
                 }
             }
         },

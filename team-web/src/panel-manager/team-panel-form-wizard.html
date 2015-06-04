@@ -118,7 +118,7 @@
                             <div id="gene-tab-config-text" class="genes-tab-container-elem"
                                  hidden$={{handleHiddenGeneText(geneTab)}}>
                                     <textarea class="jso" name="geneTextArea" id="geneTextArea" rows="3"
-                                              placeholder="BRCA2,PPL"></textarea>
+                                              placeholder="BRCA2,PPL">1:1-2,brca2,2:2-3</textarea>
 
                                 <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneTextAreaButton">Add
                                     Genes
@@ -623,16 +623,84 @@
         },
         handleClickGeneTextAreaButton: function (e) {
 
-            var textAreaValue = this.$.geneTextArea.value;
+            var me = this;
+            var textAreaValue = this.$.geneTextArea.value.toUpperCase();
             var splits = textAreaValue.split(",");
-            var genes = [];
+
             for (var i = 0; i < splits.length; i++) {
                 var geneName = splits[i];
 
                 if (geneName != '') {
-                    this.formData.addGene({
-                        name: geneName
-                    })
+
+                    debugger
+                    var re = /(\w+):(\d+)-(\d)+/;
+                    if (re.test(geneName)) {
+//                        var groups = re.match(geneName);
+                        var groups = geneName.match(re);
+
+                        var chr = groups[1];
+                        var start = parseInt(groups[2]);
+                        var end = parseInt(groups[3]);
+
+                        if (start > end) {
+                            alert("Malformed Region: " + geneName);
+                        } else {
+                            var gene = {
+                                name: geneName,
+                                chr: chr,
+                                start: start,
+                                end: end
+                            };
+
+                            me.formData.addGene(gene);
+                        }
+                    } else {
+
+                        this.$.geneTable.setLoading(true);
+
+                        setTimeout(function () {
+
+                            CellBaseManager.get({
+                                host: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest",
+                                species: 'hsapiens',
+                                category: 'feature',
+                                subCategory: 'gene',
+                                resource: 'info',
+                                async: false,
+                                query: geneName,
+                                params: {
+                                    include: "name,chromosome,start,end"
+                                },
+                                success: function (data) {
+
+                                    if (data.response && data.response.length > 0) {
+
+                                        for (var i = 0; i < data.response.length; i++) {
+                                            var elem = data.response[i];
+                                            if (elem.result.length > 0) {
+                                                var row = data.response[i].result[0];
+                                                var gene = {
+                                                    name: elem.id,
+                                                    chr: row.chromosome,
+                                                    start: row.start,
+                                                    end: row.end
+                                                };
+                                                me.formData.addGene(gene);
+
+                                            } else {
+                                                me.formData.addGene({
+                                                    name: elem.id
+                                                });
+                                            }
+
+
+                                        }
+                                    }
+                                }
+                            });
+                            me.$.geneTable.setLoading(false);
+                        }, 50);
+                    }
                 }
             }
             this.$.geneTextArea.value = '';

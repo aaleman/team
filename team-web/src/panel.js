@@ -29,21 +29,55 @@ Panel.prototype = {
             this.polymer.push('formData.diseases', disease)
 
             if (disease.associatedGenes && disease.associatedGenes.length > 0) {
+                console.log(disease.associatedGenes);
                 for (var j = 0; j < disease.associatedGenes.length; j++) {
                     var elem = disease.associatedGenes[j];
-                    if (elem.indexOf(",") >= 0) {
-                        var splits = elem.split(",");
-                        for (var k = 0; k < splits.length; k++) {
-                            var gene = splits[k];
-                            this.addGene({
-                                name: gene
-                            });
+                    //if (elem.indexOf(",") >= 0) {
+                    var splits = elem.split(",");
+
+                    CellBaseManager.get({
+                        host: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest",
+                        species: 'hsapiens',
+                        category: 'feature',
+                        subCategory: 'gene',
+                        resource: 'info',
+                        async: false,
+                        query: elem,
+                        params: {
+                            include: "name,chromosome,start,end"
+                        },
+                        success: function (data) {
+
+                            if (data.response && data.response.length > 0) {
+
+                                for (var i = 0; i < data.response.length; i++) {
+                                    var geneElem = data.response[i];
+                                    if (geneElem.result.length > 0) {
+                                        var row = data.response[i].result[0];
+                                        var gene = {
+                                            name: geneElem.id,
+                                            chr: row.chromosome,
+                                            start: row.start,
+                                            end: row.end
+                                        };
+                                        me.addGene(gene);
+
+                                    } else {
+                                        me.addGene({
+                                            name: geneElem.id
+                                        });
+                                    }
+
+
+                                }
+                            }
                         }
-                    } else {
-                        this.addGene({
-                            name: elem
-                        })
-                    }
+                    });
+                    //} else {
+                    //    this.addGene({
+                    //        name: elem
+                    //    })
+                    //}
                 }
             }
 
@@ -81,6 +115,7 @@ Panel.prototype = {
                     }
                 });
             }
+
 
             this._incModCount();
         }
@@ -122,6 +157,7 @@ Panel.prototype = {
     },
     addGene: function (gene) {
         var auxGene = this.containsGene(gene);
+
         if (auxGene) {
             auxGene.count++;
             this.polymer.notifyPath('formData.genes', this.genes);

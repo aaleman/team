@@ -4,10 +4,15 @@ package org.babelomics.team.app.cli;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.babelomics.team.lib.TeamVariantAnnotator;
 import org.babelomics.team.lib.filters.TeamVariantGeneRegionFilter;
+import org.babelomics.team.lib.io.TeamDiagnosticFileWriter;
+import org.babelomics.team.lib.io.TeamSecondaryFindingsFileWriter;
 import org.babelomics.team.lib.io.TeamVariantStdoutWriter;
 import org.babelomics.team.lib.models.Gene;
+import org.babelomics.team.lib.models.Mutation;
 import org.babelomics.team.lib.models.Panel;
+import org.babelomics.team.lib.models.TeamVariant;
 import org.opencb.biodata.formats.variant.io.VariantReader;
 import org.opencb.biodata.formats.variant.io.VariantWriter;
 import org.opencb.biodata.formats.variant.vcf4.io.VariantVcfReader;
@@ -15,12 +20,12 @@ import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.biodata.tools.variant.filtering.VariantFilter;
-import org.opencb.commons.filters.FilterApplicator;
+import org.opencb.commons.io.DataWriter;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,21 +33,27 @@ import java.util.List;
  */
 public class TeamMain {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
 
         Parameters parameters = new Parameters();
         ObjectMapper mapper = new ObjectMapper();
         JCommander jc = new JCommander(parameters);
 
-        Panel p = null;
+        Panel panel = null;
+        TeamVariantAnnotator annotator;
+
+        int batchSize = 1;
+
         List<Variant> batch;
         List<VariantFilter> filters = new ArrayList<>();
+        List<TeamVariant> diagnosticVariants = new ArrayList<>();
+        List<TeamVariant> secondaryFindingsVariants = new ArrayList<>();
 
         File jsonPanelFile;
 
         String inputFile;
-        String panel;
+        String panelFilename;
 
         try {
             jc.parse(args);
@@ -52,66 +63,115 @@ public class TeamMain {
 
 
         inputFile = parameters.getInput();
-        panel = parameters.getPanel();
+        panelFilename = parameters.getPanel();
 
-        jsonPanelFile = new File(panel);
+        jsonPanelFile = new File(panelFilename);
 
         try {
-            p = mapper.readValue(jsonPanelFile, Panel.class);
-        } catch (IOException e) {
+            panel = mapper.readValue(jsonPanelFile, Panel.class);
+
+            annotator = new TeamVariantAnnotator();
+
+            List<Region> regionList = getRegionsFromPanel(panel);
+
+            VariantSource source = new VariantSource("file", "file", "file", "file");
+
+            VariantReader reader = new VariantVcfReader(source, inputFile);
+            VariantWriter writer = new TeamVariantStdoutWriter();
+            DataWriter<TeamVariant> diagnosticWriter = new TeamDiagnosticFileWriter("diagnostic.csv");
+            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamSecondaryFindingsFileWriter("secondary.csv");
+
+            VariantFilter regionFilter = new TeamVariantGeneRegionFilter(regionList);
+
+            filters.add(regionFilter);
+
+            reader.open();
+            writer.open();
+            diagnosticWriter.open();
+            secondaryFindingsWriter.open();
+
+            reader.pre();
+            writer.pre();
+            diagnosticWriter.pre();
+            secondaryFindingsWriter.pre();
+
+
+            batch = reader.read(batchSize);
+            int count = 0;
+
+            while (batch != null && !batch.isEmpty()) {
+//                System.out.println(count++);
+
+//                FilterApplicator.filter(batch, filters);
+                List<TeamVariant> teamBatch = annotator.annotate(batch);
+
+                run(teamBatch, panel, diagnosticVariants, secondaryFindingsVariants);
+
+//                writer.write(batch);
+                diagnosticWriter.write(diagnosticVariants);
+                secondaryFindingsWriter.write(secondaryFindingsVariants);
+
+                batch.clear();
+                diagnosticVariants.clear();
+                secondaryFindingsVariants.clear();
+
+                batch = reader.read(batchSize);
+
+            }
+
+            reader.post();
+            writer.post();
+            diagnosticWriter.post();
+            secondaryFindingsWriter.post();
+
+            reader.close();
+            writer.close();
+            diagnosticWriter.close();
+            secondaryFindingsWriter.close();
+
+        } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
 
 
-        List<Region> regionList = getRegionsFromPanel(p);
+    }
 
-        System.out.println("Arrays.asList(regionList).toString() = " + Arrays.asList(regionList).toString());
-
-
-        VariantSource source = new VariantSource("file", "file", "file", "file");
-
-        VariantReader reader = new VariantVcfReader(source, inputFile);
-        VariantWriter writer = new TeamVariantStdoutWriter();
-
-        VariantFilter regionFilter = new TeamVariantGeneRegionFilter(regionList);
-        filters.add(regionFilter);
-
-        reader.open();
-        writer.open();
-
-        reader.pre();
-        writer.pre();
-
-
-        while ((batch = reader.read()) != null) {
-
-            FilterApplicator.filter(batch, filters);
-
-            writer.write(batch);
-            batch.clear();
-
+    private static void run(List<TeamVariant> batch, Panel panel, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
+        for (TeamVariant variant : batch) {
+            if (isDiagnosticVariant(variant, panel)) {
+                diagnosticVariants.add(variant);
+            } else {
+                secondaryFindingsVariants.add(variant);
+            }
         }
-
-        reader.post();
-        writer.post();
-
-        reader.close();
-        writer.close();
-
 
     }
 
-    private static List<Region> getRegionsFromPanel(Panel p) {
+    private static boolean isDiagnosticVariant(TeamVariant teamVariant, Panel panel) {
+        Variant variant = teamVariant.getVariant();
+        for (Mutation m : panel.getMutations()) {
+            if (variant.getChromosome().equals(m.getChr()) &&
+                    variant.getStart() == m.getPos() &&
+                    variant.getReference().equals(m.getRef()) &&
+                    variant.getAlternate().equals(m.getAlt())) {
+                teamVariant.setPhenotype(m.getPhe());
+                teamVariant.setSource(m.getSrc());
+                return true;
+            }
+        }
+        return false;
+    }
 
+    private static List<Region> getRegionsFromPanel(Panel p) {
         List<Region> list = new ArrayList<>();
 
         for (Gene g : p.getGenes()) {
-
             if (g.getChr() != null && !g.getChr().isEmpty()) {
                 list.add(new Region(g.getChr(), g.getStart(), g.getEnd()));
             }
         }
 
         return list;
+
     }
 }

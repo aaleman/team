@@ -20,6 +20,8 @@
         <biodata.version>0.5-SNAPSHOT</biodata.version>
         <jcl.version>3.0-SNAPSHOT</jcl.version>
         <opencga.version>0.6-SNAPSHOT</opencga.version>
+        <datastore.version>0.4-SNAPSHOT</datastore.version>
+        <cellbase.version>3.2-SNAPSHOT</cellbase.version>
     </properties>
 
     <dependencyManagement>
@@ -58,6 +60,17 @@
                 <groupId>com.beust</groupId>
                 <artifactId>jcommander</artifactId>
                 <version>1.48</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opencb.cellbase</groupId>
+                <artifactId>cellbase-core</artifactId>
+                <version>${cellbase.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.opencb.datastore</groupId>
+                <artifactId>datastore-core</artifactId>
+                <version>${datastore.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

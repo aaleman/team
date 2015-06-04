@@ -9,6 +9,7 @@ public class Mutation {
     public String ref;
     public String alt;
     public String phe;
+    public String src;
 
     public Mutation() {
     }
@@ -62,5 +63,14 @@ public class Mutation {
                 ", alt='" + alt + '\'' +
                 ", phe='" + phe + '\'' +
                 '}';
+    }
+
+    public String getSrc() {
+        return "TODO"; // TODO
+//        return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
     }
 }
