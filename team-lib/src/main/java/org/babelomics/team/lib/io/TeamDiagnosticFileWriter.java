@@ -151,16 +151,13 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
     private Maf getMAF(List<PopulationFrequency> popFreqs, String study, String population) {
 
         if (popFreqs != null && popFreqs.size() > 0) {
-            System.out.println("ENTRA ENTRA");
             for (PopulationFrequency pf : popFreqs) {
                 if (pf.getStudy().equals(study) && pf.getPop().equals(population)) {
                     if (pf.getRefAlleleFreq() < pf.getAltAlleleFreq()) {
                         return new Maf(pf.getRefAllele(), pf.getRefAlleleFreq());
                     } else {
                         return new Maf(pf.getAltAllele(), pf.getAltAlleleFreq());
-
                     }
-
                 }
             }
         }
@@ -170,7 +167,6 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
     private String getProteinSubstitutionScores(List<ConsequenceType> consequenceTypes, String source) {
 
         if (consequenceTypes != null && consequenceTypes.size() > 0) {
-
             for (ConsequenceType consequenceType : consequenceTypes) {
                 if (consequenceType.getProteinSubstitutionScores() != null && consequenceType.getProteinSubstitutionScores().size() > 0) {
                     for (Score score : consequenceType.getProteinSubstitutionScores()) {
@@ -204,7 +200,6 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
                 for (ConsequenceType.ConsequenceTypeEntry cte : ct.getSoTerms()) {
                     cts.add(cte.getSoName());
                 }
-
             }
             return Joiner.on(",").join(cts);
         }

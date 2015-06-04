@@ -39,7 +39,6 @@ public class TeamVariantAnnotator {
 
         QueryResponse<QueryResult<VariantAnnotation>> response;
 
-        System.out.println(Arrays.asList(variantList).toString());
         VariantAnnotation va = new VariantAnnotation();
         try {
             response = cellBaseClient.getFullAnnotation(CellBaseClient.Category.genomic,

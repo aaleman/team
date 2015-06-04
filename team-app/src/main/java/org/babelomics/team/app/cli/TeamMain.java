@@ -97,17 +97,14 @@ public class TeamMain {
 
 
             batch = reader.read(batchSize);
-            int count = 0;
 
             while (batch != null && !batch.isEmpty()) {
-//                System.out.println(count++);
 
 //                FilterApplicator.filter(batch, filters);
                 List<TeamVariant> teamBatch = annotator.annotate(batch);
 
                 run(teamBatch, panel, diagnosticVariants, secondaryFindingsVariants);
 
-//                writer.write(batch);
                 diagnosticWriter.write(diagnosticVariants);
                 secondaryFindingsWriter.write(secondaryFindingsVariants);
 
