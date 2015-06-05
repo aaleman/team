@@ -1,9 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-header.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-footer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-help-menu.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-upload-variant-file.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
+<!--<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-upload-variant-file.html">-->
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-study.html">-->
 <!--<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-project.html">-->
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
@@ -80,7 +80,7 @@
 
     </style>
     <template>
-        <jso-header id="jsoHeader"
+        <jso-opencga-header id="jsoHeader"
                     selected-option="{{selectedOption}}"
                     user-data="{{userData}}"
                     on-login="handleLogin"
@@ -128,7 +128,7 @@
                     &nbsp; Source code
                 </a>
             </jso-help-menu>
-        </jso-header>
+        </jso-opencga-header>
 
         <div id="content">
             <team-home hidden$="{{homeHidden}}"></team-home>
@@ -190,13 +190,13 @@
                     ></team-prioritize-form>
         </div>
 
-        <jso-footer hidden$="{{computeFooter(selectedOption)}}">
+        <jso-opencga-footer hidden$="{{computeFooter(selectedOption)}}">
             TEAM: created by Computational Genomics Department
             <br>
             Principe Felipe Research Center
             <br>
             2015
-        </jso-footer>
+        </jso-opencga-footer>
 
     </template>
 </dom-module>

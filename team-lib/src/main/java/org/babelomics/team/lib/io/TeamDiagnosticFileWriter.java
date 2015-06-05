@@ -3,6 +3,7 @@ package org.babelomics.team.lib.io;
 import com.google.common.base.Joiner;
 import org.babelomics.team.lib.models.TeamVariant;
 import org.opencb.biodata.models.variant.Variant;
+import org.opencb.biodata.models.variant.VariantSourceEntry;
 import org.opencb.biodata.models.variant.annotation.ConsequenceType;
 import org.opencb.biodata.models.variant.annotation.Score;
 import org.opencb.biodata.models.variation.PopulationFrequency;
@@ -13,6 +14,7 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -56,6 +58,10 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append("pos").append(SEPARATOR);
         sb.append("ref").append(SEPARATOR);
         sb.append("alt").append(SEPARATOR);
+
+        sb.append("qual").append(SEPARATOR);
+        sb.append("DP").append(SEPARATOR);
+
         sb.append("id").append(SEPARATOR);
         sb.append("gene").append(SEPARATOR);
         sb.append("ct").append(SEPARATOR);
@@ -93,6 +99,25 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append(variant.getStart()).append(SEPARATOR);
         sb.append(variant.getReference()).append(SEPARATOR);
         sb.append(variant.getAlternate()).append(SEPARATOR);
+
+
+        VariantSourceEntry vse = variant.getSourceEntries().get("file_file");
+        String qual = vse.hasAttribute("QUAL") ? vse.getAttribute("QUAL") : ".";
+        sb.append(qual).append(SEPARATOR);
+
+        String dp = "";
+
+
+        for (Map.Entry<String, Map<String, String>> elem : vse.getSamplesData().entrySet()) {
+
+            Map<String, String> data = elem.getValue();
+
+            dp = data.containsKey("DP") ? data.get("DP") : ".";
+            break;
+        }
+
+        sb.append(dp).append(SEPARATOR);
+
 
         String id = variant.getAnnotation().getId();
         if (id == null || id.isEmpty()) {
@@ -138,8 +163,10 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
 //            sb.append(".").append(SEPARATOR);
 //        }
 
-        sb.append(teamVariant.getPhenotype()).append(SEPARATOR);
-        sb.append(teamVariant.getSource()).append(SEPARATOR);
+        String phe = teamVariant.getPhenotype() != null ? teamVariant.getPhenotype() : ".";
+        String src = teamVariant.getSource() != null ? teamVariant.getSource() : ".";
+        sb.append(phe).append(SEPARATOR);
+        sb.append(src).append(SEPARATOR);
 
 
         printer.println(sb.toString());
