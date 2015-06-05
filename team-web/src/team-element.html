@@ -1,15 +1,25 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
+
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
-<!--<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-upload-variant-file.html">-->
-<!--<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-study.html">-->
-<!--<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-create-project.html">-->
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
+
+
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-upload-file.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-create-study.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-create-project.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+
 
 <script src="panel.js"></script>
 
@@ -26,29 +36,97 @@
             position: relative;
             cursor: default;
             font-size: 13px;
-            background-color: inherit;
-
+            height: 100%;
+            background-color: var(--default-primary-color);
         }
 
-        .menu > div {
-            margin-left: 10px;
+        [drawer] {
+            background-color: var(--default-primary-color);
+            color: var(--text-primary-color);
+        }
+
+        #sidetitle {
+            text-align: center;
+            font-size: 24px;
+            background-color: var(--dark-primary-color);
+            padding: 18px 0;
+        }
+
+        #sidemenu > div {
+            font-size: 18px;
+            box-sizing: border-box;
+            padding: 7px 20px;
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        #sidemenu > div:hover {
+            cursor: pointer;
+            background-color: var(--accent-color);
+        }
+
+        #sidemenu > div[active] {
+            font-weight: normal;
+        }
+
+        #menu > div {
+            box-sizing: border-box;
+            margin-right: 1vw;
             cursor: pointer;
             text-align: center;
+            line-height: 30px;
+            margin-top: 15px;
+            margin-bottom: 15px;
             padding: 0 5px;
         }
 
-        jso-header {
-            z-index: 2;
+        div.icon {
+            margin-left: 15px;
+        }
+
+        div.menu-button {
+            padding: 0 10px;
+        }
+
+        div.menu-button:hover {
+            background-color: rgba(0, 0, 0, 0.20);
+        }
+
+        .menu > div[active] {
+            font-weight: normal;
+            border-bottom: 2px solid var(--accent-color);
         }
 
         #content {
-            z-index: 1;
             background-color: inherit;
+            position: absolute;
+            top: 60px;
+            width: 100%;
         }
 
-        /*jso-opencga-browser {*/
-        /*top: 60px;*/
-        /*}*/
+        @media (max-width: 1100px) {
+            .option-text {
+                display: none;
+            }
+        }
+
+        .userid {
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+
+        jso-opencga-header {
+            position: absolute;
+            top: 0;
+        }
+
+        jso-opencga-footer {
+            position: absolute;
+            bottom: 0;
+        }
+
+        jso-variant-browser {
+            height: calc(100vh - 60px);
+        }
 
         team-prioritize-form {
             /*position: absolute;*/
@@ -58,145 +136,186 @@
             overflow-y: auto;
         }
 
-        #browserpanel {
-            position: absolute;
-            top: 60px;
-            right: 0;
-            height: 600px;
-            width: 550px;
-            box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.30);
-        }
+        /*#browserpanel {*/
+        /*position: absolute;*/
+        /*top: 60px;*/
+        /*right: 0;*/
+        /*height: 600px;*/
+        /*width: 550px;*/
+        /*box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.30);*/
+        /*}*/
 
+        /*#jobBrowserPanel {*/
+        /*position: absolute;*/
+        /*top: 60px;*/
+        /*right: 0;*/
+
+        /*height: 600px;*/
+        /*width: 550px;*/
+
+        /*box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.30);*/
+        /*}*/
+
+        #browserPanel,
         #jobBrowserPanel {
             position: absolute;
             top: 60px;
             right: 0;
+            width: 600px;
+        }
 
-            height: 600px;
-            width: 550px;
-
-            box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.30);
+        #browser,
+        #jobBrowser {
+            /*width: 600px;*/
+            height: 400px;
         }
 
     </style>
     <template>
-        <jso-opencga-header id="jsoHeader"
-                    selected-option="{{selectedOption}}"
-                    user-data="{{userData}}"
-                    on-login="handleLogin"
-                    on-logout="handleLogout"
-                    show-menu-on-login>
-             <span class="icon">
-                    <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
-            </span>
-            <span class="title">TEAM</span>
-            <span class="description"></span>
 
-            <div class="menu horizontal layout">
-                <!--<div on-click="handleToggleCreateProject">-->
-                <!--New Project-->
-                <!--</div>-->
-                <!--<div on-click="handleToggleCreateStudy">-->
-                <!--New Study-->
-                <!--</div>-->
-                <!--<div on-click="handleToggleUpload">-->
-                <!--Upload-->
-                <!--</div>-->
-                <div on-click="handleToggleBrowser">
-                    Browse files
-                </div>
 
-                <div on-click="handleTogglePrioritize">
-                    Prioritize
+        <paper-drawer-panel id="paperDrawerPanel" force-narrow>
+            <div drawer>
+                <div id="sidetitle">
+                    Team<br>
+                    <span class="userid">{{userData.id}}</span>
                 </div>
-                <div on-click="handleToggleJobBrowser">
-                    Results!
+                <div id="sidemenu">
+                    <div title="Diagnostics" class="hover" on-click="handleToggleJobBrowser" data-panel="">
+                        <!--<i class="fa fa-stethoscope"></i>-->
+                        <i class="fa fa-user-md"></i>
+                        <span class="">Diagnostics</span>
+                    </div>
+
+                    <div title="Browse files" class="hover" on-click="handleToggleBrowser" data-panel="">
+                        <i class="fa fa-folder-open-o"></i>
+                        <span class="">Browse files</span>
+                    </div>
+
+                    <div title="Panels" class="hover" on-click="" data-panel="">
+                        <i class="fa fa-list-alt"></i>
+                        <span class="">Panels</span>
+                    </div>
                 </div>
             </div>
+            <div main>
 
-            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
-                <a href="https://github.com/babelomics/team/wiki" target="_blank">
-                    <i class="fa fa-book"></i>
-                    &nbsp; Documentation
-                </a>
-                <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
-                    <i class="fa fa-compass"></i>
-                    &nbsp; Tutorial
-                </a>
-                <a href="https://github.com/babelomics/team/" target="_blank">
-                    <i class="fa fa-github"></i>
-                    &nbsp; Source code
-                </a>
-            </jso-help-menu>
-        </jso-opencga-header>
+                <div id="content">
+                    <team-home hidden$="{{homeHidden}}"></team-home>
 
-        <div id="content">
-            <team-home hidden$="{{homeHidden}}"></team-home>
-            <jso-opencga-create-study
-                    id="createStudy"
-                    hidden$="{{createStudyHidden}}"
-                    on-close="handleCloseCreateStudy"
-                    projects="{{projects}}">
-            </jso-opencga-create-study>
 
-            <jso-opencga-create-project
-                    id="createStudy"
-                    hidden$="{{createProjectHidden}}"
-                    on-close="handleCloseCreateProject"
-                    projects="{{projects}}">
-            </jso-opencga-create-project>
+                    <team-panel-manager
+                            id="panelManager"
+                            hidden$="{{panelManagerHidden}}"
+                            user-data="{{userData}}"
+                            projects="{{projects}}"
+                            meta-study="{{metaStudy}}"
+                            panels="{{panels}}"
+                            ></team-panel-manager>
 
-            <jso-upload-variant-file
-                    id="upload"
-                    hidden$="{{uploadHidden}}"
-                    on-close="handleCloseUpload"
-                    projects="{{projects}}"
-                    disable-index></jso-upload-variant-file>
+                    <team-prioritize-form
+                            hidden$="{{prioritizeHidden}}"
+                            panels="{{panels}}"
+                            projects="{{projects}}"
+                            on-close="handleClosePrioritizeForm"
+                            ></team-prioritize-form>
 
-            <jso-panel hidden$="{{browserHidden}}" id="browserpanel">
-                <div class="header">Browser</div>
-                <jso-opencga-browser class="container"
-                                     id="browser"
-                                     on-fileselect="handleFileSelect"
-                                     projects="{{projects}}"
-                                     bioformats="{{bioformats}}"
-                        ></jso-opencga-browser>
-            </jso-panel>
 
-            <jso-panel hidden$="{{jobBrowserHidden}}" id="jobBrowserPanel">
-                <div class="header">Analysis Browser</div>
-                <jso-opencga-job-browser class="container"
-                                         id="jobBrowser"
+                </div>
+
+                <jso-panel movable collapsible movable closable hidden$="{{jobBrowserHidden}}" id="jobBrowserPanel">
+                    <div class="header">Analysis Browser</div>
+                    <jso-opencga-job-browser class="container"
+                                             id="jobBrowser"
+                                             on-fileselect="handleFileSelect"
+                                             projects="{{projects}}"
+                                             allowed-tools="{{allowedTools}}"
+                            ></jso-opencga-job-browser>
+                </jso-panel>
+
+                <jso-panel movable collapsible movable closable hidden$="{{browserHidden}}" id="browserPanel">
+                    <div class="header">Browser</div>
+                    <jso-opencga-browser class="container"
+                                         id="browser"
                                          on-fileselect="handleFileSelect"
                                          projects="{{projects}}"
-                                         allowed-tools="{{allowedTools}}"
-                        ></jso-opencga-job-browser>
-            </jso-panel>
+                                         bioformats="{{bioformats}}"
+                            ></jso-opencga-browser>
+                </jso-panel>
 
-            <team-panel-manager
-                    id="panelManager"
-                    hidden$="{{panelManagerHidden}}"
-                    user-data="{{userData}}"
-                    projects="{{projects}}"
-                    meta-study="{{metaStudy}}"
-                    panels="{{panels}}"
-                    ></team-panel-manager>
 
-            <team-prioritize-form
-                    hidden$="{{prioritizeHidden}}"
-                    panels="{{panels}}"
-                    projects="{{projects}}"
-                    on-close="handleClosePrioritizeForm"
-                    ></team-prioritize-form>
-        </div>
+                <jso-opencga-header id="jsoHeader"
+                                    selected-option="{{selectedOption}}"
+                                    user-data="{{userData}}"
+                                    on-login="handleLogin"
+                                    on-logout="handleLogout"
+                                    show-menu-on-login>
+                    <div class="menu-button" paper-drawer-toggle>
+                        <i class="fa fa-bars" paper-drawer-toggle></i>
+                    </div>
+                     <div class="icon">
+                            <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
+                    </div>
+                    <span class="title">TEAM</span>
+                    <span class="description"></span>
 
-        <jso-opencga-footer hidden$="{{computeFooter(selectedOption)}}">
-            TEAM: created by Computational Genomics Department
-            <br>
-            Principe Felipe Research Center
-            <br>
-            2015
-        </jso-opencga-footer>
+                    <div id="menu" class="menu horizontal layout">
+                        <!--<div on-click="handleToggleCreateProject">-->
+                        <!--New Project-->
+                        <!--</div>-->
+                        <!--<div on-click="handleToggleCreateStudy">-->
+                        <!--New Study-->
+                        <!--</div>-->
+                        <!--<div on-click="handleToggleUpload">-->
+                        <!--Upload-->
+                        <!--</div>-->
+
+                        <div title="Diagnostics" class="hover" on-click="handleToggleJobBrowser" data-panel="">
+                            <!--<i class="fa fa-stethoscope"></i>-->
+                            <i class="fa fa-user-md"></i>
+                            <span class="option-text">Diagnostics</span>
+                        </div>
+
+                        <div title="Browse files" class="hover" on-click="handleToggleBrowser" data-panel="">
+                            <i class="fa fa-folder-open-o"></i>
+                            <span class="option-text">Browse files</span>
+                        </div>
+
+                        <div title="Panels" class="hover" on-click="" data-panel="">
+                            <i class="fa fa-list-alt"></i>
+                            <span class="option-text">Panels</span>
+                        </div>
+                    </div>
+
+                    <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+                        <a href="https://github.com/babelomics/team/wiki" target="_blank">
+                            <i class="fa fa-book"></i>
+                            &nbsp; Documentation
+                        </a>
+                        <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
+                            <i class="fa fa-compass"></i>
+                            &nbsp; Tutorial
+                        </a>
+                        <a href="https://github.com/babelomics/team/" target="_blank">
+                            <i class="fa fa-github"></i>
+                            &nbsp; Source code
+                        </a>
+                    </jso-help-menu>
+                </jso-opencga-header>
+
+
+                <jso-opencga-footer hidden$="{{computeFooter(selectedOption)}}">
+                    TEAM: created by Computational Genomics Department
+                    <br>
+                    Principe Felipe Research Center
+                    <br>
+                    2015
+                </jso-opencga-footer>
+
+
+            </div>
+        </paper-drawer-panel>
+
 
     </template>
 </dom-module>
@@ -273,9 +392,12 @@
             },
             bioformats: {
                 type: Array,
-                value: function () {
-                    return ["VARIANT", "NONE"];
-                }
+                value: [
+                    {
+                        text: "VCF 4.0",
+                        value: "VARIANT"
+                    }
+                ]
             }
         },
         ready: function () {

@@ -6,6 +6,8 @@
             display: block;
             position: relative;
             box-sizing: border-box;
+            background-color: var(--light-primary-color);
+            color: var(--primary-text-color);
         }
 
         #menu {
@@ -22,7 +24,6 @@
             border-style: solid;
             border-color: rgba(120, 120, 120, 0.4);
             transition: left 0.2s;
-            background-color: inherit;
         }
 
         #menu[collapsed] {
@@ -37,10 +38,10 @@
 
         #menu-button {
             font-size: 24px;
-            z-index: 3;
             position: absolute;
             top: 10px;
             left: 10px;
+            color: var(--text-primary-color);
         }
 
         #menu-button:after {

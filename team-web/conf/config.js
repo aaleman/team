@@ -3,7 +3,7 @@ CELLBASE_HOST = "http://bioinfo.hpc.cam.ac.uk/cellbase/webservices/rest";
 CELLBASE_VERSION = "v3";
 
 OPENCGA_HOST = "http://test.babelomics.org/opencga/rest";
-OPENCGA_HOST = "http://bioinfoint.hpc.cam.ac.uk/opencga/rest";
+//OPENCGA_HOST = "http://bioinfoint.hpc.cam.ac.uk/opencga/rest";
 
 var POPULAR_SPECIES = ["Homo sapiens", "Mus musculus", "Danio rerio", "Drosophila melanogaster", "Saccharomyces cerevisiae", "Plasmodium falciparum", "Arabidopsis thaliana", "Citrus Clementina"];
 
