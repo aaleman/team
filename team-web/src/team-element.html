@@ -1,20 +1,17 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
-
-
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
-
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
-
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-upload-file.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-create-study.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-create-project.html">
@@ -23,11 +20,13 @@
 
 <script src="panel.js"></script>
 
+<link rel="import" href="team-menubar.html">
 <link rel="import" href="team-home.html">
 <link rel="import" href="panel-manager/team-panel-manager.html">
 <link rel="import" href="panel-manager/team-panel-form-wizard.html">
 <link rel="import" href="team-prioritize-form.html">
-
+<link rel="import" href="team-diagnostics-element.html">
+<link rel="import" href="team-new-diagnostic-element.html">
 
 <dom-module id="team-element">
     <style>
@@ -68,17 +67,6 @@
             font-weight: normal;
         }
 
-        #menu > div {
-            box-sizing: border-box;
-            margin-right: 1vw;
-            cursor: pointer;
-            text-align: center;
-            line-height: 30px;
-            margin-top: 15px;
-            margin-bottom: 15px;
-            padding: 0 5px;
-        }
-
         div.icon {
             margin-left: 15px;
         }
@@ -91,16 +79,15 @@
             background-color: rgba(0, 0, 0, 0.20);
         }
 
-        .menu > div[active] {
-            font-weight: normal;
-            border-bottom: 2px solid var(--accent-color);
-        }
-
         #content {
             background-color: inherit;
             position: absolute;
             top: 60px;
             width: 100%;
+
+            height: calc(100% - 60px);
+            overflow-y: auto;
+
         }
 
         @media (max-width: 1100px) {
@@ -136,26 +123,6 @@
             overflow-y: auto;
         }
 
-        /*#browserpanel {*/
-        /*position: absolute;*/
-        /*top: 60px;*/
-        /*right: 0;*/
-        /*height: 600px;*/
-        /*width: 550px;*/
-        /*box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.30);*/
-        /*}*/
-
-        /*#jobBrowserPanel {*/
-        /*position: absolute;*/
-        /*top: 60px;*/
-        /*right: 0;*/
-
-        /*height: 600px;*/
-        /*width: 550px;*/
-
-        /*box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.30);*/
-        /*}*/
-
         #browserPanel,
         #jobBrowserPanel {
             position: absolute;
@@ -170,6 +137,13 @@
             height: 400px;
         }
 
+        team-new-diagnostic-element {
+            /*z-index: 90000;*/
+        }
+
+        team-panel-form-wizard {
+        }
+
     </style>
     <template>
 
@@ -180,19 +154,18 @@
                     Team<br>
                     <span class="userid">{{userData.id}}</span>
                 </div>
+
                 <div id="sidemenu">
-                    <div title="Diagnostics" class="hover" on-click="handleToggleJobBrowser" data-panel="">
+                    <div title="Diagnostics" class="hover" on-click="handleToggleDiagnostics">
                         <!--<i class="fa fa-stethoscope"></i>-->
                         <i class="fa fa-user-md"></i>
                         <span class="">Diagnostics</span>
                     </div>
-
-                    <div title="Browse files" class="hover" on-click="handleToggleBrowser" data-panel="">
+                    <div title="Browse files" class="hover" on-click="handleToggleBrowser">
                         <i class="fa fa-folder-open-o"></i>
                         <span class="">Browse files</span>
                     </div>
-
-                    <div title="Panels" class="hover" on-click="" data-panel="">
+                    <div title="Panels" class="hover" on-click="">
                         <i class="fa fa-list-alt"></i>
                         <span class="">Panels</span>
                     </div>
@@ -202,47 +175,54 @@
 
                 <div id="content">
                     <team-home hidden$="{{homeHidden}}"></team-home>
+                    <iron-pages selected="{{selectedOption}}" attr-for-selected="data-option" id="ironpages">
+
+                        <div data-option="files">
+                            <jso-panel movable collapsible movable closable id="browserPanel">
+                                <div class="header">Browser</div>
+                                <jso-opencga-browser class="container"
+                                                     id="browser"
+                                                     on-fileselect="handleFileSelect"
+                                                     projects="{{projects}}"
+                                                     bioformats="{{bioformats}}"
+                                        ></jso-opencga-browser>
+                            </jso-panel>
+                        </div>
+                        <team-diagnostics-element projects="{{projects}}"
+                                                  panels="{{panels}}"
+                                                  on-newdiagnostic="handleNewDiagnostic"
+                                                  data-option="diagnostics"
+                                ></team-diagnostics-element>
+
+                        <team-panel-manager projects="{{projects}}"
+                                                  panels="{{panels}}"
+                                                  data-option="panels"
+                                ></team-panel-manager>
 
 
-                    <team-panel-manager
-                            id="panelManager"
-                            hidden$="{{panelManagerHidden}}"
-                            user-data="{{userData}}"
-                            projects="{{projects}}"
-                            meta-study="{{metaStudy}}"
-                            panels="{{panels}}"
-                            ></team-panel-manager>
+                        <div data-option="newdiagnostic">
 
-                    <team-prioritize-form
-                            hidden$="{{prioritizeHidden}}"
-                            panels="{{panels}}"
-                            projects="{{projects}}"
-                            on-close="handleClosePrioritizeForm"
-                            ></team-prioritize-form>
+                            data-option="newdiagnostic"
+                            jpoña
+                            <team-new-diagnostic-element
+                                    id="newDiagnosticElement"
+                                    panels="{{panels}}"
+                                    projects="{{projects}}"
+                                    on-close="handleClosePrioritizeForm"
+                                    menu-option="new-diagnostic"
+                                    bioformats="{{bioformats}}"
+                                    ></team-new-diagnostic-element>
+                        </div>
+
+                        <team-panel-form-wizard
+                                data-option="newpanel"
+                                team-config-folder="{{teamConfigFolder}}"
+                                meta-study="{{metaStudy}}"
+                                ></team-panel-form-wizard>
 
 
+                    </iron-pages>
                 </div>
-
-                <jso-panel movable collapsible movable closable hidden$="{{jobBrowserHidden}}" id="jobBrowserPanel">
-                    <div class="header">Analysis Browser</div>
-                    <jso-opencga-job-browser class="container"
-                                             id="jobBrowser"
-                                             on-fileselect="handleFileSelect"
-                                             projects="{{projects}}"
-                                             allowed-tools="{{allowedTools}}"
-                            ></jso-opencga-job-browser>
-                </jso-panel>
-
-                <jso-panel movable collapsible movable closable hidden$="{{browserHidden}}" id="browserPanel">
-                    <div class="header">Browser</div>
-                    <jso-opencga-browser class="container"
-                                         id="browser"
-                                         on-fileselect="handleFileSelect"
-                                         projects="{{projects}}"
-                                         bioformats="{{bioformats}}"
-                            ></jso-opencga-browser>
-                </jso-panel>
-
 
                 <jso-opencga-header id="jsoHeader"
                                     selected-option="{{selectedOption}}"
@@ -253,39 +233,42 @@
                     <div class="menu-button" paper-drawer-toggle>
                         <i class="fa fa-bars" paper-drawer-toggle></i>
                     </div>
-                     <div class="icon">
-                            <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
+                    <div class="icon">
+                        <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
                     </div>
                     <span class="title">TEAM</span>
                     <span class="description"></span>
 
-                    <div id="menu" class="menu horizontal layout">
-                        <!--<div on-click="handleToggleCreateProject">-->
-                        <!--New Project-->
-                        <!--</div>-->
-                        <!--<div on-click="handleToggleCreateStudy">-->
-                        <!--New Study-->
-                        <!--</div>-->
-                        <!--<div on-click="handleToggleUpload">-->
-                        <!--Upload-->
-                        <!--</div>-->
-
-                        <div title="Diagnostics" class="hover" on-click="handleToggleJobBrowser" data-panel="">
+                    <team-menubar class="menu horizontal layout" selected="{{selectedOption}}"
+                                  attr-for-selected="data-option">
+                        <div title="Diagnostics" class="hover" data-option="diagnostics">
                             <!--<i class="fa fa-stethoscope"></i>-->
                             <i class="fa fa-user-md"></i>
                             <span class="option-text">Diagnostics</span>
                         </div>
 
-                        <div title="Browse files" class="hover" on-click="handleToggleBrowser" data-panel="">
+                        <div title="New Diagnostic" class="hover" data-option="newdiagnostic">
+                            <!--<i class="fa fa-stethoscope"></i>-->
+                            <i class="fa fa-plus"></i>
+                            <span class="option-text">Diagnostic</span>
+                        </div>
+
+                        <div title="New Panel" class="hover" data-option="newpanel">
+                            <!--<i class="fa fa-stethoscope"></i>-->
+                            <i class="fa fa-plus"></i>
+                            <span class="option-text">Panel</span>
+                        </div>
+
+                        <div title="Browse files" class="hover" data-option="files">
                             <i class="fa fa-folder-open-o"></i>
                             <span class="option-text">Browse files</span>
                         </div>
 
-                        <div title="Panels" class="hover" on-click="" data-panel="">
+                        <div title="Panels" class="hover" data-option="panels">
                             <i class="fa fa-list-alt"></i>
                             <span class="option-text">Panels</span>
                         </div>
-                    </div>
+                    </team-menubar>
 
                     <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
                         <a href="https://github.com/babelomics/team/wiki" target="_blank">
@@ -304,7 +287,7 @@
                 </jso-opencga-header>
 
 
-                <jso-opencga-footer hidden$="{{computeFooter(selectedOption)}}">
+                <jso-opencga-footer hidden$="{{computeFooter(selectedOption)}}" menu-option="home">
                     TEAM: created by Computational Genomics Department
                     <br>
                     Principe Felipe Research Center
@@ -328,7 +311,6 @@
                 value: "home",
                 notify: true,
                 reflectToAttribute: true,
-                observer: 'selectedOptionChanged'
             },
             userData: {
                 type: Object,
@@ -340,38 +322,10 @@
                 notify: true,
                 observer: 'projectsChanged'
             },
-            browserHidden: {
-                type: Boolean,
-                value: true,
-                reflectToAttribute: true
-            },
-            uploadHidden: {
-                type: Boolean,
-                value: true,
-                reflectToAttribute: true
-            },
-            createStudyHidden: {
-                type: Boolean,
-                value: true,
-                reflectToAttribute: true
-            },
-            createProjectHidden: {
-                type: Boolean,
-                value: true,
-                reflectToAttribute: true
-            },
-            panelManagerHidden: {
-                type: Boolean,
-                value: true
-            },
             homeHidden: {
                 type: Boolean,
                 value: false
 
-            },
-            prioritizeHidden: {
-                type: Boolean,
-                value: true
             },
             panels: {
                 type: Array,
@@ -379,10 +333,6 @@
                     return [];
                 },
                 notify: true
-            },
-            jobBrowserHidden: {
-                type: Boolean,
-                value: false
             },
             allowedTools: {
                 type: Array,
@@ -398,80 +348,36 @@
                         value: "VARIANT"
                     }
                 ]
-            }
-        },
-        ready: function () {
-        },
-        computeFooter: function (selectedOption) {
-            return false;
-        },
-        selectedOptionChanged: function (neo, old) {
-            var menuItems = Polymer.dom(this.root).querySelectorAll('[menu-option]');
-            for (var i = 0; i < menuItems.length; i++) {
-                var item = menuItems[i];
-                var currentItemValue = item.getAttribute("menu-option");
-                if (neo == currentItemValue) {
-                    item.removeAttribute("hidden");
-                } else {
-                    item.setAttribute('hidden', '');
+            },
+            metaStudy: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            teamConfigFolder: {
+                type: Object,
+                value: function () {
+                    return {};
                 }
             }
         },
-        handleMenu: function (e) {
-            var option = e.currentTarget.dataset['option'];
-            this.setMenu(option);
-        },
-        setMenu: function (option) {
-            if (option) {
-                this.selectedOption = option;
-            }
-        },
+        ready: function () {
 
-        handleToggleBrowser: function (e) {
-            this.jobBrowserHidden = !this.jobBrowserHidden;
-            this.browserHidden = !this.browserHidden;
         },
-        handleCloseBrowser: function (e) {
-            this.browserHidden = true;
-        },
-
-        handleCloseUpload: function (e) {
-            this.uploadHidden = true;
-        },
-        handleClosePanelManager: function (e) {
-            this.panelManagerHidden = true;
-        },
-        handleToggleUpload: function (e) {
-            this.uploadHidden = !this.uploadHidden;
-        },
-        handleCloseCreateStudy: function (e) {
-            this.createStudyHidden = true;
-        },
-        handleToggleCreateStudy: function (e) {
-            this.createStudyHidden = !this.createStudyHidden;
-        },
-        handleCloseCreateProject: function (e) {
-            this.createProjectHidden = true;
-        },
-        handleToggleCreateProject: function (e) {
-            this.createProjectHidden = !this.createProjectHidden;
-        },
-        handleToggleJobBrowser: function (e) {
-            this.browserHidden = !this.browserHidden;
-            this.jobBrowserHidden = !this.jobBrowserHidden;
-        },
-        computeFooter: function (selectedOption) {
-            return selectedOption == 'dashboard' || selectedOption == 'variantbrowser';
+        computeFooter: function () {
+            return this.selectedOption != "home";
         },
         handleFileSelect: function (e) {
             var file = e.detail;
             console.log(file);
         },
         handleLogin: function () {
-//            this.selectedOption = "home";
+            this.selectedOption = "panels";
             this.homeHidden = true;
             this.browserHidden = true;
             this.jobBrowserHidden = false;
+
 
 //            this.browserHidden = false;
             this.panelManagerHidden = false;
@@ -484,6 +390,7 @@
             this.jobBrowserHidden = true;
 
             this.homeHidden = false;
+            this.selectedOption = "home";
 
         },
         userDataChanged: function (neo, old) {
@@ -530,10 +437,6 @@
         },
         annonymousLogin: function () {
             this.$.jsoHeader.anonymousSign();
-        },
-        handleTogglePrioritize: function (neo, old) {
-            this.prioritizeHidden = !this.prioritizeHidden;
-
         },
         projectsChanged: function (neo, old) {
 
@@ -667,8 +570,11 @@
             });
             return folder;
         },
-        handleClosePrioritizeForm: function (e) {
-            this.prioritizeHidden = true;
+        handleNewDiagnostic: function (e) {
+            console.log("NEw Diagnostic");
+
+            this.$.ironpages.select("newdiagnostic")
+            console.log(this.selectedOption);
         }
     });
 </script>
