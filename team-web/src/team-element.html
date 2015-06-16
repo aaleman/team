@@ -501,6 +501,7 @@
 
                     var panels = this._getPanelFiles(defaultStudy, teamConfigFolder);
                     this.set('panels', panels);
+                    this.$.jobBrowser._getJobs(this.defaultStudy.id)
                 }
             }
         },
@@ -640,7 +641,13 @@
 
             this.$.teamResult.job = job;
 
+
+
+
             this.hideTeamResult = false;
+
+
+
             
 
 
