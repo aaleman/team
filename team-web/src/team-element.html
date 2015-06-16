@@ -27,6 +27,7 @@
 <link rel="import" href="team-prioritize-form.html">
 <link rel="import" href="team-diagnostics-element.html">
 <link rel="import" href="team-new-diagnostic-element.html">
+<link rel="import" href="team-result.html">
 
 <dom-module id="team-element">
     <style>
@@ -144,6 +145,10 @@
         team-panel-form-wizard {
         }
 
+        team-result {
+            height: calc(100vh - 60px);
+        }
+
     </style>
     <template>
 
@@ -159,7 +164,7 @@
                     <div title="Diagnostics" class="hover" on-click="handleToggleDiagnostics">
                         <!--<i class="fa fa-stethoscope"></i>-->
                         <i class="fa fa-user-md"></i>
-                        <span class="">Diagnostics</span>
+                        <span class="">Diagnosis</span>
                     </div>
                     <div title="Browse files" class="hover" on-click="handleToggleBrowser">
                         <i class="fa fa-folder-open-o"></i>
@@ -175,28 +180,45 @@
 
                 <div id="content">
                     <team-home hidden$="{{homeHidden}}"></team-home>
+                    <team-result id="teamResult" hidden$="{{hideTeamResult}}"></team-result>
                     <iron-pages selected="{{selectedOption}}" attr-for-selected="data-option" id="ironpages">
 
                         <div data-option="files">
                             <jso-panel movable collapsible movable closable id="browserPanel">
-                                <div class="header">Browser</div>
+                                <div class="header">File Browser</div>
                                 <jso-opencga-browser class="container"
                                                      id="browser"
-                                                     on-fileselect="handleFileSelect"
                                                      projects="{{projects}}"
                                                      bioformats="{{bioformats}}"
+                                                     disable-new-project
+                                                     disable-new-study
                                         ></jso-opencga-browser>
                             </jso-panel>
+
+
                         </div>
-                        <team-diagnostics-element projects="{{projects}}"
-                                                  panels="{{panels}}"
-                                                  on-newdiagnostic="handleNewDiagnostic"
-                                                  data-option="diagnostics"
-                                ></team-diagnostics-element>
+                        <!-- <team-diagnostics-element projects="{{projects}}"
+                        panels="{{panels}}"
+                        on-newdiagnostic="handleNewDiagnostic"
+                        data-option="diagnostics"
+                        ></team-diagnostics-element> -->
+
+                        <div data-option="diagnostics">
+                            <jso-panel movable collapsible movable closable id="jobBrowserPanel">
+                                <div class="header">Diagnoses Browser</div>
+                                <jso-opencga-job-browser class="container"
+                                                         id="jobBrowser"
+                                                         on-jobselect="handleJobSelect"
+                                                         projects="{{projects}}"
+                                                         bioformats="{{bioformats}}"
+                                                         allowed-tools="{{allowedTools}}"
+                                        ></jso-opencga-job-browser>
+                            </jso-panel>
+                        </div>
 
                         <team-panel-manager projects="{{projects}}"
-                                                  panels="{{panels}}"
-                                                  data-option="panels"
+                                            panels="{{panels}}"
+                                            data-option="panels"
                                 ></team-panel-manager>
 
 
@@ -211,16 +233,16 @@
                                     on-close="handleClosePrioritizeForm"
                                     menu-option="new-diagnostic"
                                     bioformats="{{bioformats}}"
+                                    default-study="{{defaultStudy}}"
+                                    analysis-folder="{{analysisFolder}}"
                                     ></team-new-diagnostic-element>
                         </div>
 
                         <team-panel-form-wizard
                                 data-option="newpanel"
                                 team-config-folder="{{teamConfigFolder}}"
-                                meta-study="{{metaStudy}}"
+                                default-study="{{defaultStudy}}"
                                 ></team-panel-form-wizard>
-
-
                     </iron-pages>
                 </div>
 
@@ -244,13 +266,13 @@
                         <div title="Diagnostics" class="hover" data-option="diagnostics">
                             <!--<i class="fa fa-stethoscope"></i>-->
                             <i class="fa fa-user-md"></i>
-                            <span class="option-text">Diagnostics</span>
+                            <span class="option-text">Diagnoses</span>
                         </div>
 
                         <div title="New Diagnostic" class="hover" data-option="newdiagnostic">
                             <!--<i class="fa fa-stethoscope"></i>-->
                             <i class="fa fa-plus"></i>
-                            <span class="option-text">Diagnostic</span>
+                            <span class="option-text">Diagnosis</span>
                         </div>
 
                         <div title="New Panel" class="hover" data-option="newpanel">
@@ -337,7 +359,8 @@
             allowedTools: {
                 type: Array,
                 value: function () {
-                    return ["opencga-storage.sh"];
+                    /*return ["opencga-storage.sh", "team"];*/
+                    return ["team"];
                 }
             },
             bioformats: {
@@ -349,7 +372,7 @@
                     }
                 ]
             },
-            metaStudy: {
+            defaultStudy: {
                 type: Object,
                 value: function () {
                     return {};
@@ -360,6 +383,16 @@
                 value: function () {
                     return {};
                 }
+            },
+            analysisFolder: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            hideTeamResult: {
+                type: Boolean,
+                value: true
             }
         },
         ready: function () {
@@ -368,18 +401,13 @@
         computeFooter: function () {
             return this.selectedOption != "home";
         },
-        handleFileSelect: function (e) {
-            var file = e.detail;
-            console.log(file);
-        },
+       
         handleLogin: function () {
             this.selectedOption = "panels";
             this.homeHidden = true;
             this.browserHidden = true;
             this.jobBrowserHidden = false;
-
-
-//            this.browserHidden = false;
+            //            this.browserHidden = false;
             this.panelManagerHidden = false;
 
         },
@@ -443,32 +471,35 @@
             if (neo.length > 0) {
                 var projects = neo;
 
-                var metaProject = null;
-                var metaStudy = null;
+                var defaultProject = null;
+                var defaultStudy = null;
 
-                for (var i = 0; metaProject == null && projects && i < projects.length; i++) {
+                for (var i = 0; defaultProject == null && projects && i < projects.length; i++) {
                     var proj = projects[i];
-                    if (proj.name === ".meta") {
-                        metaProject = proj;
-                        for (var j = 0; metaStudy == null && metaProject.studies && j < metaProject.studies.length; j++) {
-                            var stu = metaProject.studies[j];
-                            if (stu.name === ".meta") {
-                                metaStudy = stu;
+                    if (proj.alias === "defaultPr") {
+                        defaultProject = proj;
+                        for (var j = 0; defaultStudy == null && defaultProject.studies && j < defaultProject.studies.length; j++) {
+                            var stu = defaultProject.studies[j];
+                            if (stu.alias === "defaultSt") {
+                                defaultStudy = stu;
                             }
                         }
                     }
                 }
 
-                if (metaProject != null && metaStudy != null) {
-                    var teamConfigFolder = this._getTEAMConfigFolder(metaStudy.id);
+                if (defaultProject != null && defaultStudy != null) {
+                    var teamConfigFolder = this._getTEAMConfigFolder(defaultStudy.id);
+                    var analysisFolder = this._getAnalysisFolder(defaultStudy.id);
+
                     if (teamConfigFolder == null) {
-                        teamConfigFolder = this._createTEAMConfigFolder(metaStudy.id);
+                        teamConfigFolder = this._createTEAMConfigFolder(defaultStudy.id);
 
                     }
-                    this.metaStudy = metaStudy;
+                    this.defaultStudy = defaultStudy;
                     this.teamConfigFolder = teamConfigFolder;
+                    this.analysisFolder = analysisFolder;
 
-                    var panels = this._getPanelFiles(metaStudy, teamConfigFolder);
+                    var panels = this._getPanelFiles(defaultStudy, teamConfigFolder);
                     this.set('panels', panels);
                 }
             }
@@ -476,7 +507,7 @@
         _getPanelFiles: function (study, folder) {
             var me = this;
             var panels = [];
-            var separator = "#-#";
+            var separator = "-_-";
             OpencgaManager.files.list({
                 id: folder.id,
                 query: {
@@ -492,6 +523,7 @@
 
                             for (var i = 0; i < data.length; i++) {
                                 var file = data[i];
+
                                 var fileName = file.name;
                                 var splits = fileName.split(separator);
                                 var panelName = splits[1];
@@ -535,11 +567,37 @@
                         if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                             folder = response.response[0].result[0];
                         } else {
-//                                me.message = response.response[0].errorMsg;
+                            // me.message = response.response[0].errorMsg;
                         }
                     },
                     error: function () {
-//                            me.message = 'Server error, try again later.';
+                        // me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        _getAnalysisFolder: function (studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.search({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    studyId: studyId,
+                    name: 'analysis'
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+                            //                                me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+                        //                            me.message = 'Server error, try again later.';
                     }
                 }
             });
@@ -560,11 +618,11 @@
                         if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                             folder = response.response[0].result[0];
                         } else {
-//                                me.message = response.response[0].errorMsg;
+                            //                                me.message = response.response[0].errorMsg;
                         }
                     },
                     error: function () {
-//                             me.message = 'Server error, try again later.';
+                        //                             me.message = 'Server error, try again later.';
                     }
                 }
             });
@@ -575,6 +633,17 @@
 
             this.$.ironpages.select("newdiagnostic")
             console.log(this.selectedOption);
+        }, handleJobSelect: function (e) {
+
+            var job = e.detail;
+            console.log(job);
+
+            this.$.teamResult.job = job;
+
+            this.hideTeamResult = false;
+            
+
+
         }
     });
 </script>

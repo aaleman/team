@@ -11,6 +11,9 @@ public class Parameters {
     @Parameter(names = {"--input"}, description = "Input", required = true)
     private String input;
 
+    @Parameter(names = {"--output"}, description = "Output", required = true)
+    private String output;
+
 
     @Parameter(names = {"--panel"}, description = "panel", required = true)
     private String panel;
@@ -30,5 +33,9 @@ public class Parameters {
 
     public boolean isHelp() {
         return help;
+    }
+
+    public String getOutput() {
+        return output;
     }
 }

@@ -53,6 +53,7 @@ public class TeamMain {
         File jsonPanelFile;
 
         String inputFile;
+        String outputFile;
         String panelFilename;
 
         try {
@@ -64,6 +65,7 @@ public class TeamMain {
 
         inputFile = parameters.getInput();
         panelFilename = parameters.getPanel();
+        outputFile = parameters.getOutput();
 
         jsonPanelFile = new File(panelFilename);
 
@@ -78,8 +80,8 @@ public class TeamMain {
 
             VariantReader reader = new VariantVcfReader(source, inputFile);
             VariantWriter writer = new TeamVariantStdoutWriter();
-            DataWriter<TeamVariant> diagnosticWriter = new TeamDiagnosticFileWriter("diagnostic.csv");
-            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamSecondaryFindingsFileWriter("secondary.csv");
+            DataWriter<TeamVariant> diagnosticWriter = new TeamDiagnosticFileWriter(outputFile + "/diagnostic.csv");
+            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamSecondaryFindingsFileWriter(outputFile + "/secondary.csv");
 
             VariantFilter regionFilter = new TeamVariantGeneRegionFilter(regionList);
 

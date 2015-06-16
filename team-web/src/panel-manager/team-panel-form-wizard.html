@@ -127,7 +127,7 @@
                             <div id="gene-tab-config-text" class="genes-tab-container-elem"
                                  hidden$={{handleHiddenGeneText(geneTab)}}>
                                     <textarea class="jso" name="geneTextArea" id="geneTextArea" rows="3"
-                                              placeholder="BRCA2,PPL">1:1-2,brca2,2:2-3</textarea>
+                                              placeholder="BRCA2,PPL"></textarea>
 
                                 <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneTextAreaButton">Add
                                     Genes
@@ -369,7 +369,7 @@
                     return [];
                 }
             },
-            metaStudy: {
+            defaultStudy: {
                 type: Object,
                 value: function () {
                     return {};
@@ -641,7 +641,6 @@
 
                 if (geneName != '') {
 
-                    debugger
                     var re = /(\w+):(\d+)-(\d)+/;
                     if (re.test(geneName)) {
 //                        var groups = re.match(geneName);
@@ -854,15 +853,13 @@
             }
             if (confirm("Are you sure?")) {
 
-                if (this.metaStudy && this.teamConfigFolder) {
-
-
+                if (this.defaultStudy && this.teamConfigFolder) {
 //                    var content = pako.deflate(JSON.stringify(this.formData));
                     content = JSON.stringify(this.formData);
-                    var separator = "#-#";
+                    var separator = "-_-";
                     var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived;
 
-                    this.uploadFile(content, fileName, this.metaStudy.id);
+                    this.uploadFile(content, fileName, this.defaultStudy.id);
                 }
 
             }

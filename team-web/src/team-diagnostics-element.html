@@ -85,12 +85,12 @@
 
             for (var i = 0; i < neo.length; i++) {
                 var pr = neo[i];
-                if (pr.alias === "defaultPr") {
+                if (pr.alias === "meta") {
                     this.defaultPr = pr;
 
                     for (var j = 0; j < pr.studies.length; j++) {
                         var st = pr.studies[j];
-                        if (st.alias === "defaultSt") {
+                        if (st.alias === "meta") {
                             this.defaultStudy = st;
                             return;
                         }
