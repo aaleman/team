@@ -1,0 +1,151 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+
+<dom-module id="team-diagnostics-element">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            cursor: default;
+            font-size: 13px;
+            height: 100%;
+            background-color: var(--default-primary-color);
+        }
+
+        .item {
+            margin: 20px;
+            padding: 100px;
+            background-color: var(--light-primary-color);
+        }
+
+        .container {
+            max-width: 80%;
+        }
+
+    </style>
+    <template>
+
+        <div class="vertical layout center">
+            <div class="top">
+                <div class="jso jso-btn" on-click="handleNewDiagnostic">New Diagnostic</div>
+            </div>
+            <div class="container horizontal layout wrap">
+                <template is="dom-repeat" items="{{jobs}}">
+                    <div class="item" on-click="handleSelect" data-job="{{item}}">
+                        <span>{{item.name}}</span>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'team-diagnostics-element',
+        properties: {
+            projects: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                observer: 'projectsChanged'
+            },
+            defaultProject: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            defaultStudy: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                observer: 'defaultStudyChanged'
+            },
+            jobs: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            panels: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            }
+
+        },
+        ready: function () {
+        },
+        projectsChanged: function (neo, old) {
+
+            for (var i = 0; i < neo.length; i++) {
+                var pr = neo[i];
+                if (pr.alias === "meta") {
+                    this.defaultPr = pr;
+
+                    for (var j = 0; j < pr.studies.length; j++) {
+                        var st = pr.studies[j];
+                        if (st.alias === "meta") {
+                            this.defaultStudy = st;
+                            return;
+                        }
+
+                    }
+                }
+            }
+        },
+        defaultStudyChanged: function (neo, old) {
+            if (neo.id) {
+                this._getJobs(neo.id);
+            }
+        },
+        _getJobs: function (studyId) {
+            var me = this;
+
+            OpencgaManager.studies.job({
+                id: studyId,
+                query: {
+                    sid: Cookies('bioinfo_sid')
+                },
+                request: {
+                    async: true,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            var jobList = response.response[0].result;
+
+//                            if (me.allowedTools != null && me.allowedTools.length > 0) {
+//                                me.jobs = jobList.filter(function (item) {
+//                                    return me.allowedTools.indexOf(item.toolName) != -1;
+//                                })
+//                            } else {
+                            me.jobs = jobList;
+//                            }
+
+//                            me.jobs = response.response[0].result;
+
+                        } else {
+                            console.log(response.response[0].errorMsg);
+                        }
+                    },
+                    error: function () {
+                        console.log('Server error, try again later.');
+                    }
+                }
+            });
+        },
+        handleSelect: function (e) {
+            var job = e.currentTarget.dataJob;
+
+            console.log(job);
+        },
+        handleNewDiagnostic: function (e) {
+            this.fire('newdiagnostic');
+        }
+    });
+</script>

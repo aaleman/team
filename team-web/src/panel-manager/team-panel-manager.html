@@ -1,0 +1,124 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<dom-module id="team-panel-manager">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            cursor: default;
+            font-size: 13px;
+            height: 100%;
+            background-color: var(--default-primary-color);
+        }
+
+        .item {
+            width: 200px;
+            height: 200px;
+            background-color: var(--light-primary-color);
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 80%;
+        }
+
+    </style>
+    <template>
+
+        <div class="vertical layout center">
+            <div class="top">
+                <!--<div class="jso jso-btn" on-click="handleNewDiagnostic">New Diagnostic</div>-->
+            </div>
+            <div class="container horizontal layout wrap">
+                <template is="dom-repeat" items="{{panelsObject}}">
+                    <div class="item" on-click="handleSelect" data-panel="{{item}}">
+                        <div><label>Name:</label><span>{{item.name}}</span></div>
+                        <div><label>Author:</label>{{item.author}}</div>
+                        <div><label>Version:</label>{{item.version}}</div>
+                        <div><label>Description:</label>{{item.description}}</div>
+                        <div><label>Date:</label>{{item.date}}</div>
+                        <div><label>Diseases:</label>{{item.diseases.length}}</div>
+                        <div><label>Genes:</label>{{item.genes.length}</div>
+                        <div><label>Mutations:</label>{{item.genes.length}}</div>
+                        <div><label>Archived:</label>{{item.archived}}</div>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+
+
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'team-panel-manager',
+        properties: {
+            panels: {
+                type: Array,
+                value: function () {
+                    return [];
+                },
+                observer: 'panelsChanged'
+            },
+            panelsObject: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            }
+        },
+        ready: function () {
+        },
+        handleSelect: function (e) {
+            var panel = e.currentTarget.dataPanel;
+            console.log(panel);
+        },
+        panelsChanged: function (neo, old) {
+
+
+            var panelsObject = [];
+
+            for (var i = 0; i < neo.length; i++) {
+                var file = neo[i];
+                if (file.file.name.indexOf("panel") == 0) {
+                    var content = this._getFileContent(file.file);
+                    var panel = JSON.parse(content);
+                    panelsObject.push(panel);
+                }
+            }
+            this.set('panelsObject', panelsObject);
+
+
+        },
+
+        _getFileContent: function (file) {
+            var content;
+            OpencgaManager.files.content({
+                id: file.id,
+                query: {
+                    sid: Cookies('bioinfo_sid')
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        content = response;
+                    },
+                    error: function () {
+                        //                            me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return content;
+        },
+        computeNumDiseases: function (item) {
+            debugger
+            return item.diseases.length;
+        },
+        computeLength: function (item) {
+            return item.length;
+        }
+
+    });
+</script>

@@ -1,0 +1,197 @@
+<link rel="import" href="../lib/jsorolla/src/lib/components/table/jso-table.html">
+<dom-module id="team-result-diagnostic">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .title {
+            font-size: 22px;
+            border-bottom: thin solid #edebe3;
+            /*margin: 7px 5px;*/
+        }
+        jso-table{
+           /* height: 300px;*/
+        }
+    </style>
+    <template>
+        <div class="title">{{title}}</div>
+        <jso-table id="table" data="{{_data}}" enable-paging selectable on-rowclick="handleRowClick"></jso-table>
+    </template>
+
+</dom-module>
+<script>
+    Polymer({
+        is: "team-result-diagnostic",
+        properties: {
+            data:{
+                type:Array,
+                value: function(){
+                    return [];
+                },
+                observer: 'dataChanged'
+            },
+            _data:{
+                type:Array,
+                value: function(){
+                    return [];
+                },
+            },
+            title:{
+                type:String,
+                value: ""
+            },
+            query:{
+                type: Object,
+                value: function(){
+                    return {};
+                },
+                observer: 'queryChanged'
+            }
+        },
+        _columns: [
+            {
+                name: 'chr',
+                title: "Chr",
+                width: 100
+            }, {
+                name: 'pos',
+                title: "Pos",
+                width: 100
+            },
+             {
+                name: 'ref',
+                title: "Ref",
+                width: 100
+            },
+             {
+                name: 'alt',
+                title: "Alt",
+                width: 100
+            },
+            {
+                name: 'id',
+                title: 'SNP Id',
+                width: 100,
+                defaultValue: '.'
+            },
+            {
+                name: 'qual',
+                title: 'Qual',
+                width: 100,
+                defaultValue: '.'
+            },
+            {
+                name: 'dp',
+                title: 'DP',
+                width: 100,
+                defaultValue: '.'
+            },
+            {
+                name: 'gene',
+                title: 'Gene',
+                width: 200,
+                defaultValue: '.'
+            },
+            {
+                name: 'ct',
+                title: 'Conseq. Type',
+                width: 300,
+                defaultValue: '.'
+            },
+            {
+                name: 'phylop',
+                title: 'phyloP',
+                width: 100,
+                defaultValue: '.'
+            },
+            {
+                name: 'phastcons',
+                title: 'Phastcons',
+                width: 100,
+                defaultValue: '.'
+            },
+            {
+                name: 'sift',
+                title: 'SIFT',
+                width: 100,
+                defaultValue: '.'
+            },
+            {
+                name: 'polyphen',
+                title: 'Polyphen',
+                width: 100,
+                defaultValue: '.'
+            },
+            {
+                name: 'maf1000G',
+                title: 'MAF 1000G',
+                width: 100,
+                defaultValue: '.'
+            },
+            /*{
+                name: 'phenotype',
+                title: 'Phenotype',
+                width: 400,
+                defaultValue: '.'
+            },
+            {
+                name: 'source',
+                title: 'Source',
+                width: 100,
+                defaultValue: '.'
+            }*/
+        ],
+        handleRowClick: function (e) {
+            console.log(e.detail.row);
+        },
+        ready: function(){
+            this.$.table.columns = this._columns;
+        }   ,
+        dataChanged: function(neo, old){
+            var _data = [];
+            for (var i = 0; i < this.data.length; i++) {
+                var elem = this.data[i];
+                _data.push(elem);
+            };
+            this._data = _data;
+            
+        },
+        queryChanged: function(neo, old){
+            if(neo){
+                console.log(neo);
+                var data = [];
+                for (var i = 0; i < this.data.length; i++) {
+                    var elem = this.data[i];
+
+                    if(this._applyFilters(elem, neo)){
+                        data.push(elem);
+                    }
+                };
+
+                this.set('_data', data);
+
+            }
+        },
+        _applyFilters: function(data, filters){
+            var filtered = true;
+            for (var key in filters){
+                var query = filters[key];
+                var match = false;
+
+                if(key === "gene"){
+                    match = data.gene.toUpperCase().indexOf(query) >= 0;
+                }else if(key === "dp"){
+                    match = data.dp <= query;
+                }else if(key === "qual"){
+                    match = data.qual <= query;
+                }
+                filtered &= match;
+            }
+
+            return filtered;
+        }
+    });
+</script>

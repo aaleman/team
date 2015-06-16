@@ -1,0 +1,35 @@
+<link rel="import" href="../bower_components/iron-menu-behavior/iron-menubar-behavior.html">
+
+<dom-module id="team-menubar">
+    <style>
+        .content ::content > .iron-selected {
+            color: white;
+            font-weight: bold;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        .content ::content > * {
+            display: inline-block;
+            margin: 15px 5px;
+            cursor: pointer;
+            line-height: 30px;
+            padding: 0 5px;
+        }
+    </style>
+    <template>
+        <div class="content">
+            <content></content>
+        </div>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        Polymer({
+            is: 'team-menubar',
+            behaviors: [
+                Polymer.IronMenubarBehavior
+            ]
+        });
+    })();
+</script>
