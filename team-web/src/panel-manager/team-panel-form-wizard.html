@@ -6,32 +6,35 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-
-            width: 1000px;
-            height: 800px;
-            margin: 50px auto 0;
-
-            background-color: var(--light-primary-color);
-
+            height: 600px;
         }
 
         #wizard-content {
-            height: calc(100% - 30px);
+            height: calc(100% - 40px);
         }
 
         #wizard-bottom {
-            height: 30px;
-            background-color: lightgrey;
+            box-sizing: border-box;
+            height: 40px;
+            padding: 7px 10px;
+            background-color: var(--light-secondary-color);
+            border-top: 1px solid var(--divider-color);
+
+        }
+
+        #wizard-bottom > div {
+            margin-left: 10px;
+            width: 120px;
         }
 
         .step {
+            padding: 10px;
         }
 
         .step-title {
-            height: 50px;
+            padding-bottom: 15px;
             text-align: center;
             vertical-align: middle;
-            line-height: 50px;
             font-size: 16pt;
         }
 
@@ -81,6 +84,10 @@
         #clearDiseasesBtn {
             margin-top: 5px;
             width: 80px;
+        }
+
+        jso-table {
+            height: 400px;
         }
 
 
@@ -288,7 +295,7 @@
 
         </div>
         <div id="wizard-bottom" class="horizontal layout end-justified">
-            <div class="jso-btn jso-btn-shdw" on-click="handlePrevStepButton">Prev</div>
+            <div class="jso-btn jso-btn-shdw" on-click="handlePrevStepButton">Previous</div>
             <div class="jso-btn jso-btn-shdw" on-click="handleNextStepButton">Next</div>
         </div>
     </template>

@@ -11,56 +11,57 @@
     (function () {
         Polymer({
             is: 'team-content',
-            properties:{
-                    selectedOption:{
-                        type: String,
-                        value:"",
-                        notify:true,
-                        observer:'selectedOptionChanged',
-                        reflectToAttribute: true
-                    }
+            properties: {
+                selectedOption: {
+                    type: String,
+                    value: "",
+                    notify: true,
+                    observer: 'selectedOptionChanged',
+                    reflectToAttribute: true
+                }
             },
-            
-            selectedOptionChanged: function(neo,old){
-                if(neo){
 
-                var selectedEl = this.querySelector("[data-option="+neo+"]");
-                
-                var elType = selectedEl && selectedEl.dataset && selectedEl.dataset.menuType ? selectedEl.dataset.menuType: "";
+            selectedOptionChanged: function (neo, old) {
+                if (neo) {
 
-                switch(elType){
-                    case "unique":
+                    var selectedEl = this.querySelector("[data-option=" + neo + "]");
+
+                    var elType = selectedEl && selectedEl.dataset && selectedEl.dataset.menuType ? selectedEl.dataset.menuType : "";
+
+                    switch (elType) {
+                        case "unique":
                             var aux = this.querySelectorAll("[data-option][data-menu-type=unique]");
                             for (var i = 0; i < aux.length; i++) {
                                 var el = aux[i];
                                 el.hidden = true;
-                            };
-                            selectedEl.hidden = false;                            
-                        
-                    break;
-                    case "toggle":
+                            }
+                            ;
+                            selectedEl.hidden = false;
 
-                        selectedEl.hidden = !selectedEl.hidden;
-                        
-                    break;
+                            break;
+                        case "toggle":
 
-                    default:
+                            selectedEl.hidden = !selectedEl.hidden;
 
-                    var aux = this.querySelectorAll("[data-option]");
-                    for (var i = 0; i < aux.length; i++) {
-                        var el = aux[i];
-                        el.hidden = true;
-                    };
-                    if(selectedEl)
-                        {
-                            selectedEl.hidden = false;                            
-                        }
+                            break;
+
+                        default:
+
+                            var aux = this.querySelectorAll("[data-option]");
+                            for (var i = 0; i < aux.length; i++) {
+                                var el = aux[i];
+                                el.hidden = true;
+                            }
+                            ;
+                            if (selectedEl) {
+                                selectedEl.hidden = false;
+                            }
 
 
+                    }
                 }
             }
-            }
 
-            });
+        });
     })();
 </script> 
