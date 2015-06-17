@@ -1,6 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<!-- <link rel="import" href="../bower_components/iron-pages/iron-pages.html"> -->
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
@@ -21,6 +21,7 @@
 <script src="panel.js"></script>
 
 <link rel="import" href="team-menubar.html">
+<link rel="import" href="team-content.html">
 <link rel="import" href="team-home.html">
 <link rel="import" href="panel-manager/team-panel-manager.html">
 <link rel="import" href="panel-manager/team-panel-form-wizard.html">
@@ -138,13 +139,6 @@
             height: 400px;
         }
 
-        team-new-diagnostic-element {
-            /*z-index: 90000;*/
-        }
-
-        team-panel-form-wizard {
-        }
-
         team-result {
             height: calc(100vh - 60px);
         }
@@ -178,13 +172,11 @@
             </div>
             <div main>
 
-                <div id="content">
-                    <team-home hidden$="{{homeHidden}}"></team-home>
-                    <team-result id="teamResult" hidden$="{{hideTeamResult}}"></team-result>
-                    <iron-pages selected="{{selectedOption}}" attr-for-selected="data-option" id="ironpages">
+                <team-content id="content">
+                    <team-home data-option="home" hidden$="{{computeHome(selectedOption)}}"></team-home>
+                    <team-result data-option="result" id="teamResult" hidden$="{{hideTeamResult}}"></team-result>
 
-                        <div data-option="files">
-                            <jso-panel movable collapsible movable closable id="browserPanel">
+                           <jso-panel movable collapsible movable closable id="browserPanel" data-option="files" on-hidden="handleCloseFiles">
                                 <div class="header">File Browser</div>
                                 <jso-opencga-browser class="container"
                                                      id="browser"
@@ -194,17 +186,7 @@
                                                      disable-new-study
                                         ></jso-opencga-browser>
                             </jso-panel>
-
-
-                        </div>
-                        <!-- <team-diagnostics-element projects="{{projects}}"
-                        panels="{{panels}}"
-                        on-newdiagnostic="handleNewDiagnostic"
-                        data-option="diagnostics"
-                        ></team-diagnostics-element> -->
-
-                        <div data-option="diagnostics">
-                            <jso-panel movable collapsible movable closable id="jobBrowserPanel">
+                            <jso-panel movable collapsible movable closable id="jobBrowserPanel" data-option="diagnostics">
                                 <div class="header">Diagnoses Browser</div>
                                 <jso-opencga-job-browser class="container"
                                                          id="jobBrowser"
@@ -214,18 +196,11 @@
                                                          allowed-tools="{{allowedTools}}"
                                         ></jso-opencga-job-browser>
                             </jso-panel>
-                        </div>
-
-                        <team-panel-manager projects="{{projects}}"
+                            <team-panel-manager projects="{{projects}}"
                                             panels="{{panels}}"
-                                            data-option="panels"
-                                ></team-panel-manager>
-
-
-                        <div data-option="newdiagnostic">
-
-                            data-option="newdiagnostic"
-                            jpoña
+                                            data-option="panels">
+                            </team-panel-manager>
+                        
                             <team-new-diagnostic-element
                                     id="newDiagnosticElement"
                                     panels="{{panels}}"
@@ -235,16 +210,16 @@
                                     bioformats="{{bioformats}}"
                                     default-study="{{defaultStudy}}"
                                     analysis-folder="{{analysisFolder}}"
+                                    data-option="newdiagnostic"
                                     ></team-new-diagnostic-element>
-                        </div>
+                        
 
                         <team-panel-form-wizard
                                 data-option="newpanel"
                                 team-config-folder="{{teamConfigFolder}}"
                                 default-study="{{defaultStudy}}"
                                 ></team-panel-form-wizard>
-                    </iron-pages>
-                </div>
+                </team-content>
 
                 <jso-opencga-header id="jsoHeader"
                                     selected-option="{{selectedOption}}"
@@ -261,22 +236,18 @@
                     <span class="title">TEAM</span>
                     <span class="description"></span>
 
-                    <team-menubar class="menu horizontal layout" selected="{{selectedOption}}"
-                                  attr-for-selected="data-option">
+                    <team-menubar class="menu" on-menuchanged="handleMenuChanged" id="teamMenuBar">
                         <div title="Diagnostics" class="hover" data-option="diagnostics">
-                            <!--<i class="fa fa-stethoscope"></i>-->
                             <i class="fa fa-user-md"></i>
                             <span class="option-text">Diagnoses</span>
                         </div>
 
                         <div title="New Diagnostic" class="hover" data-option="newdiagnostic">
-                            <!--<i class="fa fa-stethoscope"></i>-->
                             <i class="fa fa-plus"></i>
                             <span class="option-text">Diagnosis</span>
                         </div>
 
                         <div title="New Panel" class="hover" data-option="newpanel">
-                            <!--<i class="fa fa-stethoscope"></i>-->
                             <i class="fa fa-plus"></i>
                             <span class="option-text">Panel</span>
                         </div>
@@ -332,7 +303,7 @@
                 type: String,
                 value: "home",
                 notify: true,
-                reflectToAttribute: true,
+                reflectToAttribute: true
             },
             userData: {
                 type: Object,
@@ -393,10 +364,26 @@
             hideTeamResult: {
                 type: Boolean,
                 value: true
+            },
+            diagnosticsHidden:{
+                type:Boolean,
+                value:true
             }
         },
         ready: function () {
+            
+            for (var i = 0; i < this.$.content.children.length; i++) {
+                var elem = this.$.content.children[i];
+                if(elem.dataset.option === "home" || elem.dataset.option === "result"){
+                    continue;
+                }
+                elem.hidden = true;
+                
+            };
 
+        },
+        computeHome: function(){
+            return this.selectedOption != "home";
         },
         computeFooter: function () {
             return this.selectedOption != "home";
@@ -405,11 +392,6 @@
         handleLogin: function () {
             this.selectedOption = "panels";
             this.homeHidden = true;
-            this.browserHidden = true;
-            this.jobBrowserHidden = false;
-            //            this.browserHidden = false;
-            this.panelManagerHidden = false;
-
         },
         handleLogout: function () {
             this.browserHidden = true;
@@ -645,12 +627,21 @@
 
 
             this.hideTeamResult = false;
-
-
-
-            
-
-
+        },
+        handleMenuChanged: function(e){
+            var menuOption = e.detail.option;
+            console.log(menuOption)
+            for (var i = 0; i < this.$.content.children.length; i++) {
+                var elem = this.$.content.children[i]
+                if("option" in elem.dataset){
+                    if(elem.dataset.option === menuOption){
+                        elem.hidden = !elem.hidden;
+                    }
+                }
+            };
+        },
+        handleCloseFiles: function(e){
+            this.$.teamMenuBar.toggleElement("files");
         }
     });
 </script>
