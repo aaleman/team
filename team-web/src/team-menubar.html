@@ -1,6 +1,6 @@
 <dom-module id="team-menubar">
     <style>
-        .content ::content > *[selected] {
+        .content ::content > [selected][data-menu-type=toggle] {
             color: white;
             font-weight: bold;
             border-bottom: 2px solid var(--accent-color);
@@ -25,6 +25,14 @@
     (function () {
         Polymer({
             is: 'team-menubar',
+            properties:{
+                    selectedOption:{
+                        type: String,
+                        value:"",
+                        notify:true,
+                        reflectToAttribute: true
+                    }
+            },
             ready: function(){
                 var me = this;
                 for (var i = 0; i < this.$.content.children.length; i++) {
@@ -36,8 +44,10 @@
                         }else{
                             elem.setAttribute("selected","");
                         }
-                        me.fire('menuchanged',{option:e.currentTarget.dataset.option})
-                    });
+
+                        me.selectedOption = null;
+                        me.selectedOption = e.currentTarget.dataset.option;
+                        });
                 };
             },
             toggleElement: function(option){

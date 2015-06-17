@@ -128,15 +128,21 @@
         #browserPanel,
         #jobBrowserPanel {
             position: absolute;
-            top: 60px;
             right: 0;
             width: 600px;
         }
 
-        #browser,
         #jobBrowser {
             /*width: 600px;*/
             height: 400px;
+        }
+
+        #browser{
+            width:90%;
+            height: 80%;
+            background-color: var(--light-primary-color);
+            margin: 0 auto;
+
         }
 
         team-result {
@@ -172,21 +178,23 @@
             </div>
             <div main>
 
-                <team-content id="content">
+                <team-content id="content" selected-option="{{selectedOption}}">
                     <team-home data-option="home" hidden$="{{computeHome(selectedOption)}}"></team-home>
-                    <team-result data-option="result" id="teamResult" hidden$="{{hideTeamResult}}"></team-result>
+                    <team-result data-option="result" id="teamResult" hidden$="{{hideTeamResult}}" data-menu-type="unique"></team-result>
 
-                           <jso-panel movable collapsible movable closable id="browserPanel" data-option="files" on-hidden="handleCloseFiles">
-                                <div class="header">File Browser</div>
+                           <!-- <jso-panel movable collapsible movable closable id="browserPanel" data-option="files" data-menu-type="toggle"> -->
+                                <!-- <div class="header">File Browser</div> -->
                                 <jso-opencga-browser class="container"
                                                      id="browser"
                                                      projects="{{projects}}"
                                                      bioformats="{{bioformats}}"
                                                      disable-new-project
                                                      disable-new-study
+                                                     data-option="files"
+                                                     data-menu-type="unique"
                                         ></jso-opencga-browser>
-                            </jso-panel>
-                            <jso-panel movable collapsible movable closable id="jobBrowserPanel" data-option="diagnostics">
+                            <!-- </jso-panel> -->
+                            <jso-panel movable collapsible movable closable id="jobBrowserPanel" data-option="diagnostics" data-menu-type="toggle">
                                 <div class="header">Diagnoses Browser</div>
                                 <jso-opencga-job-browser class="container"
                                                          id="jobBrowser"
@@ -198,7 +206,7 @@
                             </jso-panel>
                             <team-panel-manager projects="{{projects}}"
                                             panels="{{panels}}"
-                                            data-option="panels">
+                                            data-option="panels" data-menu-type="unique">
                             </team-panel-manager>
                         
                             <team-new-diagnostic-element
@@ -206,11 +214,11 @@
                                     panels="{{panels}}"
                                     projects="{{projects}}"
                                     on-close="handleClosePrioritizeForm"
-                                    menu-option="new-diagnostic"
                                     bioformats="{{bioformats}}"
                                     default-study="{{defaultStudy}}"
                                     analysis-folder="{{analysisFolder}}"
                                     data-option="newdiagnostic"
+                                    data-menu-type="unique"
                                     ></team-new-diagnostic-element>
                         
 
@@ -218,6 +226,7 @@
                                 data-option="newpanel"
                                 team-config-folder="{{teamConfigFolder}}"
                                 default-study="{{defaultStudy}}"
+                                data-menu-type="unique"
                                 ></team-panel-form-wizard>
                 </team-content>
 
@@ -236,28 +245,28 @@
                     <span class="title">TEAM</span>
                     <span class="description"></span>
 
-                    <team-menubar class="menu" on-menuchanged="handleMenuChanged" id="teamMenuBar">
-                        <div title="Diagnostics" class="hover" data-option="diagnostics">
+                    <team-menubar class="menu" id="teamMenuBar" selected-option="{{selectedOption}}">
+                        <div title="Diagnostics" class="hover" data-option="diagnostics" data-menu-type="toggle">
                             <i class="fa fa-user-md"></i>
                             <span class="option-text">Diagnoses</span>
                         </div>
 
-                        <div title="New Diagnostic" class="hover" data-option="newdiagnostic">
+                        <div title="New Diagnostic" class="hover" data-option="newdiagnostic" data-menu-type="unique">
                             <i class="fa fa-plus"></i>
                             <span class="option-text">Diagnosis</span>
                         </div>
 
-                        <div title="New Panel" class="hover" data-option="newpanel">
+                        <div title="New Panel" class="hover" data-option="newpanel" data-menu-type="unique">
                             <i class="fa fa-plus"></i>
                             <span class="option-text">Panel</span>
                         </div>
 
-                        <div title="Browse files" class="hover" data-option="files">
+                        <div title="Browse files" class="hover" data-option="files" data-menu-type="unique">
                             <i class="fa fa-folder-open-o"></i>
                             <span class="option-text">Browse files</span>
                         </div>
 
-                        <div title="Panels" class="hover" data-option="panels">
+                        <div title="Panels" class="hover" data-option="panels" data-menu-type="unique">
                             <i class="fa fa-list-alt"></i>
                             <span class="option-text">Panels</span>
                         </div>
@@ -303,7 +312,8 @@
                 type: String,
                 value: "home",
                 notify: true,
-                reflectToAttribute: true
+                reflectToAttribute: true,
+                observer: 'selectedOptionChanged'
             },
             userData: {
                 type: Object,
@@ -390,18 +400,11 @@
         },
        
         handleLogin: function () {
-            this.selectedOption = "panels";
-            this.homeHidden = true;
+            // this.selectedOption = "panels";
+            // this.homeHidden = true;
         },
         handleLogout: function () {
-            this.browserHidden = true;
-            this.panelManagerHidden = true;
-
-            this.jobBrowserHidden = true;
-
-            this.homeHidden = false;
-            this.selectedOption = "home";
-
+            // this.selectedOption = "home";
         },
         userDataChanged: function (neo, old) {
             var me = this;
@@ -641,7 +644,10 @@
             };
         },
         handleCloseFiles: function(e){
-            this.$.teamMenuBar.toggleElement("files");
+           // this.$.teamMenuBar.toggleElement("files");
+        },
+        selectedOptionChanged: function(neo, old){
+            
         }
     });
 </script>
