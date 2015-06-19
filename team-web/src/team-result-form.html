@@ -113,12 +113,43 @@
 
                     <div>
                         <label class="jso">1000G</label>
-                        <input type="text"/>
+                        <select name="maf1000g_op" id="maf1000g_op">
+                            <option value="==">==</option>
+                            <option value="!=">!=</option>
+                            <option value="<" selected><</option>
+                            <option value="<="><=</option>
+                            <option value=">">></option>
+                            <option value=">=">>=</option>
+                        </select>
+                        <input 
+                            type="number" 
+                            id="maf1000g" 
+                            name="maf1000g" 
+                            min="0"
+                            max="1"
+                            step="0.001"
+                            flex value="{{maf1000gValue::input}}"/>
                     </div>
 
                     <div>
                         <label class="jso">EVS</label>
-                        <input type="text"/>
+                        <select name="mafEVS_op" id="mafEVS_op">
+                            <option value="==">==</option>
+                            <option value="!=">!=</option>
+                            <option value="<" selected><</option>
+                            <option value="<="><=</option>
+                            <option value=">">></option>
+                            <option value=">=">>=</option>
+                        </select>
+                        <input 
+                            type="number" 
+                            id="mafEVS" 
+                            name="mafEVS" 
+                            min="0"
+                            max="1"
+                            step="0.001"
+                            flex value="{{mafEVSValue::input}}"/>
+
                     </div>
                 </div>
             </div>
@@ -139,7 +170,7 @@
                             <option value=">">></option>
                             <option value=">=">>=</option>
                         </select>
-                        <input type="number" id="qual" name="qual" flex value="{{qualValue::input}}"/>
+                        <input type="number" id="qual" name="qual" flex value="{{qualValue::input}}" min="0" step="1"/>
                     </div>
 
                     <div class="horizontal layout">
@@ -173,7 +204,7 @@
                             <option value=">">></option>
                             <option value=">=">>=</option>
                         </select>
-                        <input type="text" id="sift" name="sift" flex/>
+                        <input type="text" id="sift" name="sift" flex value="{{siftValue::input}}"/>
                     </div>
 
                     <div class="horizontal layout">
@@ -186,7 +217,7 @@
                             <option value=">">></option>
                             <option value=">=">>=</option>
                         </select>
-                        <input type="text" id="polyphen" name="polyphen" flex/>
+                        <input type="text" id="polyphen" name="polyphen" flex value="{{polyphenValue::input}}"/>
                     </div>
                 </div>
             </div>
@@ -310,6 +341,22 @@
              qualValue:{
                 type: Number,
                 observer:'inputQualChange'
+            },
+            maf1000gValue: {
+                type:Number,
+                observer:'inputMaf1000GChanged'
+            },
+            mafEVSValue: {
+                type:Number,
+                observer:'inputMafEVSChanged'
+            },
+            siftValue: {
+                type:Number,
+                observer: 'inputSIFTChanged'
+            },
+            polyphenValue: {
+                type: Number,
+                observer: 'inputPolyphenChanged'
             }
         },
         fileChanged: function (neo, old) {
@@ -438,6 +485,32 @@
             }
         },
         queryChanged: function(neo, old){
+        },
+        inputMaf1000GChanged: function(e){
+            if(this.query){
+                var q = Utils.clone(this.query);
+                delete q["maf1000g"];
+                var aux = parseFloat(e)
+                
+                if(aux){
+                    q["maf1000g"] = aux;
+                }
+
+                this.set('query', q);
+            }
+        },
+         inputMafEVSChanged: function(e){
+            if(this.query){
+                var q = Utils.clone(this.query);
+                delete q["mafEVS"];
+                var aux = parseFloat(e)
+                
+                if(aux){
+                    q["mafEVS"] = aux;
+                }
+
+                this.set('query', q);
+            }
         }
     });
 </script>

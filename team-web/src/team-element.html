@@ -133,8 +133,7 @@
         }
 
         #jobBrowser {
-            /*width: 600px;*/
-            height: 400px;
+            height: 800px;
         }
 
         #newDiagnosisPanel,
@@ -236,6 +235,7 @@
                                 bioformats="{{bioformats}}"
                                 default-study="{{defaultStudy}}"
                                 analysis-folder="{{analysisFolder}}"
+                                on-run="handleRunJob"
                                 ></team-new-diagnostic-element>
                     </jso-panel>
 
@@ -257,7 +257,8 @@
                     <!-- Toggle items -->
                     <jso-panel collapsible movable closable
                                id="jobBrowserPanel"
-                               data-option="diagnostics" data-menu-type="toggle">
+                               data-option="diagnoses"
+                               data-menu-type="toggle">
                         <div class="header">Diagnoses Browser</div>
                         <jso-opencga-job-browser class="container"
                                                  id="jobBrowser"
@@ -306,7 +307,7 @@
                             <span class="option-text">Panels</span>
                         </div>
 
-                        <div title="Show diagnoses" class="hover" data-option="diagnostics" data-menu-type="toggle" style="margin-left:25px;">
+                        <div title="Show diagnoses" class="hover" data-option="diagnoses" data-menu-type="toggle" style="margin-left:25px;">
                             <i class="fa fa-user-md"></i>
                             <span class="option-text">Diagnoses</span>
                         </div>
@@ -413,10 +414,6 @@
                 }
             },
             hideTeamResult: {
-                type: Boolean,
-                value: true
-            },
-            diagnosticsHidden: {
                 type: Boolean,
                 value: true
             }
@@ -687,6 +684,9 @@
         },
         selectedOptionChanged: function (neo, old) {
 
+        },
+        handleRunJob: function(e){
+            this.selectedOption = "diagnoses";
         }
     });
 </script>

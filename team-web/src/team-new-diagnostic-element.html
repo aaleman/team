@@ -76,8 +76,6 @@
                             ></jso-opencga-browser>
                 </div>
             </div>
-            <!--on-fileselect="handleFileSelect"-->
-
             <div class="jso-formbox">
                 <div class="jso-formtitle">Choose a Panel</div>
                 <div class="jso-formcontent selbox" id="panelSelector">
@@ -200,6 +198,7 @@
                     success: function (response) {
                         if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                             var userId = response.response[0].result[0].id;
+                            me.fire('run');
 //                            me.message = userId + ' created';
 //                            me.selectedOption = "jobLaunched"
                         } else {
