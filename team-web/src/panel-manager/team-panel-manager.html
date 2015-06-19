@@ -1,124 +1,217 @@
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-
-
+<!-- <link rel="import" href="jso-opencga-project-tree.html">
+<link rel="import" href="jso-opencga-upload-file.html">
+<link rel="import" href="jso-opencga-folder-list.html">
+<link rel="import" href="jso-opencga-create-study.html">
+<link rel="import" href="jso-opencga-create-project.html">
+ -->
 <dom-module id="team-panel-manager">
     <style>
         :host {
             display: block;
             position: relative;
-            cursor: default;
-            font-size: 13px;
+            box-sizing: border-box;
+
+            /*left: 0;*/
+            /*right: 0;*/
+            /*margin: 0px auto 0px auto;*/
+
             height: 100%;
-            background-color: var(--default-primary-color);
+
+            transition: all 0.2s;
+            background-color: inherit;
+            width: 600px;
+            height: 400px;
         }
 
-        .item {
-            width: 200px;
-            height: 200px;
-            background-color: var(--light-primary-color);
+        #main {
+            position: relative;
+            height: 100%;
+        }
+
+        #mainmenu {
+            position: absolute;
+            box-sizing: border-box;
+            width: 250px;
+            height: 100%;
+
+            border-right: 1px solid rgba(130, 130, 130, 0.4);
+        }
+
+        #mainmenubar {
+            box-sizing: border-box;
+            background-color: rgba(125, 125, 125, 0.1);
+            padding: 3px 7px;
+            height: 30px;
+            border-bottom: 1px solid rgba(125, 125, 125, 0.5);
+        }
+
+        #mainmenucontent {
+            height: calc(100% - 30px);
+            overflow-y: auto;
+        }
+
+        #maincontent {
+            position: absolute;
+            left: 250px;
+            top: 0;
+            width: calc(100% - 250px);
+            height: 100%;
+            /*white-space: nowrap;*/
+        }
+
+        #maininfo {
+            box-sizing: border-box;
+            width: 150px;
+            height: 100%;
+            border-left: 1px solid rgba(130, 130, 130, 0.4);;
+            word-wrap: break-word;
+        }
+
+        .project-menu-item {
+
+        }
+
+        .bar > div {
+            margin-right: 5px;
+        }
+
+        .panel-item {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            padding: 3px;
+            margin: 4px;
+            border: 1px solid #d0d0d0;
+        }
+
+        .panel-item:hover {
+            border-color: #d3d3d3;
+            background-color: #f5f5f5;
+        }
+
+        .panel-item[selected] {
+            background-color: #ccc;
+        }
+
+        .panel-item > .version {
+            width: 20px;
+        }
+
+        .panel-item > i:hover {
+            color: #d3d3d3;
+            cursor: pointer;
+        }
+
+        pre {
             margin: 20px;
-        }
-
-        .container {
-            max-width: 80%;
         }
 
     </style>
     <template>
-
-        <div class="vertical layout center">
-            <div class="top">
-                <!--<div class="jso jso-btn" on-click="handleNewDiagnostic">New Diagnostic</div>-->
-            </div>
-            <div class="container horizontal layout wrap">
-                <template is="dom-repeat" items="{{panelsObject}}">
-                    <div class="item" on-click="handleSelect" data-panel="{{item}}">
-                        <div><label>Name:</label><span>{{item.name}}</span></div>
-                        <div><label>Author:</label>{{item.author}}</div>
-                        <div><label>Version:</label>{{item.version}}</div>
-                        <div><label>Description:</label>{{item.description}}</div>
-                        <div><label>Date:</label>{{item.date}}</div>
-                        <div><label>Diseases:</label>{{item.diseases.length}}</div>
-                        <div><label>Genes:</label>{{item.genes.length}</div>
-                        <div><label>Mutations:</label>{{item.genes.length}}</div>
-                        <div><label>Archived:</label>{{item.archived}}</div>
+        <div id="main" class="flex">
+            <div id="mainmenu">
+                <div id="mainmenubar" class="horizontal layout">
+                    <div class="bar horizontal layout flex">
+                        View Archived / View Main
                     </div>
-                </template>
-
+                    <div class="bar horizontal layout">
+                    </div>
+                </div>
+                <div id="mainmenucontent">
+                    <template is="dom-repeat" items="{{panels}}">
+                        <div class="panel-item horizontal layout" data-file$="{{item.file.id}}"
+                             on-click="handlePanelSelected">
+                            <div class="name flex">{{item.name}}</div>
+                            <div class="version">{{item.version}}</div>
+                            <i class="fa fa-trash-o" on-click="handleDeletePanel"></i>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div id="maincontent">
+                <pre><code id="test"></code></pre>
             </div>
         </div>
 
 
+        <div id="botbar" class="horizontal layout end-justified">
+        </div>
+
     </template>
+
 </dom-module>
 <script>
     Polymer({
-        is: 'team-panel-manager',
+        is: "team-panel-manager",
         properties: {
+            projects: {
+                type: Array,
+                notify: true,
+                observer: 'projectsChanged'
+            },
             panels: {
                 type: Array,
                 value: function () {
                     return [];
-                },
-                observer: 'panelsChanged'
+                }
             },
-            panelsObject: {
-                type: Array,
+            selectedPanel: {
+                type: Object,
                 value: function () {
-                    return [];
+                    return {};
                 }
             }
         },
-        ready: function () {
-        },
-        handleSelect: function (e) {
-            var panel = e.currentTarget.dataPanel;
-            console.log(panel);
-        },
-        panelsChanged: function (neo, old) {
-
-
-            var panelsObject = [];
-
-            for (var i = 0; i < neo.length; i++) {
-                var file = neo[i];
-                if (file.file.name.indexOf("panel") == 0) {
-                    var content = this._getFileContent(file.file);
-                    var panel = JSON.parse(content);
-                    panelsObject.push(panel);
-                }
-            }
-            this.set('panelsObject', panelsObject);
-
+        projectsChanged: function (neo, old) {
 
         },
+        /* Private methods */
+        handleDeletePanel: function (e) {
+            e.stopPropagation();
+        },
+        handlePanelSelected: function (e) {
+            e.stopPropagation();
+            var fileId = e.currentTarget.dataset.file;
 
-        _getFileContent: function (file) {
-            var content;
+            var panelContent = "";
             OpencgaManager.files.content({
-                id: file.id,
+                id: fileId,
                 query: {
                     sid: Cookies('bioinfo_sid')
                 },
                 request: {
                     async: false,
                     success: function (response) {
-                        content = response;
+                        panelContent = response;
                     },
                     error: function () {
-                        //                            me.message = 'Server error, try again later.';
+
                     }
                 }
             });
-            return content;
-        },
-        computeNumDiseases: function (item) {
-            debugger
-            return item.diseases.length;
-        },
-        computeLength: function (item) {
-            return item.length;
-        }
+            if (panelContent != "") {
+                this.selectedPanel = JSON.parse(panelContent);
+                this.$.test.innerHTML = this._prettyPrint(this.selectedPanel);
+            }
 
+        },
+        _replacer: function (match, pIndent, pKey, pVal, pEnd) {
+            var key = '<span class="json-key">';
+            var val = '<span class="json-value">';
+            var str = '<span class="json-string">';
+            var r = pIndent || '';
+            if (pKey)
+                r = r + key + pKey.replace(/[": ]/g, '') + '</span>: ';
+            if (pVal)
+                r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
+            return r + (pEnd || '');
+        },
+        _prettyPrint: function (obj) {
+            var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
+            return JSON.stringify(obj, null, 3)
+                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(jsonLine, this._replacer);
+        }
     });
 </script>

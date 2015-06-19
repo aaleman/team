@@ -138,7 +138,8 @@
 
         #newDiagnosisPanel,
         #browserPanel,
-        #newPanelPanel {
+        #newPanelPanel ,
+        #panelManager{
             /*top:25px;*/
             width: 50%;
             min-width: 600px;
@@ -147,6 +148,19 @@
         }
 
         #browser {
+            width: 100%;
+            border-top: 1px solid var(--divider-color);
+            height: 600px;
+            /*width: 50%;*/
+            /*min-width: 600px;*/
+            /*width: 90%;*/
+            /*background-color: var(--light-primary-color);*/
+            /*margin: 0 auto;*/
+            /*box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);*/
+
+        }
+
+         #manager {
             width: 100%;
             border-top: 1px solid var(--divider-color);
             height: 600px;
@@ -212,10 +226,26 @@
                                              disable-new-study
                                 ></jso-opencga-browser>
                     </jso-panel>
-                    <team-panel-manager projects="{{projects}}"
-                                        panels="{{panels}}"
-                                        data-option="panels" data-menu-type="unique">
-                    </team-panel-manager>
+
+
+                    <jso-panel closable light-header
+                               id="panelManager"
+                               data-option="panels"
+                               data-menu-type="unique">
+                        <div class="header" style="text-align:left;font-size:15px;">
+                            <i class="fa fa-folder-open-o"></i>
+                            Panel Manager
+                        </div>
+                         <team-panel-manager
+                                            class="container"
+                                            id="manager"
+                                            projects="{{projects}}"
+                                            panels="{{panels}}"
+>
+                        </team-panel-manager>
+                    </jso-panel>
+
+
 
 
                     <jso-panel closable light-header
