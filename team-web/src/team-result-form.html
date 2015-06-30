@@ -511,6 +511,32 @@
 
                 this.set('query', q);
             }
+        },
+           inputSIFTChanged: function(e){
+            if(this.query){
+                var q = Utils.clone(this.query);
+                delete q["sift"];
+                var aux = parseFloat(e)
+                
+                if(aux){
+                    q["sift"] = aux;
+                }
+
+                this.set('query', q);
+            }
+        },
+         inputPolyphenChanged: function(e){
+            if(this.query){
+                var q = Utils.clone(this.query);
+                delete q["polyphen"];
+                var aux = parseFloat(e)
+                
+                if(aux){
+                    q["polyphen"] = aux;
+                }
+
+                this.set('query', q);
+            }
         }
     });
 </script>

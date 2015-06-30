@@ -192,6 +192,10 @@
                 }else if(key === "mafEVS"){
 //                    match = data.mafEVS <= query;
                    match = true;
+                }else if(key === "sift"){
+                    match = data.sift <= query || data.sift === ".";
+                }else if(key === "polyphen"){
+                    match = data.polyphen <= query || data.polyphen === ".";
                 }
                 filtered &= match;
             }
