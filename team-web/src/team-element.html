@@ -1,7 +1,3 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
-<!-- <link rel="import" href="../bower_components/iron-pages/iron-pages.html"> -->
-
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
@@ -138,8 +134,8 @@
 
         #newDiagnosisPanel,
         #browserPanel,
-        #newPanelPanel ,
-        #panelManager{
+        #newPanelPanel,
+        #panelManager {
             /*top:25px;*/
             width: 50%;
             min-width: 600px;
@@ -160,7 +156,7 @@
 
         }
 
-         #manager {
+        #manager {
             width: 100%;
             border-top: 1px solid var(--divider-color);
             height: 600px;
@@ -181,198 +177,164 @@
     <template>
 
 
-        <paper-drawer-panel id="paperDrawerPanel" force-narrow>
-            <div drawer>
-                <div id="sidetitle">
-                    Team<br>
-                    <span class="userid">{{userData.id}}</span>
+        <team-content id="content" selected-option="{{selectedOption}}">
+            <team-home data-option="home" hidden$="{{computeHome(selectedOption)}}"></team-home>
+            <team-result data-option="result" id="teamResult" data-menu-type="unique" hidden="true"></team-result>
+
+            <jso-panel closable light-header
+                       id="browserPanel"
+                       data-option="files"
+                       data-menu-type="unique">
+                <div class="header" style="text-align:left;font-size:15px;">
+                    <i class="fa fa-folder-open-o"></i>
+                    File Browser
+                </div>
+                <jso-opencga-browser class="container"
+                                     id="browser"
+                                     projects="{{projects}}"
+                                     bioformats="{{bioformats}}"
+                                     disable-new-project
+                                     disable-new-study
+                        ></jso-opencga-browser>
+            </jso-panel>
+
+
+            <jso-panel closable light-header
+                       id="panelManager"
+                       data-option="panels"
+                       data-menu-type="unique">
+                <div class="header" style="text-align:left;font-size:15px;">
+                    <i class="fa fa-folder-open-o"></i>
+                    Panel Manager
+                </div>
+                <team-panel-manager
+                        class="container"
+                        id="manager"
+                        projects="{{projects}}"
+                        panels="{{panels}}"
+                        >
+                </team-panel-manager>
+            </jso-panel>
+
+
+            <jso-panel closable light-header
+                       id="newDiagnosisPanel"
+                       data-option="newdiagnostic"
+                       data-menu-type="unique">
+                <div class="header" style="text-align:left;font-size:15px;">
+                    <i class="fa fa-plus"></i>
+                    New Diagnosis
+                </div>
+                <team-new-diagnostic-element
+                        id="newDiagnosticElement"
+                        class="container"
+                        panels="{{panels}}"
+                        projects="{{projects}}"
+                        on-close="handleClosePrioritizeForm"
+                        bioformats="{{bioformats}}"
+                        default-study="{{defaultStudy}}"
+                        analysis-folder="{{analysisFolder}}"
+                        on-run="handleRunJob"
+                        ></team-new-diagnostic-element>
+            </jso-panel>
+
+            <jso-panel closable light-header
+                       id="newPanelPanel"
+                       data-option="newpanel"
+                       data-menu-type="unique">
+                <div class="header" style="text-align:left;font-size:15px;">
+                    <i class="fa fa-plus"></i>
+                    New Panel
+                </div>
+                <team-panel-form-wizard
+                        class="container"
+                        team-config-folder="{{teamConfigFolder}}"
+                        default-study="{{defaultStudy}}"
+                        ></team-panel-form-wizard>
+            </jso-panel>
+
+            <!-- Toggle items -->
+            <jso-panel collapsible movable closable
+                       id="jobBrowserPanel"
+                       data-option="diagnoses"
+                       data-menu-type="toggle">
+                <div class="header">Diagnoses Browser</div>
+                <jso-opencga-job-browser class="container"
+                                         id="jobBrowser"
+                                         on-jobselect="handleJobSelect"
+                                         projects="{{projects}}"
+                                         bioformats="{{bioformats}}"
+                                         allowed-tools="{{allowedTools}}"
+                        ></jso-opencga-job-browser>
+            </jso-panel>
+        </team-content>
+
+
+        <jso-opencga-header id="jsoHeader"
+                            selected-option="{{selectedOption}}"
+                            user-data="{{userData}}"
+                            on-login="handleLogin"
+                            on-logout="handleLogout"
+                            show-menu-on-login>
+            <div class="icon">
+                <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
+            </div>
+            <span class="title">TEAM</span>
+            <span class="description"></span>
+
+            <team-menubar class="menu" id="teamMenuBar" selected-option="{{selectedOption}}">
+                <div title="New Diagnosis" class="hover" data-option="newdiagnostic" data-menu-type="unique">
+                    <i class="fa fa-plus"></i>
+                    <span class="option-text">Diagnosis</span>
                 </div>
 
-                <div id="sidemenu">
-                    <div title="Diagnostics" class="hover" on-click="handleToggleDiagnostics">
-                        <!--<i class="fa fa-stethoscope"></i>-->
-                        <i class="fa fa-user-md"></i>
-                        <span class="">Diagnosis</span>
-                    </div>
-                    <div title="Browse files" class="hover" on-click="handleToggleBrowser">
-                        <i class="fa fa-folder-open-o"></i>
-                        <span class="">Browse files</span>
-                    </div>
-                    <div title="Panels" class="hover" on-click="">
-                        <i class="fa fa-list-alt"></i>
-                        <span class="">Panels</span>
-                    </div>
+                <div title="New Panel" class="hover" data-option="newpanel" data-menu-type="unique">
+                    <i class="fa fa-plus"></i>
+                    <span class="option-text">Panel</span>
                 </div>
-            </div>
-            <div main>
 
-                <team-content id="content" selected-option="{{selectedOption}}">
-                    <team-home data-option="home" hidden$="{{computeHome(selectedOption)}}"></team-home>
-                    <team-result data-option="result" id="teamResult" data-menu-type="unique"></team-result>
+                <div title="Browse files" class="hover" data-option="files" data-menu-type="unique">
+                    <i class="fa fa-folder-open-o"></i>
+                    <span class="option-text">Browse files</span>
+                </div>
 
-                    <jso-panel closable light-header
-                               id="browserPanel"
-                               data-option="files"
-                               data-menu-type="unique">
-                        <div class="header" style="text-align:left;font-size:15px;">
-                            <i class="fa fa-folder-open-o"></i>
-                            File Browser
-                        </div>
-                        <jso-opencga-browser class="container"
-                                             id="browser"
-                                             projects="{{projects}}"
-                                             bioformats="{{bioformats}}"
-                                             disable-new-project
-                                             disable-new-study
-                                ></jso-opencga-browser>
-                    </jso-panel>
+                <div title="Panels" class="hover" data-option="panels" data-menu-type="unique">
+                    <i class="fa fa-list-alt"></i>
+                    <span class="option-text">Panels</span>
+                </div>
 
+                <div title="Show diagnoses" class="hover" data-option="diagnoses" data-menu-type="toggle"
+                     style="margin-left:25px;">
+                    <i class="fa fa-user-md"></i>
+                    <span class="option-text">Diagnoses</span>
+                </div>
 
-                    <jso-panel closable light-header
-                               id="panelManager"
-                               data-option="panels"
-                               data-menu-type="unique">
-                        <div class="header" style="text-align:left;font-size:15px;">
-                            <i class="fa fa-folder-open-o"></i>
-                            Panel Manager
-                        </div>
-                         <team-panel-manager
-                                            class="container"
-                                            id="manager"
-                                            projects="{{projects}}"
-                                            panels="{{panels}}"
->
-                        </team-panel-manager>
-                    </jso-panel>
+            </team-menubar>
+
+            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+                <a href="https://github.com/babelomics/team/wiki" target="_blank">
+                    <i class="fa fa-book"></i>
+                    &nbsp; Documentation
+                </a>
+                <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
+                    <i class="fa fa-compass"></i>
+                    &nbsp; Tutorial
+                </a>
+                <a href="https://github.com/babelomics/team/" target="_blank">
+                    <i class="fa fa-github"></i>
+                    &nbsp; Source code
+                </a>
+            </jso-help-menu>
+        </jso-opencga-header>
 
 
-
-
-                    <jso-panel closable light-header
-                               id="newDiagnosisPanel"
-                               data-option="newdiagnostic"
-                               data-menu-type="unique">
-                        <div class="header" style="text-align:left;font-size:15px;">
-                            <i class="fa fa-plus"></i>
-                            New Diagnosis
-                        </div>
-                        <team-new-diagnostic-element
-                                id="newDiagnosticElement"
-                                class="container"
-                                panels="{{panels}}"
-                                projects="{{projects}}"
-                                on-close="handleClosePrioritizeForm"
-                                bioformats="{{bioformats}}"
-                                default-study="{{defaultStudy}}"
-                                analysis-folder="{{analysisFolder}}"
-                                on-run="handleRunJob"
-                                ></team-new-diagnostic-element>
-                    </jso-panel>
-
-                    <jso-panel closable light-header
-                               id="newPanelPanel"
-                               data-option="newpanel"
-                               data-menu-type="unique">
-                        <div class="header" style="text-align:left;font-size:15px;">
-                            <i class="fa fa-plus"></i>
-                            New Panel
-                        </div>
-                        <team-panel-form-wizard
-                                class="container"
-                                team-config-folder="{{teamConfigFolder}}"
-                                default-study="{{defaultStudy}}"
-                                ></team-panel-form-wizard>
-                    </jso-panel>
-
-                    <!-- Toggle items -->
-                    <jso-panel collapsible movable closable
-                               id="jobBrowserPanel"
-                               data-option="diagnoses"
-                               data-menu-type="toggle">
-                        <div class="header">Diagnoses Browser</div>
-                        <jso-opencga-job-browser class="container"
-                                                 id="jobBrowser"
-                                                 on-jobselect="handleJobSelect"
-                                                 projects="{{projects}}"
-                                                 bioformats="{{bioformats}}"
-                                                 allowed-tools="{{allowedTools}}"
-                                ></jso-opencga-job-browser>
-                    </jso-panel>
-                </team-content>
-
-
-                <jso-opencga-header id="jsoHeader"
-                                    selected-option="{{selectedOption}}"
-                                    user-data="{{userData}}"
-                                    on-login="handleLogin"
-                                    on-logout="handleLogout"
-                                    show-menu-on-login>
-                    <div class="menu-button" paper-drawer-toggle>
-                        <i class="fa fa-bars" paper-drawer-toggle></i>
-                    </div>
-                    <div class="icon">
-                        <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
-                    </div>
-                    <span class="title">TEAM</span>
-                    <span class="description"></span>
-
-                    <team-menubar class="menu" id="teamMenuBar" selected-option="{{selectedOption}}">
-                        <div title="New Diagnosis" class="hover" data-option="newdiagnostic" data-menu-type="unique">
-                            <i class="fa fa-plus"></i>
-                            <span class="option-text">Diagnosis</span>
-                        </div>
-
-                        <div title="New Panel" class="hover" data-option="newpanel" data-menu-type="unique">
-                            <i class="fa fa-plus"></i>
-                            <span class="option-text">Panel</span>
-                        </div>
-
-                        <div title="Browse files" class="hover" data-option="files" data-menu-type="unique">
-                            <i class="fa fa-folder-open-o"></i>
-                            <span class="option-text">Browse files</span>
-                        </div>
-
-                        <div title="Panels" class="hover" data-option="panels" data-menu-type="unique">
-                            <i class="fa fa-list-alt"></i>
-                            <span class="option-text">Panels</span>
-                        </div>
-
-                        <div title="Show diagnoses" class="hover" data-option="diagnoses" data-menu-type="toggle" style="margin-left:25px;">
-                            <i class="fa fa-user-md"></i>
-                            <span class="option-text">Diagnoses</span>
-                        </div>
-
-                    </team-menubar>
-
-                    <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
-                        <a href="https://github.com/babelomics/team/wiki" target="_blank">
-                            <i class="fa fa-book"></i>
-                            &nbsp; Documentation
-                        </a>
-                        <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
-                            <i class="fa fa-compass"></i>
-                            &nbsp; Tutorial
-                        </a>
-                        <a href="https://github.com/babelomics/team/" target="_blank">
-                            <i class="fa fa-github"></i>
-                            &nbsp; Source code
-                        </a>
-                    </jso-help-menu>
-                </jso-opencga-header>
-
-
-                <jso-opencga-footer hidden$="{{computeFooter(selectedOption)}}" menu-option="home">
-                    TEAM: created by Computational Genomics Department
-                    <br>
-                    Principe Felipe Research Center
-                    <br>
-                    2015
-                </jso-opencga-footer>
-
-
-            </div>
-        </paper-drawer-panel>
-
+        <jso-opencga-footer hidden$="{{computeFooter(selectedOption)}}" menu-option="home">
+            TEAM: created by Computational Genomics Department
+            <br>
+            Principe Felipe Research Center
+            <br>
+            2015
+        </jso-opencga-footer>
 
     </template>
 </dom-module>
@@ -715,7 +677,7 @@
         selectedOptionChanged: function (neo, old) {
 
         },
-        handleRunJob: function(e){
+        handleRunJob: function (e) {
             this.selectedOption = "diagnoses";
         }
     });
