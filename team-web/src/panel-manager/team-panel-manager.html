@@ -10,13 +10,10 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-
             /*left: 0;*/
             /*right: 0;*/
             /*margin: 0px auto 0px auto;*/
-
             height: 100%;
-
             transition: all 0.2s;
             background-color: inherit;
             width: 600px;
@@ -33,7 +30,6 @@
             box-sizing: border-box;
             width: 250px;
             height: 100%;
-
             border-right: 1px solid rgba(130, 130, 130, 0.4);
         }
 
@@ -63,13 +59,12 @@
             box-sizing: border-box;
             width: 150px;
             height: 100%;
-            border-left: 1px solid rgba(130, 130, 130, 0.4);;
+            border-left: 1px solid rgba(130, 130, 130, 0.4);
+            ;
             word-wrap: break-word;
         }
 
-        .project-menu-item {
-
-        }
+        .project-menu-item {}
 
         .bar > div {
             margin-right: 5px;
@@ -105,31 +100,39 @@
         pre {
             margin: 20px;
         }
-
     </style>
     <template>
         <div id="main" class="flex">
             <div id="mainmenu">
                 <div id="mainmenubar" class="horizontal layout">
-                    <div class="bar horizontal layout flex">
+                    <!-- <div class="bar horizontal layout flex" on-click="selectView">
                         View Archived / View Main
-                    </div>
+                    </div> -->
+                    <input class="bar horizontal layout flex" type="radio" name="selectView" on-click="selectView" checked="True">
+                    <span>View Main</span>
+                    <input class="bar horizontal layout flex" type="radio" name="selectView" on-click="selectView">
+                    <span>View Archived</span>
                     <div class="bar horizontal layout">
                     </div>
                 </div>
-                <div id="mainmenucontent">
+                <div id="mainmenucontent" hidden="{{viewMain}}">
                     <template is="dom-repeat" items="{{panels}}">
-                        <div class="panel-item horizontal layout" data-file$="{{item.file.id}}"
-                             on-click="handlePanelSelected">
+                        <div class="panel-item horizontal layout" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
                             <div class="version">{{item.version}}</div>
+                            <i class="fa fa-clipboard" on-click="handleArchivedPanel">&nbsp;</i>
                             <i class="fa fa-trash-o" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
                 </div>
+                <div hidden="{{!viewMain}}">
+                    Show Archived Panels
+                </div>
             </div>
             <div id="maincontent">
-                <pre><code id="test"></code></pre>
+                <pre>
+                    <code id="test"></code>
+                </pre>
             </div>
         </div>
 
@@ -151,25 +154,36 @@
             },
             panels: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             selectedPanel: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
+            },
+            viewMain: {
+                type: Boolean,
             }
         },
-        projectsChanged: function (neo, old) {
+        ready: function() {
+            this.viewMain = false;
+        },
+
+
+        projectsChanged: function(neo, old) {
 
         },
         /* Private methods */
-        handleDeletePanel: function (e) {
+        handleDeletePanel: function(e) {
             e.stopPropagation();
         },
-        handlePanelSelected: function (e) {
+        handleArchivedPanel: function(e) {
+            e.stopPropagation();
+        },
+        handlePanelSelected: function(e) {
             e.stopPropagation();
             var fileId = e.currentTarget.dataset.file;
 
@@ -181,10 +195,10 @@
                 },
                 request: {
                     async: false,
-                    success: function (response) {
+                    success: function(response) {
                         panelContent = response;
                     },
-                    error: function () {
+                    error: function() {
 
                     }
                 }
@@ -195,7 +209,7 @@
             }
 
         },
-        _replacer: function (match, pIndent, pKey, pVal, pEnd) {
+        _replacer: function(match, pIndent, pKey, pVal, pEnd) {
             var key = '<span class="json-key">';
             var val = '<span class="json-value">';
             var str = '<span class="json-string">';
@@ -206,12 +220,20 @@
                 r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
             return r + (pEnd || '');
         },
-        _prettyPrint: function (obj) {
+        _prettyPrint: function(obj) {
             var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
             return JSON.stringify(obj, null, 3)
-                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
-                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                    .replace(jsonLine, this._replacer);
-        }
+                .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(jsonLine, this._replacer);
+        },
+
+        selectView: function(e) {
+            if (this.viewMain == true) {
+                this.viewMain = false;
+            } else {
+                this.viewMain = true;
+            }
+        },
     });
 </script>

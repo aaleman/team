@@ -36,7 +36,6 @@ Panel.prototype = {
                     var splits = elem.split(",");
 
                     CellBaseManager.get({
-                        host: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest",
                         species: 'hsapiens',
                         category: 'feature',
                         subCategory: 'gene',
@@ -84,7 +83,6 @@ Panel.prototype = {
             if (disease.source == "clinvar") {
 
                 CellBaseManager.get({
-                    host: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest",
                     species: 'hsapiens',
                     category: 'feature',
                     subCategory: 'clinical',

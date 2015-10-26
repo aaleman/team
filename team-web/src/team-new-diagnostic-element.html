@@ -5,7 +5,7 @@
             position: relative;
             box-sizing: border-box;
             padding: 10px 20px 20px 20px;
-            /*width: 900px;*/
+            width: 900px;
             /*height: 600px;*/
             /*margin: 50px auto 0;*/
             /*border: solid white 1px;*/
@@ -14,6 +14,12 @@
             /*width: 80%;*/
 
             /*max-width: 1000px;*/
+        }
+        .file {
+            text-align: center;
+            color: #445D76;
+            margin-top: 5px;
+            width: 100px;
         }
 
         .message {
@@ -108,10 +114,8 @@
                     <textarea class="jso" value="{{jobDescription}}" required></textarea>
                 </div>
             </div>
-
-            <div class="jso-btn jso-btn-shdw " style="width:200px;margin:0 auto" on-click="handleForm">Run!</div>
-
-        </form>
+              <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run</div>
+                    </form>
 
 
     </template>

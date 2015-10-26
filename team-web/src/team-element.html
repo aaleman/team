@@ -179,6 +179,7 @@
 
         <team-content id="content" selected-option="{{selectedOption}}">
             <team-home data-option="home" hidden$="{{computeHome(selectedOption)}}"></team-home>
+          <!--  <team-result data-option="result" id="teamResult" data-menu-type="unique"></team-result>-->
             <team-result data-option="result" id="teamResult" data-menu-type="unique" hidden="true"></team-result>
 
             <jso-panel closable light-header
@@ -238,7 +239,7 @@
                         ></team-new-diagnostic-element>
             </jso-panel>
 
-            <jso-panel closable light-header
+            <jso-panel expandible closable light-header collapsible movable
                        id="newPanelPanel"
                        data-option="newpanel"
                        data-menu-type="unique">
