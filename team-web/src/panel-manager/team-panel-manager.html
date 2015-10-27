@@ -120,7 +120,7 @@
                         <div class="panel-item horizontal layout" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
                             <div class="version">{{item.version}}</div>
-                            <i class="fa fa-clipboard" on-click="handleArchivedPanel">&nbsp;</i>
+                            <i class="fa fa-clipboard" data-archived$="{{item.archived}}" on-click="handleArchivedPanel">&nbsp;</i>
                             <i class="fa fa-trash-o" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
@@ -179,11 +179,16 @@
         /* Private methods */
         handleDeletePanel: function(e) {
             e.stopPropagation();
+
         },
         handleArchivedPanel: function(e) {
+          debugger
             e.stopPropagation();
-        },
+            var fileArchived = e.currentTarget.dataset.archived;
+
+      },
         handlePanelSelected: function(e) {
+
             e.stopPropagation();
             var fileId = e.currentTarget.dataset.file;
 

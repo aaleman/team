@@ -122,14 +122,23 @@
         .next {
             text-align: right;
             font-size: 12pt;
-            color: #CCCCCC;
+            color: #6B6B6B;
         }
 
         .prev {
             text-align: left;
             font-size: 12pt;
-            color: #CCCCCC;
+            color: #6B6B6B;
         }
+
+        #panelPreview .container {
+            width: 800px;
+            height: 600px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+
     </style>
     <template>
         <div id="wizard-content">
@@ -156,50 +165,6 @@
             </div>
 
 
-            <!-- <div class="step vertical layout" id="step2" hidden$={{handleHiddenStep2(step)}}>
-                <div class="step-title">
-                    Step 2: Genes
-                </div>
-                <div class="step-content horizontal layout">
-                    <div id="genes-tab" flex>
-                        <div id="genes-tab-menu" class="horizontal layout">
-                            <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneText">Genes/Regions</div>
-                            <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneBed">Import from BED</div>
-                            <div class="jso-btn jso-btn-shdw" on-click="handleClickGenePanel">Import from other Panel
-                            </div>
-                        </div>
-                        <div id="genes-tab-container">
-                            <div id="gene-tab-config-text" class="genes-tab-container-elem"
-                                 hidden$={{handleHiddenGeneText(geneTab)}}>
-                                    <textarea class="jso" name="geneTextArea" id="geneTextArea" rows="3"
-                                              placeholder="BRCA2,PPL"></textarea>
-
-                                <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneTextAreaButton">Add
-                                    Genes
-                                </div>
-                            </div>
-                            <div id="gene-tab-config-bed" class="genes-tab-container-elem"
-                                 hidden$={{handleHiddenGeneBed(geneTab)}}>
-                                <input type="file" id="geneBedFileInput">
-
-                                <div class="jso-btn jso-btn-shdw" on-click="handleGenesImportBed">
-                                    <span>Import!!</span>
-                                </div>
-                                <br>
-                            </div>
-                            <div id="gene-tab-config-panel"
-                                 hidden$={{handleHiddenGenePanel(geneTab)}}>PANEL
-                            </div>
-                        </div>
-                    </div>
-                    <div id="genes-list" flex>
-                        <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}"></jso-table>
-                        <div class="jso-btn jso-btn-shdw" on-click="handleClickGeneListClear">Clear</div>
-                    </div>
-                </div>
-            </div> -->
-
-
             <div class="step vertical layout" id="step2" hidden$={{handleHiddenStep2(step)}}>
                 <div class="jso-formtitle horizontal layout">
                     <div class="prev flex" on-click="handlePrevStepButton"><i class="fa fa-angle-double-left"></i>&nbsp; Step 1</div>
@@ -222,9 +187,15 @@
                         </div>
                         <div class="jso-formtitle">Import from other Panel &nbsp;</div>
                         <div class="jso-formcontent">
-                            PANEL
+                          <select id="importGenesFromPanel">
+                            <option value="none"> </option>
+                            <template is="dom-repeat" items="{{panels}}">
+                            <option value$="{{item.file.id}}">{{item.name}}</option>
+                            </template>
+                        </select>
+                        <span>&nbsp; <i class="fa fa-eye" on-click="handlePreviewFile"></i></span>
+                        <div class="jso-btn jso-btn-shdw file"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
                         </div>
-
                     </div>
 
                     <div id="genes-list" class="flex">
@@ -233,6 +204,14 @@
                     </div>
 
                 </div>
+                <jso-panel modal closable hidden id="panelPreview">
+                    <div class="header">
+                        <i class="fa fa-book"></i> Panel Preview
+                    </div>
+                    <div class="container">
+                        <code class="wrapped-text">{{contentData}}</code>
+                    </div>
+                </jso-panel>
             </div>
 
             <div class="step vertical layout" id="step3" hidden$={{handleHiddenStep3(step)}}>
@@ -316,7 +295,15 @@
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportCSV"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
 
                             </div>
-                            <div id="mutation-tab-config-panel" hidden$={{handleHiddenMutationPanel(mutationTab)}}>TODO
+                            <div id="mutation-tab-config-panel" hidden$={{handleHiddenMutationPanel(mutationTab)}}>
+                              <select id="importMutationsFromPanel">
+                                <option value="none"> </option>
+                                <template is="dom-repeat" items="{{panels}}">
+                                <option value$="{{item.file.id}}">{{item.name}}</option>
+                                </template>
+                            </select>
+                            <span>&nbsp; <i class="fa fa-eye" on-click="handlePreviewFile"></i></span>
+                            <div class="jso-btn jso-btn-shdw file"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
                             </div>
                         </div>
                     </div>
@@ -470,7 +457,13 @@
                 value: function() {
                     return [];
                 }
-            }
+            },
+            panels: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
         },
         observers: [
             "handleUpdatedGenes(formData.modCount)",
@@ -688,7 +681,7 @@
             var me = this;
             this.$.selectedDiseases.setLoading(true);
              setTimeout(function() {
-              
+
                 for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
                     var row = me.currentSelectedDiseasesData[i];
 
@@ -836,6 +829,37 @@
                 };
                 reader.readAsText(bed_file);
             }
+        },
+
+        handlePreviewFile: function(e) {
+            var file = e.detail;
+
+            var data;
+            OpencgaManager.files.content({
+                id: file.id, // TODO mmedina: el ID es null y no se le pasa al WS
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    limit: 100
+                },
+                request: {
+                    async: false,
+                    success: function(response) {
+                        data = response;
+                    },
+                    error: function() {
+
+                    }
+                }
+            });
+
+
+            if (data) {
+
+                this.contentData = data;
+                this.$.panelPreview.hidden = false;
+            }
+
+
         },
 
         handleClickGeneListClear: function(e) {
