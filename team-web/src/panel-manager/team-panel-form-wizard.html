@@ -106,6 +106,12 @@
             overflow-y: auto;
             overflow-x: auto;
         }
+        #panelPreviewMut .container {
+            width: 800px;
+            height: 600px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
 
         .file {
             text-align: center;
@@ -186,7 +192,7 @@
                                 </template>
                             </select>
                             <span>&nbsp; <i class="fa fa-eye" on-click="handlePreviewFile"></i></span>
-                            <div class="jso-btn jso-btn-shdw file"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                            <div class="jso-btn jso-btn-shdw file" on-click="handleImportGenesPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
                         </div>
                     </div>
 
@@ -274,8 +280,8 @@
                                     <option value$="{{item.file.id}}">{{item.name}}</option>
                                 </template>
                             </select>
-                            <span>&nbsp; <i class="fa fa-eye" on-click="handlePreviewFile"></i></span>
-                            <div class="jso-btn jso-btn-shdw file"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                            <span>&nbsp; <i class="fa fa-eye" on-click="handlePreviewFileMut"></i></span>
+                            <div class="jso-btn jso-btn-shdw file" on-click="handleImportMutationsPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
                         </div>
                     </div>
                     <div id="mutations-list" flex>
@@ -283,6 +289,14 @@
                         <div class="jso-btn jso-btn-shdw file" style="margin:0 auto" on-click="handleClickMutationListClear">Clear</div>
                     </div>
                 </div>
+                <jso-panel modal closable hidden id="panelPreviewMut">
+                    <div class="header">
+                        <i class="fa fa-book"></i> Panel Preview
+                    </div>
+                    <div class="container">
+                        <code class="wrapped-text">{{contentData}}</code>
+                    </div>
+                </jso-panel>
             </div>
 
             <div class="step vertical layout" id="step4" hidden$={{handleHiddenStep4(step)}}>
@@ -317,6 +331,7 @@
         <div id="wizard-bottom" class="horizontal layout end-justified">
             <div class="jso-btn jso-btn-shdw file" on-click="handlePrevStepButton" hidden="{{!handleHiddenStep1(step)}}"><i class="fa fa-angle-double-left"></i>&nbsp; Previous</div>
             <div class="jso-btn jso-btn-shdw file" on-click="handleNextStepButton" hidden="{{!handleHiddenStep4(step)}}">Next &nbsp;<i class="fa fa-angle-double-right"></i></div>
+            <div hidden="{{handleHiddenStep4(step)}}"> &nbsp; </div>
         </div>
     </template>
 </dom-module>
@@ -427,6 +442,18 @@
                 value: function() {
                     return [];
                 }
+            },
+            selectedPanel: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            genes: {
+                type: Array,
+            },
+            mutations: {
+                type: Array,
             },
 
         },
@@ -828,11 +855,12 @@
         },
 
         handlePreviewFile: function(e) {
-            var file = e.detail;
+
+            var fileId=parseInt(this.$.importGenesFromPanel.value);
 
             var data;
             OpencgaManager.files.content({
-                id: file.id, // TODO mmedina: el ID es null y no se le pasa al WS
+                id: fileId,
                 query: {
                     sid: Cookies('bioinfo_sid'),
                     limit: 100
@@ -848,15 +876,43 @@
                 }
             });
 
-
             if (data) {
-
                 this.contentData = data;
                 this.$.panelPreview.hidden = false;
             }
 
 
         },
+        handlePreviewFileMut: function(e) {
+
+            var fileId=parseInt(this.$.importMutationsFromPanel.value);
+
+            var data;
+            OpencgaManager.files.content({
+                id: fileId,
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    limit: 100
+                },
+                request: {
+                    async: false,
+                    success: function(response) {
+                        data = response;
+                    },
+                    error: function() {
+
+                    }
+                }
+            });
+
+            if (data) {
+                this.contentData = data;
+                this.$.panelPreviewMut.hidden = false;
+            }
+
+
+        },
+
 
         handleClickGeneListClear: function(e) {
             this.formData.clearGenes();
@@ -1063,6 +1119,71 @@
                 this.formData = new Panel(neo);
                 this.formData.polymer = this;
             }
+        },
+
+        handleImportGenesPanel: function(e){
+
+          var me = this;
+          var fileId=parseInt(this.$.importGenesFromPanel.value);
+          for(var i = 0; i < this.panels.length; i++){
+            var panel = this.panels[i];
+            if(panel.file.id === fileId){
+              var panelContent = "";
+              OpencgaManager.files.content({
+                  id: fileId,
+                  query: {
+                      sid: Cookies('bioinfo_sid')
+                  },
+                  request: {
+                      async: false,
+                      success: function (response) {
+                          panelContent = response;
+                      },
+                      error: function () {
+                      }
+                  }
+              });
+              if (panelContent != "") {
+                  this.selectedPanel = JSON.parse(panelContent);
+                  this.genes =this.selectedPanel.genes;
+              }
+            }
+          }
+          for (var i=0; i<this.genes.length; i++){
+          me.formData.addGene(this.genes[i]);
         }
+
+        },
+        handleImportMutationsPanel: function(e){
+            var me = this;
+          var fileId=parseInt(this.$.importMutationsFromPanel.value);
+          for(var i = 0; i < this.panels.length; i++){
+            var panel = this.panels[i];
+            if(panel.file.id === fileId){
+              var panelContent = "";
+              OpencgaManager.files.content({
+                  id: fileId,
+                  query: {
+                      sid: Cookies('bioinfo_sid')
+                  },
+                  request: {
+                      async: false,
+                      success: function (response) {
+                          panelContent = response;
+                      },
+                      error: function () {
+                      }
+                  }
+              });
+              if (panelContent != "") {
+                  this.selectedPanel = JSON.parse(panelContent);
+                  this.mutations =this.selectedPanel.mutations;
+              }
+            }
+          }
+          for (var i=0; i<this.mutations.length; i++){
+          me.formData.addMutation(this.mutations[i]);
+        }
+        },
     });
 </script>
