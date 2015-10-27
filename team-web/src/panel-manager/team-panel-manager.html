@@ -21,53 +21,12 @@
         }
 
         #main {
-            position: relative;
             height: 100%;
-        }
-
-        #mainmenu {
-            position: absolute;
-            box-sizing: border-box;
-            width: 250px;
-            height: 100%;
-            border-right: 1px solid rgba(130, 130, 130, 0.4);
-        }
-
-        #mainmenubar {
-            box-sizing: border-box;
-            background-color: rgba(125, 125, 125, 0.1);
-            padding: 3px 7px;
-            height: 30px;
-            border-bottom: 1px solid rgba(125, 125, 125, 0.5);
-        }
-
-        #mainmenucontent {
-            height: calc(100% - 30px);
-            overflow-y: auto;
+            width: 100%;
         }
 
         #maincontent {
-            position: absolute;
-            left: 250px;
-            top: 0;
-            width: calc(100% - 250px);
-            height: 100%;
-            /*white-space: nowrap;*/
-        }
-
-        #maininfo {
-            box-sizing: border-box;
-            width: 150px;
-            height: 100%;
-            border-left: 1px solid rgba(130, 130, 130, 0.4);
-            ;
-            word-wrap: break-word;
-        }
-
-        .project-menu-item {}
-
-        .bar > div {
-            margin-right: 5px;
+            overflow-y: auto;
         }
 
         .panel-item {
@@ -100,39 +59,67 @@
         pre {
             margin: 20px;
         }
+
+        /* NEW */
+
+        #left {
+            padding: 5px;
+            width: 280px;
+            border-right: 1px solid #d3d3d3;
+            box-sizing: border-box;
+        }
+
+        #left div {
+            margin-top: 3px;
+        }
+
+
     </style>
     <template>
-        <div id="main" class="flex">
-            <div id="mainmenu">
-                <div id="mainmenubar" class="horizontal layout">
-                    <!-- <div class="bar horizontal layout flex" on-click="selectView">
-                        View Archived / View Main
-                    </div> -->
-                    <input class="bar horizontal layout flex" type="radio" name="selectView" on-click="selectView" checked="True">
-                    <span>View Main</span>
-                    <input class="bar horizontal layout flex" type="radio" name="selectView" on-click="selectView">
-                    <span>View Archived</span>
-                    <div class="bar horizontal layout">
+        <div id="main" class="horizontal layout">
+
+            <div id="left" class="vertical layout">
+                <div class="horizontal layout">
+                    <div class="jso-btn jso-btn-shdw flex"
+                         on-click="handleView"
+                         data-value="main"
+                         data-checked$="{{computeView(view, 'main')}}">
+                        Main Panels
+                    </div>
+                    <div class="jso-btn jso-btn-shdw flex"
+                         on-click="handleView"
+                         data-value="archived"
+                         data-checked$="{{computeView(view, 'archived')}}">
+                        Archived Panels
                     </div>
                 </div>
-                <div id="mainmenucontent" hidden="{{viewMain}}">
-                    <template is="dom-repeat" items="{{panels}}">
-                        <div class="panel-item horizontal layout" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
+
+                <br>
+
+                <template is="dom-if" if="{{computeView(view, 'main')}}">
+
+                    <template is="dom-repeat" items="{{panels}}" filter="isArchived" observe="type archived">
+                        <div class="panel-item horizontal layout" data-file$="{{item.file.id}}"
+                             on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
                             <div class="version">{{item.version}}</div>
                             <i class="fa fa-clipboard" on-click="handleArchivedPanel">&nbsp;</i>
                             <i class="fa fa-trash-o" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
-                </div>
-                <div hidden="{{!viewMain}}">
-                    Show Archived Panels
-                </div>
+
+
+                </template>
+
+                <template is="dom-if" is="{{computeView(view, 'archived')}}">
+                    archived
+                </template>
             </div>
+
             <div id="maincontent">
-                <pre>
-                    <code id="test"></code>
-                </pre>
+            <pre>
+            <code id="test"></code>
+            </pre>
             </div>
         </div>
 
@@ -154,36 +141,40 @@
             },
             panels: {
                 type: Array,
-                value: function() {
+                value: function () {
                     return [];
                 }
             },
             selectedPanel: {
                 type: Object,
-                value: function() {
+                value: function () {
                     return {};
                 }
             },
             viewMain: {
                 type: Boolean,
+            },
+            view: {
+                type: String,
+                value: 'main'
             }
         },
-        ready: function() {
+        ready: function () {
             this.viewMain = false;
         },
 
 
-        projectsChanged: function(neo, old) {
+        projectsChanged: function (neo, old) {
 
         },
         /* Private methods */
-        handleDeletePanel: function(e) {
+        handleDeletePanel: function (e) {
             e.stopPropagation();
         },
-        handleArchivedPanel: function(e) {
+        handleArchivedPanel: function (e) {
             e.stopPropagation();
         },
-        handlePanelSelected: function(e) {
+        handlePanelSelected: function (e) {
             e.stopPropagation();
             var fileId = e.currentTarget.dataset.file;
 
@@ -195,10 +186,10 @@
                 },
                 request: {
                     async: false,
-                    success: function(response) {
+                    success: function (response) {
                         panelContent = response;
                     },
-                    error: function() {
+                    error: function () {
 
                     }
                 }
@@ -209,7 +200,7 @@
             }
 
         },
-        _replacer: function(match, pIndent, pKey, pVal, pEnd) {
+        _replacer: function (match, pIndent, pKey, pVal, pEnd) {
             var key = '<span class="json-key">';
             var val = '<span class="json-value">';
             var str = '<span class="json-string">';
@@ -220,20 +211,31 @@
                 r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
             return r + (pEnd || '');
         },
-        _prettyPrint: function(obj) {
+        _prettyPrint: function (obj) {
             var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
             return JSON.stringify(obj, null, 3)
-                .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
-                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(jsonLine, this._replacer);
+                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(jsonLine, this._replacer);
         },
 
-        selectView: function(e) {
+        selectView: function (e) {
             if (this.viewMain == true) {
                 this.viewMain = false;
             } else {
                 this.viewMain = true;
             }
         },
+        handleView: function (e) {
+            this.view = e.target.dataset.value;
+        },
+        computeView: function (view, value) {
+            console.log(view)
+            console.log(value)
+            return view === value;
+        },
+        isArchived: function (item) {
+            return item.archived;
+        }
     });
 </script>

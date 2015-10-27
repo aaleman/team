@@ -179,7 +179,6 @@
 
         <team-content id="content" selected-option="{{selectedOption}}">
             <team-home data-option="home" hidden$="{{computeHome(selectedOption)}}"></team-home>
-          <!--  <team-result data-option="result" id="teamResult" data-menu-type="unique"></team-result>-->
             <team-result data-option="result" id="teamResult" data-menu-type="unique" hidden="true"></team-result>
 
             <jso-panel closable light-header
@@ -200,7 +199,7 @@
             </jso-panel>
 
 
-            <jso-panel closable light-header
+            <jso-panel closable movable
                        id="panelManager"
                        data-option="panels"
                        data-menu-type="unique">
@@ -239,7 +238,7 @@
                         ></team-new-diagnostic-element>
             </jso-panel>
 
-            <jso-panel expandible closable light-header collapsible movable
+            <jso-panel movable expandible
                        id="newPanelPanel"
                        data-option="newpanel"
                        data-menu-type="unique">
@@ -250,8 +249,8 @@
                 <team-panel-form-wizard
                         class="container"
                         team-config-folder="{{teamConfigFolder}}"
-                        default-study="{{defaultStudy}}"
-                        ></team-panel-form-wizard>
+                        default-study="{{defaultStudy}}">
+                </team-panel-form-wizard>
             </jso-panel>
 
             <!-- Toggle items -->
