@@ -26,7 +26,11 @@
         }
 
         #maincontent {
-            overflow-y: auto;
+
+          margin:8px;
+            height: 80%;
+            width: 50%;
+
         }
 
         .panel-item {
@@ -59,7 +63,6 @@
         pre {
             margin: 20px;
         }
-
         /* NEW */
 
         #left {
@@ -69,27 +72,26 @@
             box-sizing: border-box;
         }
 
-        #left div {
+        #left > div {
             margin-top: 3px;
         }
 
+        jso-table {
+            height: 500px;
+            font-size: 12px;
+            padding: 10px
+        }
 
     </style>
     <template>
-        <div id="main" class="horizontal layout">
+        <div id="main" class="horizontal layout flex">
 
             <div id="left" class="vertical layout">
                 <div class="horizontal layout">
-                    <div class="jso-btn jso-btn-shdw flex"
-                         on-click="handleView"
-                         data-value="main"
-                         data-checked$="{{computeView(view, 'main')}}">
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
                         Main Panels
                     </div>
-                    <div class="jso-btn jso-btn-shdw flex"
-                         on-click="handleView"
-                         data-value="archived"
-                         data-checked$="{{computeView(view, 'archived')}}">
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="archived" data-checked$="{{computeView(view, 'archived')}}">
                         Archived Panels
                     </div>
                 </div>
@@ -99,8 +101,7 @@
                 <template is="dom-if" if="{{computeView(view, 'main')}}">
 
                     <template is="dom-repeat" items="{{panels}}" filter="isArchived" observe="type archived">
-                        <div class="panel-item horizontal layout" data-file$="{{item.file.id}}"
-                             on-click="handlePanelSelected">
+                        <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
                             <div class="version">{{item.version}}</div>
                             <i class="fa fa-clipboard" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
@@ -112,25 +113,40 @@
                 </template>
 
                 <template is="dom-if" if="{{computeView(view, 'archived')}}">
-                  <template is="dom-repeat" items="{{panels}}" filter="isNotArchived" observe="type archived">
-                      <div class="panel-item horizontal layout" data-file$="{{item.file.id}}"
-                           on-click="handlePanelSelected">
-                          <div class="name flex">{{item.name}}</div>
-                          <div class="version">{{item.version}}</div>
-                          <i class="fa fa-clipboard" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
-                          <i class="fa fa-trash-o" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
-                      </div>
-                  </template>
+                    <template is="dom-repeat" items="{{panels}}" filter="isNotArchived" observe="type archived">
+                        <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
+                            <div class="name flex">{{item.name}}</div>
+                            <div class="version">{{item.version}}</div>
+                            <i class="fa fa-clipboard" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                            <i class="fa fa-trash-o" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
+                        </div>
+                    </template>
                 </template>
             </div>
 
-            <div id="maincontent">
-            <pre>
-            <code id="test"></code>
-            </pre>
+<div id="maincontent" class="vertical layout">
+  <div class="horizontal layout">
+            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
+                Diseases
+            </div>
+            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="genes" data-checked$="{{computeOptions(option, 'genes')}}">
+                Genes/Regions
+            </div>
+            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="mutations" data-checked$="{{computeOptions(option, 'mutations')}}">
+                Mutations
             </div>
         </div>
 
+        <template is="dom-if" if="{{computeOptions(option, 'diseases')}}">
+            <jso-table columns="{{diseaseColumns}}" data="{{diseases}}"></jso-table>
+        </template>
+        <template is="dom-if" if="{{computeOptions(option, 'genes')}}">
+          <jso-table columns="{{geneColumns}}" data="{{genes}}"> </jso-table>
+        </template>
+        <template is="dom-if" if="{{computeOptions(option, 'mutations')}}">
+          <jso-table columns="{{mutationColumns}}" data="{{mutations}}"></jso-table>
+        </template>
+</div>
 
         <div id="botbar" class="horizontal layout end-justified">
         </div>
@@ -149,42 +165,127 @@
             },
             panels: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             selectedPanel: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
             view: {
                 type: String,
                 value: 'main'
-            }
+            },
+            option: {
+                type: String,
+                value: 'diseases'
+            },
+            geneColumns: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+            mutationColumns: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+            formData: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                notify: true
+            },
+            diseases: {
+                type: Array,
+            },
+            genes: {
+                type: Array,
+            },
+            mutations: {
+                type: Array,
+            },
         },
-        ready: function () {
-        },        projectsChanged: function (neo, old) {
+        ready: function() {
+          this.formData = new Panel();
+          this.formData.polymer = this;
+
+            this.geneColumns = [{
+                name: 'name',
+                title: 'Name'
+            }, {
+                name: 'chr',
+                title: 'Chr',
+                defaultValue: '.'
+            }, {
+                name: 'start',
+                title: 'Start',
+                defaultValue: '.'
+            }, {
+                name: 'end',
+                title: 'End',
+                defaultValue: '.'
+            }];
+            this.mutationColumns = [{
+                name: 'chr',
+                title: 'Chr',
+                width: 40
+            }, {
+                name: 'pos',
+                title: 'Pos'
+            }, {
+                name: 'ref',
+                title: 'Ref',
+                width: 70
+            }, {
+                name: 'alt',
+                title: 'Alt',
+                width: 70
+            }, {
+                name: 'phe',
+                title: 'Phenotype'
+            }];
+            this.diseaseColumns = [{
+                name: 'phenotype',
+                title: 'Phenotype',
+                type: 'text',
+                width:200
+            }, {
+                name: 'source',
+                title: 'Source',
+                type: 'select',
+                options: ["clinvar", "gwas"],
+                width: 100
+            }];
+
+        },
+
+        projectsChanged: function(neo, old) {
 
         },
         /* Private methods */
-        handleDeletePanel: function (e) {
+        handleDeletePanel: function(e) {
             e.stopPropagation();
 
             var fileId = parseInt(e.currentTarget.dataset.file);
 
             var find = false;
             var index = -1;
-            for(var i = 0; i < this.panels.length && !find; i++){
-              var panel = this.panels[i];
-              if(panel.file.id === fileId){
-                find = true;
-                index = i;
-              }
+            for (var i = 0; i < this.panels.length && !find; i++) {
+                var panel = this.panels[i];
+                if (panel.file.id === fileId) {
+                    find = true;
+                    index = i;
+                }
             }
-            if(find == true && index > -1){
-              this.splice('panels', index, 1);
+            if (find == true && index > -1) {
+                this.splice('panels', index, 1);
             }
         },
         handleArchivedPanel: function(e) {
@@ -192,16 +293,17 @@
             e.stopPropagation();
             var fileId = parseInt(e.currentTarget.dataset.file);
 
-            for(var i = 0; i < this.panels.length; i++){
-              var panel = this.panels[i];
-              if(panel.file.id === fileId){
-                var archived = (panel.archived === "true") ? "false" : "true";
-                this.set('panels.' + i + '.archived', archived);
-              }
+            for (var i = 0; i < this.panels.length; i++) {
+                var panel = this.panels[i];
+                if (panel.file.id === fileId) {
+                    var archived = (panel.archived === "true") ? "false" : "true";
+                    this.set('panels.' + i + '.archived', archived);
+                }
             }
-      },
+        },
         handlePanelSelected: function(e) {
             e.stopPropagation();
+            var me = this;
             var fileId = e.currentTarget.dataset.file;
 
             var panelContent = "";
@@ -212,21 +314,24 @@
                 },
                 request: {
                     async: false,
-                    success: function (response) {
+                    success: function(response) {
                         panelContent = response;
                     },
-                    error: function () {
+                    error: function() {
 
                     }
                 }
             });
             if (panelContent != "") {
                 this.selectedPanel = JSON.parse(panelContent);
-                this.$.test.innerHTML = this._prettyPrint(this.selectedPanel);
+                //this.$.test.innerHTML = this._prettyPrint(this.selectedPanel);
+                this.diseases = this.selectedPanel.diseases;
+                this.genes = this.selectedPanel.genes;
+                this.mutations = this.selectedPanel.mutations;
             }
 
         },
-        _replacer: function (match, pIndent, pKey, pVal, pEnd) {
+        _replacer: function(match, pIndent, pKey, pVal, pEnd) {
             var key = '<span class="json-key">';
             var val = '<span class="json-value">';
             var str = '<span class="json-string">';
@@ -237,25 +342,31 @@
                 r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
             return r + (pEnd || '');
         },
-        _prettyPrint: function (obj) {
+        _prettyPrint: function(obj) {
             var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
             return JSON.stringify(obj, null, 3)
-                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
-                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                    .replace(jsonLine, this._replacer);
+                .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(jsonLine, this._replacer);
         },
-        handleView: function (e) {
+        handleView: function(e) {
             this.view = e.target.dataset.value;
         },
-        computeView: function (view, value) {
+        computeView: function(view, value) {
             return view === value;
         },
-        isArchived: function (item) {
+        isArchived: function(item) {
             // return item.archived;
             return !(item.archived === "true");
         },
-        isNotArchived: function (item) {
+        isNotArchived: function(item) {
             return (item.archived === "true");
-        }
+        },
+        handleOptions: function(e) {
+            this.option = e.target.dataset.value;
+        },
+        computeOptions: function(option, value) {
+            return option === value;
+        },
     });
 </script>
