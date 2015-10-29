@@ -1,0 +1,88 @@
+<link rel="import" href="../../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
+
+<dom-module id="team-mutation-selector">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            margin: 5px;
+            width: 800px;
+            /*height: 500px;*/
+        }
+
+        .input {
+            width: 100px;
+            height: 13px;
+            margin: 5px;
+        }
+
+        .data {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .file {
+            text-align: center;
+            color: #445D76;
+            margin-top: 5px;
+            width: 100px;
+        }
+
+        .names {
+            width: 200px
+        }
+    </style>
+    <template>
+
+        <div class="vertical layout" style="border: 1px solid #d3d3d3;padding:5px;height: 20%;">
+
+            <div class="horizontal layout data">
+                <label style="font-size:12px;" for="">Chr: &nbsp;</label>
+                <input class="input" type="text">
+                <label style="font-size:12px;" for="">Pos: &nbsp;</label>
+                <input class="input" type="number" step="1" min="0">
+                <label style="font-size:12px;" for="">Ref: &nbsp;</label>
+                <input class="input" type="text">
+                <label style="font-size:12px;" for="">Alt: &nbsp;</label>
+                <input class="input" type="text">
+            </div>
+            <div class="horizontal layout data">
+                <label style="font-size:12px;" for="">Gene Name: &nbsp;</label>
+                <input class="input names" type="text">
+                <label style="font-size:12px;" for="">Disease Name: &nbsp;</label>
+                <input class="input names" type="text">
+            </div>
+
+            <div class="horizontal layout">
+                <div class="flex">
+
+                </div>
+                <div class="jso-btn jso-btn-shdw file" on-click="handleReset">Reset</div>&nbsp;
+                <div class="jso-btn jso-btn-shdw file" on-click="handleCheck">Check</div>&nbsp;
+                <div class="jso-btn jso-btn-shdw file" on-click="handleAddMut">Add Mutation</div>
+            </div>
+        </div>
+        <jso-genome-viewer-element id="gv" on-created="handleGenomeViewerCreated"></jso-genome-viewer-element>
+        </template>
+
+    <script>
+        Polymer({
+            is: "team-mutation-selector",
+            properties: {
+
+            },
+            ready: function(){
+              this.async(function(){
+              this.$.gv.createGenomeViewer();
+              this.$.gv.genomeViewer.removeTrack(this.$.gv.genomeViewer.trackListPanel.tracks[2]);
+              this.$.gv.genomeViewer.draw();
+            });
+
+            },
+            handleGenomeViewerCreated: function(e){
+
+            }
+        })
+    </script>
+</dom-module>

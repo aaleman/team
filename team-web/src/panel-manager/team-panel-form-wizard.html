@@ -1,4 +1,5 @@
 <link rel="import" href="../../lib/jsorolla/src/lib/components/table/jso-table.html">
+<link rel="import" href="team-mutation-selector.html">
 
 <dom-module id="team-panel-form-wizard">
     <style>
@@ -116,6 +117,9 @@
             overflow-y: auto;
             overflow-x: auto;
         }
+        #panelGV  {
+
+        }
 
         .file {
             text-align: center;
@@ -139,7 +143,7 @@
 
         .input {
             width: 100px;
-            height: 14px;
+            height: 13px;
         }
 
         .eye > i:hover {
@@ -162,7 +166,7 @@
     <template>
         <div id="wizard-content">
 
-            <div class="step vertical layout" hidden$="{{handleHiddenStep1(step)}}" id="step1">
+          <div class="step vertical layout" hidden$="{{handleHiddenStep1(step)}}" id="step1">
                 <div class="jso-formtitle horizontal layout">
                     <div class="flex"> </div>
                     <div class="step-title">Step 1: Diseases</div>
@@ -171,13 +175,19 @@
                 <div class="step-content horizontal layout">
                     <div class="disease">
                         <jso-table id="allDiseases" class="disease-left" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter></jso-table>
+                        <div class="horizontal layout">
+                        <div class="flex"></div>
                         <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
+                        </div>
                         </div>
                     </div>
                     <div class="disease">
                         <jso-table id="selectedDiseases" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" data="{{formData.diseases}}"></jso-table>
+                        <div class="horizontal layout">
+                        <div class="flex"></div>
                         <div class="jso-btn jso-btn-shdw file" on-click="handleClearSelectedDiseases">
                             Clear
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -197,29 +207,41 @@
                         <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
                         <div class="jso-formcontent">
                             <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2,PPL"></textarea>
+                            <div class="horizontal layout">
+                            <div class="flex"></div>
                             <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneTextAreaButton"><i class="fa fa-plus-square-o"></i>&nbsp; Add Genes</div>
+                        </div>
                         </div>
                         <div class="jso-formtitle" style="font-size:14px;">Import from BED &nbsp;</div>
                         <div class="jso-formcontent">
                             <input type="file" id="geneBedFileInput">
+                            <div class="horizontal layout">
+                            <div class="flex"></div>
                             <div class="jso-btn jso-btn-shdw file" on-click="handleGenesImportBed"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                        </div>
                         </div>
                         <div class="jso-formtitle" style="font-size:14px;">Import from other Panel &nbsp;</div>
                         <div class="jso-formcontent">
-                            <select id="importGenesFromPanel">
+                            <select id="importGenesFromPanel" style="width:150px">
                                 <option value="none"> </option>
                                 <template is="dom-repeat" items="{{panels}}">
                                     <option value$="{{item.file.id}}">{{item.name}}</option>
                                 </template>
                             </select>
                             <span class="eye">&nbsp;<i class="fa fa-eye" on-click="handlePreviewFile"></i></span>
+                            <div class="horizontal layout">
+                            <div class="flex"></div>
                             <div class="jso-btn jso-btn-shdw file" on-click="handleImportGenesPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                        </div>
                         </div>
                     </div>
 
                     <div id="genes-list">
                         <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}" enable-edit></jso-table>
-                        <div class="jso-btn jso-btn-shdw file" style="margin:0 auto" on-click="handleClickGeneListClear">Clear</div>
+                        <div class="horizontal layout">
+                        <div class="flex"></div>
+                        <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
+                    </div>
                     </div>
 
                 </div>
@@ -250,7 +272,7 @@
                                 <input class="input" type="text" name="mutationGVChr" id="mutationGVChr" />
                                 <div class="flex"></div>
                                 <label style="font-size:12px;" for="">Pos: &nbsp;</label>
-                                <input class="input" type="text" name="mutationGVPos" id="mutationGVPos" />
+                                <input class="input" type="number" step="1" min= "0" name="mutationGVPos" id="mutationGVPos" />
                             </div>
                             <div class="horizontal layout data">
                                 <label style="font-size:12px;" for="">Ref: &nbsp;&nbsp;</label>
@@ -268,14 +290,21 @@
                                     </template>
                                 </datalist>
                             </div>
-
+                            <div class="horizontal layout">
+                              <div class="jso-btn jso-btn-shdw file" on-click="handleOpenGV">Open GV</div>
+                              <div class="flex"></div>
                             <div class="jso-btn jso-btn-shdw file" on-click="handleMutationAdd"><i class="fa fa-plus-square-o"></i>&nbsp; Add</div>
-                            <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
+
+                            </div>
+                            <!-- <jso-genome-viewer-element id="gv"></jso-genome-viewer-element> -->
                         </div>
                         <div class="jso-formtitle" style="font-size:13px;">Import VCF &nbsp;</div>
                         <div class="jso-formcontent" id="mutation-tab-config-vcf">
                             <input type="file" id="mutationVCFFileInput">
+                            <div class="horizontal layout">
+                            <div class="flex"></div>
                             <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                        </div>
                         </div>
                         <div class="jso-formtitle" style="font-size:13px;">Import CSV &nbsp;</div>
                         <div class="jso-formcontent" id="mutation-tab-config-csv">
@@ -293,24 +322,32 @@
                             </div>
 
                             <input style="margin-top:5px" type="file" id="mutationCSVFileInput">
+                            <div class="horizontal layout">
+                            <div class="flex"></div>
                             <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportCSV"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
-
+                            </div>
                         </div>
                         <div class="jso-formtitle" style="font-size:13px;">Import from other Panel &nbsp;</div>
                         <div class="jso-formcontent" id="mutation-tab-config-panel">
-                            <select id="importMutationsFromPanel">
+                            <select id="importMutationsFromPanel" style="width:150px">
                                 <option value="none"> </option>
                                 <template is="dom-repeat" items="{{panels}}">
                                     <option value$="{{item.file.id}}">{{item.name}}</option>
                                 </template>
                             </select>
                             <span class="eye">&nbsp; <i class="fa fa-eye" on-click="handlePreviewFileMut"></i></span>
+                            <div class="horizontal layout">
+                            <div class="flex"></div>
                             <div class="jso-btn jso-btn-shdw file" on-click="handleImportMutationsPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                            </div>
                         </div>
                     </div>
                     <div id="mutations-list" flex>
                         <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}" enable-edit></jso-table>
-                        <div class="jso-btn jso-btn-shdw file" style="margin:0 auto" on-click="handleClickMutationListClear">Clear</div>
+                        <div class="horizontal layout">
+                        <div class="flex"></div>
+                        <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear</div>
+                    </div>
                     </div>
                 </div>
                 <jso-panel modal closable hidden id="panelPreviewMut">
@@ -323,6 +360,17 @@
 
                     </div>
                 </jso-panel>
+
+                <jso-panel movable fixed closable hidden id="panelGV">
+                    <div class="header">
+                        <i class="fa fa-eye"></i> View Mutation
+                    </div>
+                    <team-mutation-selector class="container" id="mutationSelector">
+                    </team-mutation-selector>
+               </jso-panel>
+
+
+
             </div>
 
             <div class="step vertical layout" id="step4" hidden$={{handleHiddenStep4(step)}}>
@@ -1184,6 +1232,9 @@
             for (var i = 0; i < this.mutations.length; i++) {
                 me.formData.addMutation(this.mutations[i]);
             }
+        },
+        handleOpenGV: function(e){
+          this.$.panelGV.hidden = false;
         },
     });
 </script>
