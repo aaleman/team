@@ -14,6 +14,7 @@ import org.opencb.datastore.core.QueryResponse;
 import org.opencb.datastore.core.QueryResult;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,9 @@ public class TeamVariantAnnotator {
 
 
     public TeamVariantAnnotator() throws URISyntaxException {
-        this.cellBaseClient = new CellBaseClient("bioinfodev.hpc.cam.ac.uk", 80, "/cellbase/webservices/rest", "v3", "hsapiens");
+
+        URI cellbaseUri = new URI("http://bioinfo.hpc.cam.ac.uk/cellbase/webservices/rest");
+        this.cellBaseClient = new CellBaseClient(cellbaseUri, "v3", "hsapiens");
     }
 
     public List<TeamVariant> annotate(List<Variant> variantList) {
@@ -36,29 +39,39 @@ public class TeamVariantAnnotator {
 
         List<TeamVariant> res = new ArrayList<>();
 
+        if (batch.isEmpty()) {
+            return res;
+        }
+
+
         QueryResponse<QueryResult<VariantAnnotation>> response;
 
         VariantAnnotation va = new VariantAnnotation();
         try {
+
             response = cellBaseClient.getFullAnnotation(CellBaseClient.Category.genomic,
                     CellBaseClient.SubCategory.variant, batch, new QueryOptions("post", true));
             if (response != null) {
-
                 List<QueryResult<VariantAnnotation>> qr = response.getResponse();
-
-                va = qr.get(0).getResult().get(0);
-
+                if (!qr.isEmpty()) {
+                    QueryResult<VariantAnnotation> variantAnnotationQueryResult = qr.get(0);
+                    if (!variantAnnotationQueryResult.getResult().isEmpty()) {
+                        va = variantAnnotationQueryResult.getResult().get(0);
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Variant v = variantList.get(0);
-        v.setAnnotation(va);
+        if (!variantList.isEmpty()) {
+            Variant v = variantList.get(0);
+            v.setAnnotation(va);
 
-        TeamVariant tv = new TeamVariant(v);
+            TeamVariant tv = new TeamVariant(v);
 
-        res.add(tv);
+            res.add(tv);
+        }
         return res;
     }
 

@@ -20,6 +20,7 @@ import org.opencb.biodata.models.feature.Region;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.biodata.tools.variant.filtering.VariantFilter;
+import org.opencb.commons.filters.FilterApplicator;
 import org.opencb.commons.io.DataWriter;
 
 import java.io.File;
@@ -60,12 +61,18 @@ public class TeamMain {
             jc.parse(args);
         } catch (ParameterException e) {
             jc.usage();
+            System.exit(-1);
         }
 
 
         inputFile = parameters.getInput();
         panelFilename = parameters.getPanel();
         outputFile = parameters.getOutput();
+
+
+        System.out.println("inputFile = " + inputFile);
+        System.out.println("panelFilename = " + panelFilename);
+        System.out.println("outputFile = " + outputFile);
 
         jsonPanelFile = new File(panelFilename);
 
@@ -102,7 +109,7 @@ public class TeamMain {
 
             while (batch != null && !batch.isEmpty()) {
 
-//                FilterApplicator.filter(batch, filters);
+                FilterApplicator.filter(batch, filters);
                 List<TeamVariant> teamBatch = annotator.annotate(batch);
 
                 run(teamBatch, panel, diagnosticVariants, secondaryFindingsVariants);
