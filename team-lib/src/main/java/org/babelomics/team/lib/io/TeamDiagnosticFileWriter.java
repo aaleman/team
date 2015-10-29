@@ -131,8 +131,8 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         String cts = getConsequenceTypes(variant.getAnnotation().getConsequenceTypes());
         sb.append(cts).append(SEPARATOR);
 
-        String phylop = getConservedRegionScore(variant.getAnnotation().getConservedRegionScores(), "phylop");
-        String phastCons = getConservedRegionScore(variant.getAnnotation().getConservedRegionScores(), "phastCons");
+        String phylop = getConservedRegionScore(variant.getAnnotation().getConservationScores(), "phylop");
+        String phastCons = getConservedRegionScore(variant.getAnnotation().getConservationScores(), "phastCons");
 
         sb.append(phylop).append(SEPARATOR);
         sb.append(phastCons).append(SEPARATOR);

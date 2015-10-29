@@ -36,12 +36,12 @@ public class TeamVariantMongoReader implements VariantReader {
 
     @Override
     public boolean open() {
-        try {
-            variantDBAdaptor = new VariantMongoDBAdaptor((MongoCredentials) credentials, "variants", "files");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return false;
-        }
+//        try {
+//            variantDBAdaptor = new VariantMongoDBAdaptor((MongoCredentials) credentials, "variants", "files");
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
         return true;
     }
 

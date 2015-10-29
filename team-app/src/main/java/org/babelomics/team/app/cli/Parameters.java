@@ -8,14 +8,14 @@ import com.beust.jcommander.Parameter;
 public class Parameters {
 
 
-    @Parameter(names = {"--input"}, description = "Input", required = true)
+    @Parameter(names = {"--input","-i"}, description = "Input", required = true)
     private String input;
 
-    @Parameter(names = {"--output"}, description = "Output", required = true)
+    @Parameter(names = {"--output","-o"}, description = "Output", required = true)
     private String output;
 
 
-    @Parameter(names = {"--panel"}, description = "panel", required = true)
+    @Parameter(names = {"--panel","-p"}, description = "panel", required = true)
     private String panel;
 
 
