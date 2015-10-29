@@ -26,11 +26,10 @@
         }
 
         #maincontent {
-
-          margin:8px;
+            margin: 8px;
             height: 80%;
             width: 50%;
-
+            
         }
 
         .panel-item {
@@ -79,9 +78,8 @@
         jso-table {
             height: 500px;
             font-size: 12px;
-            padding: 10px
+            padding: 10px;
         }
-
     </style>
     <template>
         <div id="main" class="horizontal layout flex">
@@ -124,32 +122,33 @@
                 </template>
             </div>
 
-<div id="maincontent" class="vertical layout">
-  <div class="horizontal layout">
-            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
-                Diseases
-            </div>
-            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="genes" data-checked$="{{computeOptions(option, 'genes')}}">
-                Genes/Regions
-            </div>
-            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="mutations" data-checked$="{{computeOptions(option, 'mutations')}}">
-                Mutations
-            </div>
-        </div>
+            <div id="maincontent" class="vertical layout">
+                <div class="horizontal layout">
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
+                        Diseases
+                    </div>
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="genes" data-checked$="{{computeOptions(option, 'genes')}}">
+                        Genes/Regions
+                    </div>
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="mutations" data-checked$="{{computeOptions(option, 'mutations')}}">
+                        Mutations
+                    </div>
+                </div>
 
-        <template is="dom-if" if="{{computeOptions(option, 'diseases')}}">
-            <jso-table columns="{{diseaseColumns}}" data="{{diseases}}"></jso-table>
-        </template>
-        <template is="dom-if" if="{{computeOptions(option, 'genes')}}">
-          <jso-table columns="{{geneColumns}}" data="{{genes}}"> </jso-table>
-        </template>
-        <template is="dom-if" if="{{computeOptions(option, 'mutations')}}">
-          <jso-table columns="{{mutationColumns}}" data="{{mutations}}"></jso-table>
-        </template>
-</div>
+                <template is="dom-if" if="{{computeOptions(option, 'diseases')}}">
+                    <jso-table columns="{{diseaseColumns}}" data="{{diseases}}"></jso-table>
 
-        <div id="botbar" class="horizontal layout end-justified">
-        </div>
+                </template>
+                <template is="dom-if" if="{{computeOptions(option, 'genes')}}">
+                    <jso-table columns="{{geneColumns}}" data="{{genes}}"> </jso-table>
+                </template>
+                <template is="dom-if" if="{{computeOptions(option, 'mutations')}}">
+                    <jso-table columns="{{mutationColumns}}" data="{{mutations}}"></jso-table>
+                </template>
+            </div>
+
+            <div id="botbar" class="horizontal layout end-justified">
+            </div>
 
     </template>
 
@@ -213,8 +212,8 @@
             },
         },
         ready: function() {
-          this.formData = new Panel();
-          this.formData.polymer = this;
+            this.formData = new Panel();
+            this.formData.polymer = this;
 
             this.geneColumns = [{
                 name: 'name',
@@ -255,7 +254,7 @@
                 name: 'phenotype',
                 title: 'Phenotype',
                 type: 'text',
-                width:200
+                width: 200
             }, {
                 name: 'source',
                 title: 'Source',
