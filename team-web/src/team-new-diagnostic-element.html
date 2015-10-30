@@ -4,7 +4,6 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-
             width: 100%;
             height: 600px;
         }
@@ -47,7 +46,6 @@
             width: 100%;
             height: 300px;
         }
-
     </style>
     <template>
 
@@ -59,20 +57,19 @@
                             Step 1: Choose a File
                         </div>
                         <div class="jso-formcontent" style="padding:0">
-                            <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}"
-                                                 on-fileselect="handleFileSelected" disable-new-project
-                                                 disable-new-study></jso-opencga-browser>
+                            <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
                         </div>
                     </div>
                 </div>
                 <div class="step">
                     <div class="jso-formbox">
                         <div class="jso-formtitle">Step 2: Choose a Panel</div>
-                        <div class="jso-formcontent selbox" id="panelSelector">
+                        <div class="jso-formcontent selbox vertical layout" id="panelSelector">
                             <template is="dom-repeat" items="{{panels}}" filter="isPanel">
-                                <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
+                                <div class="horizontal layout" style="margin-top:10px">
+                                    <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
                                     <span>{{item.name}}</span>
-
+                                </div>
                             </template>
                         </div>
                     </div>
@@ -87,8 +84,7 @@
                             <textarea class="jso" value="{{jobDescription}}" required></textarea>
                         </div>
                     </div>
-                    <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i
-                            class="fa fa-rocket"></i>&nbsp; Run
+                    <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
                     </div>
                 </div>
 
@@ -103,39 +99,39 @@
         properties: {
             panels: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
                 observer: 'handlePanelsChanged'
             },
             projects: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             selectedPanel: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return [];
                 },
                 observer: 'handleSelectedPanelChanged'
             },
             bioformats: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             defaultStudy: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
             analysisFolder: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
@@ -148,13 +144,13 @@
                 value: "New Diagnosis"
             }
         },
-        handlePanelsChanged: function (neo, old) {
+        handlePanelsChanged: function(neo, old) {
             //            debugger
         },
-        isPanel: function (item) {
+        isPanel: function(item) {
             return item.file.name.indexOf("panel") == 0;
         },
-        handleForm: function (e) {
+        handleForm: function(e) {
             var me = this;
             var query = {
                 sid: Cookies("bioinfo_sid"),
@@ -174,7 +170,7 @@
                 query: query,
                 request: {
                     //method: 'POST',
-                    success: function (response) {
+                    success: function(response) {
                         if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                             var userId = response.response[0].result[0].id;
                             me.fire('run');
@@ -184,7 +180,7 @@
                             //                            me.message = response.response[0].errorMsg;
                         }
                     },
-                    error: function () {
+                    error: function() {
                         me.message = 'Server error, try again later.';
                     }
                 }
@@ -192,10 +188,10 @@
 
 
         },
-        handleClose: function (e) {
+        handleClose: function(e) {
             this.fire('close');
         },
-        handlePanelClick: function (e) {
+        handlePanelClick: function(e) {
             var sel = this.querySelectorAll('.panel-item');
             for (var i = 0; i < sel.length; i++) {
                 var el = sel[i];
@@ -205,10 +201,10 @@
             e.currentTarget.setAttribute('data-checked', '')
 
         },
-        handleSelectedPanelChanged: function (neo, old) {
+        handleSelectedPanelChanged: function(neo, old) {
             console.log(this.selectedPanel);
         },
-        handleFileSelected: function (e) {
+        handleFileSelected: function(e) {
             this.inputSelectedFile = e.detail;
         }
     });
