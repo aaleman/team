@@ -72,6 +72,30 @@
             width: 100%;
         }
 
+        .maf-elem,
+        .qual-elem,
+        .pss-elem,
+        .conserv-elem {
+            margin-bottom: 3px;
+        }
+
+        .maf-elem > label,
+        .qual-elem > label,
+        .pss-elem > label,
+        .conserv-elem > label {
+            width: 60px;
+            text-align: right;
+            font-weight: bold;;
+        }
+
+        .maf-elem > .jso-select,
+        .qual-elem > .jso-select,
+        .pss-elem > .jso-select,
+        .conserv-elem > .jso-select {
+            width: 45px;
+            margin-right: 3px;
+        }
+
     </style>
     <template>
         <div id="filter_form">
@@ -110,45 +134,52 @@
                     Population Freqs.
                 </div>
                 <div class="jso-formcontent vertical layout">
-
-                    <div>
+                    <div class="horizontal layout maf-elem">
                         <label class="jso">1000G</label>
-                        <select name="maf1000g_op" id="maf1000g_op">
-                            <option value="==">==</option>
-                            <option value="!=">!=</option>
-                            <option value="<" selected><</option>
-                            <option value="<="><=</option>
-                            <option value=">">></option>
-                            <option value=">=">>=</option>
-                        </select>
-                        <input 
-                            type="number" 
-                            id="maf1000g" 
-                            name="maf1000g" 
-                            min="0"
-                            max="1"
-                            step="0.001"
-                            flex value="{{maf1000gValue::input}}"/>
+
+                        <div class="jso-select">
+                            <select class="jso" name="maf1000g_op" id="maf1000g_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input
+                                class="jso flex"
+                                type="number"
+                                id="maf1000g"
+                                name="maf1000g"
+                                min="0"
+                                max="1"
+                                step="0.001"
+                                flex value="{{maf1000gValue::input}}"/>
                     </div>
 
-                    <div>
+                    <div class="horizontal layout maf-elem">
                         <label class="jso">EVS</label>
-                        <select name="mafEVS_op" id="mafEVS_op">
-                            <option value="==">==</option>
-                            <option value="!=">!=</option>
-                            <option value="<" selected><</option>
-                            <option value="<="><=</option>
-                            <option value=">">></option>
-                            <option value=">=">>=</option>
-                        </select>
-                        <input 
-                            type="number" 
-                            id="mafEVS" 
-                            name="mafEVS" 
-                            min="0"
-                            max="1"
-                            step="0.001"
-                            flex value="{{mafEVSValue::input}}"/>
+
+                        <div class="jso-select">
+                            <select class="jso" name="mafEVS_op" id="mafEVS_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input
+                                class="jso flex"
+                                type="number"
+                                id="mafEVS"
+                                name="mafEVS"
+                                min="0"
+                                max="1"
+                                step="0.001"
+                                flex value="{{mafEVSValue::input}}"/>
 
                     </div>
                 </div>
@@ -160,30 +191,36 @@
                 </div>
                 <div class="jso-formcontent vertical layout">
 
-                    <div class="horizontal layout">
+                    <div class="horizontal layout qual-elem">
                         <label class="jso">QUAL</label>
-                        <select name="qual_op" id="qual_op">
-                            <option value="==">==</option>
-                            <option value="!=">!=</option>
-                            <option value="<" selected><</option>
-                            <option value="<="><=</option>
-                            <option value=">">></option>
-                            <option value=">=">>=</option>
-                        </select>
-                        <input type="number" id="qual" name="qual" flex value="{{qualValue::input}}" min="0" step="1"/>
+                        <div class="jso-select">
+                            <select class="jso" name="qual_op" id="qual_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="qual" name="qual" flex value="{{qualValue::input}}"
+                               min="0"
+                               step="1"/>
                     </div>
 
-                    <div class="horizontal layout">
+                    <div class="horizontal layout qual-elem">
                         <label class="jso">DP</label>
-                        <select name="dp_op" id="dp_op">
-                            <option value="==">==</option>
-                            <option value="!=">!=</option>
-                            <option value="<" selected><</option>
-                            <option value="<="><=</option>
-                            <option value=">">></option>
-                            <option value=">=">>=</option>
-                        </select>
-                        <input type="number" id="dp" name="dp" flex value="{{dpValue::input}}"/>
+                        <div class="jso-select">
+                            <select class="jso" name="dp_op" id="dp_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="dp" name="dp" flex value="{{dpValue::input}}"/>
                     </div>
                 </div>
             </div>
@@ -193,31 +230,35 @@
                     Protein Substitution Scores
                 </div>
                 <div class="jso-formcontent vertical layout">
-
-                    <div class="horizontal layout">
+                    <div class="horizontal layout pss-elem">
                         <label class="jso">SIFT</label>
-                        <select name="sift_op" id="sift_op">
-                            <option value="==">==</option>
-                            <option value="!=">!=</option>
-                            <option value="<" selected><</option>
-                            <option value="<="><=</option>
-                            <option value=">">></option>
-                            <option value=">=">>=</option>
-                        </select>
-                        <input type="text" id="sift" name="sift" flex value="{{siftValue::input}}"/>
+                        <div class="jso-select">
+                            <select name="sift_op" id="sift_op" class="jso">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="text" id="sift" name="sift" flex value="{{siftValue::input}}"/>
                     </div>
 
-                    <div class="horizontal layout">
+                    <div class="horizontal layout pss-elem">
                         <label class="jso">Polyphen</label>
-                        <select name="polyphen_op" id="polyphen_op">
-                            <option value="==">==</option>
-                            <option value="!=">!=</option>
-                            <option value="<" selected><</option>
-                            <option value="<="><=</option>
-                            <option value=">">></option>
-                            <option value=">=">>=</option>
-                        </select>
-                        <input type="text" id="polyphen" name="polyphen" flex value="{{polyphenValue::input}}"/>
+                        <div class="jso-select">
+                            <select class="jso" name="polyphen_op" id="polyphen_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="text" id="polyphen" name="polyphen" flex
+                               value="{{polyphenValue::input}}"/>
                     </div>
                 </div>
             </div>
@@ -228,30 +269,34 @@
                 </div>
                 <div class="jso-formcontent vertical layout">
 
-                    <div class="horizontal layout">
+                    <div class="horizontal layout conserv-elem">
                         <label class="jso">phyloP</label>
-                        <select name="phylop_op" id="phylop_op">
-                            <option value="==">==</option>
-                            <option value="!=">!=</option>
-                            <option value="<" selected><</option>
-                            <option value="<="><=</option>
-                            <option value=">">></option>
-                            <option value=">=">>=</option>
-                        </select>
-                        <input type="text" flex/>
+                        <div class="jso-select">
+                            <select class="jso" name="phylop_op" id="phylop_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input type="text" class="jso flex"/>
                     </div>
 
-                    <div class="horizontal layout">
+                    <div class="horizontal layout conserv-elem">
                         <label class="jso">PhastCons</label>
-                        <select name="phastcons_op" id="phastcons_op">
-                            <option value="==">==</option>
-                            <option value="!=">!=</option>
-                            <option value="<" selected><</option>
-                            <option value="<="><=</option>
-                            <option value=">">></option>
-                            <option value=">=">>=</option>
-                        </select>
-                        <input type="text" flex/>
+                        <div class="jso-select">
+                            <select class="jso" name="phastcons_op" id="phastcons_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input type="text" class="jso flex"/>
                     </div>
                 </div>
             </div>
@@ -326,32 +371,32 @@
                     return CONSEQUENCE_TYPES;
                 }
             },
-            query:{
-                type:Object, 
-                value: function(){
+            query: {
+                type: Object,
+                value: function () {
                     return {};
                 },
                 notify: true,
                 observer: 'queryChanged'
             },
-            dpValue:{
+            dpValue: {
                 type: Number,
-                observer:'inputDPChange'
+                observer: 'inputDPChange'
             },
-             qualValue:{
+            qualValue: {
                 type: Number,
-                observer:'inputQualChange'
+                observer: 'inputQualChange'
             },
             maf1000gValue: {
-                type:Number,
-                observer:'inputMaf1000GChanged'
+                type: Number,
+                observer: 'inputMaf1000GChanged'
             },
             mafEVSValue: {
-                type:Number,
-                observer:'inputMafEVSChanged'
+                type: Number,
+                observer: 'inputMafEVSChanged'
             },
             siftValue: {
-                type:Number,
+                type: Number,
                 observer: 'inputSIFTChanged'
             },
             polyphenValue: {
@@ -398,10 +443,10 @@
             }
         },
         submitForm: function () {
-            
+
         },
 
-       
+
         handleBrowseClick: function (e) {
             this.$.fileInput.click();
 
@@ -449,89 +494,89 @@
 
             }
         },
-        inputGeneChange: function(e){
-            if(this.query){
+        inputGeneChange: function (e) {
+            if (this.query) {
                 var q = Utils.clone(this.query);
                 delete q["gene"];
                 q["gene"] = e.toUpperCase();
                 this.set('query', q);
             }
-           
+
         },
-        inputDPChange: function(e){
-           if(this.query){
+        inputDPChange: function (e) {
+            if (this.query) {
                 var q = Utils.clone(this.query);
                 delete q["dp"];
                 var aux = parseFloat(e)
-                
-                if(aux){
+
+                if (aux) {
                     q["dp"] = aux;
                 }
 
                 this.set('query', q);
             }
         },
-        inputQualChange: function(e){
-           if(this.query){
+        inputQualChange: function (e) {
+            if (this.query) {
                 var q = Utils.clone(this.query);
                 delete q["qual"];
                 var aux = parseFloat(e)
-                
-                if(aux){
+
+                if (aux) {
                     q["qual"] = aux;
                 }
-                
+
                 this.set('query', q);
             }
         },
-        queryChanged: function(neo, old){
+        queryChanged: function (neo, old) {
         },
-        inputMaf1000GChanged: function(e){
-            if(this.query){
+        inputMaf1000GChanged: function (e) {
+            if (this.query) {
                 var q = Utils.clone(this.query);
                 delete q["maf1000g"];
                 var aux = parseFloat(e)
-                
-                if(aux){
+
+                if (aux) {
                     q["maf1000g"] = aux;
                 }
 
                 this.set('query', q);
             }
         },
-         inputMafEVSChanged: function(e){
-            if(this.query){
+        inputMafEVSChanged: function (e) {
+            if (this.query) {
                 var q = Utils.clone(this.query);
                 delete q["mafEVS"];
                 var aux = parseFloat(e)
-                
-                if(aux){
+
+                if (aux) {
                     q["mafEVS"] = aux;
                 }
 
                 this.set('query', q);
             }
         },
-           inputSIFTChanged: function(e){
-            if(this.query){
+        inputSIFTChanged: function (e) {
+            if (this.query) {
                 var q = Utils.clone(this.query);
                 delete q["sift"];
                 var aux = parseFloat(e)
-                
-                if(aux){
+
+                if (aux) {
                     q["sift"] = aux;
                 }
 
                 this.set('query', q);
             }
         },
-         inputPolyphenChanged: function(e){
-            if(this.query){
+        inputPolyphenChanged: function (e) {
+            if (this.query) {
                 var q = Utils.clone(this.query);
                 delete q["polyphen"];
                 var aux = parseFloat(e)
-                
-                if(aux){
+
+                if (aux) {
                     q["polyphen"] = aux;
                 }
 
