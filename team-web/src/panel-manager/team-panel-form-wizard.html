@@ -10,42 +10,12 @@
             height: 600px;
             width: 100%;
         }
+
         .wrapped-text {
             white-space: pre-wrap;
         }
 
-        #wizard-content {
-            height: calc(100% - 40px);
-        }
 
-        #wizard-bottom {
-            box-sizing: border-box;
-            height: 40px;
-            padding: 7px 10px;
-            background-color: var(--light-secondary-color);
-            border-top: 1px solid var(--divider-color);
-        }
-
-        #wizard-bottom > div {
-            margin-left: 10px;
-            width: 120px;
-        }
-
-        .step {
-            padding: 10px;
-        }
-
-        .step-title {
-            padding-bottom: 15px;
-            text-align: center;
-            vertical-align: middle;
-            font-size: 16pt;
-        }
-
-        .step-content {
-            height: 100%;
-            margin-top: 10px;
-        }
 
         #genes-tab {
             height: 80%;
@@ -94,15 +64,7 @@
             height: 450px;
         }
 
-        .next {
-            text-align: right;
-            color: #6B6B6B;
-        }
 
-        .prev {
-            text-align: left;
-            color: #6B6B6B;
-        }
 
         #panelPreview .container {
             width: 800px;
@@ -117,9 +79,7 @@
             overflow-y: auto;
             overflow-x: auto;
         }
-        #panelGV  {
 
-        }
 
         .file {
             text-align: center;
@@ -136,9 +96,8 @@
         }
 
         .data {
-            color:#666;
-            margin-top:10px;
-
+            color: #666;
+            margin-top: 10px;
         }
 
         .input {
@@ -151,266 +110,226 @@
             cursor: pointer;
         }
 
-        .next > i:hover {
-            color: #445D76;
-            cursor: pointer;
-        }
-
-        .prev > i:hover {
-            color: #445D76;
-            cursor: pointer;
-        }
-
-
+        
     </style>
     <template>
-        <div id="wizard-content">
 
-          <div class="step vertical layout" hidden$="{{handleHiddenStep1(step)}}" id="step1">
-                <div class="jso-formtitle horizontal layout">
-                    <div class="flex"> </div>
-                    <div class="step-title">Step 1: Diseases</div>
-                    <div class="flex next" on-click="handleNextStepButton"><i>Step 2 &nbsp;</i><i class="fa fa-angle-double-right"></i></div>
-                </div>
-                <div class="step-content horizontal layout">
-                    <div class="disease">
-                        <jso-table id="allDiseases" class="disease-left" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter></jso-table>
-                        <div class="horizontal layout">
-                        <div class="flex"></div>
-                        <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
+        <jso-wizard id="formWizard">
+            <div class="step">
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">Step 1: Diseases</div>
+                    <div class="jso-formcontent horizontal layout">
+                        <div class="disease">
+                            <jso-table id="allDiseases" class="disease-left" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter></jso-table>
+                            <div class="horizontal layout">
+                                <div class="flex"></div>
+                                <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
+                                </div>
+                            </div>
                         </div>
-                        </div>
-                    </div>
-                    <div class="disease">
-                        <jso-table id="selectedDiseases" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" data="{{formData.diseases}}"></jso-table>
-                        <div class="horizontal layout">
-                        <div class="flex"></div>
-                        <div class="jso-btn jso-btn-shdw file" on-click="handleClearSelectedDiseases">
-                            Clear
-                        </div>
+                        <div class="disease">
+                            <jso-table id="selectedDiseases" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" data="{{formData.diseases}}"></jso-table>
+                            <div class="horizontal layout">
+                                <div class="flex"></div>
+                                <div class="jso-btn jso-btn-shdw file" on-click="handleClearSelectedDiseases">
+                                    Clear
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="step">
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">Step 2: Genes</div>
+                    <div class="jso-formcontent horizontal layout">
+                        <div id="genes-tab" class="vertical layout">
 
-
-            <div class="step vertical layout" id="step2" hidden$={{handleHiddenStep2(step)}}>
-                <div class="jso-formtitle horizontal layout">
-                    <div class="prev flex" on-click="handlePrevStepButton"><i class="fa fa-angle-double-left"></i><i>&nbsp; Step 1</i></div>
-                    <div class="step-title">Step 2: Genes</div>
-                    <div class="flex next" on-click="handleNextStepButton"><i>Step 3 &nbsp;</i><i class="fa fa-angle-double-right"></i></div>
-                </div>
-                <div class="step-content horizontal layout">
-
-                    <div id="genes-tab" class="vertical layout">
-
-                        <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
-                        <div class="jso-formcontent">
-                            <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2,PPL"></textarea>
-                            <div class="horizontal layout">
-                            <div class="flex"></div>
-                            <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneTextAreaButton"><i class="fa fa-plus-square-o"></i>&nbsp; Add Genes</div>
-                        </div>
-                        </div>
-                        <div class="jso-formtitle" style="font-size:14px;">Import from BED &nbsp;</div>
-                        <div class="jso-formcontent">
-                            <input type="file" id="geneBedFileInput">
-                            <div class="horizontal layout">
-                            <div class="flex"></div>
-                            <div class="jso-btn jso-btn-shdw file" on-click="handleGenesImportBed"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
-                        </div>
-                        </div>
-                        <div class="jso-formtitle" style="font-size:14px;">Import from other Panel &nbsp;</div>
-                        <div class="jso-formcontent">
-                            <select id="importGenesFromPanel" style="width:150px">
-                                <option value="none"> </option>
-                                <template is="dom-repeat" items="{{panels}}">
-                                    <option value$="{{item.file.id}}">{{item.name}}</option>
-                                </template>
-                            </select>
-                            <span class="eye">&nbsp;<i class="fa fa-eye" on-click="handlePreviewFile"></i></span>
-                            <div class="horizontal layout">
-                            <div class="flex"></div>
-                            <div class="jso-btn jso-btn-shdw file" on-click="handleImportGenesPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
-                        </div>
-                        </div>
-                    </div>
-
-                    <div id="genes-list">
-                        <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}" enable-edit></jso-table>
-                        <div class="horizontal layout">
-                        <div class="flex"></div>
-                        <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
-                    </div>
-                    </div>
-
-                </div>
-                <jso-panel modal closable hidden id="panelPreview">
-                    <div class="header">
-                        <i class="fa fa-book"></i> Panel Preview
-                    </div>
-                    <div class="container">
-                         <!-- <pre> -->
-                        <code class="wrapped-text">{{contentData}}</code>
-                        <!-- </pre> -->
-                    </div>
-                </jso-panel>
-            </div>
-
-            <div class="step vertical layout" id="step3" hidden$={{handleHiddenStep3(step)}}>
-                <div class="jso-formtitle horizontal layout">
-                    <div class="prev flex" on-click="handlePrevStepButton"><i class="fa fa-angle-double-left"></i><i>&nbsp; Step 2</i></div>
-                    <div class="step-title">Step 3: Mutations</div>
-                    <div class="flex next" on-click="handleNextStepButton"><i>Step 4 &nbsp;</i><i class="fa fa-angle-double-right"></i></div>
-                </div>
-                <div class="step-content horizontal layout">
-                    <div id="mutations-tab" flex>
-                        <div class="jso-formtitle" style="font-size:13px;">Genomic Pos. &nbsp;</div>
-                        <div class="jso-formcontent vertical layout" id="mutation-tab-config-gv">
-                            <div class="horizontal layout data">
-                                <label style="font-size:12px;" for="">Chr: &nbsp;</label>
-                                <input class="input" type="text" name="mutationGVChr" id="mutationGVChr" />
-                                <div class="flex"></div>
-                                <label style="font-size:12px;" for="">Pos: &nbsp;</label>
-                                <input class="input" type="number" step="1" min= "0" name="mutationGVPos" id="mutationGVPos" />
+                            <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
+                            <div class="jso-formcontent">
+                                <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2,PPL"></textarea>
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneTextAreaButton"><i class="fa fa-plus-square-o"></i>&nbsp; Add Genes</div>
+                                </div>
                             </div>
-                            <div class="horizontal layout data">
-                                <label style="font-size:12px;" for="">Ref: &nbsp;&nbsp;</label>
-                                <input class="input" type="text" name="mutationGVRef" id="mutationGVRef" />
-                                <div class="flex"></div>
-                                <label style="font-size:12px;" for="">Alt: &nbsp;</label>
-                                <input class="input" type="text" name="mutationGVAlt" id="mutationGVAlt" />
+                            <div class="jso-formtitle" style="font-size:14px;">Import from BED &nbsp;</div>
+                            <div class="jso-formcontent">
+                                <input type="file" id="geneBedFileInput">
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleGenesImportBed"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                                </div>
                             </div>
-                            <div class="horizontal layout data">
-                                <label style="font-size:12px;" for="">Phe: &nbsp;</label>
-                                <input class="input flex" type="text" name="mutationGVPhe" id="mutationGVPhe" list="dataListPhe" />
-                                <datalist id="dataListPhe">
-                                    <template is="dom-repeat" items="{{allDiseasesData}}">
-                                        <option value="{{item.phenotype}}">{{item.phenotype}}</option>
+                            <div class="jso-formtitle" style="font-size:14px;">Import from other Panel &nbsp;</div>
+                            <div class="jso-formcontent">
+                                <select id="importGenesFromPanel" style="width:150px">
+                                    <option value="none"> </option>
+                                    <template is="dom-repeat" items="{{panels}}">
+                                        <option value$="{{item.file.id}}">{{item.name}}</option>
                                     </template>
-                                </datalist>
-                            </div>
-                            <div class="horizontal layout">
-                              <div class="jso-btn jso-btn-shdw file" on-click="handleOpenGV">Open GV</div>
-                              <div class="flex"></div>
-                            <div class="jso-btn jso-btn-shdw file" on-click="handleMutationAdd"><i class="fa fa-plus-square-o"></i>&nbsp; Add</div>
-
-                            </div>
-                            <!-- <jso-genome-viewer-element id="gv"></jso-genome-viewer-element> -->
-                        </div>
-                        <div class="jso-formtitle" style="font-size:13px;">Import VCF &nbsp;</div>
-                        <div class="jso-formcontent" id="mutation-tab-config-vcf">
-                            <input type="file" id="mutationVCFFileInput">
-                            <div class="horizontal layout">
-                            <div class="flex"></div>
-                            <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
-                        </div>
-                        </div>
-                        <div class="jso-formtitle" style="font-size:13px;">Import CSV &nbsp;</div>
-                        <div class="jso-formcontent" id="mutation-tab-config-csv">
-                            <div>
-                                <label class="data" style="font-size:12px;" for="">Separator:</label>
-                                <select name="mutationCSVSeparator" id="mutationCSVSeparator">
-                                    <option value=";" selected>;</option>
-                                    <option value=",">,</option>
-                                    <option value="\t">Tab</option>
                                 </select>
+                                <span class="eye">&nbsp;<i class="fa fa-eye" on-click="handlePreviewFile"></i></span>
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleImportGenesPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                                </div>
                             </div>
-                            <div>
-                                <label class="data" style="font-size:12px;" for="">Ignore first line (header):</label>
-                                <input type="checkbox" name="mutationCSVHeader" id="mutationCSVHeader" value="ignore" checked/>
-                            </div>
+                        </div>
 
-                            <input style="margin-top:5px" type="file" id="mutationCSVFileInput">
+                        <div id="genes-list">
+                            <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}" enable-edit></jso-table>
                             <div class="horizontal layout">
-                            <div class="flex"></div>
-                            <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportCSV"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                                <div class="flex"></div>
+                                <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
                             </div>
                         </div>
-                        <div class="jso-formtitle" style="font-size:13px;">Import from other Panel &nbsp;</div>
-                        <div class="jso-formcontent" id="mutation-tab-config-panel">
-                            <select id="importMutationsFromPanel" style="width:150px">
-                                <option value="none"> </option>
-                                <template is="dom-repeat" items="{{panels}}">
-                                    <option value$="{{item.file.id}}">{{item.name}}</option>
-                                </template>
-                            </select>
-                            <span class="eye">&nbsp; <i class="fa fa-eye" on-click="handlePreviewFileMut"></i></span>
-                            <div class="horizontal layout">
-                            <div class="flex"></div>
-                            <div class="jso-btn jso-btn-shdw file" on-click="handleImportMutationsPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
-                            </div>
+
+                    </div>
+                    <jso-panel modal closable hidden id="panelPreview">
+                        <div class="header">
+                            <i class="fa fa-book"></i> Panel Preview
                         </div>
-                    </div>
-                    <div id="mutations-list" flex>
-                        <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}" enable-edit></jso-table>
-                        <div class="horizontal layout">
-                        <div class="flex"></div>
-                        <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear</div>
-                    </div>
-                    </div>
+                        <div class="container">
+
+                            <code class="wrapped-text">{{contentData}}</code>
+
+                        </div>
+                    </jso-panel>
                 </div>
-                <jso-panel modal closable hidden id="panelPreviewMut">
-                    <div class="header">
-                        <i class="fa fa-book"></i> Panel Preview
-                    </div>
-                    <div class="container">
-
-                        <pre><code class="wrapped-text">{{contentData}}</code></pre>
-
-                    </div>
-                </jso-panel>
-
-                <jso-panel movable fixed closable hidden id="panelGV">
-                    <div class="header">
-                        <i class="fa fa-eye"></i> View Mutation
-                    </div>
-                    <team-mutation-selector class="container" id="mutationSelector">
-                    </team-mutation-selector>
-               </jso-panel>
-
-
-
             </div>
+            <div class="step">
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">Step 3: Mutations</div>
+                    <div class="jso-formcontent horizontal layout">
+                        <div id="mutations-tab" flex>
+                            <div class="jso-formtitle" style="font-size:13px;">Genomic Pos. &nbsp;</div>
+                            <div class="jso-formcontent vertical layout" id="mutation-tab-config-gv">
+                                <div class="horizontal layout data">
+                                    <label style="font-size:12px;" for="">Chr: &nbsp;</label>
+                                    <input class="input" type="text" name="mutationGVChr" id="mutationGVChr" />
+                                    <div class="flex"></div>
+                                    <label style="font-size:12px;" for="">Pos: &nbsp;</label>
+                                    <input class="input" type="number" step="1" min="0" name="mutationGVPos" id="mutationGVPos" />
+                                </div>
+                                <div class="horizontal layout data">
+                                    <label style="font-size:12px;" for="">Ref: &nbsp;&nbsp;</label>
+                                    <input class="input" type="text" name="mutationGVRef" id="mutationGVRef" />
+                                    <div class="flex"></div>
+                                    <label style="font-size:12px;" for="">Alt: &nbsp;</label>
+                                    <input class="input" type="text" name="mutationGVAlt" id="mutationGVAlt" />
+                                </div>
+                                <div class="horizontal layout data">
+                                    <label style="font-size:12px;" for="">Phe: &nbsp;</label>
+                                    <input class="input flex" type="text" name="mutationGVPhe" id="mutationGVPhe" list="dataListPhe" />
+                                    <datalist id="dataListPhe">
+                                        <template is="dom-repeat" items="{{allDiseasesData}}">
+                                            <option value="{{item.phenotype}}">{{item.phenotype}}</option>
+                                        </template>
+                                    </datalist>
+                                </div>
+                                <div class="horizontal layout">
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleOpenGV">Open GV</div>
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationAdd"><i class="fa fa-plus-square-o"></i>&nbsp; Add</div>
 
-            <div class="step vertical layout" id="step4" hidden$={{handleHiddenStep4(step)}}>
-                <div class="jso-formtitle horizontal layout">
-                    <div class="prev flex" on-click="handlePrevStepButton"><i class="fa fa-angle-double-left"></i><i>&nbsp; Step 3</i></div>
-                    <div class="step-title">Step 4: Panel Info</div>
-                    <div class="flex"> </div>
+                                </div>
+
+                            </div>
+                            <div class="jso-formtitle" style="font-size:13px;">Import VCF &nbsp;</div>
+                            <div class="jso-formcontent" id="mutation-tab-config-vcf">
+                                <input type="file" id="mutationVCFFileInput">
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                                </div>
+                            </div>
+                            <div class="jso-formtitle" style="font-size:13px;">Import CSV &nbsp;</div>
+                            <div class="jso-formcontent" id="mutation-tab-config-csv">
+                                <div>
+                                    <label class="data" style="font-size:12px;" for="">Separator:</label>
+                                    <select name="mutationCSVSeparator" id="mutationCSVSeparator">
+                                        <option value=";" selected>;</option>
+                                        <option value=",">,</option>
+                                        <option value="\t">Tab</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="data" style="font-size:12px;" for="">Ignore first line (header):</label>
+                                    <input type="checkbox" name="mutationCSVHeader" id="mutationCSVHeader" value="ignore" checked/>
+                                </div>
+
+                                <input style="margin-top:5px" type="file" id="mutationCSVFileInput">
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportCSV"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                                </div>
+                            </div>
+                            <div class="jso-formtitle" style="font-size:13px;">Import from other Panel &nbsp;</div>
+                            <div class="jso-formcontent" id="mutation-tab-config-panel">
+                                <select id="importMutationsFromPanel" style="width:150px">
+                                    <option value="none"> </option>
+                                    <template is="dom-repeat" items="{{panels}}">
+                                        <option value$="{{item.file.id}}">{{item.name}}</option>
+                                    </template>
+                                </select>
+                                <span class="eye">&nbsp; <i class="fa fa-eye" on-click="handlePreviewFileMut"></i></span>
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleImportMutationsPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="mutations-list" flex>
+                            <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}" enable-edit></jso-table>
+                            <div class="horizontal layout">
+                                <div class="flex"></div>
+                                <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear</div>
+                            </div>
+                        </div>
+                    </div>
+                    <jso-panel modal closable hidden id="panelPreviewMut">
+                        <div class="header">
+                            <i class="fa fa-book"></i> Panel Preview
+                        </div>
+                        <div class="container">
+
+                            <pre>
+                                <code class="wrapped-text">{{contentData}}</code>
+                            </pre>
+
+                        </div>
+                    </jso-panel>
+
+                    <jso-panel movable fixed closable hidden id="panelGV">
+                        <div class="header">
+                            <i class="fa fa-eye"></i> View Mutation
+                        </div>
+                        <team-mutation-selector class="container" id="mutationSelector">
+                        </team-mutation-selector>
+                    </jso-panel>
                 </div>
-                <div class="step-content vertical layout" id="personalData">
-
-
+            </div>
+            <div class="step">
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">Step 4: Panel Info</div>
+                    <div class="jso-formcontent vertical layout" id="personalData">
                         <div style="color:#666;margin-top:5px;" for="">Name</div>
                         <input style="margin-top: 2px;border-color:#d3d3d3;" type="text" value="{{formData.name::input}}" />
-
-
-
-                        <div class="data"  for="">Author</div>
+                        <div class="data" for="">Author</div>
                         <input style="margin-top: 2px;border-color:#d3d3d3;" type="text" value="{{formData.author::input}}" />
-
-
-
                         <div class="data" for="">Date</div>
                         <input style="width:150px; margin-top: 2px;border-color:#d3d3d3;" type="date" value="{{formData.date::input}}" />
-
-
-
                         <div class="data" for="">Description: &nbsp; </div>
                         <textarea class="jso sgenesTextArea flex" style="height: 100px; width:100%;" name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
-
-
-                    <div class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save</div>
+                        <div class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save</div>
+                    </div>
                 </div>
             </div>
+        </jso-wizard>
 
-        </div>
-        <div id="wizard-bottom" class="horizontal layout end-justified">
-            <div class="jso-btn jso-btn-shdw file" on-click="handlePrevStepButton" hidden="{{!handleHiddenStep1(step)}}"><i class="fa fa-angle-double-left"></i>&nbsp; Previous</div>
-            <div class="jso-btn jso-btn-shdw file" on-click="handleNextStepButton" hidden="{{!handleHiddenStep4(step)}}">Next &nbsp;<i class="fa fa-angle-double-right"></i></div>
-            <div hidden="{{handleHiddenStep4(step)}}"> &nbsp; </div>
-        </div>
+
+
     </template>
 </dom-module>
 <script>
@@ -1233,8 +1152,8 @@
                 me.formData.addMutation(this.mutations[i]);
             }
         },
-        handleOpenGV: function(e){
-          this.$.panelGV.hidden = false;
+        handleOpenGV: function(e) {
+            this.$.panelGV.hidden = false;
         },
     });
 </script>

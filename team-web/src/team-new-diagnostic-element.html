@@ -71,7 +71,7 @@
                 <div class="step">
                     <div class="jso-formbox">
                         <div class="jso-formtitle">
-                            Choose a File
+                            Step 1: Choose a File
                         </div>
                         <div class="jso-formcontent" style="padding:0">
                             <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
@@ -80,7 +80,7 @@
                 </div>
                 <div class="step">
                     <div class="jso-formbox">
-                        <div class="jso-formtitle">Choose a Panel</div>
+                        <div class="jso-formtitle">Step 2: Choose a Panel</div>
                         <div class="jso-formcontent selbox" id="panelSelector">
                             <template is="dom-repeat" items="{{panels}}" filter="isPanel">
                                 <div class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
@@ -92,7 +92,7 @@
                 </div>
                 <div class="step">
                     <div class="jso-formbox">
-                        <div class="jso-formtitle">Job information</div>
+                        <div class="jso-formtitle">Step 3: Job information</div>
                         <div class="jso-formcontent">
                             <!--<label>Output folder</label>-->
                             <!--<jso-project-browser-window id="outdir" studies="{{studies}}" selectedStudy="{{selectedStudy}}"-->
