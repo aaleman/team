@@ -120,9 +120,16 @@
             overflow-y: auto;
         }
 
+
         #jobBrowserPanel {
             position: absolute;
             right: 0;
+            top: 0;
+            width: 600px;
+        }
+        #browserPanel {
+            position: absolute;
+            left: 0;
             top: 0;
             width: 600px;
         }
@@ -132,7 +139,6 @@
         }
 
         #newDiagnosisPanel,
-        #browserPanel,
         #newPanelPanel,
         #panelManager {
             /*top:25px;*/
@@ -177,15 +183,15 @@
             <team-home data-option="home" hidden$="{{computeHome(selectedOption)}}"></team-home>
             <team-result data-option="result" id="teamResult" data-menu-type="unique" hidden="true"></team-result>
 
-            <jso-panel closable  id="browserPanel" data-option="files" data-menu-type="unique">
-                <div class="header" style="text-align:left;font-size:15px;">
+            <jso-panel collapsible closable movable  id="browserPanel" data-option="files" data-menu-type="unique">
+                <div class="header">
                     <i class="fa fa-folder-open-o"></i> File Browser
                 </div>
                 <jso-opencga-browser class="container" id="browser" projects="{{projects}}" bioformats="{{bioformats}}" disable-new-project disable-new-study></jso-opencga-browser>
             </jso-panel>
 
 
-            <jso-panel closable movable id="panelManager" data-option="panels" data-menu-type="unique">
+            <jso-panel movable expandible closable id="panelManager" data-option="panels" data-menu-type="unique">
                 <div class="header" style="text-align:left;font-size:15px;">
                     <i class="fa fa-folder-open-o"></i> Panel Manager
                 </div>
@@ -194,7 +200,7 @@
             </jso-panel>
 
 
-            <jso-panel closable id="newDiagnosisPanel" data-option="newdiagnostic" data-menu-type="unique">
+            <jso-panel movable expandible closable id="newDiagnosisPanel" data-option="newdiagnostic" data-menu-type="unique">
                 <div class="header" style="text-align:left;font-size:15px;">
                     <i class="fa fa-plus"></i> New Diagnosis
                 </div>
@@ -242,12 +248,12 @@
                     <span class="option-text">Panels</span>
                 </div>
 
-                <div class="flex"></div>
-                <div title="Browse files" class="hover" data-option="files" data-menu-type="unique">
+
+                <div title="Browse files" class="hover" data-option="files" data-menu-type="unique" style="margin-left:200px">
                     <i class="fa fa-folder-open-o"></i>
                     <span class="option-text">Browse files</span>
                 </div>
-                <div title="Show diagnoses" class="hover" data-option="diagnoses" data-menu-type="toggle" style="margin-left:25px;">
+                <div title="Show diagnoses" class="hover" data-option="diagnoses" data-menu-type="unique">
                     <i class="fa fa-user-md"></i>
                     <span class="option-text">Diagnoses</span>
                 </div>

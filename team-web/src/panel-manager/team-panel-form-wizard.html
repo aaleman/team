@@ -55,10 +55,11 @@
 
         .disease {
             width: 45%;
-            height: 450px;
+            height: 80%;
             margin: 0 auto;
             border: 1px solid #d3d3d3;
         }
+
 
         jso-table {
             height: 450px;
@@ -110,7 +111,7 @@
             cursor: pointer;
         }
 
-        
+
     </style>
     <template>
 
@@ -120,7 +121,7 @@
                     <div class="jso-formtitle">Step 1: Diseases</div>
                     <div class="jso-formcontent horizontal layout">
                         <div class="disease">
-                            <jso-table id="allDiseases" class="disease-left" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter></jso-table>
+                            <jso-table id="allDiseases" class="disease-left" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter ></jso-table>
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
@@ -560,7 +561,7 @@
                 title: 'Source',
                 type: 'select',
                 options: ["clinvar", "gwas"],
-                width: 100
+                width: 120
             }, {
                 name: '',
                 title: '',

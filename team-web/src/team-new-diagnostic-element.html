@@ -83,9 +83,9 @@
                         <div class="jso-formtitle">Step 2: Choose a Panel</div>
                         <div class="jso-formcontent selbox" id="panelSelector">
                             <template is="dom-repeat" items="{{panels}}" filter="isPanel">
-                                <div class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
+                                <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
                                     <span>{{item.name}}</span>
-                                </div>
+
                             </template>
                         </div>
                     </div>
