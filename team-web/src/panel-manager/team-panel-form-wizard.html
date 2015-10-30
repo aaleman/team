@@ -7,7 +7,7 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-            height: 800px;
+            height: 650px;
             width: 100%;
         }
 
@@ -16,7 +16,7 @@
         }
 
         #genes-tab {
-            height: 80%;
+            height: 100%;
             width: 40%;
             border: 1px solid #d3d3d3;
         }
@@ -52,15 +52,10 @@
         }
 
         .disease {
-            width: 45%;
-            height: 80%;
+            width: 450px;
+            /*height: 80%;*/
             margin: 0 auto;
             border: 1px solid #d3d3d3;
-        }
-
-
-        jso-table {
-            height: 100%;
         }
 
         #panelPreview .container {
@@ -105,6 +100,12 @@
             color: #666;
             cursor: pointer;
         }
+
+        #allDiseases, #selectedDiseases, #geneTable, #mutationTable {
+            height: 450px;
+            width: 100%;
+        }
+
     </style>
     <template>
 
@@ -112,9 +113,12 @@
             <div class="step">
                 <div class="jso-formbox vertical layout">
                     <div class="jso-formtitle">Select Diseases</div>
-                    <div class="jso-formcontent horizontal layout flex">
-                        <div class="disease">
-                            <jso-table id="allDiseases" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}"
+                    <div class="jso-formcontent horizontal layout">
+                        <div class="disease vertical layout">
+                            <jso-table id="allDiseases"
+                                       class="flex"
+                                       columns="{{allDiseaseColumns}}"
+                                       data="{{allDiseasesData}}"
                                        selected="{{currentSelectedDiseasesData}}" enable-select
                                        enable-filter></jso-table>
                             <div class="horizontal layout">
@@ -124,9 +128,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="disease">
-                            <jso-table id="selectedDiseases" columns="{{diseaseColumns}}"
-                                       on-removerow="handleRemoveDisease" data="{{formData.diseases}}"></jso-table>
+                        <div class="disease vertical layout">
+                            <jso-table id="selectedDiseases"
+                                       class="flex"
+                                       columns="{{diseaseColumns}}"
+                                       on-removerow="handleRemoveDisease"
+                                       data="{{formData.diseases}}">
+
+                            </jso-table>
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClearSelectedDiseases">
@@ -142,7 +151,6 @@
                     <div class="jso-formtitle">Step 2: Genes</div>
                     <div class="jso-formcontent horizontal layout">
                         <div id="genes-tab" class="vertical layout">
-
                             <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
                             <div class="jso-formcontent">
                                 <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3"
@@ -580,25 +588,25 @@
                 name: 'phenotype',
                 title: 'Phenotype',
                 type: 'text',
-                width: 140
+                width: 350
             }, {
                 name: 'source',
                 title: 'Source',
                 type: 'select',
                 options: ["clinvar", "gwas"],
-                width: 120
+                width: 100
             }];
             this.diseaseColumns = [{
                 name: 'phenotype',
                 title: 'Phenotype',
                 type: 'text',
-                width: 150
+                width: 320
             }, {
                 name: 'source',
                 title: 'Source',
                 type: 'select',
                 options: ["clinvar", "gwas"],
-                width: 120
+                width: 100
             }, {
                 name: '',
                 title: '',
