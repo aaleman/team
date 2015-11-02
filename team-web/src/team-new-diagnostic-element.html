@@ -46,6 +46,12 @@
             width: 100%;
             height: 300px;
         }
+
+        .errmsg {
+            color: #8b0000;
+            font-size: 15px;
+            font-style: italic;
+        }
     </style>
     <template>
 
@@ -57,7 +63,7 @@
                             Step 1: Choose a File
                         </div>
                         <div class="jso-formcontent" style="padding:0">
-                            <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
+                            <jso-opencga-browser name="{{vcfFile}}" id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
                         </div>
                     </div>
                 </div>
@@ -84,7 +90,10 @@
                             <textarea class="jso" value="{{jobDescription}}" required></textarea>
                         </div>
                     </div>
-                    <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                    <div class="horizontal layout">
+                        <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                        </div>
+                        <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
                     </div>
                 </div>
 
@@ -142,7 +151,15 @@
             jobDescription: {
                 type: String,
                 value: "New Diagnosis"
+            },
+            vcfFile: {
+                type: Array,
+                value: null
             }
+        },
+
+        ready: function() {
+            vcfFile = null;
         },
         handlePanelsChanged: function(neo, old) {
             //            debugger
@@ -152,39 +169,51 @@
         },
         handleForm: function(e) {
             var me = this;
-            var query = {
-                sid: Cookies("bioinfo_sid"),
-                studyId: this.defaultStudy.id,
-                toolId: "team",
-                //                outdir: this.$.outdir.selectedFile.id,
-                //                name: "TEAM_JOB_NAME",
-                name: this.jobName,
-                description: "TEAM_DESC",
-                //                description: this.description,
-                "input": this.inputSelectedFile.id,
-                "panel": this.selectedPanel,
-                output: this.analysisFolder.id
-            };
 
-            OpencgaManager.jobs.create({
-                query: query,
-                request: {
-                    //method: 'POST',
-                    success: function(response) {
-                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                            var userId = response.response[0].result[0].id;
-                            me.fire('run');
-                            //                            me.message = userId + ' created';
-                            //                            me.selectedOption = "jobLaunched"
-                        } else {
-                            //                            me.message = response.response[0].errorMsg;
+
+            if (vcfFile != null) {
+
+
+
+                var query = {
+                    sid: Cookies("bioinfo_sid"),
+                    studyId: this.defaultStudy.id,
+                    toolId: "team",
+                    //                outdir: this.$.outdir.selectedFile.id,
+                    //                name: "TEAM_JOB_NAME",
+                    name: this.jobName,
+                    description: "TEAM_DESC",
+                    //                description: this.description,
+
+                    "input": this.inputSelectedFile.id,
+                    "panel": this.selectedPanel,
+                    output: this.analysisFolder.id
+
+                };
+
+                OpencgaManager.jobs.create({
+                    query: query,
+                    request: {
+                        //method: 'POST',
+                        success: function(response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                var userId = response.response[0].result[0].id;
+                                me.fire('run');
+                                //                            me.message = userId + ' created';
+                                //                            me.selectedOption = "jobLaunched"
+                            } else {
+                                //                            me.message = response.response[0].errorMsg;
+                            }
+                        },
+                        error: function() {
+                            me.message = 'Server error, try again later.';
                         }
-                    },
-                    error: function() {
-                        me.message = 'Server error, try again later.';
                     }
-                }
-            })
+                })
+
+            } else {
+                this.errorMessage = "No input file selected";
+            }
 
 
         },

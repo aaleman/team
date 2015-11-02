@@ -10,104 +10,108 @@
             height: 650px;
             width: 100%;
         }
-
         .wrapped-text {
             white-space: pre-wrap;
         }
-
         #genes-tab {
             height: 100%;
             width: 40%;
             border: 1px solid #d3d3d3;
         }
-
         #genes-list {
             height: 80%;
             width: 55%;
             margin: 0 auto;
             border: 1px solid #d3d3d3;
         }
-
         .genes-tab-container-elem {
             margin: 20px;
         }
-
         #mutations-tab {
             height: 80%;
             width: 50%;
             border: 1px solid #d3d3d3;
         }
-
         #mutations-list {
             height: 80%;
             width: 45%;
             margin: 0 auto;
             border: 1px solid #d3d3d3;
         }
-
         #personalData {
             border: 1px solid #d3d3d3;
             padding: 10px;
             margin: 20px 100px;
         }
-
         .disease {
             width: 400px;
             /*height: 80%;*/
             margin: 0 auto;
             border: 1px solid #d3d3d3;
         }
-
         jso-table {
             height: 600px;
         }
-
         #panelPreview .container {
             width: 800px;
             height: 600px;
             overflow-y: auto;
             overflow-x: auto;
         }
-
+        #appPanel .container {
+            width: 800px;
+            height: 600px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
         #panelPreviewMut .container {
             width: 800px;
             height: 600px;
             overflow-y: auto;
             overflow-x: auto;
         }
-
         .file {
             text-align: center;
             color: #445D76;
             margin-top: 5px;
             width: 100px;
         }
-
         .sgenesTextArea {
             box-sizing: border-box;
             width: 100%;
             height: 40px;
             resize: none;
         }
-
         .data {
             color: #666;
             margin-top: 10px;
         }
-
         .input {
             width: 100px;
             height: 13px;
         }
-
         .eye > i:hover {
             color: #666;
             cursor: pointer;
         }
-
-        #allDiseases, #selectedDiseases, #geneTable, #mutationTable {
+        #allDiseases,
+        #selectedDiseases,
+        #geneTable,
+        #mutationTable {
             height: 450px;
             width: 100%;
+        }
+        #panelAppDiseases {
+            margin: 5px;
+            width: 55%;
+            border: 1px solid #d3d3d3;
+            box-sizing: border-box;
+        }
+        #panelAppGenes {
+            margin: 5px;
+            width: 45%;
+            border: 1px solid #d3d3d3;
+            box-sizing: border-box;
         }
 
     </style>
@@ -119,25 +123,15 @@
                     <div class="jso-formtitle">Select Diseases</div>
                     <div class="jso-formcontent horizontal layout">
                         <div class="disease vertical layout">
-                            <jso-table id="allDiseases"
-                                       class="flex"
-                                       columns="{{allDiseaseColumns}}"
-                                       data="{{allDiseasesData}}"
-                                       selected="{{currentSelectedDiseasesData}}" enable-select
-                                       enable-filter></jso-table>
+                            <jso-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter></jso-table>
                             <div class="horizontal layout">
                                 <div class="flex"></div>
-                                <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i
-                                        class="fa fa-plus-square-o"></i>&nbsp; Add
+                                <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
                                 </div>
                             </div>
                         </div>
                         <div class="disease vertical layout">
-                            <jso-table id="selectedDiseases"
-                                       class="flex"
-                                       columns="{{diseaseColumns}}"
-                                       on-removerow="handleRemoveDisease"
-                                       data="{{formData.diseases}}">
+                            <jso-table id="selectedDiseases" class="flex" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" data="{{formData.diseases}}">
 
                             </jso-table>
                             <div class="horizontal layout">
@@ -157,13 +151,11 @@
                         <div id="genes-tab" class="vertical layout">
                             <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
                             <div class="jso-formcontent">
-                                <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3"
-                                          placeholder="BRCA2,PPL"></textarea>
+                                <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2,PPL"></textarea>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneTextAreaButton"><i
-                                            class="fa fa-plus-square-o"></i>&nbsp; Add Genes
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneTextAreaButton"><i class="fa fa-plus-square-o"></i>&nbsp; Add Genes
                                     </div>
                                 </div>
                             </div>
@@ -173,8 +165,7 @@
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleGenesImportBed"><i
-                                            class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleGenesImportBed"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
                             </div>
@@ -190,16 +181,22 @@
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleImportGenesPanel"><i
-                                            class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleImportGenesPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="jso-formtitle" style="font-size:14px;">Import from PanelApp &nbsp;</div>
+                            <div class="jso-formcontent">
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleImportAppPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div id="genes-list">
-                            <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}"
-                                       enable-edit></jso-table>
+                            <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}" enable-edit></jso-table>
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
@@ -209,13 +206,45 @@
                     </div>
                     <jso-panel modal closable hidden id="panelPreview">
                         <div class="header">
-                            <i class="fa fa-book"></i> Panel Preview
+                            <i class="fa fa-eye"></i> Panel Preview
                         </div>
                         <div class="container">
 
                             <code class="wrapped-text">{{contentData}}</code>
 
                         </div>
+                    </jso-panel>
+                    <jso-panel movable fixed closable hidden id="appPanel">
+                        <div class="header">
+                            <i class="fa fa-plus-square-o"></i> Import from PanelApp
+                        </div>
+
+                        <div class="jso-formcontent horizontal layout container">
+
+                            <div id="panelAppDiseases" class="vertical layout">
+                                <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select style="height:550px">
+
+                                </jso-table>
+
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <a href="https://bioinfo.extge.co.uk/crowdsourcing/PanelApp/">
+                                        <div class="jso-btn jso-btn-shdw file">>>More info<<</div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="panelAppGenes" class="vertical layout">
+                                <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" enable-select style="height:550px">
+
+                                </jso-table>
+                                <div class="horizontal layout">
+                                    <div class="flex"></div>
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </jso-panel>
                 </div>
             </div>
@@ -228,25 +257,23 @@
                             <div class="jso-formcontent vertical layout" id="mutation-tab-config-gv">
                                 <div class="horizontal layout data">
                                     <label style="font-size:12px;" for="">Chr: &nbsp;</label>
-                                    <input class="input" type="text" name="mutationGVChr" id="mutationGVChr"/>
+                                    <input class="input" type="text" name="mutationGVChr" id="mutationGVChr" />
 
                                     <div class="flex"></div>
                                     <label style="font-size:12px;" for="">Pos: &nbsp;</label>
-                                    <input class="input" type="number" step="1" min="0" name="mutationGVPos"
-                                           id="mutationGVPos"/>
+                                    <input class="input" type="number" step="1" min="0" name="mutationGVPos" id="mutationGVPos" />
                                 </div>
                                 <div class="horizontal layout data">
                                     <label style="font-size:12px;" for="">Ref: &nbsp;&nbsp;</label>
-                                    <input class="input" type="text" name="mutationGVRef" id="mutationGVRef"/>
+                                    <input class="input" type="text" name="mutationGVRef" id="mutationGVRef" />
 
                                     <div class="flex"></div>
                                     <label style="font-size:12px;" for="">Alt: &nbsp;</label>
-                                    <input class="input" type="text" name="mutationGVAlt" id="mutationGVAlt"/>
+                                    <input class="input" type="text" name="mutationGVAlt" id="mutationGVAlt" />
                                 </div>
                                 <div class="horizontal layout data">
                                     <label style="font-size:12px;" for="">Phe: &nbsp;</label>
-                                    <input class="input flex" type="text" name="mutationGVPhe" id="mutationGVPhe"
-                                           list="dataListPhe"/>
+                                    <input class="input flex" type="text" name="mutationGVPhe" id="mutationGVPhe" list="dataListPhe" />
                                     <datalist id="dataListPhe">
                                         <template is="dom-repeat" items="{{allDiseasesData}}">
                                             <option value="{{item.phenotype}}">{{item.phenotype}}</option>
@@ -258,8 +285,7 @@
                                         Open Genome Viewer
                                     </div>
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationAdd"><i
-                                            class="fa fa-plus-square-o"></i>&nbsp; Add
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationAdd"><i class="fa fa-plus-square-o"></i>&nbsp; Add
                                     </div>
 
                                 </div>
@@ -271,8 +297,7 @@
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i
-                                            class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
                             </div>
@@ -287,18 +312,16 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="data" style="font-size:12px;" for="">Ignore first line
-                                        (header):</label>
-                                    <input type="checkbox" name="mutationCSVHeader" id="mutationCSVHeader"
-                                           value="ignore" checked/>
+                                    <label class="data" style="font-size:12px;" for="">Ignore first line (header):
+                                    </label>
+                                    <input type="checkbox" name="mutationCSVHeader" id="mutationCSVHeader" value="ignore" checked/>
                                 </div>
 
                                 <input style="margin-top:5px" type="file" id="mutationCSVFileInput">
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportCSV"><i
-                                            class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportCSV"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
                             </div>
@@ -310,20 +333,17 @@
                                         <option value$="{{item.file.id}}">{{item.name}}</option>
                                     </template>
                                 </select>
-                                <span class="eye">&nbsp; <i class="fa fa-eye"
-                                                            on-click="handlePreviewFileMut"></i></span>
+                                <span class="eye">&nbsp; <i class="fa fa-eye" on-click="handlePreviewFileMut"></i></span>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleImportMutationsPanel"><i
-                                            class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    <div class="jso-btn jso-btn-shdw file" on-click="handleImportMutationsPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div id="mutations-list" flex>
-                            <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}"
-                                       enable-edit></jso-table>
+                            <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}" enable-edit></jso-table>
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear
@@ -361,23 +381,18 @@
                     <div class="jso-formtitle">Step 4: Panel Info</div>
                     <div class="jso-formcontent vertical layout" id="personalData">
                         <div style="color:#666;margin-top:5px;" for="">Name</div>
-                        <input style="margin-top: 2px;border-color:#d3d3d3;" type="text"
-                               value="{{formData.name::input}}"/>
+                        <input style="margin-top: 2px;border-color:#d3d3d3;" type="text" value="{{formData.name::input}}" />
 
                         <div class="data" for="">Author</div>
-                        <input style="margin-top: 2px;border-color:#d3d3d3;" type="text"
-                               value="{{formData.author::input}}"/>
+                        <input style="margin-top: 2px;border-color:#d3d3d3;" type="text" value="{{formData.author::input}}" />
 
                         <div class="data" for="">Date</div>
-                        <input style="width:150px; margin-top: 2px;border-color:#d3d3d3;" type="date"
-                               value="{{formData.date::input}}"/>
+                        <input style="width:150px; margin-top: 2px;border-color:#d3d3d3;" type="date" value="{{formData.date::input}}" />
 
                         <div class="data" for="">Description: &nbsp; </div>
-                        <textarea class="jso sgenesTextArea flex" style="height: 100px; width:100%;" name="" id=""
-                                  cols="30" rows="10" value="{{formData.description::input}}"></textarea>
+                        <textarea class="jso sgenesTextArea flex" style="height: 100px; width:100%;" name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
 
-                        <div class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px"
-                             on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save
+                        <div class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save
                         </div>
                     </div>
                 </div>
@@ -401,20 +416,20 @@
             },
             formData: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 },
                 notify: true
             },
             diseaseColumns: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             selectedDiseases: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
                 notify: true,
@@ -422,19 +437,19 @@
             },
             currentSelectedDiseasesData: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             selectedDiseasesData: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             associatedGenes: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
@@ -444,7 +459,7 @@
             },
             geneColumns: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
@@ -454,50 +469,50 @@
             },
             mutationColumns: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             mutationData: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             defaultStudy: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
             teamConfigFolder: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
             showPanel: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 },
                 observer: 'handleShowPanel'
             },
             dataListPhenotype: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             panels: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             selectedPanel: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
@@ -506,6 +521,18 @@
             },
             mutations: {
                 type: Array,
+            },
+            panelAppDiseases: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+            panelAppGenes: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
             },
 
         },
@@ -516,21 +543,41 @@
         ],
 
 
-        handleUpdatedSelectedDiseases: function (neo, old, path) {
+        handleUpdatedSelectedDiseases: function(neo, old, path) {
 
         },
-        handleUpdatedGenes: function (neo, old, path) {
+        handleUpdatedGenes: function(neo, old, path) {
             if (neo) {
                 this.$.geneTable.refresh();
             }
         },
-        handleRemoveDisease: function (e) {
+        handleRemoveDisease: function(e) {
             var disease = e.detail.row;
             this.formData.removeGenesFromDisease(disease);
             this.formData.removeMutationsFromDisease(disease);
 
         },
-        ready: function () {
+        handlePanelAppSelected: function(e) {
+
+            var me = this;
+
+            var selectedPanelAppDisease = e.detail.length > 0 ? e.detail[0] : {};
+
+            if (selectedPanelAppDisease.Name && selectedPanelAppDisease.Name !== "") {
+
+                var query = "https://bioinfo.extge.co.uk/crowdsourcing/WebServices/get_panel/" + selectedPanelAppDisease.Name + "/?format=json"
+
+                $.ajax({
+                    url: query,
+                    dataType: 'json',
+                    async: false,
+                    success: function(response, textStatus, jqXHR) {
+                        me.panelAppGenes = response.result.Genes;
+                    }
+                });
+            }
+        },
+        ready: function() {
 
 
             var me = this;
@@ -551,7 +598,7 @@
                     url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     dataType: 'json',
                     async: false,
-                    success: function (response, textStatus, jqXHR) {
+                    success: function(response, textStatus, jqXHR) {
                         try {
                             var data = response.response;
                             var clinvar = data[0].result;
@@ -572,7 +619,7 @@
                                 diseases.push(dis);
                             }
 
-                            diseases.sort(function (a, b) {
+                            diseases.sort(function(a, b) {
                                 return a.phenotype.localeCompare(b.phenotype);
                             });
 
@@ -591,6 +638,8 @@
                 });
 
             }
+
+
             this.$.allDiseases.setLoading(false);
 
             this.allDiseaseColumns = [{
@@ -645,6 +694,7 @@
                 width: 30
             }];
 
+
             this.mutationColumns = [{
                 name: 'chr',
                 title: 'Chr',
@@ -670,6 +720,48 @@
                 width: 30
             }];
 
+            this.panelAppGenesColumns = [{
+                name: "GeneSymbol",
+                title: "Gene",
+                width: 180
+            }, {
+                name: "LevelOfConfidence",
+                title: "Level Of Confidence",
+                width: 170
+            }];
+            this.panelAppDiseasesColumns = [{
+                name: 'Name',
+                title: 'Disease',
+                width: 220
+
+            }, {
+                name: 'Number_of_Genes',
+                title: 'NºGenes',
+                width: 100
+            }, {
+                name: 'CurrentVersion',
+                title: 'Version',
+                width: 100
+            }];
+
+
+            if (localStorage.bioinfo_team_panelapp_diseases) {
+                this.panelAppDiseases = JSON.parse(localStorage.bioinfo_team_panelapp_diseases);
+            } else {
+                $.ajax({
+                    url: "https://bioinfo.extge.co.uk/crowdsourcing/WebServices/list_panels?format=json",
+                    dataType: 'json',
+                    async: false,
+                    success: function(response, textStatus, jqXHR) {
+                        var result = response.result;
+                        if (result.length > 0) {
+                            me.panelAppDiseases = result;
+                            localStorage.bioinfo_team_panelapp_diseases = JSON.stringify(result);
+                        }
+                    }
+                });
+
+            }
 
             //            this.$.mutationGVPhe.addEventListener('keyup', function (event) {
             //                        var query = this.value.toUpperCase();
@@ -682,9 +774,7 @@
 
             var stepNumbers = this.getElementsByClassName("step-number");
         },
-        _setQuickSearchMenu: function (query) {
-
-
+        _setQuickSearchMenu: function(query) {
             this.dataListPhenotype = [];
             //            this.splice('dataListPhenotype',0,this.dataListPhenotype.length);
             for (var i = 0; i < this.allDiseasesData.length; i++) {
@@ -693,43 +783,41 @@
                 if (disName.indexOf(query) >= 0) {
                     this.push('dataListPhenotype', row);
                 }
-
             }
             console.log(this.dataListPhenotype);
         },
-        handleHiddenStep1: function (step) {
+        handleHiddenStep1: function(step) {
             return step != 1;
         },
-        handleHiddenStep2: function (step) {
+        handleHiddenStep2: function(step) {
             return step != 2;
         },
-        handleHiddenStep3: function (step) {
+        handleHiddenStep3: function(step) {
             return step != 3;
         },
-        handleHiddenStep4: function (step) {
+        handleHiddenStep4: function(step) {
             return step != 4;
         },
-        collapseMenu: function (menuHidden, searchingFlag) {
+        collapseMenu: function(menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
         },
-        hideProjectList: function (menuHidden, searchingFlag) {
+        hideProjectList: function(menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
         },
-        handlePrevStepButton: function (e) {
+        handlePrevStepButton: function(e) {
             this.step = (this.step <= 1) ? 1 : this.step - 1;
             console.log(this.step);
         },
-        handleNextStepButton: function (e) {
+        handleNextStepButton: function(e) {
             this.step = (this.step >= this.maxSteps) ? this.maxSteps : this.step + 1;
         },
-        handleSelectedRows: function (neo, old) {
+        handleSelectedRows: function(neo, old) {
             return neo;
         },
-        handleAddSelectedDiseases: function () {
-
+        handleAddSelectedDiseases: function() {
             var me = this;
             this.$.selectedDiseases.setLoading(true);
-            setTimeout(function () {
+            setTimeout(function() {
                 for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
                     var row = me.currentSelectedDiseasesData[i];
 
@@ -741,30 +829,28 @@
                 me.$.selectedDiseases.setLoading(false);
             }, 50)
         },
-        handleClearSelectedDiseases: function () {
+        handleClearSelectedDiseases: function() {
             this.formData.clearDiseases();
         },
-
-        handleHiddenGeneText: function (geneTab) {
+        handleHiddenGeneText: function(geneTab) {
             return geneTab != 'text';
         },
-        handleHiddenGeneBed: function (geneTab) {
+        handleHiddenGeneBed: function(geneTab) {
             return geneTab != 'bed';
         },
-        handleHiddenGenePanel: function (geneTab) {
+        handleHiddenGenePanel: function(geneTab) {
             return geneTab != 'panel';
         },
-        handleClickGeneText: function (e) {
+        handleClickGeneText: function(e) {
             this.geneTab = 'text';
         },
-        handleClickGeneBed: function (e) {
+        handleClickGeneBed: function(e) {
             this.geneTab = 'bed';
         },
-        handleClickGenePanel: function (e) {
+        handleClickGenePanel: function(e) {
             this.geneTab = 'panel';
         },
-        handleClickGeneTextAreaButton: function (e) {
-
+        handleClickGeneTextAreaButton: function(e) {
             var me = this;
             var textAreaValue = this.$.geneTextArea.value.toUpperCase();
             var splits = textAreaValue.split(",");
@@ -792,17 +878,12 @@
                                 start: start,
                                 end: end
                             };
-
                             me.formData.addGene(gene);
                         }
                     } else {
-
                         this.$.geneTable.setLoading(true);
-
-                        setTimeout(function () {
-
+                        setTimeout(function() {
                             CellBaseManager.get({
-                                //  host: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest",
                                 species: 'hsapiens',
                                 category: 'feature',
                                 subCategory: 'gene',
@@ -812,10 +893,8 @@
                                 params: {
                                     include: "name,chromosome,start,end"
                                 },
-                                success: function (data) {
-
+                                success: function(data) {
                                     if (data.response && data.response.length > 0) {
-
                                         for (var i = 0; i < data.response.length; i++) {
                                             var elem = data.response[i];
                                             if (elem.result.length > 0) {
@@ -827,14 +906,11 @@
                                                     end: row.end
                                                 };
                                                 me.formData.addGene(gene);
-
                                             } else {
                                                 me.formData.addGene({
                                                     name: elem.id
                                                 });
                                             }
-
-
                                         }
                                     }
                                 }
@@ -846,13 +922,12 @@
             }
             this.$.geneTextArea.value = '';
         },
-        handleGenesImportBed: function (e) {
-
+        handleGenesImportBed: function(e) {
             var me = this;
             var bed_file = this.$.geneBedFileInput.files[0];
             if (bed_file != null) {
                 var reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     var data = e.target.result;
                     var lines = data.split("\n");
                     for (var i = 0; i < lines.length; i++) {
@@ -862,14 +937,12 @@
                             var chr = fields[0];
                             var start = fields[1];
                             var end = fields[2];
-
                             var gene = {
                                 name: chr + ":" + start + "-" + end,
                                 chr: chr,
                                 start: start,
                                 end: end
                             };
-
                             me.formData.addGene(gene);
                         }
                     }
@@ -877,11 +950,8 @@
                 reader.readAsText(bed_file);
             }
         },
-
-        handlePreviewFile: function (e) {
-
+        handlePreviewFile: function(e) {
             var fileId = parseInt(this.$.importGenesFromPanel.value);
-
             var data;
             OpencgaManager.files.content({
                 id: fileId,
@@ -891,26 +961,19 @@
                 },
                 request: {
                     async: false,
-                    success: function (response) {
+                    success: function(response) {
                         data = response;
                     },
-                    error: function () {
-
-                    }
+                    error: function() {}
                 }
             });
-
             if (data) {
                 this.contentData = data;
                 this.$.panelPreview.hidden = false;
             }
-
-
         },
-        handlePreviewFileMut: function (e) {
-
+        handlePreviewFileMut: function(e) {
             var fileId = parseInt(this.$.importMutationsFromPanel.value);
-
             var data;
             OpencgaManager.files.content({
                 id: fileId,
@@ -920,61 +983,53 @@
                 },
                 request: {
                     async: false,
-                    success: function (response) {
+                    success: function(response) {
                         data = response;
                     },
-                    error: function () {
-
-                    }
+                    error: function() {}
                 }
             });
-
             if (data) {
                 this.contentData = data;
                 this.$.panelPreviewMut.hidden = false;
             }
-
-
         },
-
-
-        handleClickGeneListClear: function (e) {
+        handleImportAppPanel: function(e) {
+            this.$.appPanel.hidden = false;
+        },
+        handleClickGeneListClear: function(e) {
             this.formData.clearGenes();
         },
-        handleClickMutationGV: function (e) {
+        handleClickMutationGV: function(e) {
             this.mutationTab = 'gv';
         },
-        handleClickMutationVCF: function (e) {
+        handleClickMutationVCF: function(e) {
             this.mutationTab = 'vcf';
         },
-        handleClickMutationCSV: function (e) {
+        handleClickMutationCSV: function(e) {
             this.mutationTab = 'csv';
         },
-        handleClickMutationPanel: function (e) {
+        handleClickMutationPanel: function(e) {
             this.mutationTab = 'panel';
         },
-        handleHiddenMutationGV: function (mutationTab) {
+        handleHiddenMutationGV: function(mutationTab) {
             return mutationTab != 'gv';
         },
-        handleHiddenMutationVCF: function (mutationTab) {
+        handleHiddenMutationVCF: function(mutationTab) {
             return mutationTab != 'vcf';
         },
-        handleHiddenMutationCSV: function (mutationTab) {
+        handleHiddenMutationCSV: function(mutationTab) {
             return mutationTab != 'csv';
         },
-        handleHiddenMutationPanel: function (mutationTab) {
+        handleHiddenMutationPanel: function(mutationTab) {
             return mutationTab != 'panel';
         },
-        handleMutationImportVCF: function (e) {
-
+        handleMutationImportVCF: function(e) {
             var me = this;
             var vcf_file = this.$.mutationVCFFileInput.files[0];
-
             if (vcf_file != null) {
-
                 var reader = new FileReader();
-
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     var data = e.target.result;
                     var lines = data.split("\n");
                     for (var i = 0; i < lines.length; i++) {
@@ -994,29 +1049,23 @@
                                 phe: "TODO"
                             };
                             me.formData.addMutation(mut);
-
                         }
                     }
                 };
                 reader.readAsText(vcf_file);
             }
         },
-        handleMutationImportCSV: function (e) {
-
+        handleMutationImportCSV: function(e) {
             var me = this;
             var csv_file = this.$.mutationCSVFileInput.files[0];
-
             if (csv_file != null) {
-
                 var reader = new FileReader();
                 var separator = this.$.mutationCSVSeparator.selectedOptions[0].value;
                 var ignoreHeader = this.$.mutationCSVHeader.checked;
-
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     var data = e.target.result;
                     var lines = data.split("\n");
                     var i = ignoreHeader ? 1 : 0;
-
                     for (; i < lines.length; i++) {
                         var line = lines[i];
                         if (line != '') {
@@ -1026,14 +1075,12 @@
                             var ref = fields[2];
                             var alt = fields[3];
                             var phe = fields[4];
-
                             var mut = {
                                 chr: chr,
                                 pos: pos,
                                 ref: ref,
                                 alt: alt,
                                 phe: phe
-
                             };
                             me.formData.addMutation(mut);
                         }
@@ -1042,53 +1089,47 @@
                 reader.readAsText(csv_file);
             }
         },
-        handleClickMutationListClear: function (e) {
+        handleClickMutationListClear: function(e) {
             this.formData.clearMutations();
         },
-        handleMutationAdd: function (e) {
+        handleMutationAdd: function(e) {
 
             var chr = this.$.mutationGVChr.value;
             var pos = this.$.mutationGVPos.value;
             var ref = this.$.mutationGVRef.value;
             var alt = this.$.mutationGVAlt.value;
             var phe = this.$.mutationGVPhe.value;
-
             var mut = {
                 chr: chr,
                 pos: pos,
                 ref: ref,
                 alt: alt,
                 phe: phe
-
             };
-            this.formData.addMutation(mut);
 
+            this.formData.addMutation(mut);
             this.$.mutationGVChr.value = "";
             this.$.mutationGVPos.value = "";
             this.$.mutationGVRef.value = "";
             this.$.mutationGVAlt.value = "";
             this.$.mutationGVPhe.value = "";
-
         },
-        handleClickSavePanel: function (e) {
+        handleClickSavePanel: function(e) {
             if (this.formData.name == "") {
                 alert("The Panel name is mandatory!!");
                 return;
             }
             if (confirm("Are you sure?")) {
-
                 if (this.defaultStudy && this.teamConfigFolder) {
                     //                    var content = pako.deflate(JSON.stringify(this.formData));
                     content = JSON.stringify(this.formData);
                     var separator = "-_-";
                     var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived;
-
                     this.uploadFile(content, fileName, this.defaultStudy.id);
                 }
-
             }
         },
-        uploadFile: function (fileContent, fileName, studyId) {
+        uploadFile: function(fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({
                 query: {
                     sid: Cookies("bioinfo_sid")
@@ -1097,13 +1138,10 @@
                     url: true
                 }
             });
-
             console.log(url);
-
             var blob = new Blob([fileContent], {
                 type: 'text/plain'
             });
-
             var formData = new FormData();
             var userId = Cookies("bioinfo_user");
             var studyId = studyId;
@@ -1122,7 +1160,6 @@
             formData.append('studyId', studyId);
             formData.append('relativeFilePath', relativeFilePath);
             /*formData.append('chunk_gzip', );*/
-
             formData.append("last_chunk", true);
             formData.append("total_size", blob.size);
             formData.append("fileFormat", fileFormat);
@@ -1131,22 +1168,18 @@
 
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, false);
-            xhr.onloadend = function (e) {
+            xhr.onloadend = function(e) {
                 console.log('upload Done!');
-
             };
             xhr.send(formData);
         },
-        handleShowPanel: function (neo, old) {
+        handleShowPanel: function(neo, old) {
             if (neo.id) {
-
                 this.formData = new Panel(neo);
                 this.formData.polymer = this;
             }
         },
-
-        handleImportGenesPanel: function (e) {
-
+        handleImportGenesPanel: function(e) {
             var me = this;
             var fileId = parseInt(this.$.importGenesFromPanel.value);
             for (var i = 0; i < this.panels.length; i++) {
@@ -1160,11 +1193,10 @@
                         },
                         request: {
                             async: false,
-                            success: function (response) {
+                            success: function(response) {
                                 panelContent = response;
                             },
-                            error: function () {
-                            }
+                            error: function() {}
                         }
                     });
                     if (panelContent != "") {
@@ -1176,9 +1208,8 @@
             for (var i = 0; i < this.genes.length; i++) {
                 me.formData.addGene(this.genes[i]);
             }
-
         },
-        handleImportMutationsPanel: function (e) {
+        handleImportMutationsPanel: function(e) {
             var me = this;
             var fileId = parseInt(this.$.importMutationsFromPanel.value);
             for (var i = 0; i < this.panels.length; i++) {
@@ -1192,11 +1223,10 @@
                         },
                         request: {
                             async: false,
-                            success: function (response) {
+                            success: function(response) {
                                 panelContent = response;
                             },
-                            error: function () {
-                            }
+                            error: function() {}
                         }
                     });
                     if (panelContent != "") {
@@ -1209,14 +1239,57 @@
                 me.formData.addMutation(this.mutations[i]);
             }
         },
-        handleOpenGV: function (e) {
+        handleOpenGV: function(e) {
             this.$.panelGV.hidden = false;
         },
         handleAddedMutationFromGV: function (e) {
             this.$.panelGV.hidden = true;
             var mut = e.detail;
             this.formData.addMutation(mut);
+        },
+        handlePanelAppAddGenes: function(e) {
+            var geneName = [];
+            var sgenes = this.$.panelAppSelectedGenes.selected;
+            for (var i = 0; i < sgenes.length; i++) {
+                geneName[i] = sgenes[i].GeneSymbol;
+            }
+            geneName = geneName.join(",");
+            var me = this;
+            CellBaseManager.get({
+                species: 'hsapiens',
+                category: 'feature',
+                subCategory: 'gene',
+                resource: 'info',
+                async: false,
+                query: geneName,
+                params: {
+                    include: "name,chromosome,start,end"
+                },
+                success: function(data) {
 
+                    if (data.response && data.response.length > 0) {
+
+                        for (var i = 0; i < data.response.length; i++) {
+                            var elem = data.response[i];
+                            if (elem.result.length > 0) {
+                                var row = data.response[i].result[0];
+                                var gene = {
+                                    name: elem.id,
+                                    chr: row.chromosome,
+                                    start: row.start,
+                                    end: row.end
+                                };
+                                me.formData.addGene(gene);
+                            } else {
+                                me.formData.addGene({
+                                    name: elem.id
+                                });
+                            }
+                        }
+                    }
+                }
+            });
+            this.$.appPanel.hidden = true;
         }
     });
 </script>
