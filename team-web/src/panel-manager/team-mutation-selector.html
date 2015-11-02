@@ -61,7 +61,7 @@
                 <label style="font-size:12px;" for="">Alt: &nbsp;</label>
                 <input class="input alt" type="text" value="{{alt::input}}">
                 <label style="font-size:12px;" for="">Disease Name: &nbsp;</label>
-                <input class="input flex" type="text">
+                <input class="input flex" type="text" value="{{phe::input}}">
             </div>
             <!--<div class="horizontal layout data">-->
                 <!--<label style="font-size:12px;" for="">Gene Name: &nbsp;</label>-->
@@ -90,7 +90,7 @@
                 pos: {type: Number},
                 ref: {type: String, value: ""},
                 alt: {type: String, value: ""},
-                alt: {dis: String, value: ""}
+                phe: {type: String, value: ""}
 
             },
             ready: function () {
@@ -118,7 +118,7 @@
                 this.pos = "";
                 this.ref = "";
                 this.alt = "";
-                this.dis = "";
+                this.phe = "";
             },
             handleAddMut: function(){
 
@@ -127,7 +127,7 @@
                     pos: this.pos,
                     ref: this.ref,
                     alt: this.alt,
-                    dis: this.dis
+                    phe: this.phe
                 };
 
                 this.fire("created-mutation", mut);
