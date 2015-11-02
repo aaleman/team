@@ -254,7 +254,9 @@
                                     </datalist>
                                 </div>
                                 <div class="horizontal layout">
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleOpenGV">Open GV</div>
+                                    <div class="jso-btn jso-btn-shdw file" style="width: 140px" on-click="handleOpenGV">
+                                        Open Genome Viewer
+                                    </div>
                                     <div class="flex"></div>
                                     <div class="jso-btn jso-btn-shdw file" on-click="handleMutationAdd"><i
                                             class="fa fa-plus-square-o"></i>&nbsp; Add
@@ -346,7 +348,10 @@
                         <div class="header">
                             <i class="fa fa-eye"></i> View Mutation
                         </div>
-                        <team-mutation-selector class="container" id="mutationSelector">
+                        <team-mutation-selector class="container"
+                                                id="mutationSelector"
+                                                on-created-mutation="handleAddedMutationFromGV"
+                                >
                         </team-mutation-selector>
                     </jso-panel>
                 </div>
@@ -987,7 +992,7 @@
                                 ref: ref,
                                 alt: alt,
                                 phe: "TODO"
-                            }
+                            };
                             me.formData.addMutation(mut);
 
                         }
@@ -1029,7 +1034,7 @@
                                 alt: alt,
                                 phe: phe
 
-                            }
+                            };
                             me.formData.addMutation(mut);
                         }
                     }
@@ -1055,7 +1060,7 @@
                 alt: alt,
                 phe: phe
 
-            }
+            };
             this.formData.addMutation(mut);
 
             this.$.mutationGVChr.value = "";
@@ -1207,5 +1212,11 @@
         handleOpenGV: function (e) {
             this.$.panelGV.hidden = false;
         },
+        handleAddedMutationFromGV: function (e) {
+            this.$.panelGV.hidden = true;
+            var mut = e.detail;
+            this.formData.addMutation(mut);
+
+        }
     });
 </script>

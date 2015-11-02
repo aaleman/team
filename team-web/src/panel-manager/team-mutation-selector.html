@@ -32,6 +32,20 @@
         .names {
             width: 200px
         }
+        .chr{
+            width:50px;
+        }
+
+        .pos{
+            width:75px;
+        }
+
+        .ref, .alt{
+            width:50px;
+        }
+        .dis{
+            width:200px;
+        }
     </style>
     <template>
 
@@ -39,49 +53,85 @@
 
             <div class="horizontal layout data">
                 <label style="font-size:12px;" for="">Chr: &nbsp;</label>
-                <input class="input" type="text">
+                <input class="input chr" type="text" value="{{chr::input}}">
                 <label style="font-size:12px;" for="">Pos: &nbsp;</label>
-                <input class="input" type="number" step="1" min="0">
+                <input class="input pos" type="number" step="1" min="0" value="{{pos::input}}">
                 <label style="font-size:12px;" for="">Ref: &nbsp;</label>
-                <input class="input" type="text">
+                <input class="input ref" type="text" value="{{ref::input}}">
                 <label style="font-size:12px;" for="">Alt: &nbsp;</label>
-                <input class="input" type="text">
-            </div>
-            <div class="horizontal layout data">
-                <label style="font-size:12px;" for="">Gene Name: &nbsp;</label>
-                <input class="input names" type="text">
+                <input class="input alt" type="text" value="{{alt::input}}">
                 <label style="font-size:12px;" for="">Disease Name: &nbsp;</label>
-                <input class="input names" type="text">
+                <input class="input flex" type="text">
             </div>
+            <!--<div class="horizontal layout data">-->
+                <!--<label style="font-size:12px;" for="">Gene Name: &nbsp;</label>-->
+                <!--<input class="input names" type="text">-->
+            <!--</div>-->
 
             <div class="horizontal layout">
                 <div class="flex">
 
                 </div>
-                <div class="jso-btn jso-btn-shdw file" on-click="handleReset">Reset</div>&nbsp;
-                <div class="jso-btn jso-btn-shdw file" on-click="handleCheck">Check</div>&nbsp;
+                <div class="jso-btn jso-btn-shdw file" on-click="handleReset">Reset</div>
+                &nbsp;
+                <div class="jso-btn jso-btn-shdw file" on-click="handleCheck">Check</div>
+                &nbsp;
                 <div class="jso-btn jso-btn-shdw file" on-click="handleAddMut">Add Mutation</div>
             </div>
         </div>
-        <jso-genome-viewer-element id="gv" on-created="handleGenomeViewerCreated"></jso-genome-viewer-element>
-        </template>
+        <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
+    </template>
 
     <script>
         Polymer({
             is: "team-mutation-selector",
             properties: {
+                chr: {type: String, value: ""},
+                pos: {type: Number},
+                ref: {type: String, value: ""},
+                alt: {type: String, value: ""},
+                alt: {dis: String, value: ""}
 
             },
-            ready: function(){
-              this.async(function(){
-              this.$.gv.createGenomeViewer();
-              this.$.gv.genomeViewer.removeTrack(this.$.gv.genomeViewer.trackListPanel.tracks[2]);
-              this.$.gv.genomeViewer.draw();
-            });
+            ready: function () {
+                var me = this;
+                this.async(function () {
+
+                    this.$.gv.createGenomeViewer();
+                    var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
+                    this.$.gv.genomeViewer.draw();
+
+                    var updateForm = function () {
+                        me.chr = seq.region.chromosome;
+                        me.pos = seq.region.center();
+                        me.ref = me.$.gv.genomeViewer.trackListPanel.getSequenceNucleotid(me.pos);
+                    };
+
+                    this.genomeViewer = this.$.gv.genomeViewer;
+                    this.genomeViewer.on("region:change", updateForm);
+                    this.genomeViewer.on("region:move", updateForm);
+                });
 
             },
-            handleGenomeViewerCreated: function(e){
+            handleReset: function(){
+                this.chr = "";
+                this.pos = "";
+                this.ref = "";
+                this.alt = "";
+                this.dis = "";
+            },
+            handleAddMut: function(){
 
+                var mut = {
+                    chr: this.chr,
+                    pos: this.pos,
+                    ref: this.ref,
+                    alt: this.alt,
+                    dis: this.dis
+                };
+
+                this.fire("created-mutation", mut);
+                
             }
         })
     </script>
