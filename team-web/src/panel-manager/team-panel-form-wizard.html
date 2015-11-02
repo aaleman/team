@@ -177,7 +177,7 @@
                                         <option value$="{{item.file.id}}">{{item.name}}</option>
                                     </template>
                                 </select>
-                                <span class="eye">&nbsp;<i class="fa fa-eye" on-click="handlePreviewFile"></i></span>
+                                <span class="eye">&nbsp;<i class="fa fa-eye" title="View Panel" on-click="handlePreviewFile"></i> </span>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
@@ -291,8 +291,17 @@
                             </div>
                             <div class="jso-formtitle" style="font-size:13px;">Import VCF &nbsp;</div>
                             <div class="jso-formcontent" id="mutation-tab-config-vcf">
-                                <input type="file" id="mutationVCFFileInput">
 
+                                <div class="horizontal layout data">
+                                    <label style="font-size:12px;" for="">Phe: &nbsp;</label>
+                                    <input class="input flex" type="text" name="mutationGVPheVCF" id="mutationGVPheVCF" list="dataListPheVCF" />
+                                    <datalist id="dataListPheVCF">
+                                        <template is="dom-repeat" items="{{allDiseasesData}}">
+                                            <option value="{{item.phenotype}}">{{item.phenotype}}</option>
+                                        </template>
+                                    </datalist>
+                                </div>
+                                <input style="margin-top:10px" type="file" id="mutationVCFFileInput">
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
                                     <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i class="fa fa-plus-square-o"></i>&nbsp; Import
@@ -331,7 +340,7 @@
                                         <option value$="{{item.file.id}}">{{item.name}}</option>
                                     </template>
                                 </select>
-                                <span class="eye">&nbsp; <i class="fa fa-eye" on-click="handlePreviewFileMut"></i></span>
+                                <span class="eye">&nbsp; <i class="fa fa-eye" title="View Panel" on-click="handlePreviewFileMut"></i></span>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
@@ -781,31 +790,14 @@
             }
             console.log(this.dataListPhenotype);
         },
-        handleHiddenStep1: function(step) {
-            return step != 1;
-        },
-        handleHiddenStep2: function(step) {
-            return step != 2;
-        },
-        handleHiddenStep3: function(step) {
-            return step != 3;
-        },
-        handleHiddenStep4: function(step) {
-            return step != 4;
-        },
+
         collapseMenu: function(menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
         },
         hideProjectList: function(menuHidden, searchingFlag) {
             return menuHidden || searchingFlag;
         },
-        handlePrevStepButton: function(e) {
-            this.step = (this.step <= 1) ? 1 : this.step - 1;
-            console.log(this.step);
-        },
-        handleNextStepButton: function(e) {
-            this.step = (this.step >= this.maxSteps) ? this.maxSteps : this.step + 1;
-        },
+
         handleSelectedRows: function(neo, old) {
             return neo;
         },
@@ -1022,6 +1014,7 @@
         handleMutationImportVCF: function(e) {
             var me = this;
             var vcf_file = this.$.mutationVCFFileInput.files[0];
+            phe= this.$.mutationGVPheVCF.value;
             if (vcf_file != null) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
@@ -1041,7 +1034,7 @@
                                 pos: pos,
                                 ref: ref,
                                 alt: alt,
-                                phe: "TODO"
+                                phe: phe
                             }
                             me.formData.addMutation(mut);
                         }

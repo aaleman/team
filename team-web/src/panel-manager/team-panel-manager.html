@@ -4,6 +4,9 @@
 <link rel="import" href="jso-opencga-create-study.html">
 <link rel="import" href="jso-opencga-create-project.html">
  -->
+
+<link rel="import" href="team-panel-preview.html">
+
 <dom-module id="team-panel-manager">
     <style>
         :host {
@@ -74,10 +77,6 @@
             margin-top: 3px;
         }
 
-        jso-table {
-            height: 500px;
-        }
-
         #table {
             width: 100%;
             height: 500px;
@@ -85,6 +84,8 @@
             margin-top: 10px;
             border: 1px solid #d3d3d3;
         }
+
+        
     </style>
     <template>
         <div id="main" class="horizontal layout flex">
@@ -107,8 +108,9 @@
                         <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
                             <div class="version">{{item.version}}</div>
-                            <i class="fa fa-clipboard" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
-                            <i class="fa fa-trash-o" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
+                            <i class="fa fa-clone" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i>
+                            <i class="fa fa-clipboard" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                            <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
 
@@ -120,39 +122,18 @@
                         <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
                             <div class="version">{{item.version}}</div>
-                            <i class="fa fa-clipboard" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
-                            <i class="fa fa-trash-o" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
+                            <i class="fa fa-clone" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i>
+                            <i class="fa fa-clipboard" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                            <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
                 </template>
             </div>
 
-            <div id="maincontent" class="vertical layout">
-                <div class="horizontal layout">
-                    <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
-                        Diseases
-                    </div>
-                    <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="genes" data-checked$="{{computeOptions(option, 'genes')}}">
-                        Genes/Regions
-                    </div>
-                    <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="mutations" data-checked$="{{computeOptions(option, 'mutations')}}">
-                        Mutations
-                    </div>
-                </div>
-
-                <div id="table">
-                    <template is="dom-if" if="{{computeOptions(option, 'diseases')}}">
-                        <jso-table columns="{{diseaseColumns}}" data="{{diseases}}"></jso-table>
-                    </template>
-                    <template is="dom-if" if="{{computeOptions(option, 'genes')}}">
-                        <jso-table columns="{{geneColumns}}" data="{{genes}}"> </jso-table>
-                    </template>
-                    <template is="dom-if" if="{{computeOptions(option, 'mutations')}}">
-                        <jso-table columns="{{mutationColumns}}" data="{{mutations}}"></jso-table>
-                    </template>
-                </div>
+            <div id="maincontent">
+                <team-panel-preview selected-panel="{{selectedPanel}}">
+                </team-panel-preview>
             </div>
-
             <div id="botbar" class="horizontal layout end-justified">
             </div>
 
@@ -178,16 +159,14 @@
                 type: Object,
                 value: function() {
                     return {};
-                }
+                },
+                observer: 'handleSelectedPanelChanged'
             },
             view: {
                 type: String,
                 value: 'main'
             },
-            option: {
-                type: String,
-                value: 'diseases'
-            },
+
             geneColumns: {
                 type: Array,
                 value: function() {
@@ -207,67 +186,11 @@
                 },
                 notify: true
             },
-            diseases: {
-                type: Array,
-            },
-            genes: {
-                type: Array,
-            },
-            mutations: {
-                type: Array,
-            },
+
         },
         ready: function() {
             this.formData = new Panel();
             this.formData.polymer = this;
-
-            this.geneColumns = [{
-                name: 'name',
-                title: 'Name'
-            }, {
-                name: 'chr',
-                title: 'Chr',
-                defaultValue: '.'
-            }, {
-                name: 'start',
-                title: 'Start',
-                defaultValue: '.'
-            }, {
-                name: 'end',
-                title: 'End',
-                defaultValue: '.'
-            }];
-            this.mutationColumns = [{
-                name: 'chr',
-                title: 'Chr',
-                width: 40
-            }, {
-                name: 'pos',
-                title: 'Pos'
-            }, {
-                name: 'ref',
-                title: 'Ref',
-                width: 70
-            }, {
-                name: 'alt',
-                title: 'Alt',
-                width: 70
-            }, {
-                name: 'phe',
-                title: 'Phenotype'
-            }];
-            this.diseaseColumns = [{
-                name: 'phenotype',
-                title: 'Phenotype',
-                type: 'text',
-                width: 200
-            }, {
-                name: 'source',
-                title: 'Source',
-                type: 'select',
-                options: ["clinvar", "gwas"],
-                width: 120
-            }];
 
         },
 
@@ -306,10 +229,16 @@
                 }
             }
         },
+        handleClonePanel: function(e) {
+
+            e.stopPropagation();
+
+        },
         handlePanelSelected: function(e) {
             e.stopPropagation();
             var me = this;
             var fileId = e.currentTarget.dataset.file;
+
 
             var panelContent = "";
             OpencgaManager.files.content({
@@ -329,10 +258,7 @@
             });
             if (panelContent != "") {
                 this.selectedPanel = JSON.parse(panelContent);
-                //this.$.test.innerHTML = this._prettyPrint(this.selectedPanel);
-                this.diseases = this.selectedPanel.diseases;
-                this.genes = this.selectedPanel.genes;
-                this.mutations = this.selectedPanel.mutations;
+                selectedPanel = this.selectedPanel;
             }
 
         },
@@ -367,11 +293,14 @@
         isNotArchived: function(item) {
             return (item.archived === "true");
         },
-        handleOptions: function(e) {
-            this.option = e.target.dataset.value;
-        },
-        computeOptions: function(option, value) {
-            return option === value;
-        },
+        handleSelectedPanelChanged: function(neo, old) {
+                // debugger
+            }
+            // handleOptions: function(e) {
+            //     this.option = e.target.dataset.value;
+            // },
+            // computeOptions: function(option, value) {
+            //     return option === value;
+            // },
     });
 </script>
