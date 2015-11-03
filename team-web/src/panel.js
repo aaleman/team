@@ -79,40 +79,40 @@ Panel.prototype = {
                     //}
                 }
             }
-
-            if (disease.source == "clinvar") {
-
-                CellBaseManager.get({
-                    species: 'hsapiens',
-                    category: 'feature',
-                    subCategory: 'clinical',
-                    resource: 'all',
-                    async: false,
-                    params: {
-                        source: 'clinvar',
-                        phenotype: disease.phenotype,
-                        exclude: "annot,clinvarSet"
-                    },
-                    success: function (data) {
-                        if (data.response && data.response.length > 0) {
-                            var result = data.response[0].result;
-                            for (var i = 0; i < result.length; i++) {
-                                var row = result[i];
-                                var mut = {
-
-                                    chr: row.chromosome,
-                                    pos: row.start,
-                                    ref: row.reference,
-                                    alt: row.alternate,
-                                    phe: disease.phenotype
-                                }
-                                me.addMutation(mut);
-
-                            }
-                        }
-                    }
-                });
-            }
+            //
+            //if (disease.source == "clinvar") {
+            //
+            //    CellBaseManager.get({
+            //        species: 'hsapiens',
+            //        category: 'feature',
+            //        subCategory: 'clinical',
+            //        resource: 'all',
+            //        async: false,
+            //        params: {
+            //            source: 'clinvar',
+            //            phenotype: disease.phenotype,
+            //            exclude: "annot,clinvarSet"
+            //        },
+            //        success: function (data) {
+            //            if (data.response && data.response.length > 0) {
+            //                var result = data.response[0].result;
+            //                for (var i = 0; i < result.length; i++) {
+            //                    var row = result[i];
+            //                    var mut = {
+            //
+            //                        chr: row.chromosome,
+            //                        pos: row.start,
+            //                        ref: row.reference,
+            //                        alt: row.alternate,
+            //                        phe: disease.phenotype
+            //                    }
+            //                    me.addMutation(mut);
+            //
+            //                }
+            //            }
+            //        }
+            //    });
+            //}
 
 
             this._incModCount();
