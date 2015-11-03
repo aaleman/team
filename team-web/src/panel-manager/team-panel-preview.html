@@ -10,16 +10,20 @@
         }
 
         jso-table {
-            height: 500px;
+            height: 480px;
         }
         .data {
             color: #666;
 
         }
+        #table{
+          border: 1px solid #d0d0d0;
+          margin-top: 5px;
+        }
 
     </style>
     <template>
-        <div style="margin:10px">
+        <div style="margin:5px">
             <div class="horizontal layout" style="line-height: 25px;">
                 <div class="data">Name: &nbsp;</div>
                 <div class="flex">{{namePanel}}</div>
@@ -123,7 +127,8 @@
                     width: 70
                 }, {
                     name: 'phe',
-                    title: 'Phenotype'
+                    title: 'Phenotype',
+                    width: 150
                 }];
                 this.diseaseColumns = [{
                     name: 'phenotype',

@@ -1,3 +1,5 @@
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-select-box.html">
+
 <dom-module id="team-new-diagnostic-element">
     <style>
         :host {
@@ -5,7 +7,7 @@
             position: relative;
             box-sizing: border-box;
             width: 100%;
-            height: 600px;
+            height: 750px;
         }
 
         .file {
@@ -17,7 +19,9 @@
 
         .selbox {
             box-sizing: border-box;
-            height: 150px;
+            border-right: 1px solid #d0d0d0;
+            height: 650px;
+            width: 25%;
             overflow-y: auto;
         }
 
@@ -52,6 +56,25 @@
             font-size: 15px;
             font-style: italic;
         }
+
+        #panelPreview {
+            width: 70%;
+            height: 650px;
+        }
+
+        .titlePreview {
+            font-size: 15px;
+            color: #445D76;
+            margin-top: 5px;
+            text-align: center;
+            border-bottom: 1px solid #445D76;
+            margin-left: 5px;
+        }
+
+        .eye > i:hover {
+            color: #666;
+            cursor: pointer;
+        }
     </style>
     <template>
 
@@ -59,26 +82,48 @@
             <form id="form">
                 <div class="step">
                     <div class="jso-formbox">
-                        <div class="jso-formtitle">
+                        <div class="jso-formtitle flex">
                             Step 1: Choose a File
+                            <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
                         </div>
                         <div class="jso-formcontent" style="padding:0">
-                            <jso-opencga-browser name="{{vcfFile}}" id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
+                            <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
                         </div>
                     </div>
                 </div>
                 <div class="step">
                     <div class="jso-formbox">
-                        <div class="jso-formtitle">Step 2: Choose a Panel</div>
-                        <div class="jso-formcontent selbox vertical layout" id="panelSelector">
-                            <template is="dom-repeat" items="{{panels}}" filter="isPanel">
-                                <label class="horizontal layout jso-control" style="margin-top:10px">
-                                    <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
-                                    <span>{{item.name}}</span>
-                                </label>
-                            </template>
+                        <div class="jso-formtitle flex">Step 2: Choose a Panel
+                            <!-- <span class="eye">&nbsp;<i class="fa fa-eye" title="View Panel" on-click="handlePreviewFile"></i> </span> -->
+                            <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
                         </div>
+                        <div class="horizontal layout">
+                            <div class="jso-formcontent selbox vertical layout" id="panelSelector">
+                                 <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
+                                    <label class="horizontal layout jso-control" style="margin-top:10px">
+                                        <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
+                                        <span>{{item.name}}</span>
+                                    </label>
+                                </template> -->
+                                <jso-select-box options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+                            </div>
+                            <div id="panelPreview">
+                                <div class="titlePreview">
+                                    <strong><i class="fa fa-eye"></i> Panel Preview</strong>
+                                </div>
+                                <team-panel-preview selected-panel="{{selectedPanel}}">
+                                </team-panel-preview>
+                            </div>
+                        </div>
+
                     </div>
+                    <!-- <jso-panel modal closable hidden id="panelPreview">
+                        <div class="header">
+                            <i class="fa fa-eye"></i> Panel Preview
+                        </div>
+                        <team-panel-preview class="container" selected-panel="{{selectedPanel}}">
+                        </team-panel-preview>
+                    </jso-panel> -->
                 </div>
                 <div class="step">
                     <div class="jso-formbox">
@@ -119,12 +164,15 @@
                     return [];
                 }
             },
+            selectedPanelId: {
+                type: Number,
+
+                observer: 'handleSelectedPanelChanged'
+            },
             selectedPanel: {
                 type: Object,
-                value: function() {
-                    return [];
-                },
-                observer: 'handleSelectedPanelChanged'
+
+
             },
             bioformats: {
                 type: Array,
@@ -152,17 +200,14 @@
                 type: String,
                 value: "New Diagnosis"
             },
-            vcfFile: {
-                type: Array,
-                value: null
-            }
+
         },
 
         ready: function() {
-            vcfFile = null;
+
         },
         handlePanelsChanged: function(neo, old) {
-            //            debugger
+
         },
         isPanel: function(item) {
             return item.file.name.indexOf("panel") == 0;
@@ -170,10 +215,15 @@
         handleForm: function(e) {
             var me = this;
 
+            if (this.inputSelectedFile == null) {
+                this.errorMessageFile = "No input file selected";
+            }
+            if (this.selectedPanelId == "") {
+                this.errorMessagePanel = "No panel selected";
+            }
 
-            if (vcfFile != null) {
-
-
+            if (this.inputSelectedFile != null && this.selectedPanelId != "") {
+                this.errorMessage = " ";
 
                 var query = {
                     sid: Cookies("bioinfo_sid"),
@@ -186,7 +236,7 @@
                     //                description: this.description,
 
                     "input": this.inputSelectedFile.id,
-                    "panel": this.selectedPanel,
+                    "panel": this.selectedPanelId,
                     output: this.analysisFolder.id
 
                 };
@@ -210,31 +260,92 @@
                         }
                     }
                 })
-
             } else {
-                this.errorMessage = "No input file selected";
+                this.errorMessage = "There are errors in the form. Correct them before launching work.";
             }
-
-
         },
         handleClose: function(e) {
             this.fire('close');
         },
         handlePanelClick: function(e) {
-            var sel = this.querySelectorAll('.panel-item');
-            for (var i = 0; i < sel.length; i++) {
-                var el = sel[i];
-                el.removeAttribute('data-checked');
+          //  var sel = this.querySelectorAll('.panel-item');
+            // for (var i = 0; i < sel.length; i++) {
+            //     var el = sel[i];
+            //     el.removeAttribute('data-checked');
+            // }
+            this.selectedPanelId = e.detail.file.id;
+            this.errorMessagePanel = " ";
+          //  e.currentTarget.setAttribute('data-checked', '');
+
+            // var aux = this.$.panelSelector.querySelectorAll('input[type=radio]');
+            // for (var i = 0; i < aux.length; i++) {
+            //     var filech = aux[i];
+            //     if (filech.checked) {
+            //         fileId = parseInt(filech.dataset.file);
+            //     }
+            // }
+
+            var data;
+
+            OpencgaManager.files.content({
+                id:this.selectedPanelId,
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    limit: 100
+                },
+                request: {
+                    async: false,
+                    success: function(response) {
+                        data = response;
+                    },
+                    error: function() {}
+                }
+            });
+
+            if (data) {
+                this.selectedPanel = JSON.parse(data);
             }
-            this.selectedPanel = e.currentTarget.dataset.file;
-            e.currentTarget.setAttribute('data-checked', '')
 
         },
         handleSelectedPanelChanged: function(neo, old) {
-            console.log(this.selectedPanel);
+            console.log(this.selectedPanelId);
         },
         handleFileSelected: function(e) {
             this.inputSelectedFile = e.detail;
-        }
+            this.errorMessageFile = " ";
+        },
+        // handlePreviewFile: function(e) {
+        //     var aux = this.$.panelSelector.querySelectorAll('input[type=radio]');
+        //     for (var i = 0; i < aux.length; i++) {
+        //         var filech = aux[i];
+        //         if (filech.checked) {
+        //             fileId = parseInt(filech.dataset.file);
+        //         }
+        //     }
+        //
+        //     var data;
+        //
+        //     OpencgaManager.files.content({
+        //         id: fileId,
+        //         query: {
+        //             sid: Cookies('bioinfo_sid'),
+        //             limit: 100
+        //         },
+        //         request: {
+        //             async: false,
+        //             success: function(response) {
+        //                 data = response;
+        //             },
+        //             error: function() {}
+        //         }
+        //     });
+        //
+        //     if (data) {
+        //         this.selectedPanel = JSON.parse(data);
+        //         this.$.panelPreview.hidden = false;
+        //     }
+        //
+        //     this.$.panelPreview.hidden = false;
+        // },
     });
 </script>

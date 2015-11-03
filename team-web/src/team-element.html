@@ -22,7 +22,7 @@
 <link rel="import" href="team-home.html">
 <link rel="import" href="panel-manager/team-panel-manager.html">
 <link rel="import" href="panel-manager/team-panel-form-wizard.html">
-<link rel="import" href="team-prioritize-form.html">
+<!-- <link rel="import" href="team-prioritize-form.html"> -->
 <link rel="import" href="team-diagnostics-element.html">
 <link rel="import" href="team-new-diagnostic-element.html">
 <link rel="import" href="team-result.html">
@@ -111,15 +111,13 @@
         jso-variant-browser {
             height: calc(100vh - 60px);
         }
-
-        team-prioritize-form {
-            /*position: absolute;*/
+        /*team-prioritize-form {
+            position: absolute;
             margin: 0 auto;
             height: 800px;
-            /*width: 600px;*/
+            width: 600px;
             overflow-y: auto;
-        }
-
+        }*/
 
         #jobBrowserPanel {
             position: absolute;
@@ -127,6 +125,7 @@
             top: 0;
             width: 600px;
         }
+
         #browserPanel {
             position: absolute;
             left: 0;
@@ -152,7 +151,6 @@
             width: 100%;
             border-top: 1px solid var(--divider-color);
             height: 600px;
-
         }
 
         #manager {
@@ -172,7 +170,7 @@
             <team-home data-option="home" hidden$="{{computeHome(selectedOption)}}"></team-home>
             <team-result data-option="result" id="teamResult" data-menu-type="unique" hidden="true"></team-result>
 
-            <jso-panel collapsible closable movable  id="browserPanel" data-option="files" data-menu-type="unique">
+            <jso-panel collapsible closable movable id="browserPanel" data-option="files" data-menu-type="unique">
                 <div class="header">
                     <i class="fa fa-folder-open-o"></i> File Browser
                 </div>
@@ -193,8 +191,7 @@
                 <div class="header" style="text-align:left;font-size:15px;">
                     <i class="fa fa-plus"></i> New Diagnosis
                 </div>
-                <team-new-diagnostic-element id="newDiagnosticElement" class="container" panels="{{panels}}" projects="{{projects}}" on-close="handleClosePrioritizeForm" bioformats="{{bioformats}}" default-study="{{defaultStudy}}" analysis-folder="{{analysisFolder}}"
-                on-run="handleRunJob"></team-new-diagnostic-element>
+                <team-new-diagnostic-element id="newDiagnosticElement" class="container" panels="{{panels}}" projects="{{projects}}" bioformats="{{bioformats}}" default-study="{{defaultStudy}}" analysis-folder="{{analysisFolder}}" on-run="handleRunJob"></team-new-diagnostic-element>
 
             </jso-panel>
 
