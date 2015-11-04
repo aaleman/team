@@ -153,11 +153,11 @@
         jso-table::shadow .table-pager > input {
             width: 40px !important;
         }
-
+/*
         #formWizard {
             height: 700px;
             width: 900px;
-        }
+        }*/
 
     </style>
     <template>
@@ -165,7 +165,7 @@
         <jso-wizard id="formWizard">
             <div class="step">
                 <div class="jso-formbox vertical layout">
-                    <div class="jso-formtitle">Step 1: Select Diseases</div>
+                    <div class="jso-formtitle">Select Diseases</div>
                     <div class="jso-formcontent horizontal layout">
                         <div class="disease vertical layout">
                             <jso-table id="allDiseases"
@@ -199,7 +199,7 @@
             </div>
             <div class="step">
                 <div class="jso-formbox">
-                    <div class="jso-formtitle">Step 2: Select Genes</div>
+                    <div class="jso-formtitle">Select Genes</div>
                     <div class="jso-formcontent horizontal layout">
                         <div id="genes-tab" class="vertical layout">
                             <div class="genes-tab-elem">
@@ -322,7 +322,7 @@
             </div>
             <div class="step">
                 <div class="jso-formbox">
-                    <div class="jso-formtitle">Step 3: Select Mutations</div>
+                    <div class="jso-formtitle">Select Mutations</div>
                     <div class="jso-formcontent horizontal layout">
                         <div id="mutations-tab" flex>
                             <div class="mutations-tab-elem">
@@ -472,8 +472,8 @@
                 </div>
             </div>
             <div class="step">
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">Step 4: Panel Info</div>
+                <!-- <div class="jso-formbox"> -->
+                    <div class="stepName" style="font-size:15px; margin:0 auto;" >Panel Info</div>
                     <div class="jso-formcontent vertical layout" id="personalData">
                         <div style="color:#666;margin-top:5px;" for="">Name</div>
                         <input style="margin-top: 2px;border-color:#d3d3d3;" type="text"
@@ -495,7 +495,7 @@
                              on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save
                         </div>
                     </div>
-                </div>
+                <!-- </div> -->
             </div>
         </jso-wizard>
 
