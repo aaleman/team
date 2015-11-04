@@ -84,8 +84,6 @@
             margin-top: 10px;
             border: 1px solid #d3d3d3;
         }
-
-        
     </style>
     <template>
         <div id="main" class="horizontal layout flex">
@@ -232,7 +230,18 @@
         handleClonePanel: function(e) {
 
             e.stopPropagation();
-
+            // var fileId = parseInt(e.currentTarget.dataset.file);
+            // nwpanel = this.panels.length;
+            // for (var i = 0; i < nwpanel; i++) {
+            //     var panel = this.panels[i];
+            //     if (panel.file.id === fileId) {
+            //       // debugger
+            //         // this.panels[nwpanel]=panel;
+            //         // this.panels[nwpanel].version="2";
+            //         this.set('panels.'+nwpanel,panel);
+            //         this.set('panels.'+nwpanel+'.version',"2");
+            //     }
+            // }
         },
         handlePanelSelected: function(e) {
             e.stopPropagation();
@@ -288,6 +297,7 @@
         },
         isArchived: function(item) {
             // return item.archived;
+            // debugger
             return !(item.archived === "true");
         },
         isNotArchived: function(item) {
