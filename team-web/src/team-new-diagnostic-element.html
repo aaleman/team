@@ -18,11 +18,12 @@
         }
 
         .selbox {
-            box-sizing: border-box;
-            border-right: 1px solid #d0d0d0;
+            /*box-sizing: border-box;
+            border-right: 1px solid #d0d0d0;*/
             height: 650px;
             width: 25%;
             overflow-y: auto;
+
         }
 
         .panel-item {
@@ -66,75 +67,104 @@
             font-size: 15px;
             color: #445D76;
             margin-top: 5px;
-            text-align: center;
+            /*text-align: center;*/
             border-bottom: 1px solid #445D76;
-            margin-left: 5px;
+            margin-left: 10px;
         }
 
         .eye > i:hover {
             color: #666;
             cursor: pointer;
         }
+
+        .stepName {
+            font-size: 20px;
+            text-align: center;
+            color: #445D76;
+            margin-bottom: 10px;
+        }
+
+        #personalData {
+            border: 1px solid #d3d3d3;
+            padding: 10px;
+            margin: 20px 100px;
+        }
+
+        .data {
+            color: #666;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .sgenesTextArea {
+            box-sizing: border-box;
+            width: 100%;
+            resize: none;
+            height: 100px;
+            margin-top: 5px;
+        }
     </style>
     <template>
 
         <jso-wizard id="formWizard">
-            <form id="form">
-                <div class="step">
-                    <div class="jso-formbox">
-                        <div class="jso-formtitle flex">
-                            Step 1: Choose a File
-                            <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
-                        </div>
-                        <div class="jso-formcontent" style="padding:0">
-                            <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
-                        </div>
-                    </div>
+            <!-- <form id="form"> -->
+            <div class="step">
+                <!-- <div class="jso-formbox"> -->
+                <div class="stepName">
+                    Step 1: Choose a File
+                    <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
                 </div>
-                <div class="step">
-                    <div class="jso-formbox">
-                        <div class="jso-formtitle flex">Step 2: Choose a Panel
-                            <!-- <span class="eye">&nbsp;<i class="fa fa-eye" title="View Panel" on-click="handlePreviewFile"></i> </span> -->
-                            <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
-                        </div>
-                        <div class="horizontal layout">
-                            <div class="jso-formcontent selbox vertical layout" id="panelSelector">
-                                 <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
+
+                <div class="jso-formbox" style="padding:0">
+                    <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
+                </div>
+                <!-- </div> -->
+            </div>
+            <div class="step">
+                <!-- <div class="jso-formbox"> -->
+                <div class="stepName">Step 2: Choose a Panel
+                    <!-- <span class="eye">&nbsp;<i class="fa fa-eye" title="View Panel" on-click="handlePreviewFile"></i> </span> -->
+                    <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
+                </div>
+                <div class="horizontal layout">
+                    <div class=" selbox" id="panelSelector">
+                      <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                        <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
                                     <label class="horizontal layout jso-control" style="margin-top:10px">
                                         <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
                                         <span>{{item.name}}</span>
                                     </label>
                                 </template> -->
-                                <jso-select-box options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
-                            </div>
-                            <div id="panelPreview">
-                                <div class="titlePreview">
-                                    <strong><i class="fa fa-eye"></i> Panel Preview</strong>
-                                </div>
-                                <team-panel-preview selected-panel="{{selectedPanel}}">
-                                </team-panel-preview>
-                            </div>
-                        </div>
-
+                        <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
                     </div>
-                    <!-- <jso-panel modal closable hidden id="panelPreview">
+                    <div id="panelPreview">
+                        <div class="titlePreview">
+                            <i class="fa fa-eye"></i>&nbsp; Panel Preview
+                        </div>
+                        <team-panel-preview selected-panel="{{selectedPanel}}">
+                        </team-panel-preview>
+                    </div>
+                </div>
+
+                <!-- </div> -->
+                <!-- <jso-panel modal closable hidden id="panelPreview">
                         <div class="header">
                             <i class="fa fa-eye"></i> Panel Preview
                         </div>
                         <team-panel-preview class="container" selected-panel="{{selectedPanel}}">
                         </team-panel-preview>
                     </jso-panel> -->
-                </div>
-                <div class="step">
-                    <div class="jso-formbox">
-                        <div class="jso-formtitle">Step 3: Job information</div>
-                        <div class="jso-formcontent">
-                            <label class="jso">Job name</label>
-                            <input class="jso" type="text" id="jobName" value="{{jobName::change}}" required>
-                            <label class="jso">Description</label>
-                            <textarea class="jso" value="{{jobDescription}}" required></textarea>
-                        </div>
+            </div>
+            <div class="step">
+                <!-- <div class="jso-formbox"> -->
+                <div class="stepName">Step 3: Job information</div>
+                <div class="jso-formcontent vertical layout" id="personalData">
+                    <div style="color:#666;margin-top:5px;">Job name</div>
+                    <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
+                    <div class="data">Description</label>
+                        <textarea class="jso sgenesTextArea flex" value="{{jobDescription}}" required></textarea>
                     </div>
+                    <!-- </div> -->
                     <div class="horizontal layout">
                         <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
                         </div>
@@ -142,7 +172,7 @@
                     </div>
                 </div>
 
-            </form>
+                </form>
         </jso-wizard>
 
     </template>
@@ -268,14 +298,14 @@
             this.fire('close');
         },
         handlePanelClick: function(e) {
-          //  var sel = this.querySelectorAll('.panel-item');
+            //  var sel = this.querySelectorAll('.panel-item');
             // for (var i = 0; i < sel.length; i++) {
             //     var el = sel[i];
             //     el.removeAttribute('data-checked');
             // }
             this.selectedPanelId = e.detail.file.id;
             this.errorMessagePanel = " ";
-          //  e.currentTarget.setAttribute('data-checked', '');
+            //  e.currentTarget.setAttribute('data-checked', '');
 
             // var aux = this.$.panelSelector.querySelectorAll('input[type=radio]');
             // for (var i = 0; i < aux.length; i++) {
@@ -288,7 +318,7 @@
             var data;
 
             OpencgaManager.files.content({
-                id:this.selectedPanelId,
+                id: this.selectedPanelId,
                 query: {
                     sid: Cookies('bioinfo_sid'),
                     limit: 100

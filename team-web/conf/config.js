@@ -1,7 +1,7 @@
 CELLBASE_HOST = "http://bioinfo.hpc.cam.ac.uk/cellbase";
 CELLBASE_VERSION = "v3";
 
-OPENCGA_HOST = "http://test.babelomics.org/opencga";
+OPENCGA_HOST = "http://test.babelomics.org/opencga-0.7-dev";
 //OPENCGA_HOST = "http://bioinfoint.hpc.cam.ac.uk/opencga/rest";
 
 CONSEQUENCE_TYPES = [{
