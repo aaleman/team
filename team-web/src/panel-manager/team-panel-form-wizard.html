@@ -7,7 +7,7 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-            height: 700px;
+            height: 750px;
             width: 100%;
         }
 
@@ -121,7 +121,7 @@
         #geneTable,
         #mutationTable {
             height: 450px;
-            width: 400px;
+            width: 100%;
         }
 
         #panelAppDiseases {
@@ -282,15 +282,14 @@
                     <div class="jso-formcontent horizontal layout container">
 
                         <div id="panelAppDiseases" class="vertical layout">
-                            <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select style="height:550px">
+                            <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging style="height:550px">
 
                             </jso-table>
 
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <a href="https://bioinfo.extge.co.uk/crowdsourcing/PanelApp/">
-                                    <div class="jso-btn jso-btn-shdw file">>>More info
-                                        <<</div>
+                                    <div class="jso-btn jso-btn-shdw file" style="width: 150px"> >>More info<< </div>
                                 </a>
                                 </div>
                             </div>
@@ -459,7 +458,7 @@
                         <input style="margin-top: 2px;border-color:#d3d3d3;" type="text" value="{{formData.author::input}}" />
 
                         <div class="data" for="">Date</div>
-                        <input style="width:150px; margin-top: 2px;border-color:#d3d3d3;" type="date" value="{{formData.date::input}}" />
+                        <input style="width:150px; margin-top: 2px;border-color:#d3d3d3;" type="date" value="{{formData.date::input}}" placeholder="mm/dd/yyyy"/>
 
                         <div class="data" for="">Description &nbsp; </div>
                         <textarea class="jso sgenesTextArea" style="height: 100px;" name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
@@ -745,19 +744,23 @@
             this.geneTab = 'text';
             this.geneColumns = [{
                 name: 'name',
-                title: 'Name'
+                title: 'Name',
+                width: 120
             }, {
                 name: 'chr',
                 title: 'Chr',
-                defaultValue: '.'
+                defaultValue: '.',
+                width: 120
             }, {
                 name: 'start',
                 title: 'Start',
-                defaultValue: '.'
+                defaultValue: '.',
+                width: 120
             }, {
                 name: 'end',
                 title: 'End',
-                defaultValue: '.'
+                defaultValue: '.',
+                width: 120
             }, {
                 name: '',
                 title: '',
@@ -783,7 +786,8 @@
                 width: 70
             }, {
                 name: 'phe',
-                title: 'Phenotype'
+                title: 'Phenotype',
+                width: 150
             }, {
                 name: '',
                 title: '',
