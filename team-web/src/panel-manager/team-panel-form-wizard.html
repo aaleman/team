@@ -1,4 +1,3 @@
-<link rel="import" href="../../lib/jsorolla/src/lib/components/table/jso-table.html">
 <link rel="import" href="team-mutation-selector.html">
 
 <dom-module id="team-panel-form-wizard">
@@ -168,6 +167,12 @@
             color: #445D76;
             margin-bottom: 10px;
         }
+
+        #mutationsFromPanel,
+        #genesFromPanel {
+            margin-top: 5px;
+            margin-left: 5px;
+        }
     </style>
     <template>
 
@@ -206,7 +211,7 @@
                         <div class="genes-tab-elem">
                             <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
                             <!-- <div class=""> -->
-                            <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2,PPL" style="width: 60%;"></textarea>
+                            <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2" style="width: 60%;"></textarea>
 
                             <div class="horizontal layout">
                                 <div class="flex"></div>
@@ -232,14 +237,22 @@
                         <div class="genes-tab-elem">
                             <div class="jso-formtitle" style="font-size:14px;">Import from other Panel &nbsp;</div>
                             <!-- <div class="jso-formcontent"> -->
+                            <!-- <input id="genesFromPanel" name="genesFromPanel" type="text" list="importGenesFromPanel" />
+                            <datalist id="importGenesFromPanel">
+                                <option value=" "></option>
+                                <template is="dom-repeat" items="{{panels}}">
+                                    <option value="{{item.name}}" data-file$="{{item.file.id}}"></option>
+                                </template>
+                            </datalist> -->
                             <select id="importGenesFromPanel" style="width:150px;margin-top:5px">
                                 <option value="none"></option>
                                 <template is="dom-repeat" items="{{panels}}">
                                     <option value$="{{item.file.id}}">{{item.name}}</option>
                                 </template>
                             </select>
+
                             <div class="horizontal layout">
-                            <div class="jso-btn jso-btn-shdw file" on-click="handlePreviewFile"> &nbsp; <i class="fa fa-eye"></i>&nbsp;View Panel</div>
+                                <div class="jso-btn jso-btn-shdw file" on-click="handlePreviewFile"> &nbsp; <i class="fa fa-eye"></i>&nbsp;View Panel</div>
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleImportGenesPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                 </div>
@@ -289,7 +302,8 @@
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <a href="https://bioinfo.extge.co.uk/crowdsourcing/PanelApp/">
-                                    <div class="jso-btn jso-btn-shdw file" style="width: 150px"> >>More info<< </div>
+                                    <div class="jso-btn jso-btn-shdw file" style="width: 150px"> >>More info
+                                        << </div>
                                 </a>
                                 </div>
                             </div>
@@ -406,6 +420,13 @@
                             <div class="mutations-tab-elem">
                                 <div class="jso-formtitle" style="font-size:13px">Import from other Panel &nbsp;</div>
                                 <div class="" id="mutation-tab-config-panel">
+                                  <!--  <input id="mutationsFromPanel" name="mutationsFromPanel" type="text" list="importMutationsFromPanel" />
+                                     <datalist id="importMutationsFromPanel">
+                                        <option value=" "></option>
+                                        <template is="dom-repeat" items="{{panels}}">
+                                            <option value="{{item.name}}" data-file$="{{item.file.id}}"></option>
+                                        </template>
+                                    </datalist> -->
                                     <select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
                                         <option value="none"></option>
                                         <template is="dom-repeat" items="{{panels}}">
@@ -458,7 +479,7 @@
                         <input style="margin-top: 2px;border-color:#d3d3d3;" type="text" value="{{formData.author::input}}" />
 
                         <div class="data" for="">Date</div>
-                        <input style="width:150px; margin-top: 2px;border-color:#d3d3d3;" type="date" value="{{formData.date::input}}" placeholder="mm/dd/yyyy"/>
+                        <input style="width:150px; margin-top: 2px;border-color:#d3d3d3;" type="date" value="{{formData.date::input}}" placeholder="mm/dd/yyyy" />
 
                         <div class="data" for="">Description &nbsp; </div>
                         <textarea class="jso sgenesTextArea" style="height: 100px;" name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
@@ -750,7 +771,7 @@
                 name: 'chr',
                 title: 'Chr',
                 defaultValue: '.',
-                width: 120
+                width: 100
             }, {
                 name: 'start',
                 title: 'Start',
@@ -779,11 +800,11 @@
             }, {
                 name: 'ref',
                 title: 'Ref',
-                width: 70
+                width: 65
             }, {
                 name: 'alt',
                 title: 'Alt',
-                width: 70
+                width: 65
             }, {
                 name: 'phe',
                 title: 'Phenotype',
@@ -1144,6 +1165,7 @@
                     this.uploadFile(content, fileName, this.defaultStudy.id);
                 }
             }
+            this.formData = new Panel();
         },
         uploadFile: function(fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({
@@ -1196,6 +1218,10 @@
             }
         },
         handlePreviewFile: function(e) {
+            // var panelValue = this.$.genesFromPanel.value;
+            // var datalist = this.$.importGenesFromPanel;
+            // var selecteOption = datalist.querySelector("[value='" + panelValue + "']");
+            // var fileId = parseInt(selecteOption.dataset.file);
             var fileId = parseInt(this.$.importGenesFromPanel.value);
             var data;
 
@@ -1220,6 +1246,11 @@
         },
         handleImportGenesPanel: function(e) {
             var me = this;
+
+            // var panelValue = this.$.genesFromPanel.value;
+            // var datalist = this.$.importGenesFromPanel;
+            // var selecteOption = datalist.querySelector("[value='" + panelValue + "']");
+            // var fileId = parseInt(selecteOption.dataset.file);
             var fileId = parseInt(this.$.importGenesFromPanel.value);
             for (var i = 0; i < this.panels.length; i++) {
                 var panel = this.panels[i];
@@ -1249,6 +1280,10 @@
             }
         },
         handlePreviewFileMut: function(e) {
+            // var panelValue = this.$.mutationsFromPanel.value;
+            // var datalist = this.$.importMutationsFromPanel;
+            // var selecteOption = datalist.querySelector("[value='" + panelValue + "']");
+            // var fileId = parseInt(selecteOption.dataset.file);
             var fileId = parseInt(this.$.importMutationsFromPanel.value);
             var data;
             OpencgaManager.files.content({
@@ -1272,6 +1307,11 @@
         },
         handleImportMutationsPanel: function(e) {
             var me = this;
+
+            // var panelValue = this.$.mutationsFromPanel.value;
+            // var datalist = this.$.importMutationsFromPanel;
+            // var selecteOption = datalist.querySelector("[value='" + panelValue + "']");
+            // var fileId = parseInt(selecteOption.dataset.file);
             var fileId = parseInt(this.$.importMutationsFromPanel.value);
             for (var i = 0; i < this.panels.length; i++) {
                 var panel = this.panels[i];

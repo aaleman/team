@@ -80,7 +80,7 @@ Panel.prototype = {
                 }
             }
             //
-            //if (disease.source == "clinvar") {
+            // if (disease.source == "clinvar") {
             //
             //    CellBaseManager.get({
             //        species: 'hsapiens',
@@ -112,7 +112,7 @@ Panel.prototype = {
             //            }
             //        }
             //    });
-            //}
+            // }
 
 
             this._incModCount();

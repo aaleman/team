@@ -12,15 +12,15 @@
         jso-table {
             height: 480px;
         }
+
         .data {
             color: #666;
-
-        }
-        #table{
-          border: 1px solid #d0d0d0;
-          margin-top: 5px;
         }
 
+        #table {
+            border: 1px solid #d0d0d0;
+            margin-top: 5px;
+        }
     </style>
     <template>
         <div style="margin:5px">
@@ -92,6 +92,7 @@
                     observer: 'selectedPanelChanged'
                 },
 
+
             },
             ready: function() {
                 this.geneColumns = [{
@@ -145,6 +146,7 @@
 
 
             },
+
             handleOptions: function(e) {
                 this.option = e.target.dataset.value;
                 this.diseases = this.selectedPanel.diseases;
@@ -163,6 +165,14 @@
                     this.diseases = neo.diseases;
                     this.genes = neo.genes;
                     this.mutations = neo.mutations;
+                } else {
+                    this.namePanel = "";
+                    this.vers = "";
+                    this.author = "";
+                    this.desc = "";
+                    this.diseases = "";
+                    this.genes = "";
+                    this.mutations = "";
                 }
             }
 

@@ -1,10 +1,3 @@
-<!-- <link rel="import" href="jso-opencga-project-tree.html">
-<link rel="import" href="jso-opencga-upload-file.html">
-<link rel="import" href="jso-opencga-folder-list.html">
-<link rel="import" href="jso-opencga-create-study.html">
-<link rel="import" href="jso-opencga-create-project.html">
- -->
-
 <link rel="import" href="team-panel-preview.html">
 
 <dom-module id="team-panel-manager">
@@ -107,7 +100,7 @@
                             <div class="name flex">{{item.name}}</div>
                             <div class="version">{{item.version}}</div>
                             <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i>
-                            <i class="fa fa-clipboard" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                            <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
                             <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
@@ -121,7 +114,7 @@
                             <div class="name flex">{{item.name}}</div>
                             <div class="version">{{item.version}}</div>
                             <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i>
-                            <i class="fa fa-clipboard" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                            <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
                             <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
@@ -211,7 +204,13 @@
                 }
             }
             if (find == true && index > -1) {
-                this.splice('panels', index, 1);
+                var deletedPanel = this.splice('panels', index, 1)[0];
+                if (this.selectedPanel!=null && this.selectedPanel.fileId == deletedPanel.file.id) {
+                    this.set('selectedPanel', null);
+                }
+                if (this.panels.length === 0) {
+                    this.set('selectedPanel', null);
+                }
             }
         },
         handleArchivedPanel: function(e) {
@@ -267,6 +266,7 @@
             });
             if (panelContent != "") {
                 this.selectedPanel = JSON.parse(panelContent);
+                this.selectedPanel.fileId = fileId;
                 selectedPanel = this.selectedPanel;
             }
 
