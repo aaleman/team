@@ -4,58 +4,52 @@ package org.babelomics.team.app.cli;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.babelomics.team.lib.TeamVariantAnnotator;
 import org.babelomics.team.lib.filters.TeamVariantGeneRegionFilter;
 import org.babelomics.team.lib.io.TeamDiagnosticFileWriter;
 import org.babelomics.team.lib.io.TeamSecondaryFindingsFileWriter;
+import org.babelomics.team.lib.io.TeamVariantMongoReader;
 import org.babelomics.team.lib.io.TeamVariantStdoutWriter;
+import org.babelomics.team.lib.models.Disease;
 import org.babelomics.team.lib.models.Gene;
-import org.babelomics.team.lib.models.Mutation;
 import org.babelomics.team.lib.models.Panel;
 import org.babelomics.team.lib.models.TeamVariant;
 import org.opencb.biodata.formats.variant.io.VariantReader;
 import org.opencb.biodata.formats.variant.io.VariantWriter;
-import org.opencb.biodata.formats.variant.vcf4.io.VariantVcfReader;
-import org.opencb.biodata.models.feature.Region;
+import org.opencb.biodata.models.core.Region;
 import org.opencb.biodata.models.variant.Variant;
-import org.opencb.biodata.models.variant.VariantSource;
+import org.opencb.biodata.models.variant.avro.ClinVar;
+import org.opencb.biodata.models.variant.avro.Cosmic;
+import org.opencb.biodata.models.variant.avro.Gwas;
+import org.opencb.biodata.models.variant.avro.VariantTraitAssociation;
 import org.opencb.biodata.tools.variant.filtering.VariantFilter;
 import org.opencb.commons.filters.FilterApplicator;
 import org.opencb.commons.io.DataWriter;
+import org.opencb.opencga.catalog.exceptions.CatalogException;
+import org.opencb.opencga.storage.core.StorageManagerException;
+import org.opencb.opencga.storage.core.config.StorageConfiguration;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
  */
 public class TeamMain {
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException, CatalogException, IllegalAccessException, InstantiationException, ClassNotFoundException, StorageManagerException {
 
         Parameters parameters = new Parameters();
         ObjectMapper mapper = new ObjectMapper();
         JCommander jc = new JCommander(parameters);
 
-        Panel panel = null;
-        TeamVariantAnnotator annotator;
-
-        int batchSize = 1;
-
-        List<Variant> batch;
-        List<VariantFilter> filters = new ArrayList<>();
-        List<TeamVariant> diagnosticVariants = new ArrayList<>();
-        List<TeamVariant> secondaryFindingsVariants = new ArrayList<>();
-
-        File jsonPanelFile;
 
         String inputFile;
         String outputFile;
         String panelFilename;
+        String sessionId;
+        int studyId;
 
         try {
             jc.parse(args);
@@ -68,32 +62,50 @@ public class TeamMain {
         inputFile = parameters.getInput();
         panelFilename = parameters.getPanel();
         outputFile = parameters.getOutput();
+        sessionId = parameters.getSessionId();
+        studyId = parameters.getStudyId();
+
+
+        Properties catalogProp = new Properties();
+        catalogProp.load(TeamMain.class.getClassLoader().getResourceAsStream("catalog.properties"));
+
+        StorageConfiguration storageConfiguration = StorageConfiguration.load(TeamMain.class.getClassLoader().getResourceAsStream("storage-configuration.yml"));
+
+        Panel panel = null;
+
+        int batchSize = 1;
+
+        List<Variant> batch;
+        List<VariantFilter> filters = new ArrayList<>();
+        List<TeamVariant> diagnosticVariants = new ArrayList<>();
+        List<TeamVariant> secondaryFindingsVariants = new ArrayList<>();
+
+        java.io.File jsonPanelFile;
 
 
         System.out.println("inputFile = " + inputFile);
         System.out.println("panelFilename = " + panelFilename);
         System.out.println("outputFile = " + outputFile);
 
-        jsonPanelFile = new File(panelFilename);
-
+        jsonPanelFile = new java.io.File(panelFilename);
+//
         try {
             panel = mapper.readValue(jsonPanelFile, Panel.class);
 
-            annotator = new TeamVariantAnnotator();
 
             List<Region> regionList = getRegionsFromPanel(panel);
 
-            VariantSource source = new VariantSource("file", "file", "file", "file");
+            VariantReader reader = new TeamVariantMongoReader(catalogProp, storageConfiguration, studyId, sessionId);
 
-            VariantReader reader = new VariantVcfReader(source, inputFile);
             VariantWriter writer = new TeamVariantStdoutWriter();
-            DataWriter<TeamVariant> diagnosticWriter = new TeamDiagnosticFileWriter(outputFile + "/diagnostic.csv");
-            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamSecondaryFindingsFileWriter(outputFile + "/secondary.csv");
+
+            DataWriter<TeamVariant> diagnosticWriter = new TeamDiagnosticFileWriter(inputFile, outputFile + "/diagnostic.csv");
+            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamSecondaryFindingsFileWriter(inputFile, outputFile + "/secondary.csv");
 
             VariantFilter regionFilter = new TeamVariantGeneRegionFilter(regionList);
-
             filters.add(regionFilter);
 
+//
             reader.open();
             writer.open();
             diagnosticWriter.open();
@@ -110,9 +122,8 @@ public class TeamMain {
             while (batch != null && !batch.isEmpty()) {
 
                 FilterApplicator.filter(batch, filters);
-                List<TeamVariant> teamBatch = annotator.annotate(batch);
 
-                run(teamBatch, panel, diagnosticVariants, secondaryFindingsVariants);
+                run(batch, panel, diagnosticVariants, secondaryFindingsVariants);
 
                 diagnosticWriter.write(diagnosticVariants);
                 secondaryFindingsWriter.write(secondaryFindingsVariants);
@@ -135,19 +146,20 @@ public class TeamMain {
             diagnosticWriter.close();
             secondaryFindingsWriter.close();
 
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
 
     }
 
-    private static void run(List<TeamVariant> batch, Panel panel, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
-        for (TeamVariant variant : batch) {
-            if (isDiagnosticVariant(variant, panel)) {
-                diagnosticVariants.add(variant);
+    private static void run(List<Variant> batch, Panel panel, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
+        for (Variant variant : batch) {
+            TeamVariant teamVariant = new TeamVariant(variant);
+            if (isDiagnosticVariant(teamVariant, panel)) {
+                diagnosticVariants.add(teamVariant);
             } else {
-                secondaryFindingsVariants.add(variant);
+                secondaryFindingsVariants.add(teamVariant);
             }
         }
 
@@ -155,16 +167,54 @@ public class TeamMain {
 
     private static boolean isDiagnosticVariant(TeamVariant teamVariant, Panel panel) {
         Variant variant = teamVariant.getVariant();
-        for (Mutation m : panel.getMutations()) {
-            if (variant.getChromosome().equals(m.getChr()) &&
-                    variant.getStart() == m.getPos() &&
-                    variant.getReference().equals(m.getRef()) &&
-                    variant.getAlternate().equals(m.getAlt())) {
-                teamVariant.setPhenotype(m.getPhe());
-                teamVariant.setSource(m.getSrc());
-                return true;
+        VariantTraitAssociation variantTraitAssociation = variant.getAnnotation().getVariantTraitAssociation();
+        for (Disease disease : panel.getDiseases()) {
+
+            // TODO aaleman: Check if the mutation is in the list of mutations (from the panel)
+            if (variantTraitAssociation == null) {
+                continue;
+            }
+            switch (disease.getSource().toLowerCase()) {
+                case "clinvar":
+                    if (variantTraitAssociation.getClinvar() != null && !variantTraitAssociation.getClinvar().isEmpty()) {
+                        for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
+                            for (String trait : clinvar.getTraits()) {
+                                if (trait.equalsIgnoreCase(disease.getPhenotype())) {
+                                    teamVariant.setPhenotype(disease.getPhenotype());
+                                    teamVariant.setSource("clinvar");
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "cosmic":
+                    if (variantTraitAssociation.getCosmic() != null && !variantTraitAssociation.getCosmic().isEmpty()) {
+                        for (Cosmic cosmic : variantTraitAssociation.getCosmic()) {
+                            if (cosmic.getPrimaryHistology().equalsIgnoreCase(disease.getPhenotype())) {
+                                teamVariant.setPhenotype(disease.getPhenotype());
+                                teamVariant.setSource("cosmic");
+                                return true;
+                            }
+                        }
+                    }
+                    break;
+                case "gwas":
+                    if (variantTraitAssociation.getGwas() != null && !variantTraitAssociation.getGwas().isEmpty()) {
+                        for (Gwas gwas : variantTraitAssociation.getGwas()) {
+                            for (String trait : gwas.getTraits()) {
+                                if (trait.equalsIgnoreCase(disease.getPhenotype())) {
+                                    teamVariant.setPhenotype(disease.getPhenotype());
+                                    teamVariant.setSource("gwas");
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    break;
             }
         }
+
         return false;
     }
 

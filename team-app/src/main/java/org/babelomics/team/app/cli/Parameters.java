@@ -8,15 +8,22 @@ import com.beust.jcommander.Parameter;
 public class Parameters {
 
 
-    @Parameter(names = {"--input","-i"}, description = "Input", required = true)
+    @Parameter(names = {"--fileId", "-f"}, description = "File Id", required = true)
     private String input;
 
-    @Parameter(names = {"--output","-o"}, description = "Output", required = true)
+    @Parameter(names = {"--output", "-o"}, description = "Output", required = true)
     private String output;
 
 
-    @Parameter(names = {"--panel","-p"}, description = "panel", required = true)
+    @Parameter(names = {"--panel", "-p"}, description = "panel", required = false)
     private String panel;
+
+
+    @Parameter(names = {"--sessionId", "-s"}, description = "sessionId", required = true)
+    private String sessionId;
+
+    @Parameter(names = {"--studyId"}, description = "StudyId", required = true)
+    private int studyId;
 
 
     @Parameter(names = {"-h", "--help"}, help = true)
@@ -37,5 +44,13 @@ public class Parameters {
 
     public String getOutput() {
         return output;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public int getStudyId() {
+        return studyId;
     }
 }
