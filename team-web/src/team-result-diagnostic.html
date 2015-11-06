@@ -12,7 +12,8 @@
             border-bottom: thin solid #edebe3;
             /*margin: 7px 5px;*/
         }
-        jso-table{
+
+        jso-table {
             height: 365px;
             border: 1px solid #d0d0d0;
         }
@@ -27,26 +28,26 @@
     Polymer({
         is: "team-result-diagnostic",
         properties: {
-            data:{
-                type:Array,
-                value: function(){
+            data: {
+                type: Array,
+                value: function () {
                     return [];
                 },
                 observer: 'dataChanged'
             },
-            _data:{
-                type:Array,
-                value: function(){
+            _data: {
+                type: Array,
+                value: function () {
                     return [];
                 },
             },
-            title:{
-                type:String,
+            title: {
+                type: String,
                 value: ""
             },
-            query:{
+            query: {
                 type: Object,
-                value: function(){
+                value: function () {
                     return {};
                 },
                 observer: 'queryChanged'
@@ -55,19 +56,19 @@
         _columns: [
             {
                 name: 'chr',
-                title: "Chr",
+                title: "Chro",
                 width: 100
             }, {
                 name: 'pos',
                 title: "Pos",
                 width: 100
             },
-             {
+            {
                 name: 'ref',
                 title: "Ref",
                 width: 100
             },
-             {
+            {
                 name: 'alt',
                 title: "Alt",
                 width: 100
@@ -132,7 +133,13 @@
                 width: 100,
                 defaultValue: '.'
             },
-            /*{
+            {
+                name: 'maf1000GP3',
+                title: 'MAF 1000G Phase 3',
+                width: 100,
+                defaultValue: '.'
+            },
+            {
                 name: 'phenotype',
                 title: 'Phenotype',
                 width: 400,
@@ -143,59 +150,62 @@
                 title: 'Source',
                 width: 100,
                 defaultValue: '.'
-            }*/
-        ],
+            }
+        ]
+        ,
         handleRowClick: function (e) {
             console.log(e.detail.row);
         },
-        ready: function(){
+        ready: function () {
             this.$.table.columns = this._columns;
-        }   ,
-        dataChanged: function(neo, old){
+        },
+        dataChanged: function (neo, old) {
             var _data = [];
             for (var i = 0; i < this.data.length; i++) {
                 var elem = this.data[i];
                 _data.push(elem);
-            };
+            }
+            ;
             this._data = _data;
 
         },
-        queryChanged: function(neo, old){
-            if(neo){
+        queryChanged: function (neo, old) {
+            if (neo) {
                 console.log(neo);
                 var data = [];
                 for (var i = 0; i < this.data.length; i++) {
                     var elem = this.data[i];
 
-                    if(this._applyFilters(elem, neo)){
+                    if (this._applyFilters(elem, neo)) {
                         data.push(elem);
                     }
-                };
+                }
+                ;
 
                 this.set('_data', data);
 
             }
         },
-        _applyFilters: function(data, filters){
+        _applyFilters: function (data, filters) {
             var filtered = true;
-            for (var key in filters){
+            for (var key in filters) {
                 var query = filters[key];
                 var match = false;
 
-                if(key === "gene"){
+                if (key === "gene") {
                     match = data.gene.toUpperCase().indexOf(query) >= 0;
-                }else if(key === "dp"){
+                } else if (key === "dp") {
                     match = data.dp <= query;
-                }else if(key === "qual"){
+                } else if (key === "qual") {
                     match = data.qual <= query;
-                }else if(key === "maf1000g"){
+                } else if (key === "maf1000g") {
                     match = data.maf1000G <= query;
-                }else if(key === "mafEVS"){
+                } else if (key === "mafEVS") {
 //                    match = data.mafEVS <= query;
-                   match = true;
-                }else if(key === "sift"){
+                    match = true;
+                } else if (key === "sift") {
                     match = data.sift <= query || data.sift === ".";
-                }else if(key === "polyphen"){
+                } else if (key === "polyphen") {
                     match = data.polyphen <= query || data.polyphen === ".";
                 }
                 filtered &= match;

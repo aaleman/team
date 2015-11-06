@@ -216,7 +216,6 @@
 
                     if (diag != null && sec != null) {
 
-
                         var diagContent;
                         var secContent;
                         OpencgaManager.files.content({
@@ -277,10 +276,12 @@
                                     polyphen: splits[12],
                                     maf1000G: splits[13],
                                     amaf1000G: splits[14],
-                                    phenotype: splits[15],
-                                    source: splits[16]
+                                    maf1000GP3: splits[15],
+                                    amaf1000GP3: splits[16],
+                                    phenotype: splits[17],
+                                    source: splits[18]
 
-                                }
+                                };
                                 diagData.push(elem);
                             }
                         }
@@ -307,10 +308,12 @@
                                     polyphen: splits[12],
                                     maf1000G: splits[13],
                                     amaf1000G: splits[14],
-                                    phenotype: splits[15],
-                                    source: splits[16]
+                                    maf1000GP3: splits[15],
+                                    amaf1000GP3: splits[16],
+                                    phenotype: splits[17],
+                                    source: splits[18]
 
-                                }
+                                };
                                 secData.push(elem);
                             }
                         }

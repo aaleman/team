@@ -137,17 +137,17 @@
             box-sizing: border-box;
         }
 
-        .genes-tab-elem {
+        .genes-tab-elem,.mutations-tab-elem {
             margin-bottom: 5px;
             border: 1px solid #d3d3d3;
-            padding: 5px;
+            /*padding: 5px;*/
         }
 
-        .mutations-tab-elem {
+        /*.mutations-tab-elem {
             margin-bottom: 5px;
             border: 1px solid #d3d3d3;
             padding: 5px;
-        }
+        }*/
 
         jso-table::shadow .table-row {
             height: 25px;
@@ -217,7 +217,7 @@
                             <div class="genes-tab-elem">
                                 <div class="jso-formtitle" style="font-size:14px;">Import from BED &nbsp;</div>
 
-                                <input type="file" style="margin-top:5px" id="geneBedFileInput">
+                                <input type="file" style="margin-top:5px; margin-left:5px" id="geneBedFileInput">
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
@@ -237,7 +237,7 @@
                                     <option value="{{item.name}}" data-file$="{{item.file.id}}"></option>
                                 </template>
                             </datalist> -->
-                                <select id="importGenesFromPanel" style="width:150px;margin-top:5px">
+                                <select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
                                     <option value="none"></option>
                                     <template is="dom-repeat" items="{{panels}}">
                                         <option value$="{{item.file.id}}">{{item.name}}</option>
@@ -321,7 +321,7 @@
                         <div id="mutations-tab" flex>
                             <div class="mutations-tab-elem">
                                 <div class="jso-formtitle" style="font-size:13px;">Genomic Pos. &nbsp;</div>
-                                <div class="vertical layout" id="mutation-tab-config-gv">
+                                <div class="vertical layout" id="mutation-tab-config-gv" style="margin:5px">
                                     <div class="horizontal layout data">
                                         <label style="font-size:12px;" for="">Chr: &nbsp;</label>
                                         <input class="input" type="text" name="mutationGVChr" id="mutationGVChr" />
@@ -362,7 +362,7 @@
                             <div class="mutations-tab-elem">
 
                                 <div class="jso-formtitle" style="font-size:13px;">Import VCF &nbsp;</div>
-                                <div class="" id="mutation-tab-config-vcf">
+                                <div class="" id="mutation-tab-config-vcf" style="margin:5px">
 
                                     <div class="horizontal layout data">
                                         <label style="font-size:12px;" for="">Phe: &nbsp;</label>
@@ -384,7 +384,7 @@
                             </div>
                             <div class="mutations-tab-elem">
                                 <div class="jso-formtitle" style="font-size:13px;">Import CSV &nbsp;</div>
-                                <div class="" id="mutation-tab-config-csv">
+                                <div class="" id="mutation-tab-config-csv" style="margin:5px">
                                     <div>
                                         <label class="data" style="font-size:12px; margin-top:5px" for="">Separator:</label>
                                         <select name="mutationCSVSeparator" id="mutationCSVSeparator">
@@ -411,7 +411,7 @@
 
                             <div class="mutations-tab-elem">
                                 <div class="jso-formtitle" style="font-size:13px">Import from other Panel &nbsp;</div>
-                                <div class="" id="mutation-tab-config-panel">
+                                <div class="" id="mutation-tab-config-panel" style="margin:5px">
                                     <!--  <input id="mutationsFromPanel" name="mutationsFromPanel" type="text" list="importMutationsFromPanel" />
                                      <datalist id="importMutationsFromPanel">
                                         <option value=" "></option>
