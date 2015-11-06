@@ -211,7 +211,7 @@
                         <div class="genes-tab-elem">
                             <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
                             <!-- <div class=""> -->
-                            <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2" style="width: 60%;"></textarea>
+                            <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2,PPL" style="width: 60%;"></textarea>
 
                             <div class="horizontal layout">
                                 <div class="flex"></div>
@@ -930,6 +930,7 @@
             this.geneTab = 'panel';
         },
         handleClickGeneTextAreaButton: function(e) {
+
             var me = this;
             var textAreaValue = this.$.geneTextArea.value.toUpperCase();
             var splits = textAreaValue.split(",");
@@ -939,7 +940,7 @@
 
                 if (geneName != '') {
 
-                    var re = /(\w+):(\d+)-(\d)+/;
+                    var re = /(\w+):(\d+)-(\d+)/;
                     if (re.test(geneName)) {
                         //                        var groups = re.match(geneName);
                         var groups = geneName.match(re);
@@ -960,8 +961,7 @@
                             me.formData.addGene(gene);
                         }
                     } else {
-                        this.$.geneTable.setLoading(true);
-                        setTimeout(function() {
+
                             CellBaseManager.get({
                                 species: 'hsapiens',
                                 category: 'feature',
@@ -993,9 +993,8 @@
                                         }
                                     }
                                 }
-                            });
-                            me.$.geneTable.setLoading(false);
-                        }, 50);
+                            }
+                          );
                     }
                 }
             }

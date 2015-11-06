@@ -142,7 +142,7 @@
                         <div class="titlePreview">
                             <i class="fa fa-eye"></i>&nbsp; Panel Preview
                         </div>
-                        <team-panel-preview selected-panel="{{selectedPanel}}">
+                         <team-panel-preview selected-panel="{{selectedPanel}}">
                         </team-panel-preview>
                     </div>
                 </div>
@@ -187,7 +187,7 @@
                 value: function() {
                     return [];
                 },
-                observer: 'handlePanelsChanged'
+
             },
             projects: {
                 type: Array,
@@ -202,8 +202,7 @@
             },
             selectedPanel: {
                 type: Object,
-
-
+                observer: 'handleSelectedPanelChanged'
             },
             bioformats: {
                 type: Array,
@@ -233,11 +232,19 @@
             },
 
         },
+        observers:[
+          "handlePanelsChanged(panels.splices)"
+        ],
 
         ready: function() {
 
         },
-        handlePanelsChanged: function(neo, old) {
+        handlePanelsChanged: function(neo,old,path) {
+        
+
+          if(neo==null){
+               this.set('selectedPanel', null);
+             }
 
         },
         isPanel: function(item) {
@@ -341,6 +348,7 @@
         },
         handleSelectedPanelChanged: function(neo, old) {
             console.log(this.selectedPanelId);
+            console.log(this.selectedPanel);
         },
         handleFileSelected: function(e) {
             this.inputSelectedFile = e.detail;
