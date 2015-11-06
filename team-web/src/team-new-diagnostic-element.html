@@ -24,7 +24,6 @@
             height: 650px;
             width: 25%;
             overflow-y: auto;
-
         }
 
         .panel-item {
@@ -129,7 +128,7 @@
                 </div>
                 <div class="horizontal layout">
                     <div class=" selbox" id="panelSelector">
-                      <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                        <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
                         <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
                                     <label class="horizontal layout jso-control" style="margin-top:10px">
                                         <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
@@ -142,7 +141,7 @@
                         <div class="titlePreview">
                             <i class="fa fa-eye"></i>&nbsp; Panel Preview
                         </div>
-                         <team-panel-preview selected-panel="{{selectedPanel}}">
+                        <team-panel-preview selected-panel="{{selectedPanel}}">
                         </team-panel-preview>
                     </div>
                 </div>
@@ -232,19 +231,26 @@
             },
 
         },
-        observers:[
-          "handlePanelsChanged(panels.splices)"
+        observers: [
+            "handlePanelsChanged(panels.splices)"
         ],
 
         ready: function() {
 
         },
-        handlePanelsChanged: function(neo,old,path) {
-        
+        handlePanelsChanged: function(value) {
+          var aux=0;
+            if (this.panels == "") {
+                this.set('selectedPanel', null);
+            }else{
+              for(var i=0;i<this.panels.length;i++){
+                if(this.panels[i].file.id==this.selectedPanelId){
+                  aux=1;
+                }
+              }
+                  if(aux==0){this.set('selectedPanel', null);}
 
-          if(neo==null){
-               this.set('selectedPanel', null);
-             }
+            }
 
         },
         isPanel: function(item) {
