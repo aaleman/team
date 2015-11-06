@@ -158,7 +158,7 @@
         }
 
         jso-table::shadow .table-pager > input {
-            width: 40px;
+            width: 40px !important;
         }
 
         #mutationsFromPanel,
@@ -180,7 +180,7 @@
                 <div class="step">
                     <div class="jso-formcontent horizontal layout">
                         <div class="disease vertical layout">
-                            <jso-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter enable-paging></jso-table>
+                            <jso-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter enable-paging hide-column-selector></jso-table>
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
@@ -188,7 +188,7 @@
                             </div>
                         </div>
                         <div class="disease vertical layout">
-                            <jso-table id="selectedDiseases" class="flex" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" data="{{formData.diseases}}">
+                            <jso-table id="selectedDiseases" class="flex" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" data="{{formData.diseases}}" hide-column-selector>
 
                             </jso-table>
                             <div class="horizontal layout">
@@ -265,7 +265,7 @@
                         </div>
 
                         <div id="genes-list">
-                            <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}" enable-edit></jso-table>
+                            <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}" enable-edit hide-column-selector></jso-table>
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
@@ -289,9 +289,7 @@
                     <div class="jso-formcontent horizontal layout container">
 
                         <div id="panelAppDiseases" class="vertical layout">
-                            <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging style="height:550px">
-
-                            </jso-table>
+                            <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:550px"></jso-table>
 
                             <div class="horizontal layout">
                                 <div class="flex"></div>
@@ -302,9 +300,7 @@
                                 </div>
                             </div>
                             <div id="panelAppGenes" class="vertical layout">
-                                <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" enable-select style="height:550px">
-
-                                </jso-table>
+                                <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" enable-select hide-column-selector style="height:550px"></jso-table>
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
                                     <div class="jso-btn jso-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
@@ -435,7 +431,7 @@
                             </div>
                         </div>
                         <div id="mutations-list" flex>
-                            <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}" enable-edit></jso-table>
+                            <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}" enable-edit hide-column-selector></jso-table>
                             <div class="horizontal layout">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear
