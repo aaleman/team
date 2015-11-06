@@ -24,7 +24,6 @@
             height: 650px;
             width: 25%;
             overflow-y: auto;
-
         }
 
         .panel-item {
@@ -78,13 +77,6 @@
             cursor: pointer;
         }
 
-        .stepName {
-            font-size: 20px;
-            text-align: center;
-            color: #445D76;
-            margin-bottom: 10px;
-        }
-
         #personalData {
             border: 1px solid #d3d3d3;
             padding: 10px;
@@ -104,81 +96,81 @@
             height: 100px;
             margin-top: 5px;
         }
+
+        .stepName {
+            font-size: 20px;
+            text-align: center;
+            color: #445D76;
+            margin-bottom: 10px;
+        }
     </style>
     <template>
 
         <jso-wizard id="formWizard">
             <!-- <form id="form"> -->
-            <div class="step">
-                <!-- <div class="jso-formbox"> -->
-                <div class="stepName">
-                    Step 1: Choose a File
+            <div class="title">
+                <div class="stepName">Choose a File
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
                 </div>
-
-                <div class="jso-formbox" style="padding:0">
-                    <jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}"
-                                         on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>
-                </div>
-                <!-- </div> -->
-            </div>
-            <div class="step">
-                <!-- <div class="jso-formbox"> -->
-                <div class="stepName">Step 2: Choose a Panel
-                    <!-- <span class="eye">&nbsp;<i class="fa fa-eye" title="View Panel" on-click="handlePreviewFile"></i> </span> -->
+                <div class="stepName">Choose a Panel
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
                 </div>
-                <div class="horizontal layout">
-                    <div class=" selbox" id="panelSelector">
-                        <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
-                        <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
+
+                <div class="stepName">Job information</div>
+            </div>
+
+            <div class="container">
+                <div class="step">
+                    <div class="jso-formbox" style="padding:0">
+                        <jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>
+                    </div>
+                    <!-- </div> -->
+                </div>
+                <div class="step">
+                    <div class="horizontal layout">
+                        <div class=" selbox" id="panelSelector">
+                            <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                            <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
                                     <label class="horizontal layout jso-control" style="margin-top:10px">
                                         <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
                                         <span>{{item.name}}</span>
                                     </label>
                                 </template> -->
-                        <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name"
-                                        on-select="handlePanelClick"></jso-select-box>
-                    </div>
-                    <div id="panelPreview">
-                        <div class="titlePreview">
-                            <i class="fa fa-eye"></i>&nbsp; Panel Preview
+                            <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
                         </div>
-                        <team-panel-preview selected-panel="{{selectedPanel}}">
-                        </team-panel-preview>
+                        <div id="panelPreview">
+                            <div class="titlePreview">
+                                <i class="fa fa-eye"></i>&nbsp; Panel Preview
+                            </div>
+                            <team-panel-preview selected-panel="{{selectedPanel}}">
+                            </team-panel-preview>
+                        </div>
                     </div>
-                </div>
-
-                <!-- </div> -->
-                <!-- <jso-panel modal closable hidden id="panelPreview">
+                    <!-- </div> -->
+                    <!-- <jso-panel modal closable hidden id="panelPreview">
                         <div class="header">
                             <i class="fa fa-eye"></i> Panel Preview
                         </div>
                         <team-panel-preview class="container" selected-panel="{{selectedPanel}}">
                         </team-panel-preview>
                     </jso-panel> -->
-            </div>
-            <div class="step">
-                <!-- <div class="jso-formbox"> -->
-                <div class="stepName">Step 3: Job information</div>
-                <div class="jso-formcontent vertical layout" id="personalData">
-                    <div style="color:#666;margin-top:5px;">Job name</div>
-                    <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName"
-                           value="{{jobName::change}}" required>
-
-                    <div class="data">Description</label>
-                        <textarea class="jso sgenesTextArea flex" value="{{jobDescription}}" required></textarea>
-                    </div>
-                    <!-- </div> -->
-                    <div class="horizontal layout">
-                        <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm">
-                            <i class="fa fa-rocket"></i>&nbsp; Run
+                </div>
+                <div class="step">
+                    <div class="jso-formcontent vertical layout" id="personalData">
+                        <div style="color:#666;margin-top:5px;">Job name</div>
+                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
+                        <div class="data">Description</label>
+                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription}}" required></textarea>
                         </div>
-                        <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
+                        <div class="horizontal layout">
+                            <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                            </div>
+                            <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
+                        </div>
                     </div>
                 </div>
-
-                </form>
+            </div>
+            <!-- </form> -->
         </jso-wizard>
 
     </template>
@@ -189,14 +181,14 @@
         properties: {
             panels: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
-                observer: 'handlePanelsChanged'
+
             },
             projects: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
@@ -207,22 +199,23 @@
             },
             selectedPanel: {
                 type: Object,
+                observer: 'handleSelectedPanelChanged'
             },
             bioformats: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             defaultStudy: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
             analysisFolder: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
@@ -236,17 +229,35 @@
             },
 
         },
+        observers: [
+            "handlePanelsChanged(panels.splices)"
+        ],
 
-        ready: function () {
+        ready: function() {
 
         },
-        handlePanelsChanged: function (neo, old) {
+        handlePanelsChanged: function(value) {
+            var aux = 0;
+            if (this.panels == "") {
+                this.set('selectedPanel', null);
+            } else {
+                for (var i = 0; i < this.panels.length; i++) {
+                    if (this.panels[i].file.id == this.selectedPanelId) {
+                        aux = 1;
+                    }
+                }
+                if (aux == 0) {
+                    this.set('selectedPanel', null);
+                    this.set('selectedPanelId', "");
+                }
+
+            }
 
         },
-        isPanel: function (item) {
+        isPanel: function(item) {
             return item.file.name.indexOf("panel") == 0;
         },
-        handleForm: function (e) {
+        handleForm: function(e) {
             var me = this;
 
             if (this.inputSelectedFile == null) {
@@ -279,7 +290,7 @@
                     query: query,
                     request: {
                         //method: 'POST',
-                        success: function (response) {
+                        success: function(response) {
                             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                                 var userId = response.response[0].result[0].id;
                                 me.fire('run');
@@ -289,7 +300,7 @@
                                 //                            me.message = response.response[0].errorMsg;
                             }
                         },
-                        error: function () {
+                        error: function() {
                             me.message = 'Server error, try again later.';
                         }
                     }
@@ -298,10 +309,10 @@
                 this.errorMessage = "There are errors in the form. Correct them before launching work.";
             }
         },
-        handleClose: function (e) {
+        handleClose: function(e) {
             this.fire('close');
         },
-        handlePanelClick: function (e) {
+        handlePanelClick: function(e) {
             //  var sel = this.querySelectorAll('.panel-item');
             // for (var i = 0; i < sel.length; i++) {
             //     var el = sel[i];
@@ -330,11 +341,10 @@
                 },
                 request: {
                     async: false,
-                    success: function (response) {
+                    success: function(response) {
                         data = response;
                     },
-                    error: function () {
-                    }
+                    error: function() {}
                 }
             });
 
@@ -343,13 +353,14 @@
             }
 
         },
-        handleSelectedPanelChanged: function (neo, old) {
+        handleSelectedPanelChanged: function(neo, old) {
             console.log(this.selectedPanelId);
+            console.log(this.selectedPanel);
         },
-        handleFileSelected: function (e) {
+        handleFileSelected: function(e) {
             this.inputSelectedFile = e.detail;
             this.errorMessageFile = " ";
-        }
+        },
         // handlePreviewFile: function(e) {
         //     var aux = this.$.panelSelector.querySelectorAll('input[type=radio]');
         //     for (var i = 0; i < aux.length; i++) {
