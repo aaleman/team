@@ -156,14 +156,14 @@
         #manager {
             width: 100%;
             border-top: 1px solid var(--divider-color);
-            height: 600px;
+            height: 700px;
         }
 
         team-result {
             height: 100%;
         }
         #newDiagnosticElement{
-          height: 750px;
+          height: 700px;
         }
     </style>
     <template>
@@ -177,7 +177,7 @@
                 <div class="header">
                     <i class="fa fa-folder-open-o"></i> File Browser
                 </div>
-                <jso-opencga-browser class="container" id="browser" projects="{{projects}}" bioformats="{{bioformats}}" disable-new-project disable-new-study></jso-opencga-browser>
+                <jso-opencga-browser class="container" id="browser" projects="{{projects}}" bioformats="{{bioformats}}" disable-new-project disable-new-study mode="file"></jso-opencga-browser>
             </jso-panel>
 
 

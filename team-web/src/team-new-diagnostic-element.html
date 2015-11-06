@@ -77,13 +77,6 @@
             cursor: pointer;
         }
 
-        .stepName {
-            font-size: 20px;
-            text-align: center;
-            color: #445D76;
-            margin-bottom: 10px;
-        }
-
         #personalData {
             border: 1px solid #d3d3d3;
             padding: 10px;
@@ -109,38 +102,24 @@
         <jso-wizard id="formWizard">
             <!-- <form id="form"> -->
             <div class="title">
-                <div class="stepName">
-                    Step 1: Choose a File
+                <div class="stepName">Choose a File
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
                 </div>
-                <div class="stepName">
-                    Step 2: Choose a Panel
+                <div class="stepName">Choose a Panel
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
                 </div>
 
-                <div class="stepName">
-                    Step 3: Job information</div>
+                <div class="stepName">Job information</div>
             </div>
 
             <div class="container">
                 <div class="step">
-                    <!-- <div class="jso-formbox"> -->
-                    <!-- <div class="stepName">
-                        Step 1: Choose a File
-                        <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
-                    </div> -->
-
                     <div class="jso-formbox" style="padding:0">
-                        <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
+                        <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study mode="file"></jso-opencga-browser>
                     </div>
                     <!-- </div> -->
                 </div>
                 <div class="step">
-                    <!-- <div class="jso-formbox"> -->
-                    <!-- <div class="stepName">Step 2: Choose a Panel
-                         <span class="eye">&nbsp;<i class="fa fa-eye" title="View Panel" on-click="handlePreviewFile"></i> </span>
-                        <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
-                    </div> -->
                     <div class="horizontal layout">
                         <div class=" selbox" id="panelSelector">
                             <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
@@ -160,7 +139,6 @@
                             </team-panel-preview>
                         </div>
                     </div>
-
                     <!-- </div> -->
                     <!-- <jso-panel modal closable hidden id="panelPreview">
                         <div class="header">
@@ -171,15 +149,12 @@
                     </jso-panel> -->
                 </div>
                 <div class="step">
-                    <!-- <div class="jso-formbox"> -->
-                    <!-- <div class="stepName">Step 3: Job information</div> -->
                     <div class="jso-formcontent vertical layout" id="personalData">
                         <div style="color:#666;margin-top:5px;">Job name</div>
                         <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
                         <div class="data">Description</label>
                             <textarea class="jso sgenesTextArea flex" value="{{jobDescription}}" required></textarea>
                         </div>
-                        <!-- </div> -->
                         <div class="horizontal layout">
                             <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
                             </div>
@@ -188,7 +163,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- </form> -->
         </jso-wizard>
 
