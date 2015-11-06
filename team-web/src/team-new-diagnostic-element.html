@@ -108,71 +108,88 @@
 
         <jso-wizard id="formWizard">
             <!-- <form id="form"> -->
-            <div class="step">
-                <!-- <div class="jso-formbox"> -->
+            <div class="title">
                 <div class="stepName">
                     Step 1: Choose a File
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
                 </div>
-
-                <div class="jso-formbox" style="padding:0">
-                    <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
-                </div>
-                <!-- </div> -->
-            </div>
-            <div class="step">
-                <!-- <div class="jso-formbox"> -->
-                <div class="stepName">Step 2: Choose a Panel
-                    <!-- <span class="eye">&nbsp;<i class="fa fa-eye" title="View Panel" on-click="handlePreviewFile"></i> </span> -->
+                <div class="stepName">
+                    Step 2: Choose a Panel
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
                 </div>
-                <div class="horizontal layout">
-                    <div class=" selbox" id="panelSelector">
-                        <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
-                        <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
+
+                <div class="stepName">
+                    Step 3: Job information</div>
+            </div>
+
+            <div class="container">
+                <div class="step">
+                    <!-- <div class="jso-formbox"> -->
+                    <!-- <div class="stepName">
+                        Step 1: Choose a File
+                        <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
+                    </div> -->
+
+                    <div class="jso-formbox" style="padding:0">
+                        <jso-opencga-browser id="brower" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" disable-new-project disable-new-study></jso-opencga-browser>
+                    </div>
+                    <!-- </div> -->
+                </div>
+                <div class="step">
+                    <!-- <div class="jso-formbox"> -->
+                    <!-- <div class="stepName">Step 2: Choose a Panel
+                         <span class="eye">&nbsp;<i class="fa fa-eye" title="View Panel" on-click="handlePreviewFile"></i> </span>
+                        <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
+                    </div> -->
+                    <div class="horizontal layout">
+                        <div class=" selbox" id="panelSelector">
+                            <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                            <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
                                     <label class="horizontal layout jso-control" style="margin-top:10px">
                                         <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
                                         <span>{{item.name}}</span>
                                     </label>
                                 </template> -->
-                        <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
-                    </div>
-                    <div id="panelPreview">
-                        <div class="titlePreview">
-                            <i class="fa fa-eye"></i>&nbsp; Panel Preview
+                            <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
                         </div>
-                        <team-panel-preview selected-panel="{{selectedPanel}}">
-                        </team-panel-preview>
+                        <div id="panelPreview">
+                            <div class="titlePreview">
+                                <i class="fa fa-eye"></i>&nbsp; Panel Preview
+                            </div>
+                            <team-panel-preview selected-panel="{{selectedPanel}}">
+                            </team-panel-preview>
+                        </div>
                     </div>
-                </div>
 
-                <!-- </div> -->
-                <!-- <jso-panel modal closable hidden id="panelPreview">
+                    <!-- </div> -->
+                    <!-- <jso-panel modal closable hidden id="panelPreview">
                         <div class="header">
                             <i class="fa fa-eye"></i> Panel Preview
                         </div>
                         <team-panel-preview class="container" selected-panel="{{selectedPanel}}">
                         </team-panel-preview>
                     </jso-panel> -->
-            </div>
-            <div class="step">
-                <!-- <div class="jso-formbox"> -->
-                <div class="stepName">Step 3: Job information</div>
-                <div class="jso-formcontent vertical layout" id="personalData">
-                    <div style="color:#666;margin-top:5px;">Job name</div>
-                    <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
-                    <div class="data">Description</label>
-                        <textarea class="jso sgenesTextArea flex" value="{{jobDescription}}" required></textarea>
-                    </div>
-                    <!-- </div> -->
-                    <div class="horizontal layout">
-                        <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                </div>
+                <div class="step">
+                    <!-- <div class="jso-formbox"> -->
+                    <!-- <div class="stepName">Step 3: Job information</div> -->
+                    <div class="jso-formcontent vertical layout" id="personalData">
+                        <div style="color:#666;margin-top:5px;">Job name</div>
+                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
+                        <div class="data">Description</label>
+                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription}}" required></textarea>
                         </div>
-                        <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
+                        <!-- </div> -->
+                        <div class="horizontal layout">
+                            <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                            </div>
+                            <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                </form>
+            <!-- </form> -->
         </jso-wizard>
 
     </template>
@@ -239,16 +256,19 @@
 
         },
         handlePanelsChanged: function(value) {
-          var aux=0;
+            var aux = 0;
             if (this.panels == "") {
                 this.set('selectedPanel', null);
-            }else{
-              for(var i=0;i<this.panels.length;i++){
-                if(this.panels[i].file.id==this.selectedPanelId){
-                  aux=1;
+            } else {
+                for (var i = 0; i < this.panels.length; i++) {
+                    if (this.panels[i].file.id == this.selectedPanelId) {
+                        aux = 1;
+                    }
                 }
-              }
-                  if(aux==0){this.set('selectedPanel', null);}
+                if (aux == 0) {
+                    this.set('selectedPanel', null);
+                    this.set('selectedPanelId', "");
+                }
 
             }
 
