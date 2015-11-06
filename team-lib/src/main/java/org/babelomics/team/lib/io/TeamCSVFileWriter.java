@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
  */
-public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
+public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
 
     private PrintWriter printer;
     private String fileId;
@@ -27,7 +27,7 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
     private DecimalFormat df;
 
 
-    public TeamDiagnosticFileWriter(String fileId, String filename) {
+    public TeamCSVFileWriter(String fileId, String filename) {
         this.fileId = fileId;
 
         this.filename = filename;

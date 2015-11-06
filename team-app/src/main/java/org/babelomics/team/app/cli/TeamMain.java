@@ -5,8 +5,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.babelomics.team.lib.filters.TeamVariantGeneRegionFilter;
-import org.babelomics.team.lib.io.TeamDiagnosticFileWriter;
-import org.babelomics.team.lib.io.TeamSecondaryFindingsFileWriter;
+import org.babelomics.team.lib.io.TeamCSVFileWriter;
 import org.babelomics.team.lib.io.TeamVariantMongoReader;
 import org.babelomics.team.lib.io.TeamVariantStdoutWriter;
 import org.babelomics.team.lib.models.Disease;
@@ -71,9 +70,7 @@ public class TeamMain {
 
         StorageConfiguration storageConfiguration = StorageConfiguration.load(TeamMain.class.getClassLoader().getResourceAsStream("storage-configuration.yml"));
 
-        Panel panel = null;
-
-        int batchSize = 1;
+        int batchSize = 1000;
 
         List<Variant> batch;
         List<VariantFilter> filters = new ArrayList<>();
@@ -83,15 +80,10 @@ public class TeamMain {
         java.io.File jsonPanelFile;
 
 
-        System.out.println("inputFile = " + inputFile);
-        System.out.println("panelFilename = " + panelFilename);
-        System.out.println("outputFile = " + outputFile);
-
         jsonPanelFile = new java.io.File(panelFilename);
-//
-        try {
-            panel = mapper.readValue(jsonPanelFile, Panel.class);
 
+        try {
+            Panel panel = mapper.readValue(jsonPanelFile, Panel.class);
 
             List<Region> regionList = getRegionsFromPanel(panel);
 
@@ -99,13 +91,12 @@ public class TeamMain {
 
             VariantWriter writer = new TeamVariantStdoutWriter();
 
-            DataWriter<TeamVariant> diagnosticWriter = new TeamDiagnosticFileWriter(inputFile, outputFile + "/diagnostic.csv");
-            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamSecondaryFindingsFileWriter(inputFile, outputFile + "/secondary.csv");
+            DataWriter<TeamVariant> diagnosticWriter = new TeamCSVFileWriter(inputFile, outputFile + "/diagnostic.csv");
+            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamCSVFileWriter(inputFile, outputFile + "/secondary.csv");
 
             VariantFilter regionFilter = new TeamVariantGeneRegionFilter(regionList);
             filters.add(regionFilter);
 
-//
             reader.open();
             writer.open();
             diagnosticWriter.open();
@@ -116,12 +107,13 @@ public class TeamMain {
             diagnosticWriter.pre();
             secondaryFindingsWriter.pre();
 
-
             batch = reader.read(batchSize);
 
             while (batch != null && !batch.isEmpty()) {
 
+                System.out.println("batch = " + batch.size());
                 FilterApplicator.filter(batch, filters);
+                System.out.println("batch = " + batch.size());
 
                 run(batch, panel, diagnosticVariants, secondaryFindingsVariants);
 
@@ -149,8 +141,6 @@ public class TeamMain {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     private static void run(List<Variant> batch, Panel panel, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
