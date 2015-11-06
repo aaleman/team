@@ -1,6 +1,6 @@
 package org.babelomics.team.lib.filters;
 
-import org.opencb.biodata.models.feature.Region;
+import org.opencb.biodata.models.core.Region;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.tools.variant.filtering.VariantFilter;
 
@@ -45,7 +45,6 @@ public class TeamVariantGeneRegionFilter extends VariantFilter {
     public boolean apply(Variant variant) {
         for (Region r : regionList) {
             if (r.contains(variant.getChromosome(), variant.getStart())) {
-                System.out.println("variant = " + variant);
                 return true;
             }
         }

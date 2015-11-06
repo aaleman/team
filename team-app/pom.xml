@@ -5,7 +5,8 @@
     <parent>
         <artifactId>team</artifactId>
         <groupId>org.babelomics.team</groupId>
-        <version>1.0.0</version>
+        <version>${team.version}</version>
+        <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +17,6 @@
         <dependency>
             <groupId>org.babelomics.team</groupId>
             <artifactId>team-lib</artifactId>
-            <version>${team.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opencb.opencga</groupId>
@@ -27,12 +27,42 @@
             <artifactId>opencga-storage-mongodb</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opencb.opencga</groupId>
+            <artifactId>opencga-catalog</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencb.opencga</groupId>
+            <artifactId>opencga-analysis</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opencb.cellbase</groupId>
             <artifactId>cellbase-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencb.biodata</groupId>
+            <artifactId>biodata-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencb.biodata</groupId>
+            <artifactId>biodata-formats</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opencb.biodata</groupId>
+            <artifactId>biodata-models</artifactId>
         </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -50,14 +80,10 @@
                     <repositoryName>libs</repositoryName>
                     <repositoryLayout>flat</repositoryLayout>
                     <useWildcardClassPath>true</useWildcardClassPath>
-                    <!--<assembleDirectory>${build.dir}</assembleDirectory>-->
                     <programs>
                         <program>
                             <mainClass>org.babelomics.team.app.cli.TeamMain</mainClass>
                             <name>team.sh</name>
-                            <platforms>
-                                <platform>unix</platform>
-                            </platforms>
                         </program>
                     </programs>
                 </configuration>
