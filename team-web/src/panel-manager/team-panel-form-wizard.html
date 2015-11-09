@@ -16,14 +16,17 @@
 
         #genes-tab {
             height: 100%;
-            width: 40%;
+            /*width: 35%;*/
+            margin: 5px;
+            padding-top:10px;
         }
 
         #genes-list {
-            height: 80%;
-            width: 55%;
-            margin: 0 auto;
+            height: 100%;
+            /*width: 50%;*/
+            margin: 15px 10px;
             border: 1px solid #d3d3d3;
+
         }
 
         .genes-tab-container-elem {
@@ -31,15 +34,18 @@
         }
 
         #mutations-tab {
-            height: 80%;
-            width: 45%;
+            height: 100%;
+            /*width: 40%;*/
+            margin: 5px;
+            padding-top:10px;
         }
 
         #mutations-list {
-            height: 80%;
-            width: 50%;
-            margin: 0 auto;
+            height: 100%;
+            /*width: 45%;*/
+            margin: 15px 10px;
             border: 1px solid #d3d3d3;
+
         }
 
         #personalData {
@@ -160,6 +166,21 @@
             margin-top: 5px;
             margin-left: 5px;
         }
+        .diseaseSelected{
+          color: #445D76;
+          padding: 5px 5px 5px 7px;
+          word-wrap: break-word;
+
+        }
+        .boxDiseaseSelected{
+          border-right: 1px solid var(--divider-color);
+          width: 200px;
+          height: 620px;
+          background-color: var(--light-secondary-color);
+          margin-right: 5px;
+          padding: 5px;
+          overflow-y: auto;
+        }
     </style>
     <template>
 
@@ -172,7 +193,7 @@
             </div>
             <div class="container">
                 <div class="step">
-                    <div class="jso-formcontent horizontal layout">
+                    <div class="jso-formcontent horizontal layout" style="margin-top:10px;">
                         <div class="disease vertical layout">
                             <jso-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter enable-paging hide-column-selector page-size="15"></jso-table>
                             <div class="horizontal layout">
@@ -195,7 +216,18 @@
                     </div>
                 </div>
                 <div class="step">
-                    <div class="jso-formcontent horizontal layout">
+                   <div class="horizontal layout">
+                      <div class="vertical layout boxDiseaseSelected" flex>
+                        <div style="margin-left:2px;color: #666;">Diseases Selected:&nbsp;
+                          <template is="dom-repeat" items="{{formData.diseases}}">
+                            <div class="horizontal layout">
+                              <i class="fa fa-arrow-circle-o-right" style="color:#445D76;margin-top:5px"></i>
+                              <div class="diseaseSelected">{{item.phenotype}}</div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+
                         <div id="genes-tab" class="vertical layout">
                             <div class="genes-tab-elem">
                                 <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
@@ -223,12 +255,12 @@
                             <div class="genes-tab-elem">
                                 <div class="jso-formtitle" style="font-size:14px;">Import from other Panel &nbsp;</div>
 
-                                <select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
-                                    <option value="none"></option>
+                                <jso-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
+                                    <jso-option style="color: grey;" value="none"></jso-option>
                                     <template is="dom-repeat" items="{{panels}}">
-                                        <option value$="{{item.file.id}}">{{item.name}}</option>
+                                        <jso-option value$="{{item.file.id}}">{{item.name}}</jso-option>
                                     </template>
-                                </select>
+                                </jso-select>
 
                                 <div class="horizontal layout">
                                     <div class="jso-btn jso-btn-shdw file" on-click="handlePreviewFile"> &nbsp; <i class="fa fa-eye"></i>&nbsp;View Panel</div>
@@ -256,47 +288,60 @@
                             </div>
                         </div>
 
-                    </div>
-                </div>
-                <jso-panel modal closable hidden id="panelPreview">
-                    <div class="header">
-                        <i class="fa fa-eye"></i> Panel Preview
-                    </div>
-                    <team-panel-preview class="container" selected-panel="{{selectedPanel}}">
-                    </team-panel-preview>
-                </jso-panel>
-                <jso-panel movable fixed closable hidden id="appPanel">
-                    <div class="header">
-                        <i class="fa fa-plus-square-o"></i> Import from PanelApp
-                    </div>
+                  </div>
 
-                    <div class="jso-formcontent horizontal layout container">
+                    <jso-panel modal closable hidden id="panelPreview">
+                        <div class="header">
+                            <i class="fa fa-eye"></i> Panel Preview
+                        </div>
+                        <team-panel-preview class="container" selected-panel="{{selectedPanel}}">
+                        </team-panel-preview>
+                    </jso-panel>
+                    <jso-panel modal movable fixed closable hidden id="appPanel">
+                        <div class="header">
+                            <i class="fa fa-plus-square-o"></i> Import from PanelApp
+                        </div>
 
-                        <div id="panelAppDiseases" class="vertical layout">
-                            <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:550px"></jso-table>
+                        <div class="jso-formcontent horizontal layout container">
 
-                            <div class="horizontal layout">
-                                <div class="flex"></div>
-                                <a href="https://bioinfo.extge.co.uk/crowdsourcing/PanelApp/">
-                                    <div class="jso-btn jso-btn-shdw file" style="width: 150px"> >>More info
-                                        << </div>
-                                </a>
-                                </div>
-                            </div>
-                            <div id="panelAppGenes" class="vertical layout">
-                                <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" enable-select hide-column-selector style="height:550px"></jso-table>
+                            <div id="panelAppDiseases" class="vertical layout">
+                                <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:550px"></jso-table>
+
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
+                                    <a href="https://bioinfo.extge.co.uk/crowdsourcing/PanelApp/">
+                                        <div class="jso-btn jso-btn-shdw file" style="width: 150px"> >>More info
+                                            << </div>
+                                    </a>
+                                    </div>
+                                </div>
+                                <div id="panelAppGenes" class="vertical layout">
+                                    <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" enable-select hide-column-selector style="height:550px"></jso-table>
+                                    <div class="horizontal layout">
+                                        <div class="flex"></div>
+                                        <div class="jso-btn jso-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                </jso-panel>
+                    </jso-panel>
                 </div>
                 <div class="step">
-                    <div class="jso-formcontent horizontal layout">
+
+                    <div class="horizontal layout">
+                      <div class="vertical layout boxDiseaseSelected" flex>
+                        <div style="margin-left:2px;color: #666;">Diseases Selected:&nbsp;
+                          <template is="dom-repeat" items="{{formData.diseases}}">
+                            <div class="horizontal layout">
+                              <i class="fa fa-arrow-circle-o-right" style="color:#445D76;margin-top:5px"></i>
+                            <div class="diseaseSelected">{{item.phenotype}}</div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+<!-- <div style="800"> -->
+
+
                         <div id="mutations-tab" flex>
                             <div class="mutations-tab-elem">
                                 <div class="jso-formtitle" style="font-size:13px;">Genomic Pos. &nbsp;</div>
@@ -414,6 +459,7 @@
                                 </div>
                             </div>
                         </div>
+<!-- </div> -->
                     </div>
                     <jso-panel modal closable hidden id="panelPreviewMut">
                         <div class="header">
@@ -594,9 +640,7 @@
             "handleUpdatedSelectedDiseases(formData.diseases.splices)",
         ],
 
-
         handleUpdatedSelectedDiseases: function(neo, old, path) {
-
         },
         handleUpdatedGenes: function(neo, old, path) {
             if (neo) {
@@ -607,7 +651,6 @@
             var disease = e.detail.row;
             this.formData.removeGenesFromDisease(disease);
             this.formData.removeMutationsFromDisease(disease);
-
         },
         handlePanelAppSelected: function(e) {
 
@@ -846,14 +889,14 @@
         },
         handleAddSelectedDiseases: function() {
             var me = this;
+            var auxDisease = [];
             this.$.selectedDiseases.setLoading(true);
+
             setTimeout(function() {
                 for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
                     var row = me.currentSelectedDiseasesData[i];
-
                     if (!me.formData.containsDisease(row)) {
                         me.formData.addDisease(row);
-
                     }
                 }
                 me.$.selectedDiseases.setLoading(false);
