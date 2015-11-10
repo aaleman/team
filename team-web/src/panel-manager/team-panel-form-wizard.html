@@ -51,12 +51,13 @@
         #personalData {
             border: 1px solid #d3d3d3;
             padding: 10px;
-            margin: 20px 100px;
+            margin: 20px 230px;
+            width: 500px;
         }
 
         .disease {
-            width: 400px;
-            height: 500px;
+            width: 450px;
+            height: 550px;
             margin: 0 auto;
             border: 1px solid #d3d3d3;
         }
@@ -95,7 +96,7 @@
 
         .sgenesTextArea {
             box-sizing: border-box;
-            width: 100%;
+            width: 98%;
             height: 40px;
             resize: none;
             margin: 5px;
@@ -125,7 +126,7 @@
         #selectedDiseases,
         #geneTable,
         #mutationTable {
-            height: 450px;
+            height: 500px;
             width: 100%;
         }
 
@@ -256,7 +257,7 @@
                                 <div class="jso-formtitle" style="font-size:14px;">Import from other Panel &nbsp;</div>
 
                                 <jso-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
-                                    <jso-option style="color: grey;" value="none"></jso-option>
+                                    <jso-option value="none"></jso-option>
                                     <template is="dom-repeat" items="{{panels}}">
                                         <jso-option value$="{{item.file.id}}">{{item.name}}</jso-option>
                                     </template>
@@ -339,9 +340,6 @@
                           </template>
                         </div>
                       </div>
-<!-- <div style="800"> -->
-
-
                         <div id="mutations-tab" flex>
                             <div class="mutations-tab-elem">
                                 <div class="jso-formtitle" style="font-size:13px;">Genomic Pos. &nbsp;</div>
@@ -409,13 +407,13 @@
                             <div class="mutations-tab-elem">
                                 <div class="jso-formtitle" style="font-size:13px;">Import CSV &nbsp;</div>
                                 <div class="" id="mutation-tab-config-csv" style="margin:5px">
-                                    <div>
+                                    <div class="horizontal layout">
                                         <label class="data" style="font-size:12px; margin-top:5px" for="">Separator:</label>
-                                        <select name="mutationCSVSeparator" id="mutationCSVSeparator">
-                                            <option value=";" selected>;</option>
-                                            <option value=",">,</option>
-                                            <option value="\t">Tab</option>
-                                        </select>
+                                        <jso-select name="mutationCSVSeparator" id="mutationCSVSeparator" style="width:75px; margin-left:5px;">
+                                            <jso-option value=";" selected>;</jso-option>
+                                            <jso-option value=",">,</jso-option>
+                                            <jso-option value="\t">Tab</jso-option>
+                                        </jso-select>
                                     </div>
                                     <div>
                                         <label class="data" style="font-size:12px;" for="">Ignore first line (header):
@@ -436,12 +434,12 @@
                             <div class="mutations-tab-elem">
                                 <div class="jso-formtitle" style="font-size:13px">Import from other Panel &nbsp;</div>
                                 <div class="" id="mutation-tab-config-panel" style="margin:5px">
-                                    <select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
-                                        <option value="none"></option>
+                                    <jso-select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
+                                        <jso-option value="none"></jso-option>
                                         <template is="dom-repeat" items="{{panels}}">
-                                            <option value$="{{item.file.id}}">{{item.name}}</option>
+                                            <jso-option value$="{{item.file.id}}">{{item.name}}</jso-option>
                                         </template>
-                                    </select>
+                                    </jso-select>
                                     <div class="horizontal layout">
                                         <div class="jso-btn jso-btn-shdw file" on-click="handlePreviewFileMut"> &nbsp; <i class="fa fa-eye"></i>&nbsp;View Panel</div>
                                         <div class="flex"></div>
@@ -459,11 +457,11 @@
                                 </div>
                             </div>
                         </div>
-<!-- </div> -->
+
                     </div>
                     <jso-panel modal closable hidden id="panelPreviewMut">
                         <div class="header">
-                            <i class="fa fa-book"></i> Panel Preview
+                            <i class="fa fa-eye"></i> Panel Preview
                         </div>
                         <team-panel-preview class="container" selected-panel="{{selectedPanel}}">
                         </team-panel-preview>
@@ -477,7 +475,7 @@
                         </team-mutation-selector>
                     </jso-panel>
                 </div>
-                <div class="step">
+                <div class="step layout center">
                     <div class="jso-formcontent vertical layout" id="personalData">
                         <div style="color:#666;margin-top:5px;" for="">Name</div>
                         <input style="margin-top: 2px;border-color:#d3d3d3;" type="text" value="{{formData.name::input}}" />
@@ -489,7 +487,7 @@
                         <input style="width:150px; margin-top: 2px;border-color:#d3d3d3;" type="date" value="{{formData.date::input}}" placeholder="mm/dd/yyyy" />
 
                         <div class="data" for="">Description &nbsp; </div>
-                        <textarea class="jso sgenesTextArea" style="height: 100px;" name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
+                        <textarea class="jso sgenesTextArea" style="height: 120px" name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
 
                         <div class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save
                         </div>

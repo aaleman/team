@@ -24,7 +24,7 @@
         #maincontent {
             margin: 8px;
             height: 80%;
-            width: 50%;
+            /*width: 50%;*/
         }
 
         .panel-item {
@@ -93,6 +93,15 @@
             margin: 0 auto;
             box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
         }
+        .titlePreview {
+            font-size: 15px;
+            color: #445D76;
+            margin-top: 5px;
+            /*text-align: center;*/
+            border-bottom: 1px solid #445D76;
+            margin-left: 10px;
+        }
+
     </style>
     <template>
         <div id="main" class="horizontal layout flex">
@@ -145,8 +154,12 @@
             </div>
 
             <div id="maincontent" class="vertical layout">
+                <div class="titlePreview">
+                    <i class="fa fa-eye"></i>&nbsp; Panel Preview
+                </div>
                 <team-panel-preview selected-panel="{{selectedPanel}}">
                 </team-panel-preview>
+
             </div>
 
 
