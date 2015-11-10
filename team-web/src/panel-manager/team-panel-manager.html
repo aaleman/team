@@ -60,7 +60,7 @@
         /* NEW */
 
         #left {
-            padding: 5px;
+            padding: 10px;
             width: 280px;
             border-right: 1px solid #d3d3d3;
             box-sizing: border-box;
@@ -76,6 +76,22 @@
             font-size: 12px;
             margin-top: 10px;
             border: 1px solid #d3d3d3;
+        }
+
+        .file {
+            text-align: center;
+            color: #445D76;
+            margin: 5px;
+            width: 100px;
+            margin-top: 10px;
+        }
+
+        #newPanelPanel {
+            /*top:25px;*/
+            width: 50%;
+            min-width: 1000px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
         }
     </style>
     <template>
@@ -98,8 +114,8 @@
                     <template is="dom-repeat" items="{{panels}}" filter="isArchived" observe="type archived">
                         <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
-                            <div class="version">{{item.version}}</div>
-                            <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i>
+                            <div class="version" title="Version">{{item.version}}</div>
+                            <!-- <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i> -->
                             <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
                             <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
                         </div>
@@ -112,21 +128,35 @@
                     <template is="dom-repeat" items="{{panels}}" filter="isNotArchived" observe="type archived">
                         <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
-                            <div class="version">{{item.version}}</div>
-                            <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i>
+                            <div class="version" title="Version">{{item.version}}</div>
+                            <!-- <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i> -->
                             <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
                             <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
                 </template>
+                <div class="flex">
+                </div>
+                <div class="horizontal layout">
+                    <div class="flex"></div>
+                    <div id="botbar" class="jso-btn jso-btn-shdw file" on-click="handleNewPanel">
+                        <i class="fa fa-plus-square-o"></i>&nbsp; New Panel</div>
+                </div>
             </div>
 
-            <div id="maincontent">
+            <div id="maincontent" class="vertical layout">
                 <team-panel-preview selected-panel="{{selectedPanel}}">
                 </team-panel-preview>
             </div>
-            <div id="botbar" class="horizontal layout end-justified">
+
+
+        </div>
+        <jso-panel modal movable expandible closable id="newPanelPanel" hidden>
+            <div class="header" style="text-align:left;font-size:15px;">
+                <i class="fa fa-plus"></i> New Panel
             </div>
+            <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
+        </jso-panel>
 
     </template>
 
@@ -177,6 +207,18 @@
                 },
                 notify: true
             },
+            teamConfigFolder: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
+            },
+            defaultStudy: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
+            },
 
         },
 
@@ -206,7 +248,7 @@
             }
             if (find == true && index > -1) {
                 var deletedPanel = this.splice('panels', index, 1)[0];
-                if (this.selectedPanel!=null && this.selectedPanel.fileId == deletedPanel.file.id) {
+                if (this.selectedPanel != null && this.selectedPanel.fileId == deletedPanel.file.id) {
                     this.set('selectedPanel', null);
                 }
                 if (this.panels.length === 0) {
@@ -305,13 +347,17 @@
             return (item.archived === "true");
         },
         handleSelectedPanelChanged: function(neo, old) {
-                // debugger
-            }
-            // handleOptions: function(e) {
-            //     this.option = e.target.dataset.value;
-            // },
-            // computeOptions: function(option, value) {
-            //     return option === value;
-            // },
+            // debugger
+        },
+        // handleOptions: function(e) {
+        //     this.option = e.target.dataset.value;
+        // },
+        // computeOptions: function(option, value) {
+        //     return option === value;
+        // },
+
+        handleNewPanel: function(e) {
+            this.$.newPanelPanel.hidden = false;
+        }
     });
 </script>

@@ -16,7 +16,6 @@
     "tests"
   ],
   "dependencies": {
-    "paper-drawer-panel": "PolymerElements/paper-drawer-panel#~1.0.1",
     "fontawesome": "*",
     "cookies-js": "~1.1.0",
     "crypto-js-evanvosberg": "3.1.4",
@@ -28,8 +27,7 @@
     "bowser": "~0.7.2",
     "pako": "~0.2.6",
     "iron-menu-behavior": "PolymerElements/iron-menu-behavior#~1.0.1",
-    "iron-pages": "PolymerElements/iron-pages#~1.0.0",
-    "iron-flex-layout": "PolymerElements/iron-flex-layout#1.0.4",
-    "polymer": "Polymer/polymer#1.1.5"
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#1.0.5",
+    "polymer": "Polymer/polymer#1.2.1"
   }
 }

@@ -97,12 +97,11 @@
             margin-top: 5px;
         }
 
-      
+
     </style>
     <template>
 
         <jso-wizard id="formWizard">
-            <!-- <form id="form"> -->
             <div class="title">
                 <div class="stepName">Choose a File
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
@@ -116,21 +115,15 @@
 
             <div class="container">
                 <div class="step">
-                    <div class="jso-formbox" style="padding:0">
+                    <div class="jso-forcontent" style="padding:0">
                         <jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>
                     </div>
-                    <!-- </div> -->
                 </div>
                 <div class="step">
                     <div class="horizontal layout">
                         <div class=" selbox" id="panelSelector">
                             <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
-                            <!-- <template is="dom-repeat" items="{{panels}}" filter="isPanel">
-                                    <label class="horizontal layout jso-control" style="margin-top:10px">
-                                        <input type="radio" name="panel" class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
-                                        <span>{{item.name}}</span>
-                                    </label>
-                                </template> -->
+
                             <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
                         </div>
                         <div id="panelPreview">
@@ -141,14 +134,7 @@
                             </team-panel-preview>
                         </div>
                     </div>
-                    <!-- </div> -->
-                    <!-- <jso-panel modal closable hidden id="panelPreview">
-                        <div class="header">
-                            <i class="fa fa-eye"></i> Panel Preview
-                        </div>
-                        <team-panel-preview class="container" selected-panel="{{selectedPanel}}">
-                        </team-panel-preview>
-                    </jso-panel> -->
+
                 </div>
                 <div class="step">
                     <div class="jso-formcontent vertical layout" id="personalData">
@@ -165,7 +151,6 @@
                     </div>
                 </div>
             </div>
-            <!-- </form> -->
         </jso-wizard>
 
     </template>
@@ -308,23 +293,9 @@
             this.fire('close');
         },
         handlePanelClick: function(e) {
-            //  var sel = this.querySelectorAll('.panel-item');
-            // for (var i = 0; i < sel.length; i++) {
-            //     var el = sel[i];
-            //     el.removeAttribute('data-checked');
-            // }
 
             this.selectedPanelId = e.detail.file.id;
             this.errorMessagePanel = " ";
-            //  e.currentTarget.setAttribute('data-checked', '');
-
-            // var aux = this.$.panelSelector.querySelectorAll('input[type=radio]');
-            // for (var i = 0; i < aux.length; i++) {
-            //     var filech = aux[i];
-            //     if (filech.checked) {
-            //         fileId = parseInt(filech.dataset.file);
-            //     }
-            // }
 
             var data;
 
@@ -356,38 +327,6 @@
             this.inputSelectedFile = e.detail;
             this.errorMessageFile = " ";
         },
-        // handlePreviewFile: function(e) {
-        //     var aux = this.$.panelSelector.querySelectorAll('input[type=radio]');
-        //     for (var i = 0; i < aux.length; i++) {
-        //         var filech = aux[i];
-        //         if (filech.checked) {
-        //             fileId = parseInt(filech.dataset.file);
-        //         }
-        //     }
-        //
-        //     var data;
-        //
-        //     OpencgaManager.files.content({
-        //         id: fileId,
-        //         query: {
-        //             sid: Cookies('bioinfo_sid'),
-        //             limit: 100
-        //         },
-        //         request: {
-        //             async: false,
-        //             success: function(response) {
-        //                 data = response;
-        //             },
-        //             error: function() {}
-        //         }
-        //     });
-        //
-        //     if (data) {
-        //         this.selectedPanel = JSON.parse(data);
-        //         this.$.panelPreview.hidden = false;
-        //     }
-        //
-        //     this.$.panelPreview.hidden = false;
-        // },
+
     });
 </script>

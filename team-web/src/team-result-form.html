@@ -242,7 +242,14 @@
                                 <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input class="jso flex" type="text" id="sift" name="sift" flex value="{{siftValue::input}}"/>
+                        <input class="jso flex"
+                                type="number"
+                                id="sift"
+                                name="sift"
+                                min="0"
+                                max="1"
+                                step="0.001"
+                                flex value="{{siftValue::input}}"/>
                     </div>
 
                     <div class="horizontal layout pss-elem">
@@ -257,8 +264,14 @@
                                 <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input class="jso flex" type="text" id="polyphen" name="polyphen" flex
-                               value="{{polyphenValue::input}}"/>
+                        <input class="jso flex"
+                                type="number"
+                                id="polyphen"
+                                name="polyphen"
+                                min="0"
+                                max="1"
+                                step="0.001"
+                                flex value="{{polyphenValue::input}}"/>
                     </div>
                 </div>
             </div>
