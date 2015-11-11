@@ -113,6 +113,7 @@
         jso-variant-browser {
             height: calc(100vh - 60px);
         }
+
         #jobBrowserPanel {
             position: absolute;
             right: 0;
@@ -199,7 +200,8 @@
                 <div class="header" style="text-align:left;font-size:15px;">
                     <i class="fa fa-folder-open-o"></i> Panel Manager
                 </div>
-                <team-panel-manager class="container" id="manager" projects="{{projects}}" panels="{{panels}}" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}">
+                <team-panel-manager class="container" id="manager" projects="{{projects}}" panels="{{panels}}"
+                                    team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}">
                 </team-panel-manager>
             </jso-panel>
 
@@ -612,12 +614,14 @@
         handleJobSelect: function (e) {
 
             var job = e.detail;
-            this.$.teamResult.job = job;
-            this.selectedOption = "result";
-            console.log(job);
+
+            if (job.status !== "ERROR") {
+                this.$.teamResult.job = job;
+                this.selectedOption = "result";
+            }
         },
         handleMenuChanged: function (e) {
-            var menuOption = e.detail.option;
+            var menuOption = e.detail.option;q
             console.log(menuOption)
             for (var i = 0; i < this.$.content.children.length; i++) {
                 var elem = this.$.content.children[i]

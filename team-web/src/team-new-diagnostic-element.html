@@ -49,7 +49,7 @@
         jso-opencga-browser {
             position: relative;
             width: 100%;
-            height: 300px;
+            /*height: 300px;*/
         }
 
         .errmsg {
@@ -116,7 +116,8 @@
             <div class="container">
                 <div class="step">
                     <div class="jso-forcontent" style="padding:0">
-                        <jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>
+                        <jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}"
+                                             on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>
                     </div>
                 </div>
                 <div class="step">
@@ -124,7 +125,8 @@
                         <div class=" selbox" id="panelSelector">
                             <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
 
-                            <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+                            <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name"
+                                            on-select="handlePanelClick"></jso-select-box>
                         </div>
                         <div id="panelPreview">
                             <div class="titlePreview">
@@ -139,12 +141,16 @@
                 <div class="step">
                     <div class="jso-formcontent vertical layout" id="personalData">
                         <div style="color:#666;margin-top:5px;">Job name</div>
-                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
+                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName"
+                               value="{{jobName::change}}" required>
+
                         <div class="data">Description</label>
-                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription}}" required></textarea>
+                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}"
+                                      required></textarea>
                         </div>
                         <div class="horizontal layout">
-                            <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                            <div class="jso-btn jso-btn-shdw file" style="width:200px;margin:0 auto"
+                                 on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
                             </div>
                             <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
                         </div>
@@ -161,14 +167,14 @@
         properties: {
             panels: {
                 type: Array,
-                value: function() {
+                value: function () {
                     return [];
                 },
 
             },
             projects: {
                 type: Array,
-                value: function() {
+                value: function () {
                     return [];
                 }
             },
@@ -183,19 +189,19 @@
             },
             bioformats: {
                 type: Array,
-                value: function() {
+                value: function () {
                     return [];
                 }
             },
             defaultStudy: {
                 type: Object,
-                value: function() {
+                value: function () {
                     return {};
                 }
             },
             analysisFolder: {
                 type: Object,
-                value: function() {
+                value: function () {
                     return {};
                 }
             },
@@ -213,10 +219,10 @@
             "handlePanelsChanged(panels.splices)"
         ],
 
-        ready: function() {
+        ready: function () {
 
         },
-        handlePanelsChanged: function(value) {
+        handlePanelsChanged: function (value) {
             var aux = 0;
             if (this.panels == "") {
                 this.set('selectedPanel', null);
@@ -234,10 +240,10 @@
             }
 
         },
-        isPanel: function(item) {
+        isPanel: function (item) {
             return item.file.name.indexOf("panel") == 0;
         },
-        handleForm: function(e) {
+        handleForm: function (e) {
             var me = this;
 
             if (this.inputSelectedFile == null) {
@@ -258,7 +264,7 @@
                     studyId: studyId,
                     toolId: "team",
                     name: this.jobName,
-                    description: "TEAM_DESC",
+                    description: this.jobDescription,
 
                     fileId: this.inputSelectedFile.id,
                     panel: this.selectedPanelId,
@@ -270,7 +276,7 @@
                     query: query,
                     request: {
                         //method: 'POST',
-                        success: function(response) {
+                        success: function (response) {
                             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                                 var userId = response.response[0].result[0].id;
                                 me.fire('run');
@@ -280,7 +286,7 @@
                                 //                            me.message = response.response[0].errorMsg;
                             }
                         },
-                        error: function() {
+                        error: function () {
                             me.message = 'Server error, try again later.';
                         }
                     }
@@ -289,10 +295,10 @@
                 this.errorMessage = "There are errors in the form. Correct them before launching work.";
             }
         },
-        handleClose: function(e) {
+        handleClose: function (e) {
             this.fire('close');
         },
-        handlePanelClick: function(e) {
+        handlePanelClick: function (e) {
 
             this.selectedPanelId = e.detail.file.id;
             this.errorMessagePanel = " ";
@@ -307,10 +313,11 @@
                 },
                 request: {
                     async: false,
-                    success: function(response) {
+                    success: function (response) {
                         data = response;
                     },
-                    error: function() {}
+                    error: function () {
+                    }
                 }
             });
 
@@ -319,11 +326,11 @@
             }
 
         },
-        handleSelectedPanelChanged: function(neo, old) {
+        handleSelectedPanelChanged: function (neo, old) {
             console.log(this.selectedPanelId);
             console.log(this.selectedPanel);
         },
-        handleFileSelected: function(e) {
+        handleFileSelected: function (e) {
             this.inputSelectedFile = e.detail;
             this.errorMessageFile = " ";
         },
