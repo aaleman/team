@@ -631,7 +631,7 @@
                     return [];
                 }
             },
-
+          
         },
         observers: [
             "handleUpdatedGenes(formData.modCount)",
@@ -1156,6 +1156,7 @@
                 }
             }
             this.formData = new Panel();
+            this.$.formWizard.goToStep(1);
         },
         uploadFile: function(fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({

@@ -98,7 +98,13 @@
             margin-top: 5px;
         }
 
-
+        #newPanelPanel {
+            /*top:25px;*/
+            width: 50%;
+            min-width: 1000px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
+        }
     </style>
     <template>
 
@@ -117,17 +123,18 @@
             <div class="container">
                 <div class="step">
                     <div class="jso-forcontent" style="padding:0">
-                        <jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}"
-                                             on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>
+                        <jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>
                     </div>
                 </div>
                 <div class="step">
                     <div class="horizontal layout">
                         <div class=" selbox" id="panelSelector">
-                            <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
-
-                            <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name"
-                                            on-select="handlePanelClick"></jso-select-box>
+                            <div class="horizontal layout">
+                                <div class="titlePreview flex"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                                <div id="botbar" class="jso-btn jso-btn-shdw file" style="margin-right: 10px;" on-click="handleNewPanel">
+                                    <i class="fa fa-plus-square-o"></i>&nbsp; New Panel</div>
+                            </div>
+                            <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
                         </div>
                         <div id="panelPreview">
                             <div class="titlePreview">
@@ -137,17 +144,21 @@
                             </team-panel-preview>
                         </div>
                     </div>
+                    <jso-panel modal movable expandible closable id="newPanelPanel" hidden>
+                        <div class="header" style="text-align:left;font-size:15px;">
+                            <i class="fa fa-plus"></i> New Panel
+                        </div>
+                        <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
+                    </jso-panel>
 
                 </div>
                 <div class="step">
                     <div class="jso-formcontent vertical layout" id="personalData">
                         <div style="color:#666;margin-top:5px;">Job name</div>
-                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName"
-                               value="{{jobName::change}}" required>
+                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
 
                         <div class="data">Description</label>
-                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}"
-                                      required></textarea>
+                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}" required></textarea>
                         </div>
                         <div class="horizontal layout">
                             <div class="jso-btn jso-btn-shdw file" style="width:200px;margin: 0 auto;margin-top:10px;" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
@@ -167,14 +178,14 @@
         properties: {
             panels: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
 
             },
             projects: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
@@ -189,19 +200,19 @@
             },
             bioformats: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             defaultStudy: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
             analysisFolder: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
@@ -213,16 +224,19 @@
                 type: String,
                 value: "New Diagnosis"
             },
+            selectedStudy: {
+                type: Object,
+            },
 
         },
         observers: [
             "handlePanelsChanged(panels.splices)"
         ],
 
-        ready: function () {
+        ready: function() {
 
         },
-        handlePanelsChanged: function (value) {
+        handlePanelsChanged: function(value) {
             var aux = 0;
             if (this.panels == "") {
                 this.set('selectedPanel', null);
@@ -240,10 +254,10 @@
             }
 
         },
-        isPanel: function (item) {
+        isPanel: function(item) {
             return item.file.name.indexOf("panel") == 0;
         },
-        handleForm: function (e) {
+        handleForm: function(e) {
             var me = this;
 
             if (this.inputSelectedFile == null) {
@@ -255,9 +269,8 @@
 
             if (this.inputSelectedFile != null && this.selectedPanelId != "") {
                 this.errorMessage = " ";
-
-
                 var studyId = this.$.fileBrowser.selectedStudy.study.id;
+                this.selectedStudy=this.$.fileBrowser.selectedStudy;
 
                 var query = {
                     sid: Cookies("bioinfo_sid"),
@@ -276,7 +289,7 @@
                     query: query,
                     request: {
                         //method: 'POST',
-                        success: function (response) {
+                        success: function(response) {
                             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                                 var userId = response.response[0].result[0].id;
                                 me.fire('run');
@@ -286,7 +299,7 @@
                                 //                            me.message = response.response[0].errorMsg;
                             }
                         },
-                        error: function () {
+                        error: function() {
                             me.message = 'Server error, try again later.';
                         }
                     }
@@ -294,11 +307,13 @@
             } else {
                 this.errorMessage = "There are errors in the form. Correct them before launching work.";
             }
+            this.set('jobName', "TEAM Diagnosis");
+            this.set('jobDescription', "New Diagnosis");
         },
-        handleClose: function (e) {
+        handleClose: function(e) {
             this.fire('close');
         },
-        handlePanelClick: function (e) {
+        handlePanelClick: function(e) {
 
             this.selectedPanelId = e.detail.file.id;
             this.errorMessagePanel = " ";
@@ -313,11 +328,10 @@
                 },
                 request: {
                     async: false,
-                    success: function (response) {
+                    success: function(response) {
                         data = response;
                     },
-                    error: function () {
-                    }
+                    error: function() {}
                 }
             });
 
@@ -326,14 +340,17 @@
             }
 
         },
-        handleSelectedPanelChanged: function (neo, old) {
+        handleSelectedPanelChanged: function(neo, old) {
             console.log(this.selectedPanelId);
             console.log(this.selectedPanel);
         },
-        handleFileSelected: function (e) {
+        handleFileSelected: function(e) {
             this.inputSelectedFile = e.detail;
             this.errorMessageFile = " ";
         },
+        handleNewPanel: function(e) {
+            this.$.newPanelPanel.hidden = false;
+        }
 
     });
 </script>

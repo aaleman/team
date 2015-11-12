@@ -81,9 +81,8 @@
         .file {
             text-align: center;
             color: #445D76;
-            margin: 5px;
             width: 100px;
-            margin-top: 10px;
+            margin-top:5px;
         }
 
         #newPanelPanel {
@@ -97,9 +96,10 @@
             font-size: 15px;
             color: #445D76;
             margin-top: 5px;
+            margin-bottom: 5px;
             /*text-align: center;*/
             border-bottom: 1px solid #445D76;
-            margin-left: 10px;
+            padding: 2px;
         }
 
     </style>
@@ -107,6 +107,11 @@
         <div id="main" class="horizontal layout flex">
 
             <div id="left" class="vertical layout">
+              <div class="horizontal layout">
+                  <div class="titlePreview flex"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                  <div id="botbar" class="jso-btn jso-btn-shdw file" on-click="handleNewPanel">
+                      <i class="fa fa-plus-square-o"></i>&nbsp; New Panel</div>
+              </div>
                 <div class="horizontal layout">
                     <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
                         Main Panels
@@ -146,11 +151,11 @@
                 </template>
                 <div class="flex">
                 </div>
-                <div class="horizontal layout">
+                 <!-- <div class="horizontal layout">
                     <div class="flex"></div>
                     <div id="botbar" class="jso-btn jso-btn-shdw file" on-click="handleNewPanel">
                         <i class="fa fa-plus-square-o"></i>&nbsp; New Panel</div>
-                </div>
+                </div> -->
             </div>
 
             <div id="maincontent" class="vertical layout">
