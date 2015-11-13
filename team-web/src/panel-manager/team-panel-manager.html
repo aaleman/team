@@ -101,17 +101,28 @@
             border-bottom: 1px solid #445D76;
             padding: 2px;
         }
+        .newPanelButon {
+            margin: 5px;
+            border: 1px solid #d3d3d3;
+            margin-bottom: 10px;
+        }
+        #botbar{
+          text-align: center;
+          color: #445D76;
+          margin: 5px;
+          width: 100px;
+        }
 
     </style>
     <template>
         <div id="main" class="horizontal layout flex">
 
             <div id="left" class="vertical layout">
-              <div class="horizontal layout">
-                  <div class="titlePreview flex"><i class="fa fa-list"></i>&nbsp; Panel List</div>
-                  <div id="botbar" class="jso-btn jso-btn-shdw file" on-click="handleNewPanel">
+              <!-- <div class="horizontal layout">-->
+                  <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                  <!--<div id="botbar" class="jso-btn jso-btn-shdw file" on-click="handleNewPanel">
                       <i class="fa fa-plus-square-o"></i>&nbsp; New Panel</div>
-              </div>
+              </div> -->
                 <div class="horizontal layout">
                     <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
                         Main Panels
@@ -151,11 +162,14 @@
                 </template>
                 <div class="flex">
                 </div>
-                 <!-- <div class="horizontal layout">
-                    <div class="flex"></div>
-                    <div id="botbar" class="jso-btn jso-btn-shdw file" on-click="handleNewPanel">
-                        <i class="fa fa-plus-square-o"></i>&nbsp; New Panel</div>
-                </div> -->
+                <div class="newPanelButon">
+                    <div class="jso-formtitle" style="font-size:14px;">Create a New Panel &nbsp;</div>
+                    <div class="horizontal layout">
+                        <div class="flex"></div>
+                        <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
+                            <i class="fa fa-plus"></i>&nbsp; Panel</div>
+                    </div>
+                </div>
             </div>
 
             <div id="maincontent" class="vertical layout">
