@@ -231,7 +231,14 @@
 
                         <div id="genes-tab" class="vertical layout">
                             <div class="genes-tab-elem">
-                                <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;</div>
+                                <div class="jso-formtitle" style="font-size:14px;">Genes/Regions &nbsp;
+                                  <jso-tooltip>
+                                      <div class="jso-note jso-note-info" style="margin:0">
+                                         <b> TITULO </b><br>
+                                          HOLA
+                                      </div>
+                                  </jso-tooltip>
+                                </div>
                                 <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2,PPL" style="width: 60%;"></textarea>
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
@@ -631,7 +638,7 @@
                     return [];
                 }
             },
-          
+
         },
         observers: [
             "handleUpdatedGenes(formData.modCount)",
