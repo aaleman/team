@@ -45,7 +45,6 @@
             background: #e4e7e9;
             font-size: 16px;
             line-height: 22px;
-
             margin: 10px;
             padding: 5px;
         }
@@ -54,7 +53,8 @@
             width: 70px;
         }
 
-        input.segregation, .segregationValue {
+        input.segregation,
+        .segregationValue {
             margin-left: 3px;
         }
 
@@ -85,7 +85,8 @@
         .conserv-elem > label {
             width: 60px;
             text-align: right;
-            font-weight: bold;;
+            font-weight: bold;
+            ;
         }
 
         .maf-elem > .jso-select,
@@ -95,7 +96,6 @@
             width: 45px;
             margin-right: 3px;
         }
-
     </style>
     <template>
         <div id="filter_form">
@@ -109,23 +109,15 @@
                 </div>
                 <div class="jso-formcontent">
                     <label class="jso">Chromosomal location:</label>
-                    <textarea class="jso" id="region" name="region" placeholder="1:1-1000000,2:1-1000000"
-                              value="{{regionValue::change}}" rows="3" required>
+                    <textarea class="jso" id="region" name="region" placeholder="1:1-1000000,2:1-1000000" value="{{regionValue::change}}" rows="3" required>
                     </textarea>
 
                     <label class="jso">Gene:</label>
-                    <textarea class="jso" id="gene" name="gene" placeholder="BRCA2,PPL"
-                              value="{{geneValue::input}}" rows="3" required>
+                    <textarea class="jso" id="gene" name="gene" placeholder="BRCA2,PPL" value="{{geneValue::input}}" rows="3" required>
                     </textarea>
 
 
-                    <jso-cellbase-search-field style="margin-top:5px;" placeholder="Search gene"
-                                               on-featureselected="handleFeatureSelected"></jso-cellbase-search-field>
-
-                    <!-- <label class="jso" style="margin-top:5px;">Bed File</label>
-
-                    <div class="jso-btn jso-btn-shdw" on-click="handleBrowseClick">{{fileName}}</div>
-                    <input type="file" hidden id="fileInput" on-change="handleInputChange"> -->
+                    <!-- <jso-cellbase-search-field style="margin-top:5px;" placeholder="Search gene" on-featureselected="handleFeatureSelected"></jso-cellbase-search-field> -->
 
                 </div>
             </div>
@@ -141,21 +133,15 @@
                             <select class="jso" name="maf1000g_op" id="maf1000g_op">
                                 <option value="==">==</option>
                                 <option value="!=">!=</option>
-                                <option value="<" selected><</option>
-                                <option value="<="><=</option>
-                                <option value=">">></option>
-                                <option value=">=">>=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input
-                                class="jso flex"
-                                type="number"
-                                id="maf1000g"
-                                name="maf1000g"
-                                min="0"
-                                max="1"
-                                step="0.001"
-                                flex value="{{maf1000gValue::input}}"/>
+                        <input class="jso flex" type="number" id="maf1000g" name="maf1000g" min="0" max="1" step="0.001" value="{{maf1000gValue::input}}" />
                     </div>
 
                     <div class="horizontal layout maf-elem">
@@ -165,21 +151,15 @@
                             <select class="jso" name="mafEVS_op" id="mafEVS_op">
                                 <option value="==">==</option>
                                 <option value="!=">!=</option>
-                                <option value="<" selected><</option>
-                                <option value="<="><=</option>
-                                <option value=">">></option>
-                                <option value=">=">>=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input
-                                class="jso flex"
-                                type="number"
-                                id="mafEVS"
-                                name="mafEVS"
-                                min="0"
-                                max="1"
-                                step="0.001"
-                                flex value="{{mafEVSValue::input}}"/>
+                        <input class="jso flex" type="number" id="mafEVS" name="mafEVS" min="0" max="1" step="0.001" value="{{mafEVSValue::input}}" />
 
                     </div>
                 </div>
@@ -197,15 +177,15 @@
                             <select class="jso" name="qual_op" id="qual_op">
                                 <option value="==">==</option>
                                 <option value="!=">!=</option>
-                                <option value="<" selected><</option>
-                                <option value="<="><=</option>
-                                <option value=">">></option>
-                                <option value=">=">>=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input class="jso flex" type="number" id="qual" name="qual" flex value="{{qualValue::input}}"
-                               min="0"
-                               step="1"/>
+                        <input class="jso flex" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" />
                     </div>
 
                     <div class="horizontal layout qual-elem">
@@ -214,13 +194,15 @@
                             <select class="jso" name="dp_op" id="dp_op">
                                 <option value="==">==</option>
                                 <option value="!=">!=</option>
-                                <option value="<" selected><</option>
-                                <option value="<="><=</option>
-                                <option value=">">></option>
-                                <option value=">=">>=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input class="jso flex" type="number" id="dp" name="dp" flex value="{{dpValue::input}}"/>
+                        <input class="jso flex" type="number" id="dp" name="dp" value="{{dpValue::input}}" />
                     </div>
                 </div>
             </div>
@@ -236,20 +218,15 @@
                             <select name="sift_op" id="sift_op" class="jso">
                                 <option value="==">==</option>
                                 <option value="!=">!=</option>
-                                <option value="<" selected><</option>
-                                <option value="<="><=</option>
-                                <option value=">">></option>
-                                <option value=">=">>=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input class="jso flex"
-                                type="number"
-                                id="sift"
-                                name="sift"
-                                min="0"
-                                max="1"
-                                step="0.001"
-                                flex value="{{siftValue::input}}"/>
+                        <input class="jso flex" type="number" id="sift" name="sift" min="0" max="1" step="0.001" value="{{siftValue::input}}" />
                     </div>
 
                     <div class="horizontal layout pss-elem">
@@ -258,20 +235,15 @@
                             <select class="jso" name="polyphen_op" id="polyphen_op">
                                 <option value="==">==</option>
                                 <option value="!=">!=</option>
-                                <option value="<" selected><</option>
-                                <option value="<="><=</option>
-                                <option value=">">></option>
-                                <option value=">=">>=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input class="jso flex"
-                                type="number"
-                                id="polyphen"
-                                name="polyphen"
-                                min="0"
-                                max="1"
-                                step="0.001"
-                                flex value="{{polyphenValue::input}}"/>
+                        <input class="jso flex" type="number" id="polyphen" name="polyphen" min="0" max="1" step="0.001" value="{{polyphenValue::input}}" />
                     </div>
                 </div>
             </div>
@@ -288,13 +260,16 @@
                             <select class="jso" name="phylop_op" id="phylop_op">
                                 <option value="==">==</option>
                                 <option value="!=">!=</option>
-                                <option value="<" selected><</option>
-                                <option value="<="><=</option>
-                                <option value=">">></option>
-                                <option value=">=">>=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input type="text" class="jso flex"/>
+                        <input class="jso flex" type="number" id="phylop" name="phylop" value="{{phylopValue::input}}" />
+
                     </div>
 
                     <div class="horizontal layout conserv-elem">
@@ -303,13 +278,16 @@
                             <select class="jso" name="phastcons_op" id="phastcons_op">
                                 <option value="==">==</option>
                                 <option value="!=">!=</option>
-                                <option value="<" selected><</option>
-                                <option value="<="><=</option>
-                                <option value=">">></option>
-                                <option value=">=">>=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input type="text" class="jso flex"/>
+                        <input class="jso flex" type="number" id="phastcons" name="phastcons" value="{{phastconsValue::input}}" />
+
                     </div>
                 </div>
             </div>
@@ -322,8 +300,8 @@
                 <div id="consequenceTypes" class="jso-formcontent">
                     <template is="dom-repeat" items="{{consequenceTypes}}">
                         <label class="jso-control">
-                            <input value="{{item.value}}" type="checkbox" name="consequence_type">
-                            <span>{{item.name}}</span>
+                            <input value="{{item.value}}" type="checkbox" name="consequence_type" data-consequence$="{{item.name}}">
+                            <span>{{item.text}}</span>
                         </label>
                     </template>
                     <div class="input_container vertical layout">
@@ -348,20 +326,6 @@
                 type: Object,
                 observer: 'fileChanged'
             },
-            samples: {
-                type: Array,
-                notify: true,
-                observe: 'samplesChanged',
-                value: function () {
-                    return [];
-                }
-            },
-            samplesPosition: {
-                type: Array,
-                value: function () {
-                    return {};
-                }
-            },
             regionValue: {
                 type: String,
                 notify: true,
@@ -371,7 +335,6 @@
                 type: String,
                 notify: true,
                 value: '',
-                observer: 'inputGeneChange'
             },
             fileName: {
                 type: String,
@@ -380,13 +343,13 @@
             },
             consequenceTypes: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return CONSEQUENCE_TYPES;
                 }
             },
             query: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 },
                 notify: true,
@@ -394,207 +357,152 @@
             },
             dpValue: {
                 type: Number,
-                observer: 'inputDPChange'
             },
             qualValue: {
                 type: Number,
-                observer: 'inputQualChange'
             },
             maf1000gValue: {
                 type: Number,
-                observer: 'inputMaf1000GChanged'
             },
             mafEVSValue: {
                 type: Number,
-                observer: 'inputMafEVSChanged'
             },
             siftValue: {
                 type: Number,
-                observer: 'inputSIFTChanged'
             },
             polyphenValue: {
                 type: Number,
-                observer: 'inputPolyphenChanged'
-            }
+            },
+            phylopValue: {
+                type: Number,
+            },
+            phastconsValue: {
+                type: Number,
+            },
         },
-        fileChanged: function (neo, old) {
+        fileChanged: function(neo, old) {
             if (neo) {
-                this.samples = this.file.attributes.variantSource.samples;
-                this.samplesPosition = this.file.attributes.variantSource.samplesPosition;
-//                this.clearForm();
-//                this.submitForm();
+                //                this.clearForm();
+                //                this.submitForm();
             }
         },
-        handleFeatureSelected: function (e) {
+        handleFeatureSelected: function(e) {
             var item = e.detail;
             if (item) {
-                var values = this.$.gene.value.split(',').filter(function (el) {
+                var values = this.$.gene.value.split(',').filter(function(el) {
                     return el.length != 0
                 });
                 values.push(item.name);
-                values = values.filter(function (item, index, inputArray) {
+                values = values.filter(function(item, index, inputArray) {
                     return inputArray.indexOf(item) == index;
                 });
                 this.$.gene.value = values.join(",");
             }
         },
-        clearForm: function () {
-            /* samples */
-            for (var i = 0; i < this.samples.length; i++) {
-                var sample = this.samples[i];
-                var els = this.$.segregation.querySelectorAll("input[name='" + sample + "']:checked");
-                for (var j = 0; j < els.length; j++) {
-                    var el = els[j];
-                    el.checked = false;
-                }
-            }
+        clearForm: function() {
+            this.regionValue = "";
+            this.geneValue = "";
+            this.dpValue = "";
+            this.qualValue = "";
+            this.maf1000gValue = "";
+            this.mafEVSValue = "";
+            this.siftValue = "";
+            this.polyphenValue = "";
+            this.phylopValue = "";
+            this.phastconsValue = "";
+
+
             /* Consequence Types */
             var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
             for (var i = 0; i < els.length; i++) {
                 var el = els[i];
                 el.checked = false;
             }
+            this.submitForm();
         },
-        submitForm: function () {
-
-        },
-
-
-        handleBrowseClick: function (e) {
-            this.$.fileInput.click();
-
-        },
-        handleInputChange: function (e) {
-            var me = this;
-            var inputFile = this.$.fileInput.files[0];
-            this.fileName = inputFile.name;
-
-
-            var bedRegions = [];
-
-            if (this.regionValue) {
-                bedRegions = this.regionValue.split(",");
+        submitForm: function() {
+            var q = {};
+            if (this.geneValue) {
+                q["gene"] = this.inputGeneChange();
             }
-
-            if (inputFile != null) {
-
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    var data = e.target.result;
-                    var lines = data.split("\n");
-                    for (var i = 0; i < lines.length; i++) {
-                        var line = lines[i];
-                        if (line.indexOf("#") < 0 && line != '') {
-                            var fields = line.split("\t");
-                            var chr = fields[0];
-                            var start = parseInt(fields[1]);
-                            var end = parseInt(fields[2]);
-
-                            if (start <= end) {
-                                var r = chr + ":" + start + "-" + end;
-                                bedRegions.push(r);
-                            }
-                        }
-                    }
-
-                    me.regionValue = bedRegions.join(",");
-                    inputFile = null;
-                    me.fileName = "Choose file...";
-
-                };
-                reader.readAsText(inputFile);
-
+            if (this.dpValue) {
+                q["dp"] = this.inputChange(this.dpValue);
+                q["dp_op"] = this._getOption(this.$.dp_op);
             }
+            if (this.qualValue) {
+                q["qual"] = this.inputChange(this.qualValue);
+                q["qual_op"] = this._getOption(this.$.qual_op);
+            }
+            if (this.qmaf1000gValue) {
+                q["maf1000g"] = this.inputChange(this.qmaf1000gValue);
+                q["maf1000g_op"] = this._getOption(this.$.maf1000g_op);
+            }
+            if (this.mafEVSValue) {
+                q["mafEVS"] = this.inputChange(this.mafEVSValue);
+                q["mafEVS_op"] = this._getOption(this.$.mafEVS_op);
+            }
+            if (this.siftValue) {
+                q["sift"] = this.inputChange(this.siftValue);
+                q["sift_op"] = this._getOption(this.$.sift_op);
+            }
+            if (this.polyphenValue) {
+                q["polyphen"] = this.inputChange(this.polyphenValue);
+                q["polyphen_op"] = this._getOption(this.$.polyphen_op);
+            }
+            if (this.phylopValue) {
+                q["phylop"] = this.inputChange(this.phylopValue);
+                q["phylop_op"] = this._getOption(this.$.phylop_op);
+            }
+            if (this.phastconsValue) {
+                q["phastcons"] = this.inputChange(this.phastconsValue);
+                q["phastcons_op"] = this._getOption(this.$.phastcons_op);
+            }
+            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            if (els.length > 0) {
+
+                q["ct"] = this.inputCTChange();
+            }
+            this.set('query', q);
+
         },
-        inputGeneChange: function (e) {
+      
+        inputGeneChange: function() {
             if (this.query) {
-                var q = Utils.clone(this.query);
-                delete q["gene"];
-                q["gene"] = e.toUpperCase();
-                this.set('query', q);
+                // var q = Utils.clone(this.query);
+                // delete q["gene"];
+                //  q["gene"] = e.toUpperCase();
+                var q_aux = this.geneValue.toUpperCase();
+                q=q_aux.split(",");
+                //  this.set('query', q);
+                return q;
             }
 
         },
-        inputDPChange: function (e) {
+        inputChange: function(value) {
             if (this.query) {
-                var q = Utils.clone(this.query);
-                delete q["dp"];
-                var aux = parseFloat(e)
-
-                if (aux) {
-                    q["dp"] = aux;
+                var q = parseFloat(value);
+            }
+            return q;
+        },
+        _getOption: function(input) {
+            var op = input.querySelectorAll("option");
+            for (i = 0; i < op.length; i++) {
+                if (op[i].selected) {
+                    var option = op[i].value;
+                    return option;
                 }
 
-                this.set('query', q);
             }
         },
-        inputQualChange: function (e) {
-            if (this.query) {
-                var q = Utils.clone(this.query);
-                delete q["qual"];
-                var aux = parseFloat(e)
-
-                if (aux) {
-                    q["qual"] = aux;
-                }
-
-                this.set('query', q);
+        inputCTChange: function() {
+            var cons = [];
+            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            for (var i = 0; i < els.length; i++) {
+                var el = els[i].dataset.consequence;
+                cons[i] = el;
             }
+            return cons;
         },
-        queryChanged: function (neo, old) {
-        },
-        inputMaf1000GChanged: function (e) {
-            if (this.query) {
-                var q = Utils.clone(this.query);
-                delete q["maf1000g"];
-                var aux = parseFloat(e)
-
-                if (aux) {
-                    q["maf1000g"] = aux;
-                }
-
-                this.set('query', q);
-            }
-        },
-        inputMafEVSChanged: function (e) {
-            if (this.query) {
-                var q = Utils.clone(this.query);
-                delete q["mafEVS"];
-                var aux = parseFloat(e)
-
-                if (aux) {
-                    q["mafEVS"] = aux;
-                }
-
-                this.set('query', q);
-            }
-        },
-        inputSIFTChanged: function (e) {
-            if (this.query) {
-                var q = Utils.clone(this.query);
-                delete q["sift"];
-                var aux = parseFloat(e)
-
-                if (aux) {
-                    q["sift"] = aux;
-                }
-
-                this.set('query', q);
-            }
-        },
-        inputPolyphenChanged: function (e) {
-            if (this.query) {
-                var q = Utils.clone(this.query);
-                delete q["polyphen"];
-                var aux = parseFloat(e)
-
-                if (aux) {
-                    q["polyphen"] = aux;
-                }
-
-                this.set('query', q);
-            }
-        }
+        queryChanged: function(neo, old) {},
     });
 </script>

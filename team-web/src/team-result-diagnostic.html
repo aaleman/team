@@ -42,14 +42,14 @@
         properties: {
             data: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
                 observer: 'dataChanged'
             },
             _data: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
             },
@@ -59,166 +59,206 @@
             },
             query: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 },
                 observer: 'queryChanged'
             }
         },
-        _columns: [
-            {
-                name: 'chr',
-                title: "Chr",
-                width: 100
-            }, {
-                name: 'pos',
-                title: "Pos",
-                width: 100
-            },
-            {
-                name: 'ref',
-                title: "Ref",
-                width: 100
-            },
-            {
-                name: 'alt',
-                title: "Alt",
-                width: 100
-            },
-            {
-                name: 'id',
-                title: 'SNP Id',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'qual',
-                title: 'Qual',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'dp',
-                title: 'DP',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'gene',
-                title: 'Gene',
-                width: 200,
-                defaultValue: '.'
-            },
-            {
-                name: 'ct',
-                title: 'Conseq. Type',
-                width: 300,
-                defaultValue: '.'
-            },
-            {
-                name: 'phylop',
-                title: 'phyloP',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'phastcons',
-                title: 'Phastcons',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'sift',
-                title: 'SIFT',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'polyphen',
-                title: 'Polyphen',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'maf1000G',
-                title: 'MAF 1000G',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'maf1000GP3',
-                title: 'MAF 1000G Phase 3',
-                width: 100,
-                defaultValue: '.'
-            },
-            {
-                name: 'phenotype',
-                title: 'Phenotype',
-                width: 400,
-                defaultValue: '.'
-            },
-            {
-                name: 'source',
-                title: 'Source',
-                width: 100,
-                defaultValue: '.'
-            }
-        ]
-        ,
-        handleRowClick: function (e) {
+        _columns: [{
+            name: 'chr',
+            title: "Chr",
+            width: 100
+        }, {
+            name: 'pos',
+            title: "Pos",
+            width: 100
+        }, {
+            name: 'ref',
+            title: "Ref",
+            width: 100
+        }, {
+            name: 'alt',
+            title: "Alt",
+            width: 100
+        }, {
+            name: 'id',
+            title: 'SNP Id',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'qual',
+            title: 'Qual',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'dp',
+            title: 'DP',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'gene',
+            title: 'Gene',
+            width: 200,
+            defaultValue: '.'
+        }, {
+            name: 'ct',
+            title: 'Conseq. Type',
+            width: 300,
+            defaultValue: '.'
+        }, {
+            name: 'phylop',
+            title: 'phyloP',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'phastcons',
+            title: 'Phastcons',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'sift',
+            title: 'SIFT',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'polyphen',
+            title: 'Polyphen',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'maf1000G',
+            title: 'MAF 1000G',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'maf1000GP3',
+            title: 'MAF 1000G Phase 3',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'phenotype',
+            title: 'Phenotype',
+            width: 400,
+            defaultValue: '.'
+        }, {
+            name: 'source',
+            title: 'Source',
+            width: 100,
+            defaultValue: '.'
+        }],
+        handleRowClick: function(e) {
             console.log(e.detail.row);
         },
-        ready: function () {
+        ready: function() {
             this.$.table.columns = this._columns;
         },
-        dataChanged: function (neo, old) {
+        dataChanged: function(neo, old) {
             var _data = [];
             for (var i = 0; i < this.data.length; i++) {
                 var elem = this.data[i];
                 _data.push(elem);
-            }
-            ;
+            };
             this._data = _data;
 
         },
-        queryChanged: function (neo, old) {
+        queryChanged: function(neo, old) {
             if (neo) {
+                // neo => query
                 console.log(neo);
                 var data = [];
                 for (var i = 0; i < this.data.length; i++) {
                     var elem = this.data[i];
 
-                    if (this._applyFilters(elem, neo)) {
+                    if (this._applyFilters(elem, neo) == 1) {
                         data.push(elem);
                     }
-                }
-                ;
+                };
 
                 this.set('_data', data);
 
             }
         },
-        _applyFilters: function (data, filters) {
+        _computeInputOption: function(value, query, op) {
+            var aux = false;
+            if (value === ".") {
+                aux = true;
+            }
+            value = parseFloat(value);
+            if (op == "==") {
+                if (value == query) {
+                    aux = true;
+                }
+            } else if (op == "!=") {
+                if (value != query) {
+                    aux = true;
+                }
+            } else if (op == "<") {
+                if (value < query) {
+                    aux = true;
+                }
+            } else if (op == "<=") {
+                if (value <= query) {
+                    aux = true;
+                }
+            } else if (op == ">") {
+                if (value > query) {
+                    aux = true;
+                }
+            } else if (op == ">=") {
+                if (value >= query) {
+                    aux = true;
+                }
+            }
+            return aux;
+        },
+        _applyFilters: function(data, filters) {
+            // data = row
             var filtered = true;
             for (var key in filters) {
-                var query = filters[key];
+                var query = filters[key]; // query => value
                 var match = false;
-
                 if (key === "gene") {
-                    match = data.gene.toUpperCase().indexOf(query) >= 0;
+                    // match = data.gene.toUpperCase().indexOf(query) >= 0;
+                    gene_aux = data.gene.toUpperCase().split(",");
+                    for (var i = 0; i < query.length; i++) {
+                        for (var j = 0; j < gene_aux.length; j++) {
+                            if(gene_aux[j]== query[i]){
+                              match = true;
+                              break;
+                            }
+                        }
+                    }
                 } else if (key === "dp") {
-                    match = data.dp <= query;
+                    match = this._computeInputOption(data.dp, query, filters["dp_op"]);
+
                 } else if (key === "qual") {
-                    match = data.qual <= query;
+                    match = this._computeInputOption(data.qual, query, filters["qual_op"]);
                 } else if (key === "maf1000g") {
-                    match = data.maf1000G <= query;
+                    match = this._computeInputOption(data.maf1000g, query, filters["maf1000g_op"]);
                 } else if (key === "mafEVS") {
-//                    match = data.mafEVS <= query;
+                    // match = this._computeInputOption(data.mafEVS, query, filters["mafEVS_op"]);
                     match = true;
                 } else if (key === "sift") {
-                    match = data.sift <= query || data.sift === ".";
+                    match = this._computeInputOption(data.sift, query, filters["sift_op"]);
                 } else if (key === "polyphen") {
-                    match = data.polyphen <= query || data.polyphen === ".";
+                    match = this._computeInputOption(data.polyphen, query, filters["polyphen_op"]);
+                } else if (key === "phylop") {
+                    match = this._computeInputOption(data.phylop, query, filters["phylop_op"]);
+                } else if (key === "phastcons") {
+                    match = this._computeInputOption(data.phastcons, query, filters["phastcons_op"]);
+                } else if (key === "ct") {
+                    ct_aux = data.ct.split(",");
+                    for (var i = 0; i < query.length; i++) {
+                        for (var j = 0; j < ct_aux.length; j++) {
+                            if(ct_aux[j]==query[i]){
+                              match = true;
+                              break;
+                            }
+                        }
+                    }
+                } else if (key.endsWith("_op")) {
+                    continue;
                 }
                 filtered &= match;
             }
