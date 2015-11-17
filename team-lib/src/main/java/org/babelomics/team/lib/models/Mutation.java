@@ -9,7 +9,7 @@ public class Mutation {
     public String ref;
     public String alt;
     public String phe;
-    public String src;
+    public String src = "src";
 
     public Mutation() {
     }
@@ -66,8 +66,8 @@ public class Mutation {
     }
 
     public String getSrc() {
-        return "TODO"; // TODO
-//        return src;
+
+        return src;
     }
 
     public void setSrc(String src) {

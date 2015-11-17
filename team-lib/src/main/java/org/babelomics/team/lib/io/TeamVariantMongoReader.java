@@ -2,6 +2,8 @@ package org.babelomics.team.lib.io;
 
 import org.opencb.biodata.formats.variant.io.VariantReader;
 import org.opencb.biodata.models.variant.Variant;
+import org.opencb.datastore.core.Query;
+import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.analysis.storage.AnalysisFileIndexer;
 import org.opencb.opencga.catalog.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
@@ -17,33 +19,25 @@ import org.opencb.opencga.storage.core.variant.adaptors.VariantDBIterator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
  */
 public class TeamVariantMongoReader implements VariantReader {
 
-    private Properties catalogProp;
     private StorageConfiguration storageConfiguration;
     private CatalogManager catalogManager;
-    private DataStore dataStore;
     private int studyId;
     private String sessionId;
-    private String storageEngine;
-    private String dbName;
-    private StorageManagerFactory storageManagerFactory;
-    private VariantStorageManager storageManager;
-    private VariantDBAdaptor dbAdaptor;
     private VariantDBIterator iterator;
 
-    public TeamVariantMongoReader(Properties catalogProp, StorageConfiguration storageConfiguration, int studyId, String sessionId) {
+    public TeamVariantMongoReader(CatalogManager catalogManager, StorageConfiguration storageConfiguration, int studyId, String sessionId) {
 
 
-        this.catalogProp = catalogProp;
         this.storageConfiguration = storageConfiguration;
         this.studyId = studyId;
         this.sessionId = sessionId;
+        this.catalogManager = catalogManager;
     }
 
     @Override
@@ -60,17 +54,19 @@ public class TeamVariantMongoReader implements VariantReader {
     public boolean open() {
         boolean res = true;
         try {
-            CatalogManager catalogManager = new CatalogManager(catalogProp);
-            dataStore = AnalysisFileIndexer.getDataStore(catalogManager, studyId, File.Bioformat.VARIANT, sessionId);
-            storageEngine = dataStore.getStorageEngine();
-            dbName = dataStore.getDbName();
-            storageManagerFactory = new StorageManagerFactory(storageConfiguration);
+            DataStore dataStore = AnalysisFileIndexer.getDataStore(catalogManager, studyId, File.Bioformat.VARIANT, sessionId);
+            String storageEngine = dataStore.getStorageEngine();
+            String dbName = dataStore.getDbName();
+            StorageManagerFactory storageManagerFactory = new StorageManagerFactory(storageConfiguration);
 
-            storageManager = storageManagerFactory.getVariantStorageManager(storageEngine);
-            dbAdaptor = storageManager.getDBAdaptor(dbName);
+            VariantStorageManager storageManager = storageManagerFactory.getVariantStorageManager(storageEngine);
+            VariantDBAdaptor dbAdaptor = storageManager.getDBAdaptor(dbName);
 
-            iterator = dbAdaptor.iterator();
+            Query q = new Query();
 
+            q.append(String.valueOf(VariantDBAdaptor.VariantQueryParams.RETURNED_STUDIES), this.studyId);
+
+            iterator = dbAdaptor.iterator(q, new QueryOptions());
 
             Study study = catalogManager.getStudy(studyId, sessionId).getResult().get(0);
 

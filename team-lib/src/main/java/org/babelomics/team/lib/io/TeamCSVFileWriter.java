@@ -4,8 +4,12 @@ import com.google.common.base.Joiner;
 import org.babelomics.team.lib.models.TeamVariant;
 import org.opencb.biodata.models.variant.StudyEntry;
 import org.opencb.biodata.models.variant.Variant;
-import org.opencb.biodata.models.variant.avro.*;
+import org.opencb.biodata.models.variant.avro.ConsequenceType;
+import org.opencb.biodata.models.variant.avro.PopulationFrequency;
+import org.opencb.biodata.models.variant.avro.Score;
+import org.opencb.biodata.models.variant.avro.SequenceOntologyTerm;
 import org.opencb.commons.io.DataWriter;
+import org.opencb.opencga.catalog.models.Sample;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -21,14 +25,14 @@ import java.util.Set;
 public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
 
     private PrintWriter printer;
-    private String fileId;
+    private Sample sample;
     private String filename;
     private static final String SEPARATOR = "\t";
     private DecimalFormat df;
 
 
-    public TeamCSVFileWriter(String fileId, String filename) {
-        this.fileId = fileId;
+    public TeamCSVFileWriter(Sample sample, String filename) {
+        this.sample = sample;
 
         this.filename = filename;
         df = new DecimalFormat("#.####");
@@ -104,27 +108,14 @@ public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
         sb.append(variant.getReference()).append(SEPARATOR);
         sb.append(variant.getAlternate()).append(SEPARATOR);
 
-
         StudyEntry vse = variant.getStudies().get(0); // aaleman: Check this with 2 or more studies.
 
-        FileEntry currentFile = vse.getFile(this.fileId);
-        Map<String, String> attributes = currentFile.getAttributes();
-
+        Map<String, String> attributes = vse.getSampleData(this.sample.getName());
 
         String qual = attributes.containsKey("QUAL") ? attributes.get("QUAL") : ".";
         sb.append(qual).append(SEPARATOR);
 
-        String dp = ".";
-//
-//
-//        for (Map.Entry<String, Map<String, String>> elem : vse.getSamplesData().entrySet()) {
-//
-//            Map<String, String> data = elem.getValue();
-//
-//            dp = data.containsKey("DP") ? data.get("DP") : ".";
-//            break;
-//        }
-//
+        String dp = attributes.containsKey("DP") ? attributes.get("DP") : ".";
         sb.append(dp).append(SEPARATOR);
 
 
