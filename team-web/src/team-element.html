@@ -207,7 +207,7 @@
 
 
 
-        <div class="content" menu-option="newdiagnostic,newpanel,panels,home,result">
+        <div id="content" class="content" menu-option="newdiagnostic,newpanel,panels,home,result">
             <jso-panel hidden collapsible closable movable id="browserPanel" on-hidden="handlePanelHidden">
                 <div class="header">
                     <i class="fa fa-folder-open-o"></i> File Browser
@@ -586,7 +586,8 @@
         },
         handleRunJob: function(e) {
             this.selectedOption = "";
-            this.$.jobBrowserPanel.show();
+            this.$.jobBrowserPanel.hidden=false;
+            this.$.content.hidden=false;
             this.$.newDiagnosticElement.$.formWizard.goToStep(1);
             this.$.jobBrowser.selectStudyById(this.$.newDiagnosticElement.selectedStudy.study.id);
         }
