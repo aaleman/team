@@ -297,7 +297,7 @@
                                     pos: splits[1],
                                     ref: splits[2],
                                     alt: splits[3],
-                                    qual: splits[4],
+                                    qual: parseFloat(splits[4]).toFixed(2),
                                     dp: splits[5],
                                     id: splits[6],
                                     gene: splits[7],
@@ -317,6 +317,7 @@
                                 secData.push(elem);
                             }
                         }
+
                         this.set('diagData', diagData);
                         this.set('secData', secData);
                     }

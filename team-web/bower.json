@@ -28,6 +28,7 @@
     "qtip2": "~2.2.1",
     "bowser": "~0.7.2",
     "pako": "~0.2.6",
-    "iron-menu-behavior": "PolymerElements/iron-menu-behavior#~1.0.1"
+    "iron-menu-behavior": "PolymerElements/iron-menu-behavior#~1.0.1",
+    "file-saver.js": "~1.20150507.2"
   }
 }

@@ -79,7 +79,7 @@ Panel.prototype = {
                     //}
                 }
             }
-            
+
             if (disease.source == "clinvar") {
 
                CellBaseManager.get({
@@ -104,7 +104,8 @@ Panel.prototype = {
                                    pos: row.start,
                                    ref: row.reference,
                                    alt: row.alternate,
-                                   phe: disease.phenotype
+                                   phe: disease.phenotype,
+                                   src: disease.source
                                }
                                me.addMutation(mut);
 
@@ -193,7 +194,8 @@ Panel.prototype = {
                 elem.pos == mutation.pos &&
                 elem.ref == mutation.ref &&
                 elem.alt == mutation.alt &&
-                elem.phe == mutation.phe) {
+                elem.phe == mutation.phe &&
+                elem.src == mutation.src) {
                 return true;
             }
         }
