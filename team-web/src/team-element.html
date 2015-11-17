@@ -1,3 +1,4 @@
+<script src="../bower_components/file-saver.js/FileSaver.js"></script>
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-application-behavior.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-wizard.html">
@@ -176,9 +177,7 @@
         <div class="content" menu-option="home">
             <team-home data-option="home"></team-home>
         </div>
-        <div class="content" menu-option="result">
-            <team-result id="teamResult"></team-result>
-        </div>
+
 
 
         <jso-panel movable expandible closable id="newDiagnosisPanel" on-close="returnHome" menu-option="newdiagnostic">
@@ -208,7 +207,7 @@
 
 
 
-        <div class="content" menu-option="newdiagnostic,newpanel,panels,home">
+        <div class="content" menu-option="newdiagnostic,newpanel,panels,home,result">
             <jso-panel hidden collapsible closable movable id="browserPanel" on-hidden="handlePanelHidden">
                 <div class="header">
                     <i class="fa fa-folder-open-o"></i> File Browser
@@ -231,6 +230,9 @@
             </jso-panel>
         </div>
 
+        <div class="content" menu-option="result">
+            <team-result id="teamResult"></team-result>
+        </div>
 
 
         <jso-opencga-header id="jsoHeader" selected-option="{{selectedOption}}" user-data="{{userData}}" on-login="handleLogin" on-logout="handleLogout" hide-jobs hide-browse show-menu-on-login>
@@ -564,6 +566,7 @@
                 this.$.teamResult.job = job;
                 this.selectedOption = "result";
             }
+            this.$.jobBrowserPanel.hidden=true;
         },
         handleMenuChanged: function(e) {
             var menuOption = e.detail.option;

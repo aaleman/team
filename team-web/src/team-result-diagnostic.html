@@ -32,7 +32,7 @@
     </style>
     <template>
         <div class="title">{{title}}</div>
-        <jso-table id="table" data="{{_data}}" enable-paging selectable on-rowclick="handleRowClick"></jso-table>
+        <jso-table id="table" data="{{_data}}" enable-paging selectable exportable enable-resize on-rowclick="handleRowClick"></jso-table>
     </template>
 
 </dom-module>
@@ -90,7 +90,11 @@
             name: 'qual',
             title: 'Qual',
             width: 100,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row){
+              return  parseFloat(row.qual, 3);
+
+            }
         }, {
             name: 'dp',
             title: 'DP',
@@ -169,14 +173,11 @@
                 var data = [];
                 for (var i = 0; i < this.data.length; i++) {
                     var elem = this.data[i];
-
                     if (this._applyFilters(elem, neo) == 1) {
                         data.push(elem);
                     }
                 };
-
                 this.set('_data', data);
-
             }
         },
         _computeInputOption: function(value, query, op) {
@@ -212,6 +213,16 @@
             }
             return aux;
         },
+        _checkValue: function(value, query) {
+            for (var i = 0; i < query.length; i++) {
+                for (var j = 0; j < value.length; j++) {
+                    if (value[j] == query[i]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
         _applyFilters: function(data, filters) {
             // data = row
             var filtered = true;
@@ -219,19 +230,10 @@
                 var query = filters[key]; // query => value
                 var match = false;
                 if (key === "gene") {
-                    // match = data.gene.toUpperCase().indexOf(query) >= 0;
                     gene_aux = data.gene.toUpperCase().split(",");
-                    for (var i = 0; i < query.length; i++) {
-                        for (var j = 0; j < gene_aux.length; j++) {
-                            if(gene_aux[j]== query[i]){
-                              match = true;
-                              break;
-                            }
-                        }
-                    }
+                    match = this._checkValue(gene_aux, query);
                 } else if (key === "dp") {
                     match = this._computeInputOption(data.dp, query, filters["dp_op"]);
-
                 } else if (key === "qual") {
                     match = this._computeInputOption(data.qual, query, filters["qual_op"]);
                 } else if (key === "maf1000g") {
@@ -249,20 +251,12 @@
                     match = this._computeInputOption(data.phastcons, query, filters["phastcons_op"]);
                 } else if (key === "ct") {
                     ct_aux = data.ct.split(",");
-                    for (var i = 0; i < query.length; i++) {
-                        for (var j = 0; j < ct_aux.length; j++) {
-                            if(ct_aux[j]==query[i]){
-                              match = true;
-                              break;
-                            }
-                        }
-                    }
+                    match = this._checkValue(ct_aux, query);
                 } else if (key.endsWith("_op")) {
                     continue;
                 }
                 filtered &= match;
             }
-
             return filtered;
         }
     });

@@ -108,8 +108,18 @@
 
         .newPanelButon {
             margin: 10px;
+            padding-left: 5px;
             border: 1px solid #d3d3d3;
             margin-bottom: 0px;
+            line-height: 30px;
+            background-color: #E5E8EA;
+        }
+
+        #botbar {
+            text-align: center;
+            color: #445D76;
+            margin: 5px;
+            width: 100px;
         }
     </style>
     <template>
@@ -135,22 +145,19 @@
                 <div class="step">
                     <div class="horizontal layout">
                         <!-- <div class="vertical layout"> -->
-                            <div class="selbox vertical layout" id="panelSelector">
-                                <div class="horizontal layout">
-                                    <div class="titlePreview flex"><i class="fa fa-list"></i>&nbsp; Panel List</div>
-                                </div>
-                                <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
-
-                                <div class="flex"></div>
-                                <div class="newPanelButon">
-                                    <div class="jso-formtitle" style="font-size:14px;">Create a New Panel &nbsp;</div>
-                                    <div class="horizontal layout">
-                                        <div class="flex"></div>
-                                        <div id="botbar" class="jso-btn jso-btn-shdw file" title="New Panel" on-click="handleNewPanel">
-                                            <i class="fa fa-plus"></i>&nbsp; Panel</div>
-                                    </div>
-                                </div>
+                        <div class="selbox vertical layout" id="panelSelector">
+                            <div class="horizontal layout">
+                                <div class="titlePreview flex"><i class="fa fa-list"></i>&nbsp; Panel List</div>
                             </div>
+                            <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+
+                            <div class="flex"></div>
+                            <div class="newPanelButon horizontal layout">
+                                <div class="flex" style="font-size:13px;">Or create a New Panel &nbsp;</div>
+                                <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
+                                    <i class="fa fa-plus"></i>&nbsp; Panel</div>
+                            </div>
+                        </div>
                         <!-- </div> -->
 
                         <div id="panelPreview">
