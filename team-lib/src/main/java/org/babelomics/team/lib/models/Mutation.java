@@ -9,7 +9,7 @@ public class Mutation {
     public String ref;
     public String alt;
     public String phe;
-    public String src = "src";
+    public String src;
 
     public Mutation() {
     }
