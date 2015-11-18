@@ -325,13 +325,12 @@
                         <div class="jso-formcontent horizontal layout container">
 
                             <div id="panelAppDiseases" class="vertical layout">
-                                <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:550px"></jso-table>
+                                <jso-table class="flex" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:550px" page-size="18"></jso-table>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <a href="https://bioinfo.extge.co.uk/crowdsourcing/PanelApp/">
-                                        <div class="jso-btn jso-btn-shdw file" style="width: 150px"> >>More info
-                                            << </div>
+                                    <a href="https://bioinfo.extge.co.uk/crowdsourcing/PanelApp/" target="_blank">
+                                        <div class="jso-btn jso-btn-shdw file" style="width: 150px"> >>More info<< </div>
                                     </a>
                                     </div>
                                 </div>
@@ -796,12 +795,12 @@
                 name: 'start',
                 title: 'Start',
                 defaultValue: '.',
-                width: 120
+                width: 110
             }, {
                 name: 'end',
                 title: 'End',
                 defaultValue: '.',
-                width: 120
+                width: 110
             }, {
                 name: '',
                 title: '',
@@ -816,7 +815,8 @@
                 width: 40
             }, {
                 name: 'pos',
-                title: 'Pos'
+                title: 'Pos',
+                width: 70
             }, {
                 name: 'ref',
                 title: 'Ref',
@@ -829,7 +829,7 @@
                 name: 'phe',
                 title: 'Phenotype',
                 width: 150
-            },{
+            }, {
                 name: 'src',
                 title: 'Source',
                 width: 65
@@ -1040,6 +1040,7 @@
                 };
                 reader.readAsText(bed_file);
             }
+            this.$.geneBedFileInput.value="";
         },
         handleImportAppPanel: function(e) {
             this.$.appPanel.hidden = false;
@@ -1074,7 +1075,8 @@
         handleMutationImportVCF: function(e) {
             var me = this;
             var vcf_file = this.$.mutationVCFFileInput.files[0];
-            phe = this.$.mutationGVPheVCF.value;
+            var phe = this.$.mutationGVPheVCF.value;
+            var src = "user-defined";
             if (vcf_file != null) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
@@ -1094,7 +1096,8 @@
                                 pos: pos,
                                 ref: ref,
                                 alt: alt,
-                                phe: phe
+                                phe: phe,
+                                src: src
 
                             };
                             me.formData.addMutation(mut);
@@ -1103,10 +1106,13 @@
                 };
                 reader.readAsText(vcf_file);
             }
+            this.$.mutationVCFFileInput.value="";
+
         },
         handleMutationImportCSV: function(e) {
             var me = this;
             var csv_file = this.$.mutationCSVFileInput.files[0];
+            var src = "user-defined";
             if (csv_file != null) {
                 var reader = new FileReader();
                 var separator = this.$.mutationCSVSeparator.selectedOptions[0].value;
@@ -1129,7 +1135,8 @@
                                 pos: pos,
                                 ref: ref,
                                 alt: alt,
-                                phe: phe
+                                phe: phe,
+                                src: src
                             };
                             me.formData.addMutation(mut);
                         }
@@ -1137,6 +1144,7 @@
                 };
                 reader.readAsText(csv_file);
             }
+            this.$.mutationCSVFileInput.value="";
         },
         handleClickMutationListClear: function(e) {
             this.formData.clearMutations();
@@ -1337,7 +1345,21 @@
                 }
             }
             for (var i = 0; i < this.mutations.length; i++) {
-                me.formData.addMutation(this.mutations[i]);
+                var mut = this.mutations[i];
+                if (mut["src"] == null) {
+                    var src = "user-defined";
+                } else {
+                    src = mut["src"];
+                }
+                mut = {
+                    chr: mut["chr"],
+                    pos: mut["pos"],
+                    ref: mut["ref"],
+                    alt: mut["alt"],
+                    phe: mut["phe"],
+                    src: src
+                };
+                me.formData.addMutation(mut);
             }
         },
 
@@ -1347,6 +1369,15 @@
         handleAddedMutationFromGV: function(e) {
             this.$.panelGV.hidden = true;
             var mut = e.detail;
+            var src = "user-defined";
+            mut = {
+                chr: mut["chr"],
+                pos: mut["pos"],
+                ref: mut["ref"],
+                alt: mut["alt"],
+                phe: mut["phe"],
+                src: src
+            };
             this.formData.addMutation(mut);
         },
         handlePanelAppAddGenes: function(e) {

@@ -561,12 +561,12 @@
         handleJobSelect: function(e) {
 
             var job = e.detail;
-
-            if (job.status !== "ERROR") {
+            if (job.status === "READY") {
                 this.$.teamResult.job = job;
                 this.selectedOption = "result";
+                this.$.jobBrowserPanel.hidden=true;
+
             }
-            this.$.jobBrowserPanel.hidden=true;
         },
         handleMenuChanged: function(e) {
             var menuOption = e.detail.option;

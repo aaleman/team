@@ -268,7 +268,7 @@
                                                 <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input class="jso flex" type="number" id="phylop" name="phylop" value="{{phylopValue::input}}" />
+                        <input class="jso flex" type="number" id="phylop" name="phylop" value="{{phylopValue::input}}" step="0.001" />
 
                     </div>
 
@@ -286,7 +286,7 @@
                                                 <option value=">=">>=</option>
                             </select>
                         </div>
-                        <input class="jso flex" type="number" id="phastcons" name="phastcons" value="{{phastconsValue::input}}" />
+                        <input class="jso flex" type="number" id="phastcons" name="phastcons" value="{{phastconsValue::input}}" step="0.001" />
 
                     </div>
                 </div>
@@ -422,6 +422,9 @@
         },
         submitForm: function() {
             var q = {};
+            if (this.regionValue) {
+                q["region"] = this.inputRegionChange();
+            }
             if (this.geneValue) {
                 q["gene"] = this.inputGeneChange();
             }
@@ -465,14 +468,21 @@
             this.set('query', q);
 
         },
-      
+        inputRegionChange: function() {
+            if (this.query) {
+                var q_aux =this.regionValue;
+                q = q_aux.split(",");
+            }
+            return q;
+        },
+
         inputGeneChange: function() {
             if (this.query) {
                 // var q = Utils.clone(this.query);
                 // delete q["gene"];
                 //  q["gene"] = e.toUpperCase();
                 var q_aux = this.geneValue.toUpperCase();
-                q=q_aux.split(",");
+                q = q_aux.split(",");
                 //  this.set('query', q);
                 return q;
             }
