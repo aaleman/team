@@ -6,6 +6,7 @@
             box-sizing: border-box;
             margin: 5px;
             width: 600px;
+            padding: 10px;
             /*height: 500px;*/
         }
 
@@ -108,51 +109,56 @@
             ready: function() {
                 this.geneColumns = [{
                     name: 'name',
-                    title: 'Name'
+                    title: 'Name',
+                    width: 195
                 }, {
                     name: 'chr',
                     title: 'Chr',
-                    defaultValue: '.'
+                    defaultValue: '.',
+                    width: 150
                 }, {
                     name: 'start',
                     title: 'Start',
-                    defaultValue: '.'
+                    defaultValue: '.',
+                    width: 160
                 }, {
                     name: 'end',
                     title: 'End',
-                    defaultValue: '.'
+                    defaultValue: '.',
+                    width: 160
                 }];
                 this.mutationColumns = [{
                     name: 'chr',
                     title: 'Chr',
-                    width: 40
+                    width:100
                 }, {
                     name: 'pos',
-                    title: 'Pos'
+                    title: 'Pos',
+                    width: 115
                 }, {
                     name: 'ref',
                     title: 'Ref',
-                    width: 70
+                    width: 100
                 }, {
                     name: 'alt',
                     title: 'Alt',
-                    width: 70
+                    width: 100
                 }, {
                     name: 'phe',
                     title: 'Phenotype',
-                    width: 150
+                    width: 250
                 }];
                 this.diseaseColumns = [{
                     name: 'phenotype',
                     title: 'Phenotype',
                     type: 'text',
-                    width: 300
+                    width: 425
                 }, {
                     name: 'source',
                     title: 'Source',
                     type: 'select',
                     options: ["clinvar", "gwas"],
-                    width: 298
+                    width: 240
                 }];
 
 

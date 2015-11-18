@@ -66,10 +66,8 @@
         .titlePreview {
             font-size: 15px;
             color: #445D76;
-            margin-top: 5px;
-            /*text-align: center;*/
+            margin: 5px 10px 0px 10px;
             border-bottom: 1px solid #445D76;
-            margin-left: 10px;
         }
 
         .eye > i:hover {
@@ -147,7 +145,7 @@
                         <!-- <div class="vertical layout"> -->
                         <div class="selbox vertical layout" id="panelSelector">
                             <div class="horizontal layout">
-                                <div class="titlePreview flex"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                                <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; Panel List</div>
                             </div>
                             <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
 
@@ -164,7 +162,7 @@
                             <div class="titlePreview">
                                 <i class="fa fa-eye"></i>&nbsp; Panel Preview
                             </div>
-                            <team-panel-preview selected-panel="{{selectedPanel}}">
+                            <team-panel-preview selected-panel="{{selectedPanel}}" style="width:95%;">
                             </team-panel-preview>
                         </div>
                     </div>
