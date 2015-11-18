@@ -1,7 +1,5 @@
 package org.babelomics.team.lib.models;
 
-import org.opencb.biodata.models.variant.Variant;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

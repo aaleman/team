@@ -8,8 +8,8 @@ import com.beust.jcommander.Parameter;
 public class Parameters {
 
 
-    @Parameter(names = {"--fileId", "-f"}, description = "File Id", required = true)
-    private String input;
+    @Parameter(names = {"--sampleId"}, description = "Sample Id", required = true)
+    private int sampleId;
 
     @Parameter(names = {"--output", "-o"}, description = "Output", required = true)
     private String output;
@@ -30,8 +30,8 @@ public class Parameters {
     private boolean help;
 
 
-    public String getInput() {
-        return input;
+    public int getInput() {
+        return sampleId;
     }
 
     public String getPanel() {

@@ -5,25 +5,25 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.babelomics.team.lib.filters.TeamVariantGeneRegionFilter;
+import org.babelomics.team.lib.filters.TeamVariantReferenceFitler;
 import org.babelomics.team.lib.io.TeamCSVFileWriter;
 import org.babelomics.team.lib.io.TeamVariantMongoReader;
 import org.babelomics.team.lib.io.TeamVariantStdoutWriter;
-import org.babelomics.team.lib.models.Disease;
 import org.babelomics.team.lib.models.Gene;
+import org.babelomics.team.lib.models.Mutation;
 import org.babelomics.team.lib.models.Panel;
 import org.babelomics.team.lib.models.TeamVariant;
 import org.opencb.biodata.formats.variant.io.VariantReader;
 import org.opencb.biodata.formats.variant.io.VariantWriter;
 import org.opencb.biodata.models.core.Region;
 import org.opencb.biodata.models.variant.Variant;
-import org.opencb.biodata.models.variant.avro.ClinVar;
-import org.opencb.biodata.models.variant.avro.Cosmic;
-import org.opencb.biodata.models.variant.avro.Gwas;
-import org.opencb.biodata.models.variant.avro.VariantTraitAssociation;
 import org.opencb.biodata.tools.variant.filtering.VariantFilter;
 import org.opencb.commons.filters.FilterApplicator;
 import org.opencb.commons.io.DataWriter;
+import org.opencb.datastore.core.QueryOptions;
+import org.opencb.opencga.catalog.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
+import org.opencb.opencga.catalog.models.Sample;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.config.StorageConfiguration;
 
@@ -44,7 +44,7 @@ public class TeamMain {
         JCommander jc = new JCommander(parameters);
 
 
-        String inputFile;
+        int sampleId;
         String outputFile;
         String panelFilename;
         String sessionId;
@@ -58,7 +58,7 @@ public class TeamMain {
         }
 
 
-        inputFile = parameters.getInput();
+        sampleId = parameters.getInput();
         panelFilename = parameters.getPanel();
         outputFile = parameters.getOutput();
         sessionId = parameters.getSessionId();
@@ -67,6 +67,8 @@ public class TeamMain {
 
         Properties catalogProp = new Properties();
         catalogProp.load(TeamMain.class.getClassLoader().getResourceAsStream("catalog.properties"));
+        CatalogManager catalogManager = new CatalogManager(catalogProp);
+
 
         StorageConfiguration storageConfiguration = StorageConfiguration.load(TeamMain.class.getClassLoader().getResourceAsStream("storage-configuration.yml"));
 
@@ -87,15 +89,22 @@ public class TeamMain {
 
             List<Region> regionList = getRegionsFromPanel(panel);
 
-            VariantReader reader = new TeamVariantMongoReader(catalogProp, storageConfiguration, studyId, sessionId);
+
+            Sample sample = catalogManager.getSample(sampleId, new QueryOptions(), sessionId).getResult().get(0);
+
+
+            VariantReader reader = new TeamVariantMongoReader(catalogManager, storageConfiguration, studyId, sessionId);
 
             VariantWriter writer = new TeamVariantStdoutWriter();
 
-            DataWriter<TeamVariant> diagnosticWriter = new TeamCSVFileWriter(inputFile, outputFile + "/diagnostic.csv");
-            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamCSVFileWriter(inputFile, outputFile + "/secondary.csv");
+            DataWriter<TeamVariant> diagnosticWriter = new TeamCSVFileWriter(sample, outputFile + "/diagnostic.csv");
+            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamCSVFileWriter(sample, outputFile + "/secondary.csv");
 
             VariantFilter regionFilter = new TeamVariantGeneRegionFilter(regionList);
+            VariantFilter referenceFilter = new TeamVariantReferenceFitler(sample);
+
             filters.add(regionFilter);
+            filters.add(referenceFilter);
 
             reader.open();
             writer.open();
@@ -111,9 +120,7 @@ public class TeamMain {
 
             while (batch != null && !batch.isEmpty()) {
 
-                System.out.println("batch = " + batch.size());
                 FilterApplicator.filter(batch, filters);
-                System.out.println("batch = " + batch.size());
 
                 run(batch, panel, diagnosticVariants, secondaryFindingsVariants);
 
@@ -157,53 +164,67 @@ public class TeamMain {
 
     private static boolean isDiagnosticVariant(TeamVariant teamVariant, Panel panel) {
         Variant variant = teamVariant.getVariant();
-        VariantTraitAssociation variantTraitAssociation = variant.getAnnotation().getVariantTraitAssociation();
-        for (Disease disease : panel.getDiseases()) {
 
-            // TODO aaleman: Check if the mutation is in the list of mutations (from the panel)
-            if (variantTraitAssociation == null) {
-                continue;
-            }
-            switch (disease.getSource().toLowerCase()) {
-                case "clinvar":
-                    if (variantTraitAssociation.getClinvar() != null && !variantTraitAssociation.getClinvar().isEmpty()) {
-                        for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
-                            for (String trait : clinvar.getTraits()) {
-                                if (trait.equalsIgnoreCase(disease.getPhenotype())) {
-                                    teamVariant.setPhenotype(disease.getPhenotype());
-                                    teamVariant.setSource("clinvar");
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case "cosmic":
-                    if (variantTraitAssociation.getCosmic() != null && !variantTraitAssociation.getCosmic().isEmpty()) {
-                        for (Cosmic cosmic : variantTraitAssociation.getCosmic()) {
-                            if (cosmic.getPrimaryHistology().equalsIgnoreCase(disease.getPhenotype())) {
-                                teamVariant.setPhenotype(disease.getPhenotype());
-                                teamVariant.setSource("cosmic");
-                                return true;
-                            }
-                        }
-                    }
-                    break;
-                case "gwas":
-                    if (variantTraitAssociation.getGwas() != null && !variantTraitAssociation.getGwas().isEmpty()) {
-                        for (Gwas gwas : variantTraitAssociation.getGwas()) {
-                            for (String trait : gwas.getTraits()) {
-                                if (trait.equalsIgnoreCase(disease.getPhenotype())) {
-                                    teamVariant.setPhenotype(disease.getPhenotype());
-                                    teamVariant.setSource("gwas");
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    break;
+        for (Mutation mutation : panel.getMutations()) {
+
+            if (mutation.getChr().equalsIgnoreCase(variant.getChromosome()) &&
+                    mutation.getPos() == variant.getStart() &&
+                    mutation.getRef().equalsIgnoreCase(variant.getReference()) &&
+                    mutation.getAlt().equalsIgnoreCase(variant.getAlternate())
+                    ) {
+                teamVariant.setPhenotype(mutation.getPhe());
+                teamVariant.setSource(mutation.getSrc());
+                return true;
             }
         }
+
+//        VariantTraitAssociation variantTraitAssociation = variant.getAnnotation().getVariantTraitAssociation();
+//        for (Disease disease : panel.getDiseases()) {
+//
+//            // TODO aaleman: Check if the mutation is in the list of mutations (from the panel)
+//            if (variantTraitAssociation == null) {
+//                continue;
+//            }
+//            switch (disease.getSource().toLowerCase()) {
+//                case "clinvar":
+//                    if (variantTraitAssociation.getClinvar() != null && !variantTraitAssociation.getClinvar().isEmpty()) {
+//                        for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
+//                            for (String trait : clinvar.getTraits()) {
+//                                if (trait.equalsIgnoreCase(disease.getPhenotype())) {
+//                                    teamVariant.setPhenotype(disease.getPhenotype());
+//                                    teamVariant.setSource("clinvar");
+//                                    return true;
+//                                }
+//                            }
+//                        }
+//                    }
+//                    break;
+//                case "cosmic":
+//                    if (variantTraitAssociation.getCosmic() != null && !variantTraitAssociation.getCosmic().isEmpty()) {
+//                        for (Cosmic cosmic : variantTraitAssociation.getCosmic()) {
+//                            if (cosmic.getPrimaryHistology().equalsIgnoreCase(disease.getPhenotype())) {
+//                                teamVariant.setPhenotype(disease.getPhenotype());
+//                                teamVariant.setSource("cosmic");
+//                                return true;
+//                            }
+//                        }
+//                    }
+//                    break;
+//                case "gwas":
+//                    if (variantTraitAssociation.getGwas() != null && !variantTraitAssociation.getGwas().isEmpty()) {
+//                        for (Gwas gwas : variantTraitAssociation.getGwas()) {
+//                            for (String trait : gwas.getTraits()) {
+//                                if (trait.equalsIgnoreCase(disease.getPhenotype())) {
+//                                    teamVariant.setPhenotype(disease.getPhenotype());
+//                                    teamVariant.setSource("gwas");
+//                                    return true;
+//                                }
+//                            }
+//                        }
+//                    }
+//                    break;
+//            }
+//        }
 
         return false;
     }
