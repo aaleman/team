@@ -300,14 +300,14 @@
         handleForm: function (e) {
             var me = this;
 
-            if (this.selectedSample == null) {
+            if (this.selectedSample.id == null) {
                 this.errorMessageFile = "No sample selected";
             }
             if (this.selectedPanelId == "") {
                 this.errorMessagePanel = "No panel selected";
             }
 
-            if (this.selectedSample != null && this.selectedPanelId != "") {
+            if (this.selectedSample.id != null && this.selectedPanelId != "") {
                 this.errorMessage = " ";
 
                 var studyId = this.$.sampleBrowser.selectedStudy.study.id;
@@ -358,6 +358,9 @@
 
             this.selectedPanelId = e.detail.file.id;
             this.errorMessagePanel = " ";
+            if(this.selectedSample=!null){
+              this.errorMessage="";
+            }
 
             var data;
 
@@ -393,6 +396,9 @@
         handleSampleSelected: function (e) {
             this.selectedSample = e.detail;
             this.errorMessageFile = " ";
+            if(this.selectedPanelId=!""){
+              this.errorMessage="";
+            }
         },
         handleNewPanel: function (e) {
             this.$.newPanelPanel.hidden = false;
