@@ -1,0 +1,79 @@
+<link rel="import" href="team-result-static-filters.html">
+<link rel="import" href="team-result-form.html">
+
+<dom-module id="team-result-filters">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            margin: 10px;
+        }
+        #filters{
+          width: 300px;
+        }
+        team-result-form{
+          margin-top: 10px;
+          width: 295px;
+        }
+    </style>
+    <template>
+        <div id="filters">
+            <div class="horizontal layout">
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="static" data-checked$="{{computeView(view, 'static')}}">
+                    Static Filters
+                </div>
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="custom" data-checked$="{{computeView(view, 'custom')}}">
+                    Custom Filters
+                </div>
+            </div>
+
+
+              <team-result-static-filters data="{{data}}" hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
+
+              <team-result-form id="custom" query={{query}} hidden$="{{!computeView(view, 'custom')}}"></team-result-form>
+
+
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "team-result-filters",
+        properties: {
+            view: {
+                type: String,
+                value: 'static'
+            },
+            query: {
+                type: Object,
+                notify: true,
+                oberver: 'queryChanged'
+            },
+            data: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                observer: 'dataChanged'
+            },
+        },
+            handleView: function(e) {
+                this.view = e.target.dataset.value;
+                this._clearFilter();
+            },
+            _clearFilter: function(){
+              this.query={};
+              this.$.custom.clearForm();
+            },
+            computeView: function(view, value) {
+                return view === value;
+            },
+            dataChanged: function(neo, old) {
+
+            },
+            queryChanged: function(neo,old){
+            }
+
+    });
+</script>

@@ -1,0 +1,146 @@
+<dom-module id="team-result-static-filters">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            margin: 10px;
+        }
+
+        .filterBut {
+            height: 55px;
+            width: 200px;
+            font-size: 15px;
+        }
+
+        .title {
+            /*background-color: #d0d0d0;*/
+            border-bottom: 1px solid #d0d0d0;
+            box-sizing: border-box;
+            height: 20px;
+            font-size: 13px;
+        }
+
+        .findedGenes {
+            margin-left: 10px;
+        }
+
+        .but {
+          box-sizing: border-box;
+            text-align: center;
+            line-height: 30px;
+            position: relative;
+            text-decoration: none;
+            width: 200px;
+            background: #d0d0d0;
+        }
+
+        .but::before {
+            background: #d0d0d0;
+            border: none;
+            content: '';
+            display: block;
+            height: 40px;
+            left: 180px;
+            position: absolute;
+            top: 8px;
+            -moz-transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+            -o-transform: rotate(45deg);
+            transform: rotate(45deg);
+            width: 40px;
+        }
+
+        .but div {
+            background: none;
+            border: none;
+            font-weight: bold;
+            position: relative;
+        }
+        jso-btn{
+          position: absolute;
+        }
+    </style>
+    <template>
+        <div id="filters">
+
+            <div class="vertical layout">
+                <div class="but flex filterBut" on-click="handleView" data-value="none" data-checked$="{{computeView(view, 'none')}}">
+
+                        <div class="title">Without Filters</div>
+                        <i class="fa fa-filter"></i>
+                        <span class="findedGenes">{{data.length}}</span>
+
+                </div>
+                <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterA" data-checked$="{{computeView(view, 'filterA')}}">
+                    <div class="title">A: Most Likely Pathogenic</div>
+                    <i class="fa fa-filter" style="color:#b30000"></i>
+                    <span class="findedGenes">0</span>
+                </div>
+                <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterB" data-checked$="{{computeView(view, 'filterB')}}">
+                    <div class="title">B: Potentially Pathogenic</div>
+                    <i class="fa fa-filter" style="color:#ff751a"></i>
+                    <span class="findedGenes">0</span>
+                </div>
+                <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterC" data-checked$="{{computeView(view, 'filterC')}}">
+                    <div class="title">C: Unkown Significance</div>
+                    <i class="fa fa-filter" style="color:#005b99"></i>
+                    <span class="findedGenes">0</span>
+                </div>
+                <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterD" data-checked$="{{computeView(view, 'filterD')}}">
+                    <div class="title">D: Likely Benign</div>
+                    <i class="fa fa-filter" style="color:#008000"></i>
+                    <span class="findedGenes">0</span>
+                </div>
+            </div>
+
+            <template is="dom-if" if="{{computeView(view, 'none')}}">
+            </template>
+            <template is="dom-if" if="{{computeView(view, 'filterA')}}">
+            </template>
+            <template is="dom-if" if="{{computeView(view, 'filterB')}}">
+            </template>
+            <template is="dom-if" if="{{computeView(view, 'filterC')}}">
+            </template>
+            <template is="dom-if" if="{{computeView(view, 'filterD')}}">
+            </template>
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "team-result-static-filters",
+        properties: {
+            view: {
+                type: String,
+                value: 'none'
+            },
+            data: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+            },
+
+        },
+        handleView: function(e) {
+          var els=this.$.filters.querySelectorAll(".filterBut");
+          for (var i = 0; i < els.length; i++) {
+            var el=els[i];
+            el.classList.remove("but");
+            el.classList.add("jso-btn","jso-btn-shdw");
+          }
+          e.currentTarget.classList.add("but");
+          e.currentTarget.classList.remove("jso-btn","jso-btn-shdw");
+
+
+            this.view = e.target.dataset.value;
+
+        },
+        computeView: function(view, value) {
+            return view === value;
+        },
+
+
+    });
+</script>
