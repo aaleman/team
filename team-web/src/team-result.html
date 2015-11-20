@@ -1,5 +1,6 @@
-<link rel="import" href="team-result-form.html">
+<link rel="import" href="team-result-overview.html">
 <link rel="import" href="team-result-diagnostic.html">
+<link rel="import" href="team-result-filters.html">
 <dom-module id="team-result">
     <style>
         :host {
@@ -20,6 +21,11 @@
         #right {
             margin-left: 5px;
             margin-right: 5px;
+        }
+        #left {
+            margin:5px;
+            overflow-y: auto;
+            width: 320px;
         }
 
         #menu {
@@ -58,6 +64,13 @@
         team-result-diagnostic {
             height: 400px;
         }
+
+        #diagnosticResult{
+          margin: 50px;
+                  }
+        #secondary{
+          margin: 10px;
+        }
     </style>
     <template>
         <div class="vertical layout flex">
@@ -65,28 +78,34 @@
                 <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
                     Overview
                 </div>
-                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="staticFilters" data-checked$="{{computeView(view, 'staticFilters')}}">
-                    Static Filters
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
+                    Diagnostic
                 </div>
-                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="customFilters" data-checked$="{{computeView(view, 'customFilters')}}">
-                    Custom Filters
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
+                    Secondary Findings
                 </div>
                 <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
                     Report
                 </div>
             </div>
+            <template is="dom-if" if="{{computeView(view, 'overview')}}">
 
-            <template is="dom-if" if="{{computeView(view, 'customFilters')}}">
-                <div class="title color-2">
-                    <span>{{job.name}}</span>
-                    <i class="fa fa-angle-right"></i>
-                    <span>{{job.description}}</span>
-                </div>
-                <div class="horizontal layout">
+              <team-result-overview job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}"></team-result-overview>
+            </template>
+            <template is="dom-if" if="{{computeView(view, 'diagnostic')}}">
+
+              <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic"></team-result-diagnostic>
+
+            </template>
+
+            <template is="dom-if" if="{{computeView(view, 'secondary')}}">
+
+                <div id="secondary" class="horizontal layout">
                     <!-- <jso-variant-filter-form url="{{url}}" file="{{file}}"></jso-variant-filter-form> -->
-                    <team-result-form query={{query}}></team-result-form>
+                    <div id="left">
+                    <team-result-filters data="{{secData}}" query={{query}}></team-result-filters>
+                    </div>
                     <div id="right" class="flex">
-                        <team-result-diagnostic data="{{diagData}}" title="Diagnostic"></team-result-diagnostic>
                         <team-result-diagnostic data="{{secData}}" query="{{query}}" title="Secondary Findings"></team-result-diagnostic>
 
                         <!--                 <div id="menu" class="color-2 color-hover-2 horizontal layout">
@@ -96,9 +115,7 @@
                                     <div on-click="handleMenuClick" data-option="effect">Effect</div>
                                     <div on-click="handleMenuClick" data-option="stats">Stats</div>
                                 </div>
-
                                 <br>
-
                                 <div id="tools">
                                     <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
                                     <jso-variant-frequencies-grid id="frequency" hidden></jso-variant-frequencies-grid>
@@ -108,6 +125,9 @@
                                 </div> -->
                     </div>
                 </div>
+            </template>
+
+            <template is="dom-if" if="{{computeView(view, 'report')}}">
             </template>
 
         </div>
@@ -129,7 +149,9 @@
                     observer: 'selectedMenuChanged'
                 },
                 query: {
-                    type: Object
+                    type: Object,
+                    notify: true,
+                    oberver: 'queryChanged'
                 },
                 job: {
                     type: Object,
@@ -152,7 +174,7 @@
                 },
                 view: {
                     type: String,
-                    value: 'main'
+                    value: 'overview'
                 },
 
             },
@@ -198,7 +220,6 @@
                 this.$.gvEl.genomeViewer.setRegion(region);
             },
             jobChanged: function(neo, old) {
-
                 if (neo.output) {
 
                     var files = [];
@@ -341,8 +362,12 @@
 
                         this.set('diagData', diagData);
                         this.set('secData', secData);
+                        this.totalData=diagData.length+secData.length;
                     }
                 }
+            },
+            queryChanged: function(neo,old){
+
             },
             handleView: function(e) {
                 this.view = e.target.dataset.value;

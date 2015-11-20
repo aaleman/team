@@ -353,7 +353,6 @@
                     return {};
                 },
                 notify: true,
-                observer: 'queryChanged'
             },
             dpValue: {
                 type: Number,
@@ -380,6 +379,7 @@
                 type: Number,
             },
         },
+        
         fileChanged: function(neo, old) {
             if (neo) {
                 //                this.clearForm();
@@ -513,6 +513,5 @@
             }
             return cons;
         },
-        queryChanged: function(neo, old) {},
     });
 </script>
