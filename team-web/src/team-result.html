@@ -58,25 +58,38 @@
         team-result-diagnostic {
             height: 400px;
         }
-
-
     </style>
     <template>
-        <div class="title color-2">
-            <span>{{job.name}}</span>
-            <i class="fa fa-angle-right"></i>
-            <span>{{job.description}}</span>
-        </div>
-        <div class="horizontal layout">
-            <!-- <jso-variant-filter-form url="{{url}}" file="{{file}}"></jso-variant-filter-form> -->
-            <team-result-form query={{query}}></team-result-form>
-            <div id="right" class="flex">
-                <team-result-diagnostic data="{{diagData}}"
-                                        title="Diagnostic"></team-result-diagnostic>
-                <team-result-diagnostic data="{{secData}}" query="{{query}}"
-                                        title="Secondary Findings"></team-result-diagnostic>
+        <div class="vertical layout flex">
+            <div class="horizontal layout">
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
+                    Overview
+                </div>
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="staticFilters" data-checked$="{{computeView(view, 'staticFilters')}}">
+                    Static Filters
+                </div>
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="customFilters" data-checked$="{{computeView(view, 'customFilters')}}">
+                    Custom Filters
+                </div>
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
+                    Report
+                </div>
+            </div>
 
-                <!--                 <div id="menu" class="color-2 color-hover-2 horizontal layout">
+            <template is="dom-if" if="{{computeView(view, 'customFilters')}}">
+                <div class="title color-2">
+                    <span>{{job.name}}</span>
+                    <i class="fa fa-angle-right"></i>
+                    <span>{{job.description}}</span>
+                </div>
+                <div class="horizontal layout">
+                    <!-- <jso-variant-filter-form url="{{url}}" file="{{file}}"></jso-variant-filter-form> -->
+                    <team-result-form query={{query}}></team-result-form>
+                    <div id="right" class="flex">
+                        <team-result-diagnostic data="{{diagData}}" title="Diagnostic"></team-result-diagnostic>
+                        <team-result-diagnostic data="{{secData}}" query="{{query}}" title="Secondary Findings"></team-result-diagnostic>
+
+                        <!--                 <div id="menu" class="color-2 color-hover-2 horizontal layout">
                                     <div on-click="handleMenuClick" data-option="gv">Genomic context</div>
                                     <div on-click="handleMenuClick" data-option="frequency">Frequencies</div>
                                     <div on-click="handleMenuClick" data-option="phenotype">Phenotype</div>
@@ -93,7 +106,10 @@
                                     <jso-variant-effect-grid id="effect" hidden></jso-variant-effect-grid>
                                     <jso-variant-stats id="stats" hidden></jso-variant-stats>
                                 </div> -->
-            </div>
+                    </div>
+                </div>
+            </template>
+
         </div>
     </template>
     <script>
@@ -117,27 +133,32 @@
                 },
                 job: {
                     type: Object,
-                    value: function () {
+                    value: function() {
                         return {};
                     },
                     observer: 'jobChanged'
                 },
                 diagData: {
                     type: Array,
-                    value: function () {
+                    value: function() {
                         return [];
                     }
                 },
                 secData: {
                     type: Array,
-                    value: function () {
+                    value: function() {
                         return [];
                     }
-                }
+                },
+                view: {
+                    type: String,
+                    value: 'main'
+                },
+
             },
-            created: function () {},
-            ready: function () {},
-            selectedMenuChanged: function (neo, old) {
+            created: function() {},
+            ready: function() {},
+            selectedMenuChanged: function(neo, old) {
                 if (old) {
                     old.removeAttribute('selected');
                     this.$[old.dataset.option].setAttribute('hidden', '');
@@ -147,24 +168,24 @@
                     this.$[neo.dataset.option].removeAttribute('hidden');
                 }
             },
-            handleMenuClick: function (e) {
+            handleMenuClick: function(e) {
                 this.selectedMenuTool = e.currentTarget;
             },
-            handleRowClick: function (e) {
+            handleRowClick: function(e) {
                 this.$.gv.genomeViewer.setRegion(e.detail.row);
                 this.$.effect.row = e.detail.row;
                 this.$.frequency.row = e.detail.row;
                 this.$.phenotype.row = e.detail.row;
                 this.$.stats.row = e.detail.row;
             },
-            _old_ready: function () {
+            _old_ready: function() {
                 var me = this;
 
             },
-            selectedTabChanged: function (oldValue, newValue) {
+            selectedTabChanged: function(oldValue, newValue) {
                 console.log(newValue);
             },
-            handleDataGridSelected: function (oldValue, newValue) {
+            handleDataGridSelected: function(oldValue, newValue) {
                 var me = this;
                 var reg = newValue.chr + ":" + newValue.start + "-" + newValue.end;
                 var region = new Region(reg);
@@ -176,7 +197,7 @@
 
                 this.$.gvEl.genomeViewer.setRegion(region);
             },
-            jobChanged: function (neo, old) {
+            jobChanged: function(neo, old) {
 
                 if (neo.output) {
 
@@ -197,7 +218,7 @@
                         },
                         request: {
                             async: false,
-                            success: function (response) {
+                            success: function(response) {
                                 if (response.response) {
                                     for (var i = 0; i < response.response.length; i++) {
                                         var file = response.response[i].result[0];
@@ -209,7 +230,7 @@
                                     }
                                 }
                             },
-                            error: function () {}
+                            error: function() {}
                         }
                     });
 
@@ -225,10 +246,10 @@
                             },
                             request: {
                                 async: false,
-                                success: function (response) {
+                                success: function(response) {
                                     diagContent = response;
                                 },
-                                error: function () {
+                                error: function() {
 
                                 }
                             }
@@ -240,10 +261,10 @@
                             },
                             request: {
                                 async: false,
-                                success: function (response) {
+                                success: function(response) {
                                     secContent = response;
                                 },
-                                error: function () {
+                                error: function() {
 
                                 }
                             }
@@ -256,7 +277,7 @@
                         var secRaw = secContent.split("\n");
 
                         for (var i = 1; i < diagRaw.length; i++) {
-                             if (diagRaw[i] != "") {
+                            if (diagRaw[i] != "") {
 
                                 var splits = diagRaw[i].split("\t");
 
@@ -322,7 +343,13 @@
                         this.set('secData', secData);
                     }
                 }
-            }
+            },
+            handleView: function(e) {
+                this.view = e.target.dataset.value;
+            },
+            computeView: function(view, value) {
+                return view === value;
+            },
         })
     </script>
 </dom-module>
