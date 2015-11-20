@@ -1434,7 +1434,18 @@
             }
         },
         handlePanelAppAddGenes: function(e) {
-            if (this.$.panelAppSelectedGenes.selected != "") {
+
+            var lowLevel = false;
+            for (var i = 0; i < this.$.panelAppSelectedGenes.selected.length; i++) {
+                var elem = this.$.panelAppSelectedGenes.selected[i];
+                lowLevel |= (elem.LevelOfConfidence <= 2) ? true : false;
+            }
+
+            if (lowLevel && !confirm("Your selection contains genes with low level of confidence. Do you want to continue?")) {
+                return;
+            }
+
+            if (this.$.panelAppSelectedGenes.selected.length > 0) {
                 this.errorAddGenes = "";
                 var geneName = [];
                 var sgenes = this.$.panelAppSelectedGenes.selected;
