@@ -29,10 +29,17 @@
         jso-table::shadow .table-pager > input {
             width: 40px !important;
         }
+        jso-genome-viewer-element {
+            height: 400px;
+            overflow-y: auto;
+            margin: 0 auto;
+            box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+        }
     </style>
     <template>
         <div class="title">{{title}}</div>
         <jso-table id="table" data="{{_data}}" enable-paging selectable exportable enable-resize on-rowclick="handleRowClick"></jso-table>
+        <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
     </template>
 
 </dom-module>
@@ -154,11 +161,25 @@
             width: 100,
             defaultValue: '.'
         }],
-        handleRowClick: function(e) {
-            console.log(e.detail.row);
-        },
+
         ready: function() {
             this.$.table.columns = this._columns;
+            var me = this;
+               this.async(function() {
+                   this.$.gv.createGenomeViewer();
+                   var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
+                   this.$.gv.genomeViewer.draw();
+
+                   this.genomeViewer = this.$.gv.genomeViewer;
+               });
+        },
+        handleRowClick: function(e) {
+            console.log(e.detail.row);
+            var row = e.detail.row;
+                var reg = row.chr + ":" + row.pos + "-" + row.pos;
+                var region = new Region(reg);
+
+                  this.$.gv.genomeViewer.setRegion(region);
         },
         dataChanged: function(neo, old) {
             var _data = [];
@@ -190,7 +211,10 @@
             for (var key in filters) {
                 var query = filters[key]; // query => value
                 var match = false;
-                if (key === "region") {
+                if (key === "filterView") {
+                    match = this._checkData(data.sift, query);
+
+                } else if (key === "region") {
                     match = this._checkPosition(data.chr, data.pos, query);
                 } else if (key === "gene") {
                     var gene_aux = data.gene.toUpperCase().split(",");
@@ -276,6 +300,28 @@
                     if (position >= start && position <= end) {
                         return true;
                     }
+                }
+            }
+            return false;
+        },
+        _checkData: function(value, query) {
+            if (query === "none") {
+                return true;
+            } else if (query === "filterA") {
+                if (value >= 0.75) {
+                    return true;
+                }
+            } else if (query === "filterB") {
+                if (value >= 0.50 && value < 0.75) {
+                    return true;
+                }
+            } else if (query === "filterC") {
+                if ((value >= 0.25 && value < 0.50) || value == ".") {
+                    return true;
+                }
+            } else if (query === "filterD") {
+                if (value < 0.25) {
+                    return true;
                 }
             }
             return false;

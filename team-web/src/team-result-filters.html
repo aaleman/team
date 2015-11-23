@@ -29,7 +29,7 @@
             </div>
 
 
-              <team-result-static-filters data="{{data}}" hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
+              <team-result-static-filters data="{{data}}"  query={{query}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
               <team-result-form id="custom" query={{query}} hidden$="{{!computeView(view, 'custom')}}"></team-result-form>
 
@@ -55,6 +55,7 @@
                 value: function() {
                     return [];
                 },
+                notify: true,
                 observer: 'dataChanged'
             },
         },
