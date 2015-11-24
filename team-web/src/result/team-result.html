@@ -1,0 +1,449 @@
+<link rel="import" href="team-result-overview.html">
+<link rel="import" href="team-result-diagnostic.html">
+<link rel="import" href="team-result-filters.html">
+<link rel="import" href="team-result-report.html">
+<link rel="import" href="../../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
+<dom-module id="team-result">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            height: 100%;
+            background-color: #fff;
+            overflow-y: scroll;
+        }
+
+        .title {
+            box-sizing: border-box;
+            font-size: 22px;
+            padding: 3px 18px;
+        }
+
+        #right {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        #left {
+            margin: 5px;
+            overflow-y: auto;
+            width: 320px;
+        }
+
+        #menu {
+            /*border-bottom: 1px solid rgba(125, 125, 125, 0.4);*/
+            margin-top: 15px;
+        }
+
+        #menu > div {
+            font-size: 17px;
+            padding: 5px 5px;
+            margin: 0 20px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.1s;
+            cursor: pointer;
+        }
+
+        #menu > div:hover {
+            border-bottom-color: rgba(125, 125, 125, 0.4);
+        }
+
+        #menu > div[selected] {
+            border-bottom-color: rgba(125, 125, 125, 0.7);
+        }
+
+        #tools {
+            /*height: calc(100% - 375px);*/
+            /*overflow-x: hidden;*/
+        }
+        /*jso-variant-grid,
+        jso-genome-viewer-element,
+        jso-variant-effect-grid {
+            box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+        }*/
+
+        team-result-diagnostic {
+            height: 400px;
+        }
+
+        #diagnosticResult {
+            margin: 15px 45px;
+        }
+
+        #secondary {
+            margin: 10px;
+        }
+
+        .tabs {
+            height: 40px;
+            line-height: 40px;
+            font-size: 17px;
+        }
+
+
+
+        .value {
+            /*background-color: #d0d0d0;*/
+            border: 1px solid #d0d0d0;
+            box-sizing: border-box;
+            height: 20px;
+            font-size: 13px;
+        }
+    </style>
+    <template>
+        <div class="vertical layout flex">
+            <div class="horizontal layout">
+                <div class="jso-btn jso-btn-shdw flex tabs" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
+                    Overview
+                </div>
+                <div class="jso-btn jso-btn-shdw flex tabs" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
+                    Diagnostic
+                </div>
+                <div class="jso-btn jso-btn-shdw flex tabs" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
+                    Secondary Findings
+                </div>
+                <div class="jso-btn jso-btn-shdw flex tabs" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
+                    Report
+                </div>
+            </div>
+            <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
+
+            <div class="vertical layout" hidden$="{{!computeView(view, 'diagnostic')}}">
+                <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic"></team-result-diagnostic>
+            </div>
+            <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
+                <!-- <jso-variant-filter-form url="{{url}}" file="{{file}}"></jso-variant-filter-form> -->
+                <div id="left">
+                    <team-result-filters data="{{secData}}" query={{query}} value={{value}}></team-result-filters>
+                </div>
+                <div id="right" class="flex">
+                    <team-result-diagnostic data="{{secData}}" query="{{query}}" title="Secondary Findings"></team-result-diagnostic>
+
+                    <!-- <div id="menu" class="color-2 color-hover-2 horizontal layout">
+                                    <div on-click="handleMenuClick" data-option="gv">Genomic context</div>
+                                    <div on-click="handleMenuClick" data-option="frequency">Frequencies</div>
+                                    <div on-click="handleMenuClick" data-option="phenotype">Phenotype</div>
+                                    <div on-click="handleMenuClick" data-option="effect">Effect</div>
+                                    <div on-click="handleMenuClick" data-option="stats">Stats</div>
+                                </div>
+                                <br>
+                                <div id="tools">
+                                    <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
+                                    <jso-variant-frequencies-grid id="frequency" hidden></jso-variant-frequencies-grid>
+                                    <jso-variant-phenotype-grid id="phenotype" hidden></jso-variant-phenotype-grid>
+                                    <jso-variant-effect-grid id="effect" hidden></jso-variant-effect-grid>
+                                    <jso-variant-stats id="stats" hidden></jso-variant-stats>
+                                </div> -->
+                </div>
+            </div>
+
+            <div hidden$="{{!computeView(view, 'report')}}" id="result">
+                <team-result-report job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}"></team-result-report>
+
+                <div class="jso-btn jso-btn-shdw" on-click="handleExportPDF" style="width: 150px; margin:0 auto;">Export to PDF
+
+                </div>
+            </div>
+
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'team-result',
+            properties: {
+                url: {
+                    type: String,
+                    notify: true,
+                    value: ''
+                },
+                file: {
+                    type: Object
+                },
+                selectedMenuTool: {
+                    type: Object,
+                    observer: 'selectedMenuChanged'
+                },
+                query: {
+                    type: Object,
+                    notify: true,
+                    oberver: 'queryChanged'
+                },
+                job: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    observer: 'jobChanged'
+                },
+                diagData: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+                secData: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+                view: {
+                    type: String,
+                    value: 'overview'
+                },
+                value: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    notify: true,
+                    observer: "valueChanged"
+                }
+
+            },
+            created: function() {},
+            ready: function() {
+                //     var me = this;
+                //     this.async(function() {
+                //         this.$.gv.createGenomeViewer();
+                //         var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
+                //         this.$.gv.genomeViewer.draw();
+                //
+                //         this.genomeViewer = this.$.gv.genomeViewer;
+                //     });
+                //
+            },
+            // selectedMenuChanged: function(neo, old) {
+            //     if (old) {
+            //         old.removeAttribute('selected');
+            //         this.$[old.dataset.option].setAttribute('hidden', '');
+            //     }
+            //     if (neo) {
+            //         neo.setAttribute('selected', '');
+            //         this.$[neo.dataset.option].removeAttribute('hidden');
+            //     }
+            // },
+            // handleMenuClick: function(e) {
+            //     this.selectedMenuTool = e.currentTarget;
+            // },
+            // handleRowClick: function(e) {
+            //     this.$.gv.genomeViewer.setRegion(e.detail.row);
+            //     this.$.effect.row = e.detail.row;
+            //     this.$.frequency.row = e.detail.row;
+            //     this.$.phenotype.row = e.detail.row;
+            //     this.$.stats.row = e.detail.row;
+            // },
+            // _old_ready: function() {
+            //     var me = this;
+            //
+            // },
+            // selectedTabChanged: function(oldValue, newValue) {
+            //     console.log(newValue);
+            // },
+            // handleDataGridSelected: function(oldValue, newValue) {
+            //     var me = this;
+            //     var reg = newValue.chr + ":" + newValue.start + "-" + newValue.end;
+            //     var region = new Region(reg);
+            //
+            //     // update Effect
+            //     var variant = newValue.chr + ":" + newValue.start + ":" + newValue.reference + ":" + newValue.alternate;
+            //     this.variantEffect = variant;
+            //     this.$.jsoVariantStats.stats = newValue.sourceEntries[me.studyId + "_" + me.fileId].stats;
+            //
+            //     this.$.gvEl.genomeViewer.setRegion(region);
+            // },
+            jobChanged: function(neo, old) {
+                if (neo.output) {
+
+                    var files = [];
+                    for (var i = 0; i < neo.output.length; i++) {
+                        var f = neo.output[i];
+                        files.push(f);
+
+                    }
+
+                    var diag;
+                    var sec;
+
+                    OpencgaManager.files.info({
+                        id: files.join(","),
+                        query: {
+                            sid: Cookies('bioinfo_sid')
+                        },
+                        request: {
+                            async: false,
+                            success: function(response) {
+                                if (response.response) {
+                                    for (var i = 0; i < response.response.length; i++) {
+                                        var file = response.response[i].result[0];
+                                        if (file.name === "diagnostic.csv") {
+                                            diag = file;
+                                        } else if (file.name === "secondary.csv") {
+                                            sec = file;
+                                        }
+                                    }
+                                }
+                            },
+                            error: function() {}
+                        }
+                    });
+
+
+                    if (diag != null && sec != null) {
+
+                        var diagContent;
+                        var secContent;
+                        OpencgaManager.files.content({
+                            id: diag.id,
+                            query: {
+                                sid: Cookies('bioinfo_sid')
+                            },
+                            request: {
+                                async: false,
+                                success: function(response) {
+                                    diagContent = response;
+                                },
+                                error: function() {
+
+                                }
+                            }
+                        });
+                        OpencgaManager.files.content({
+                            id: sec.id,
+                            query: {
+                                sid: Cookies('bioinfo_sid')
+                            },
+                            request: {
+                                async: false,
+                                success: function(response) {
+                                    secContent = response;
+                                },
+                                error: function() {
+
+                                }
+                            }
+                        });
+
+                        var diagData = [];
+                        var secData = [];
+
+                        var diagRaw = diagContent.split("\n");
+                        var secRaw = secContent.split("\n");
+
+                        for (var i = 1; i < diagRaw.length; i++) {
+                            if (diagRaw[i] != "") {
+
+                                var splits = diagRaw[i].split("\t");
+
+                                var elem = {
+                                    chr: splits[0],
+                                    pos: splits[1],
+                                    ref: splits[2],
+                                    alt: splits[3],
+                                    qual: splits[4],
+                                    dp: splits[5],
+                                    id: splits[6],
+                                    gene: splits[7],
+                                    ct: splits[8],
+                                    phylop: splits[9],
+                                    phastcons: splits[10],
+                                    sift: splits[11],
+                                    polyphen: splits[12],
+                                    maf1000G: splits[13],
+                                    amaf1000G: splits[14],
+                                    maf1000GP3: splits[15],
+                                    amaf1000GP3: splits[16],
+                                    phenotype: splits[17],
+                                    source: splits[18]
+
+                                };
+                                diagData.push(elem);
+                            }
+                        }
+
+
+                        for (var i = 1; i < secRaw.length; i++) {
+                            if (secRaw[i] != "") {
+
+                                var splits = secRaw[i].split("\t");
+
+                                var elem = {
+                                    chr: splits[0],
+                                    pos: splits[1],
+                                    ref: splits[2],
+                                    alt: splits[3],
+                                    qual: parseFloat(splits[4]).toFixed(2),
+                                    dp: splits[5],
+                                    id: splits[6],
+                                    gene: splits[7],
+                                    ct: splits[8],
+                                    phylop: splits[9],
+                                    phastcons: splits[10],
+                                    sift: splits[11],
+                                    polyphen: splits[12],
+                                    maf1000G: splits[13],
+                                    amaf1000G: splits[14],
+                                    maf1000GP3: splits[15],
+                                    amaf1000GP3: splits[16],
+                                    phenotype: splits[17],
+                                    source: splits[18]
+
+                                };
+                                secData.push(elem);
+                            }
+                        }
+
+                        this.set('diagData', diagData);
+                        this.set('secData', secData);
+                        this.totalData = diagData.length + secData.length;
+                    }
+                }
+            },
+            queryChanged: function(neo, old) {
+
+            },
+            handleView: function(e) {
+                this.view = e.target.dataset.value;
+            },
+            computeView: function(view, value) {
+                return view === value;
+            },
+            valueChanged: function(neo, old) {},
+            handleExportPDF: function(e) {
+
+                var pdf = new jsPDF('p', 'pt', 'letter')
+
+                , source = $('#export')[0]
+
+                // , specialElementHandlers = {
+                //     '#bypassme': function(element, renderer){
+                //         return true
+                //     }
+                // }
+                margins = {
+                    top: 80,
+                    bottom: 60,
+                    left: 40,
+                    width: 522
+                };
+
+                pdf.fromHTML(
+                    source, margins.left, margins.top, {
+                        'width': margins.width
+                            // , 'elementHandlers': specialElementHandlers
+                    },
+                    function(dispose) {
+                        pdf.save('Test.pdf');
+                    },
+                    margins
+                )
+
+                // var docDefinition = { content: 'This is an sample PDF printed with pdfMake' };
+                // pdfMake.createPdf(docDefinition).open();
+                // pdfMake.createPdf(docDefinition).download();
+
+            }
+        })
+    </script>
+</dom-module>

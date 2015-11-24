@@ -1,0 +1,517 @@
+<dom-module id="team-result-form">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            width: 250px;
+        }
+
+        #filter_form {
+            overflow-y: auto;
+            height: 100%;
+            margin: 0px;
+        }
+
+        .title {
+            font-size: 22px;
+            border-bottom: thin solid #edebe3;
+            margin: 7px 5px;
+        }
+
+        #bar {
+            padding: 0 3px 5px 3px;
+        }
+
+        #bar > .jso-btn {
+            margin: 0px 2px;
+        }
+
+        .input_container {
+            margin: 0px;
+            width: 175px;
+            right: auto;
+            top: 0px;
+            left: 5px;
+            padding: 4px 6px 3px 20px;
+        }
+
+        .input_container label {
+            padding-bottom: 5px;
+            padding-left: 1px;
+        }
+
+        #headerTitle {
+            background: #e4e7e9;
+            font-size: 16px;
+            line-height: 22px;
+            margin: 10px;
+            padding: 5px;
+        }
+
+        .segregation.sampleName {
+            width: 70px;
+        }
+
+        input.segregation,
+        .segregationValue {
+            margin-left: 3px;
+        }
+
+        input#consequence_type {
+            width: 30px;
+        }
+
+        #consequenceTypes {
+            height: 250px;
+            overflow-y: auto;
+        }
+
+        textarea {
+            resize: none;
+            width: 100%;
+        }
+
+        .maf-elem,
+        .qual-elem,
+        .pss-elem,
+        .conserv-elem {
+            margin-bottom: 3px;
+        }
+
+        .maf-elem > label,
+        .qual-elem > label,
+        .pss-elem > label,
+        .conserv-elem > label {
+            width: 60px;
+            text-align: right;
+            font-weight: bold;
+            ;
+        }
+
+        .maf-elem > .jso-select,
+        .qual-elem > .jso-select,
+        .pss-elem > .jso-select,
+        .conserv-elem > .jso-select {
+            width: 45px;
+            margin-right: 3px;
+        }
+    </style>
+    <template>
+        <div id="filter_form">
+            <div id="bar" class="horizontal layout center-justified">
+                <div class="jso-btn jso-btn-shdw flex" on-click="clearForm">Clear</div>
+                <div class="jso-btn jso-btn-shdw flex" on-click="submitForm">Search</div>
+            </div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Position
+                </div>
+                <div class="jso-formcontent">
+                    <label class="jso">Chromosomal location:</label>
+                    <textarea class="jso" id="region" name="region" placeholder="1:1-1000000,2:1-1000000" value="{{regionValue::change}}" rows="3" required>
+                    </textarea>
+
+                    <label class="jso">Gene:</label>
+                    <textarea class="jso" id="gene" name="gene" placeholder="BRCA2,PPL" value="{{geneValue::input}}" rows="3" required>
+                    </textarea>
+
+
+                    <!-- <jso-cellbase-search-field style="margin-top:5px;" placeholder="Search gene" on-featureselected="handleFeatureSelected"></jso-cellbase-search-field> -->
+
+                </div>
+            </div>
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Population Freqs.
+                </div>
+                <div class="jso-formcontent vertical layout">
+                    <div class="horizontal layout maf-elem">
+                        <label class="jso">1000G</label>
+
+                        <div class="jso-select">
+                            <select class="jso" name="maf1000g_op" id="maf1000g_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="maf1000g" name="maf1000g" min="0" max="1" step="0.001" value="{{maf1000gValue::input}}" />
+                    </div>
+
+                    <div class="horizontal layout maf-elem">
+                        <label class="jso">EVS</label>
+
+                        <div class="jso-select">
+                            <select class="jso" name="mafEVS_op" id="mafEVS_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="mafEVS" name="mafEVS" min="0" max="1" step="0.001" value="{{mafEVSValue::input}}" />
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Quality
+                </div>
+                <div class="jso-formcontent vertical layout">
+
+                    <div class="horizontal layout qual-elem">
+                        <label class="jso">QUAL</label>
+                        <div class="jso-select">
+                            <select class="jso" name="qual_op" id="qual_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" />
+                    </div>
+
+                    <div class="horizontal layout qual-elem">
+                        <label class="jso">DP</label>
+                        <div class="jso-select">
+                            <select class="jso" name="dp_op" id="dp_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="dp" name="dp" value="{{dpValue::input}}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Protein Substitution Scores
+                </div>
+                <div class="jso-formcontent vertical layout">
+                    <div class="horizontal layout pss-elem">
+                        <label class="jso">SIFT</label>
+                        <div class="jso-select">
+                            <select name="sift_op" id="sift_op" class="jso">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="sift" name="sift" min="0" max="1" step="0.001" value="{{siftValue::input}}" />
+                    </div>
+
+                    <div class="horizontal layout pss-elem">
+                        <label class="jso">Polyphen</label>
+                        <div class="jso-select">
+                            <select class="jso" name="polyphen_op" id="polyphen_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="polyphen" name="polyphen" min="0" max="1" step="0.001" value="{{polyphenValue::input}}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Conservation
+                </div>
+                <div class="jso-formcontent vertical layout">
+
+                    <div class="horizontal layout conserv-elem">
+                        <label class="jso">phyloP</label>
+                        <div class="jso-select">
+                            <select class="jso" name="phylop_op" id="phylop_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="phylop" name="phylop" value="{{phylopValue::input}}" step="0.001" />
+
+                    </div>
+
+                    <div class="horizontal layout conserv-elem">
+                        <label class="jso">PhastCons</label>
+                        <div class="jso-select">
+                            <select class="jso" name="phastcons_op" id="phastcons_op">
+                                <option value="==">==</option>
+                                <option value="!=">!=</option>
+                                <option value="<" selected>
+                                    <</option>
+                                        <option value="<=">
+                                            <=</option>
+                                                <option value=">">></option>
+                                                <option value=">=">>=</option>
+                            </select>
+                        </div>
+                        <input class="jso flex" type="number" id="phastcons" name="phastcons" value="{{phastconsValue::input}}" step="0.001" />
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="jso-formbox">
+                <div class="jso-formtitle">
+                    Consequence Type
+                </div>
+                <div id="consequenceTypes" class="jso-formcontent">
+                    <template is="dom-repeat" items="{{consequenceTypes}}">
+                        <label class="jso-control">
+                            <input value="{{item.value}}" type="checkbox" name="consequence_type" data-consequence$="{{item.name}}">
+                            <span>{{item.text}}</span>
+                        </label>
+                    </template>
+                    <div class="input_container vertical layout">
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "team-result-form",
+        properties: {
+            url: {
+                type: String,
+                notify: true,
+                value: ''
+            },
+            file: {
+                type: Object,
+                observer: 'fileChanged'
+            },
+            regionValue: {
+                type: String,
+                notify: true,
+                value: ''
+            },
+            geneValue: {
+                type: String,
+                notify: true,
+                value: '',
+            },
+            fileName: {
+                type: String,
+                notify: true,
+                value: 'Choose file...'
+            },
+            consequenceTypes: {
+                type: Array,
+                value: function() {
+                    return CONSEQUENCE_TYPES;
+                }
+            },
+            query: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                notify: true,
+            },
+            dpValue: {
+                type: Number,
+            },
+            qualValue: {
+                type: Number,
+            },
+            maf1000gValue: {
+                type: Number,
+            },
+            mafEVSValue: {
+                type: Number,
+            },
+            siftValue: {
+                type: Number,
+            },
+            polyphenValue: {
+                type: Number,
+            },
+            phylopValue: {
+                type: Number,
+            },
+            phastconsValue: {
+                type: Number,
+            },
+        },
+        
+        fileChanged: function(neo, old) {
+            if (neo) {
+                //                this.clearForm();
+                //                this.submitForm();
+            }
+        },
+        handleFeatureSelected: function(e) {
+            var item = e.detail;
+            if (item) {
+                var values = this.$.gene.value.split(',').filter(function(el) {
+                    return el.length != 0
+                });
+                values.push(item.name);
+                values = values.filter(function(item, index, inputArray) {
+                    return inputArray.indexOf(item) == index;
+                });
+                this.$.gene.value = values.join(",");
+            }
+        },
+        clearForm: function() {
+            this.regionValue = "";
+            this.geneValue = "";
+            this.dpValue = "";
+            this.qualValue = "";
+            this.maf1000gValue = "";
+            this.mafEVSValue = "";
+            this.siftValue = "";
+            this.polyphenValue = "";
+            this.phylopValue = "";
+            this.phastconsValue = "";
+
+
+            /* Consequence Types */
+            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            for (var i = 0; i < els.length; i++) {
+                var el = els[i];
+                el.checked = false;
+            }
+            this.submitForm();
+        },
+        submitForm: function() {
+            var q = {};
+            if (this.regionValue) {
+                q["region"] = this.inputRegionChange();
+            }
+            if (this.geneValue) {
+                q["gene"] = this.inputGeneChange();
+            }
+            if (this.dpValue) {
+                q["dp"] = this.inputChange(this.dpValue);
+                q["dp_op"] = this._getOption(this.$.dp_op);
+            }
+            if (this.qualValue) {
+                q["qual"] = this.inputChange(this.qualValue);
+                q["qual_op"] = this._getOption(this.$.qual_op);
+            }
+            if (this.qmaf1000gValue) {
+                q["maf1000g"] = this.inputChange(this.qmaf1000gValue);
+                q["maf1000g_op"] = this._getOption(this.$.maf1000g_op);
+            }
+            if (this.mafEVSValue) {
+                q["mafEVS"] = this.inputChange(this.mafEVSValue);
+                q["mafEVS_op"] = this._getOption(this.$.mafEVS_op);
+            }
+            if (this.siftValue) {
+                q["sift"] = this.inputChange(this.siftValue);
+                q["sift_op"] = this._getOption(this.$.sift_op);
+            }
+            if (this.polyphenValue) {
+                q["polyphen"] = this.inputChange(this.polyphenValue);
+                q["polyphen_op"] = this._getOption(this.$.polyphen_op);
+            }
+            if (this.phylopValue) {
+                q["phylop"] = this.inputChange(this.phylopValue);
+                q["phylop_op"] = this._getOption(this.$.phylop_op);
+            }
+            if (this.phastconsValue) {
+                q["phastcons"] = this.inputChange(this.phastconsValue);
+                q["phastcons_op"] = this._getOption(this.$.phastcons_op);
+            }
+            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            if (els.length > 0) {
+
+                q["ct"] = this.inputCTChange();
+            }
+            this.set('query', q);
+
+        },
+        inputRegionChange: function() {
+            if (this.query) {
+                var q_aux =this.regionValue;
+                q = q_aux.split(",");
+            }
+            return q;
+        },
+
+        inputGeneChange: function() {
+            if (this.query) {
+                // var q = Utils.clone(this.query);
+                // delete q["gene"];
+                //  q["gene"] = e.toUpperCase();
+                var q_aux = this.geneValue.toUpperCase();
+                q = q_aux.split(",");
+                //  this.set('query', q);
+                return q;
+            }
+
+        },
+        inputChange: function(value) {
+            if (this.query) {
+                var q = parseFloat(value);
+            }
+            return q;
+        },
+        _getOption: function(input) {
+            var op = input.querySelectorAll("option");
+            for (i = 0; i < op.length; i++) {
+                if (op[i].selected) {
+                    var option = op[i].value;
+                    return option;
+                }
+
+            }
+        },
+        inputCTChange: function() {
+            var cons = [];
+            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            for (var i = 0; i < els.length; i++) {
+                var el = els[i].dataset.consequence;
+                cons[i] = el;
+            }
+            return cons;
+        },
+    });
+</script>

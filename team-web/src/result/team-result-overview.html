@@ -1,0 +1,92 @@
+<dom-module id="team-result-overview">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            margin: 20px;
+        }
+
+        #overview {
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            width: 600px;
+            height: 750px;
+            margin: 0 auto;
+        }
+
+        #name {
+            font-size: 20px;
+            color: #445D76;
+        }
+
+        #description {
+            font-size: 18px;
+            color: #445D76;
+            margin-left: 20px;
+        }
+
+        #stadistics {
+          margin-top:20px;
+            font-size: 15px;
+            color: #737373;
+        }
+
+        .numbers {
+            color: black;
+        }
+    </style>
+    <template>
+        <div id="overview">
+            <ul>
+                <strong><div id="name">{{job.name}}</div></strong>
+
+                <div id="description">{{job.description}}</div>
+
+                <ul id="stadistics">
+                    <div>Total Genes: &nbsp;
+                        <span class="numbers">{{totalData}}</span>
+                    </div>
+                    <div>Diagnostic Genes: &nbsp;
+                        <span class="numbers">{{diagData.length}}</span>
+                    </div>
+                    <div>Secondary Genes: &nbsp;
+                        <span class="numbers">{{secData.length}}</span>
+                    </div>
+                </ul>
+            </ul>
+
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "team-result-overview",
+        properties: {
+            job: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+            },
+            diagData: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+            secData: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+            totalData: {
+                type: Number,
+                value: "",
+            }
+        },
+
+
+    });
+</script>
