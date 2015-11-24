@@ -4,18 +4,23 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-            margin: 20px;
+            margin: 5px;
         }
 
         #report {
             padding: 10px;
-            width: 600px;
+            border: 1px solid #d0d0d0;
+            width: 650px;
             height: 750px;
+            margin: 0 auto;
+            margin-top: 10px;
+            overflow-y: auto;
         }
 
-        #name {
-            font-size: 20px;
+        #header {
+            font-size: 25px;
             color: #445D76;
+            font-weight: bold;
         }
 
         #description {
@@ -25,63 +30,139 @@
         }
 
         #stadistics {
-            margin-top: 20px;
-            font-size: 15px;
+            font-size: 14px;
             color: #737373;
         }
 
         .numbers {
             color: black;
+            text-align: right;
         }
 
-        #export {
-            padding: 10px;
-            border: 1px solid #d0d0d0;
-            width: 650px;
-            height: 750px;
+        table {
+            margin-top: 20px;
+            border: 2px solid #dadada;
+            border-collapse: collapse;
+            background-color: #fcfcfc;
+        }
+
+        th,
+        td {
+            border: 1px solid #dadada;
+            padding: 3px;
+        }
+
+        th {
+            background-color: #F1F3F5;
+        }
+
+        .title {
+            font-size: 13px;
+            font-weight: bolder;
+        }
+
+        .exportBut {
+            width: 150px;
             margin: 0 auto;
-            margin-top: 10px;
-            overflow-y: auto;
+            margin-top: 30px;
+        }
+
+        .logo {
+            margin: 3px;
+            height: 25px;
+        }
+
+        #footer {
+            text-align: end;
         }
     </style>
     <template>
-        <div id="report">
-            <div id="export">
-                <ul>
-                    <strong>
-                        <div id="name">{{job.name}}</div>
-                    </strong>
-
-                    <div id="description">{{job.description}}</div>
-
-                    <ul id="stadistics">
-                        <div>Total Genes: &nbsp;
-                            <span class="numbers">{{totalData}}</span>
-                        </div>
-                        <div>Diagnostic Genes: &nbsp;
-                            <span class="numbers">{{diagData.length}}</span>
-                        </div>
-                        <div>Secondary Genes: &nbsp;
-                            <span class="numbers">{{secData.length}}</span>
-                        </div>
-                    </ul>
-                </ul>
-
-                <div class=""> Static Filters
-                    <div class="value">A: Most Likely Pathogenic &nbsp;<i class="fa fa-filter" style="color:#b30000"></i>
-                        <span>{{value.mlp}}</span>
-                    </div>
-                    <div class="value">B: Potentially Pathogenic &nbsp;<i class="fa fa-filter" style="color:#ff751a"></i>
-                        <span>{{value.pp}}</span>
-                    </div>
-                    <div class="value">C: Unkown Significance &nbsp; <i class="fa fa-filter" style="color:#005b99"></i>
-                        <span>{{value.us}}</span>
-                    </div>
-                    <div class="value">D: Likely Benign &nbsp; <i class="fa fa-filter" style="color:#008000"></i>
-                        <span>{{value.lb}}</span>
+        <div id="report" class="vertical layout">
+            <ul class="export">
+                <div class="horizontal layout" style="line-height: 50px;">
+                    <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
+                    <div id="header" class="flex">{{job.name}}</div>
+                    <div class="">{{date}}
                     </div>
                 </div>
+
+                <div id="description">{{job.description}}</div>
+
+                <div>
+                    <table id="stadistics">
+                        <tr>
+                            <td> Total Genes </td>
+                            <td class="numbers"> {{totalData}} </td>
+                        </tr>
+                        <tr>
+                            <td> Diagnostic Genes </td>
+                            <td class="numbers"> {{diagData.length}} </td>
+                        </tr>
+                        <tr>
+                            <td> Secondary Genes </td>
+                            <td class="numbers"> {{secData.length}} </td>
+                        </tr>
+                    </table>
+                </div>
+            </ul>
+            <ul class="export">
+                <table id="values">
+                    <tr>
+                        <th class="title">Static Filters
+                        </th>
+                        <th class="title">Finded Genes
+                        </th>
+                    </tr>
+                    <tr>
+                        <td> A: Most Likely Pathogenic </td>
+                        <td class="numbers">{{value.mlp}}</td>
+                    </tr>
+                    <tr>
+                        <td> B: Potentially Pathogenic </td>
+                        <td class="numbers">{{value.pp}}</td>
+                    </tr>
+                    <tr>
+                        <td> C: Unkown Significance </td>
+                        <td class="numbers">{{value.us}}</td>
+                    </tr>
+                    <tr>
+
+                        <td> D: Likely Benign </td>
+                        <td class="numbers">{{value.lb}}</td>
+                    </tr>
+                </table>
+            </ul>
+
+            <ul class="export">
+                <table id="diagData">
+                    <tr>
+                        <th class="title"> Diagnostic Table</th>
+                    </tr>
+
+                </table>
+            </ul>
+            <ul class="export">
+                <table id="secData">
+                    <tr>
+                        <th class="title"> Secondary Findings Table</th>
+                    </tr>
+
+                </table>
+            </ul>
+            <div class="flex">
+
             </div>
+            <div id="footer" class="export">
+                <img class="logo" src="../images/logobier.jpg" />
+                <img class="logo" src="../images/logo_ciberer.jpg" />
+                <img class="logo" src="../images/logo_cipf.png" />
+                <img class="logo" src="../images/logoBabelomics_positive_trans.svg" />
+                <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
+            </div>
+        </div>
+
+
+        <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF">Export to PDF
 
         </div>
     </template>
@@ -111,8 +192,77 @@
             totalData: {
                 type: Number,
                 value: "",
+            },
+            date: {
+                type: String
             }
         },
+        ready: function() {
+            this._getDate();
+        },
+
+        handleExportPDF: function(e) {
+
+
+            var pdf = new jsPDF('p', 'pt', 'a4');
+            var options = {
+                pagesplit: true,
+            };
+            pdf.addHTML($('#report')[0],options,function(){
+                pdf.save('web.pdf');
+                  pdf.output('dataurlnewwindow');
+            });
+
+
+            // var docDefinition = {
+            //     // header: function(currentPage, pageCount) {
+            //     //     return currentData.toString();
+            //     // },
+            //     pageSize: 'A4',
+            //     content: [{
+            //         text: this.job.name,
+            //         style: header
+            //     }, {
+            //         text: this.job.description,
+            //         style: description
+            //     }, {
+            //         table: {
+            //             // headers are automatically repeated if the table spans over multiple pages
+            //             // you can declare how many rows should be treated as headers
+            //             // headerRows: 1,
+            //             // widths: ['*', 'auto', 100, '*'],
+            //
+            //             body: [
+            //                 ['Total Genes',this.totalData, ],
+            //                 ['Diagnostic Genes',this.diagData.length ],
+            //                 ['Secondary Genes',this.secData.length ]
+            //             ]
+            //         }
+            //     }],
+            //     footer: function(currentPage, pageCount) {
+            //         return currentPage.toString() + ' of ' + pageCount;
+            //     },
+            //     styles: {
+            //         header: {
+            //             fontSize: 20,
+            //             bold: true,
+            //             color: 'blue'
+            //         },
+            //         description: {
+            //             fontSize: 18,
+            //         }
+            //
+            //     },
+            //     pageMargins: [ 40, 60, 40, 60 ],
+            // };
+            // pdfMake.createPdf(docDefinition).open();
+            // pdfMake.createPdf(docDefinition).download();
+
+        },
+        _getDate: function() {
+            var date = new Date();
+            this.date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        }
 
 
     });

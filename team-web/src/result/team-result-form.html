@@ -379,7 +379,7 @@
                 type: Number,
             },
         },
-        
+
         fileChanged: function(neo, old) {
             if (neo) {
                 //                this.clearForm();
@@ -436,8 +436,8 @@
                 q["qual"] = this.inputChange(this.qualValue);
                 q["qual_op"] = this._getOption(this.$.qual_op);
             }
-            if (this.qmaf1000gValue) {
-                q["maf1000g"] = this.inputChange(this.qmaf1000gValue);
+            if (this.maf1000gValue) {
+                q["maf1000g"] = this.inputChange(this.maf1000gValue);
                 q["maf1000g_op"] = this._getOption(this.$.maf1000g_op);
             }
             if (this.mafEVSValue) {
@@ -465,12 +465,21 @@
 
                 q["ct"] = this.inputCTChange();
             }
+
+            var filter_history = [];
+            if (localStorage.bioinfo_team_filter_history) {
+                filter_history = JSON.parse(localStorage.bioinfo_team_filter_history);
+            }
+            filter_history.push(q);
+
+            localStorage.bioinfo_team_filter_history = JSON.stringify(filter_history);
+
             this.set('query', q);
 
         },
         inputRegionChange: function() {
             if (this.query) {
-                var q_aux =this.regionValue;
+                var q_aux = this.regionValue;
                 q = q_aux.split(",");
             }
             return q;

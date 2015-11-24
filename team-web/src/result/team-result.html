@@ -2,10 +2,9 @@
 <link rel="import" href="team-result-diagnostic.html">
 <link rel="import" href="team-result-filters.html">
 <link rel="import" href="team-result-report.html">
-<link rel="import" href="../../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
 <dom-module id="team-result">
     <style>
-        :host {
+    :host {
             display: block;
             position: relative;
             box-sizing: border-box;
@@ -76,34 +75,35 @@
         }
 
         .tabs {
-            height: 40px;
-            line-height: 40px;
-            font-size: 17px;
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+            width: 150px;
         }
 
+    }
+    .value {
+        /*background-color: #d0d0d0;*/
 
-
-        .value {
-            /*background-color: #d0d0d0;*/
-            border: 1px solid #d0d0d0;
-            box-sizing: border-box;
-            height: 20px;
-            font-size: 13px;
-        }
+        border: 1px solid #d0d0d0;
+        box-sizing: border-box;
+        height: 20px;
+        font-size: 13px;
+    }
     </style>
     <template>
         <div class="vertical layout flex">
             <div class="horizontal layout">
-                <div class="jso-btn jso-btn-shdw flex tabs" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
+                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
                     Overview
                 </div>
-                <div class="jso-btn jso-btn-shdw flex tabs" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
+                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
                     Diagnostic
                 </div>
-                <div class="jso-btn jso-btn-shdw flex tabs" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
+                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
                     Secondary Findings
                 </div>
-                <div class="jso-btn jso-btn-shdw flex tabs" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
+                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
                     Report
                 </div>
             </div>
@@ -139,11 +139,8 @@
             </div>
 
             <div hidden$="{{!computeView(view, 'report')}}" id="result">
-                <team-result-report job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}"></team-result-report>
+                <team-result-report id="export" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}"></team-result-report>
 
-                <div class="jso-btn jso-btn-shdw" on-click="handleExportPDF" style="width: 150px; margin:0 auto;">Export to PDF
-
-                </div>
             </div>
 
         </div>
@@ -410,40 +407,7 @@
                 return view === value;
             },
             valueChanged: function(neo, old) {},
-            handleExportPDF: function(e) {
-
-                var pdf = new jsPDF('p', 'pt', 'letter')
-
-                , source = $('#export')[0]
-
-                // , specialElementHandlers = {
-                //     '#bypassme': function(element, renderer){
-                //         return true
-                //     }
-                // }
-                margins = {
-                    top: 80,
-                    bottom: 60,
-                    left: 40,
-                    width: 522
-                };
-
-                pdf.fromHTML(
-                    source, margins.left, margins.top, {
-                        'width': margins.width
-                            // , 'elementHandlers': specialElementHandlers
-                    },
-                    function(dispose) {
-                        pdf.save('Test.pdf');
-                    },
-                    margins
-                )
-
-                // var docDefinition = { content: 'This is an sample PDF printed with pdfMake' };
-                // pdfMake.createPdf(docDefinition).open();
-                // pdfMake.createPdf(docDefinition).download();
-
-            }
+            
         })
     </script>
 </dom-module>
