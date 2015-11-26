@@ -378,7 +378,28 @@
             phastconsValue: {
                 type: Number,
             },
+            historyFilters: {
+                type: Array,
+                value: function() {
+                    // return [null, null, null, null, null];
+                    return [];
+                },
+                notify: true,
+
+            },
+            pos: {
+                type: Number,
+                value: 0
+            }
         },
+
+        ready: function() {
+          if(localStorage.bioinfo_team_filter_history){
+            this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
+          }
+            this.pos = this.historyFilters.length;
+        },
+
 
         fileChanged: function(neo, old) {
             if (neo) {
@@ -465,17 +486,38 @@
 
                 q["ct"] = this.inputCTChange();
             }
-
-            var filter_history = [];
-            if (localStorage.bioinfo_team_filter_history) {
-                filter_history = JSON.parse(localStorage.bioinfo_team_filter_history);
-            }
-            filter_history.push(q);
-
-            localStorage.bioinfo_team_filter_history = JSON.stringify(filter_history);
-
             this.set('query', q);
 
+
+            var newFilter = JSON.stringify(q);
+            var _load = 0;
+            for (var i = 0; i < this.historyFilters.length; i++) {
+                var oldFilter = JSON.stringify(this.historyFilters[i].filter);
+                if (newFilter == oldFilter) {
+                    _load = 1;
+                }
+            }
+            if (_load == 0) {
+                if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+                  var date = new Date();
+                  date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+                    var hf = {};
+                    hf = {
+                        date: date,
+                        name: newFilter,
+                        filter: q
+                    };
+                    //                 splice(path, index, removeCount, [item1, ..., itemN])
+
+                    this.pos = (this.pos == 5) ? 0 : this.pos
+                    console.log(this.pos)
+
+                    this.splice("historyFilters", this.pos, 1, hf);
+                    this.pos++;
+
+                    localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
+                }
+            }
         },
         inputRegionChange: function() {
             if (this.query) {
@@ -522,5 +564,55 @@
             }
             return cons;
         },
+        loadForm: function(hf) {
+            if (hf.region != null) {
+                this.regionValue = hf.region[0];
+                for (var i = 1; i < hf.region.length; i++) {
+                    this.regionValue += ',' + hf.region[i];
+                }
+            }
+            if (hf.gene != null) {
+                this.geneValue = hf.gene[0];
+                for (var i = 1; i < hf.gene.length; i++) {
+                    this.geneValue += ',' + hf.gene[i];
+                }
+            }
+            if (hf.dp != null) {
+                this.dpValue = hf.dp;
+            }
+            if (hf.qual != null) {
+                this.qualValue = hf.qual;
+            }
+            if (hf.maf1000g != null) {
+                this.maf1000gValue = hf.maf1000g;
+            }
+            if (hf.mafEVS != null) {
+                this.mafEVSValue = hf.mafEVS;
+            }
+            if (hf.sift != null) {
+                this.siftValue = hf.sift;
+            }
+            if (hf.polyphen != null) {
+                this.polyphenValue = hf.polyphen;
+            }
+            if (hf.phylop != null) {
+                this.phylopValue = hf.phylop;
+            }
+            if (hf.phastcons != null) {
+                this.phastconsValue = hf.phastcons;
+            }
+            if (hf.ct != null) {
+                var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']");
+                for (var i = 0; i < hf.ct.length; i++) {
+                    var cons = hf.ct[i];
+                    for (var j = 0; j < els.length; j++) {
+                        var el = els[j];
+                        if (cons == el.dataset.consequence) {
+                            el.checked = true;
+                        }
+                    }
+                }
+            }
+        }
     });
 </script>

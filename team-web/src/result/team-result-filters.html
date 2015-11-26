@@ -9,12 +9,30 @@
             box-sizing: border-box;
             margin: 10px;
         }
-        #filters{
-          width: 300px;
+
+        #filters {
+            width: 300px;
         }
-        team-result-form{
-          margin-top: 10px;
-          width: 295px;
+
+        team-result-form {
+            margin-top: 10px;
+            width: 295px;
+        }
+        jso-tooltip::shadow #messageInfo::shadow{
+          height: 150px;
+          width: 300px;
+          background-color: #d3d3d3;
+          border: 1px solid #d3d3d3;
+        }
+
+        jso-tooltip::shadow .closeInfo::shadow{
+          margin-left: 290px;
+        }
+        .filter-name{
+          text-overflow: ellipsis;
+          width: 200px;
+          white-space: nowrap;
+          overflow-x: hidden;
         }
     </style>
     <template>
@@ -24,14 +42,28 @@
                     Static Filters
                 </div>
                 <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="custom" data-checked$="{{computeView(view, 'custom')}}">
-                    Custom Filters
+                    Custom Filters &nbsp;
                 </div>
             </div>
+            <!-- <div class="">
+              Filters History
+            </div> -->
 
+            <team-result-static-filters data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
-              <team-result-static-filters data="{{data}}"  query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
-
-              <team-result-form id="custom" query={{query}} hidden$="{{!computeView(view, 'custom')}}"></team-result-form>
+            <div class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
+              <div class="horizontal layout">Filters History &nbsp;
+                <jso-tooltip title="Filters History">
+                    <div style="text-align: left"> Filters History </div>
+                    <ul>
+                        <template is="dom-repeat" items="{{historyFilters}}">
+                            <li class="filter-name" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">{{item.name}}</li>
+                        </template>
+                    </ul>
+                </jso-tooltip>
+                </div>
+                <team-result-form id="custom" query={{query}} history-filters="{{historyFilters}}"></team-result-form>
+            </div>
 
 
         </div>
@@ -65,26 +97,49 @@
                 },
                 notify: true,
                 observer: 'valueChanged'
+            },
+            historyFilters: {
+                type: Array,
+                value: function() {
+                    // return [null, null, null, null, null];
+                    return [];
+                },
+                notify: true,
+                // oberver:'filterChanged'
             }
         },
-            handleView: function(e) {
-                this.view = e.target.dataset.value;
-                this._clearFilter();
-            },
-            _clearFilter: function(){
-              this.query={};
-              this.$.custom.clearForm();
-            },
-            computeView: function(view, value) {
-                return view === value;
-            },
-            dataChanged: function(neo, old) {
+        observers: [
+            "filterChanged(historyFilters.splices)"
+        ],
 
-            },
-            queryChanged: function(neo,old){
-            },
-            valueChanged: function(neo,old){
-            },
+        ready: function(){
+          if(localStorage.bioinfo_team_filter_history){
+            this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
+          }
+        },
+        handleView: function(e) {
+            this.view = e.target.dataset.value;
+            this._clearFilter();
+        },
+        _clearFilter: function() {
+            this.query = {};
+            this.$.custom.clearForm();
+        },
+        computeView: function(view, value) {
+            return view === value;
+        },
+        dataChanged: function(neo, old) {
+
+        },
+        queryChanged: function(neo, old) {},
+        valueChanged: function(neo, old) {},
+        filterChanged: function(neo, old) {
+        },
+        loadFilter: function(e) {
+            e.stopPropagation();
+            this.$.custom.clearForm();
+            this.$.custom.loadForm(e.currentTarget.dataFilter);
+        }
 
     });
 </script>
