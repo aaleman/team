@@ -8,13 +8,22 @@
         }
 
         #report {
-            padding: 10px;
             border: 1px solid #d0d0d0;
-            width: 650px;
+            width: 750px;
             height: 750px;
             margin: 0 auto;
             margin-top: 10px;
             overflow-y: auto;
+            background-color: white;
+        }
+
+        .export {
+            padding: 20px;
+            margin: 10px;
+            width: 650px;
+            height: 900px;
+            border: 1px solid #d0d0d0;
+            background-color: white;
         }
 
         #header {
@@ -23,7 +32,7 @@
             font-weight: bold;
         }
 
-        #description {
+        .description {
             font-size: 18px;
             color: #445D76;
             margin-left: 20px;
@@ -77,16 +86,15 @@
         }
     </style>
     <template>
-        <div id="report" class="vertical layout">
-            <ul class="export">
+        <div id="report">
+            <div id="export1" class="vertical layout export">
                 <div class="horizontal layout" style="line-height: 50px;">
                     <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
                     <div id="header" class="flex">{{job.name}}</div>
                     <div class="">{{date}}
                     </div>
                 </div>
-
-                <div id="description">{{job.description}}</div>
+                <div class="description">{{job.description}}</div>
 
                 <div>
                     <table id="stadistics">
@@ -104,60 +112,134 @@
                         </tr>
                     </table>
                 </div>
-            </ul>
-            <ul class="export">
-                <table id="values">
-                    <tr>
-                        <th class="title">Static Filters
-                        </th>
-                        <th class="title">Finded Genes
-                        </th>
-                    </tr>
-                    <tr>
-                        <td> A: Most Likely Pathogenic </td>
-                        <td class="numbers">{{value.mlp}}</td>
-                    </tr>
-                    <tr>
-                        <td> B: Potentially Pathogenic </td>
-                        <td class="numbers">{{value.pp}}</td>
-                    </tr>
-                    <tr>
-                        <td> C: Unkown Significance </td>
-                        <td class="numbers">{{value.us}}</td>
-                    </tr>
-                    <tr>
+                <div>
+                    <table id="values">
+                        <tr>
+                            <th class="title">Static Filters
+                            </th>
+                            <th class="title">Finded Genes
+                            </th>
+                        </tr>
+                        <tr>
+                            <td> A: Most Likely Pathogenic </td>
+                            <td class="numbers">{{value.mlp}}</td>
+                        </tr>
+                        <tr>
+                            <td> B: Potentially Pathogenic </td>
+                            <td class="numbers">{{value.pp}}</td>
+                        </tr>
+                        <tr>
+                            <td> C: Unkown Significance </td>
+                            <td class="numbers">{{value.us}}</td>
+                        </tr>
+                        <tr>
 
-                        <td> D: Likely Benign </td>
-                        <td class="numbers">{{value.lb}}</td>
-                    </tr>
-                </table>
-            </ul>
+                            <td> D: Likely Benign </td>
+                            <td class="numbers">{{value.lb}}</td>
+                        </tr>
+                    </table>
+                </div>
 
-            <ul class="export">
-                <table id="diagData">
-                    <tr>
-                        <th class="title"> Diagnostic Table</th>
-                    </tr>
+                <div>
+                    <table id="diagData">
+                        <tr>
+                            <th class="title"> Diagnostic Table</th>
+                        </tr>
 
-                </table>
-            </ul>
-            <ul class="export">
-                <table id="secData">
-                    <tr>
-                        <th class="title"> Secondary Findings Table</th>
-                    </tr>
+                    </table>
+                </div>
+                <div>
+                    <table id="secData">
+                        <tr>
+                            <th class="title"> Secondary Findings Table</th>
+                        </tr>
 
-                </table>
-            </ul>
-            <div class="flex">
+                    </table>
+                </div>
+                <div class="flex">
 
+                </div>
+                <div id="footer">
+                    <img class="logo" src="../images/logobier.jpg" />
+                    <img class="logo" src="../images/logo_ciberer.jpg" />
+                    <img class="logo" src="../images/logo_cipf.png" />
+                    <img class="logo" src="../images/logoBabelomics_positive_trans.svg" />
+                    <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
+                    <img class="logo" src="../images/logo_inb.png"/>
+                </div>
             </div>
-            <div id="footer" class="export">
-                <img class="logo" src="../images/logobier.jpg" />
-                <img class="logo" src="../images/logo_ciberer.jpg" />
-                <img class="logo" src="../images/logo_cipf.png" />
-                <img class="logo" src="../images/logoBabelomics_positive_trans.svg" />
-                <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
+            <div id="export2" class="vertical layout export">
+                <div class="horizontal layout" style="line-height: 50px;">
+                    <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
+                    <div id="header" class="flex">{{job.name}}</div>
+                    <div class="">{{date}}
+                    </div>
+                </div>
+                <div>
+                    <div class="description">
+                        ANNEX I: Filters
+                    </div>
+                    <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada"> Static Filters</div>
+
+                    <ul>
+                        A: Most Likely Pathogenic --> sift <= 0.05 && polyphen >= 0.95
+                    </ul>
+                    <ul>
+                        B: Potentially Pathogenic -->
+                    </ul>
+                    <ul>
+                        C: Unkown Significance -->
+                    </ul>
+                    <ul>
+                        D: Likely Benign --> else
+                    </ul>
+
+                            <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada">Custom Filters</div>
+
+                            <ul>
+
+                            </ul>
+
+                </div>
+                <div class="flex">
+
+                </div>
+                <div id="footer">
+                    <img class="logo" src="../images/logobier.jpg" />
+                    <img class="logo" src="../images/logo_ciberer.jpg" />
+                    <img class="logo" src="../images/logo_cipf.png" />
+                    <img class="logo" src="../images/logoBabelomics_positive_trans.svg" />
+                    <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
+                    <img class="logo" src="../images/logo_inb.png"/>
+                </div>
+            </div>
+            <div id="export3" class="vertical layout export">
+                <div class="horizontal layout" style="line-height: 50px;">
+                    <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
+                    <div id="header" class="flex">{{job.name}}</div>
+                    <div class="">{{date}}
+                    </div>
+                </div>
+                <div>
+                    <div class="description">
+                        ANNEX II: Panels
+                    </div>
+                    <div class="title" style="margin-top:5px">
+
+                    </div>
+
+                </div>
+                <div class="flex">
+
+                </div>
+                <div id="footer">
+                    <img class="logo" src="../images/logobier.jpg" />
+                    <img class="logo" src="../images/logo_ciberer.jpg" />
+                    <img class="logo" src="../images/logo_cipf.png" />
+                    <img class="logo" src="../images/logoBabelomics_positive_trans.svg" />
+                    <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
+                    <img class="logo" src="../images/logo_inb.png"/>
+                </div>
             </div>
         </div>
 
@@ -200,70 +282,89 @@
         ready: function() {
             this._getDate();
         },
+        print: function(data) {
+            var mywindow = window.open('', '', 'height=1000,width=1000');
+            mywindow.document.write('<html><head><title>Report</title>');
+            var styles = document.getElementsByTagName('style');
+
+            mywindow.document.write('<style>');
+            // debugger
+            for (var i = 0; i < styles.length; i++) {
+                mywindow.document.write(styles[i].innerHTML);
+            }
+            mywindow.document.write('</style>');
+
+            mywindow.document.write('</head><body >');
+            mywindow.document.write(data);
+            mywindow.document.write('</body></html>');
+
+            mywindow.document.close(); // necessary for IE >= 10
+            mywindow.focus(); // necessary for IE >= 10
+
+            mywindow.print();
+            mywindow.close();
+
+            return true;
+        },
 
         handleExportPDF: function(e) {
 
+            var me = this;
 
-            var pdf = new jsPDF('p', 'pt', 'a4');
+
+            this.print(this.$.report.innerHTML);
+            return;
+
+
+            var pdf = new jsPDF('p', 'mm', 'a4');
             var options = {
+                background: '#fff',
                 pagesplit: true,
             };
-            pdf.addHTML($('#report')[0],options,function(){
+            pdf.addHTML(me.$.report, options, function() {
+                // pdf.addPage();
                 pdf.save('web.pdf');
-                  pdf.output('dataurlnewwindow');
+                // pdf.addHTML(me.$.export2, options, function() {
+                //         pdf.addPage();
+                //         pdf.addHTML(me.$.export3, options, function() {
+                //         })
+                //     })
+                //     // pdf.output('dataurlnewwindow');
             });
 
-
-            // var docDefinition = {
-            //     // header: function(currentPage, pageCount) {
-            //     //     return currentData.toString();
-            //     // },
-            //     pageSize: 'A4',
-            //     content: [{
-            //         text: this.job.name,
-            //         style: header
-            //     }, {
-            //         text: this.job.description,
-            //         style: description
-            //     }, {
-            //         table: {
-            //             // headers are automatically repeated if the table spans over multiple pages
-            //             // you can declare how many rows should be treated as headers
-            //             // headerRows: 1,
-            //             // widths: ['*', 'auto', 100, '*'],
+            // pdf.addHTML(me.$.export1, options, function() {
+            //     // pdf.addPage();
+            //     pdf.save('web.pdf');
             //
-            //             body: [
-            //                 ['Total Genes',this.totalData, ],
-            //                 ['Diagnostic Genes',this.diagData.length ],
-            //                 ['Secondary Genes',this.secData.length ]
-            //             ]
-            //         }
-            //     }],
-            //     footer: function(currentPage, pageCount) {
-            //         return currentPage.toString() + ' of ' + pageCount;
-            //     },
-            //     styles: {
-            //         header: {
-            //             fontSize: 20,
-            //             bold: true,
-            //             color: 'blue'
-            //         },
-            //         description: {
-            //             fontSize: 18,
-            //         }
+            // });
+            // console.log("hola")
             //
-            //     },
-            //     pageMargins: [ 40, 60, 40, 60 ],
+            // source = this.$.report.innerHTML;
+            //
+            // margins = {
+            //     top: 80,
+            //     bottom: 60,
+            //     left: 40,
+            //     width: 522
             // };
-            // pdfMake.createPdf(docDefinition).open();
-            // pdfMake.createPdf(docDefinition).download();
+            // pdf.fromHTML(
+            //     source // HTML string or DOM elem ref.
+            //     , margins.left // x coord
+            //     , margins.top // y coord
+            //     , {
+            //         'width': margins.width
+            //     },
+            //     function(dispose) {
+            //         pdf.save('Test.pdf');
+            //     },
+            //     margins
+            // )
+
 
         },
         _getDate: function() {
             var date = new Date();
             this.date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
         }
-
-
     });
 </script>

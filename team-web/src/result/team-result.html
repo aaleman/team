@@ -80,7 +80,6 @@
             font-size: 14px;
             width: 150px;
         }
-
     }
     .value {
         /*background-color: #d0d0d0;*/
@@ -139,7 +138,7 @@
             </div>
 
             <div hidden$="{{!computeView(view, 'report')}}" id="result">
-                <team-result-report id="export" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}"></team-result-report>
+                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}"></team-result-report>
 
             </div>
 
@@ -407,7 +406,7 @@
                 return view === value;
             },
             valueChanged: function(neo, old) {},
-            
+
         })
     </script>
 </dom-module>

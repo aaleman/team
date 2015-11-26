@@ -21,27 +21,60 @@
             height: 25px;
         }
 
-        jso-table::shadow {
+        jso-table::shadow,
+         jso-variant-frequencies-grid::shadow jso-table::shadow{
             font-size: 11px;
         }
 
         jso-table::shadow .table-pager > input {
             width: 40px !important;
         }
-        jso-genome-viewer-element {
+
+        jso-variant-frequencies-grid,jso-genome-viewer-element {
             height: 400px;
             overflow-y: auto;
             margin: 0 auto;
             box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        #menu {
+            margin-top: 5px;
+        }
+
+        #menu > div:hover {
+            background-color: rgba(125, 125, 125, 0.4);
+        }
+
+        #menu > div[selected] {
+            background-color: rgba(125, 125, 125, 0.4);
+        }
+
+        jso-variant-frequencies-grid {
+            border: 1px solid var(--divider-color);
+        }
+
+        #tools {
             margin-top: 5px;
         }
     </style>
     <template>
         <div class="title">{{title}}</div>
         <jso-table id="table" data="{{_data}}" enable-paging selectable exportable enable-resize on-rowclick="handleRowClick"></jso-table>
-        <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
-    </template>
 
+        <div id="menu" class="horizontal layout">
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="overview">Overview</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="comments">Comments</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="frequency">Frequencies</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="gv">Viewer</div>
+        </div>
+
+        <div id="tools">
+            <div id="overview" hidden> </div>
+            <div id="comments" hidden> </div>
+            <jso-variant-frequencies-grid id="frequency" hidden></jso-variant-frequencies-grid>
+            <jso-genome-viewer-element id="gv" hidden></jso-genome-viewer-element>
+        </div>
+    </template>
 </dom-module>
 <script>
     Polymer({
@@ -70,6 +103,10 @@
                     return {};
                 },
                 observer: 'queryChanged'
+            },
+            selectedMenuTool: {
+                type: Object,
+                observer: 'selectedMenuChanged'
             },
         },
         _columns: [{
@@ -165,21 +202,30 @@
         ready: function() {
             this.$.table.columns = this._columns;
             var me = this;
-               this.async(function() {
-                   this.$.gv.createGenomeViewer();
-                   var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
-                   this.$.gv.genomeViewer.draw();
+            this.async(function() {
+                this.$.gv.createGenomeViewer();
+                var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
+                this.$.gv.genomeViewer.draw();
 
-                   this.genomeViewer = this.$.gv.genomeViewer;
-               });
+                this.genomeViewer = this.$.gv.genomeViewer;
+            });
         },
         handleRowClick: function(e) {
-            console.log(e.detail.row);
             var row = e.detail.row;
-                var reg = row.chr + ":" + row.pos + "-" + row.pos;
-                var region = new Region(reg);
+            var reg = row.chr + ":" + row.pos + "-" + row.pos;
+            var region = new Region(reg);
 
-                  this.$.gv.genomeViewer.setRegion(region);
+            this.$.gv.genomeViewer.setRegion(region);
+
+            var rowFreq = {
+                chromosome: row.chr,
+                start: row.pos,
+                reference: row.ref,
+                alternate: row.alt
+            };
+            this.$.frequency.row = rowFreq;
+
+            this._createPolarChart(row);
         },
         dataChanged: function(neo, old) {
             var _data = [];
@@ -212,7 +258,7 @@
                 var query = filters[key]; // query => value
                 var match = false;
                 if (key === "filterView") {
-                    match = this._checkData(data.sift, query);
+                    match = this._checkData(data, query);
 
                 } else if (key === "region") {
                     match = this._checkPosition(data.chr, data.pos, query);
@@ -304,27 +350,90 @@
             }
             return false;
         },
-        _checkData: function(value, query) {
+        _checkData: function(data, query) {
+            var sift = data.sift;
+            var polyphen = data.polyphen;
             if (query === "none") {
                 return true;
             } else if (query === "filterA") {
-                if (value >= 0.75) {
+                if (sift <= "0.05" && polyphen >= "0.95") {
                     return true;
                 }
-            } else if (query === "filterB") {
-                if (value >= 0.50 && value < 0.75) {
-                    return true;
-                }
-            } else if (query === "filterC") {
-                if ((value >= 0.25 && value < 0.50) || value == ".") {
-                    return true;
-                }
+                //}else if (query === "filterB") {
+                //     if ((sift <= "0.25" && sift > "0.05") && (polyphen < "0.95" && polyphen >= "0.75")) {
+                //         return true;
+                //     }
+                // } else if (query === "filterC") {
+                //     if (((sift <= "0.50" && sift > "0.25") && (polyphen < "0.75" && polyphen >= "0.50")) || sift=='.' || polyphen=='.') {
+                //         return true;
+                //     }
             } else if (query === "filterD") {
-                if (value < 0.25) {
+                if (sift > "0.05" && polyphen < "0.95") {
                     return true;
                 }
+
             }
             return false;
+        },
+        handleMenuClick: function(e) {
+            this.selectedMenuTool = e.currentTarget;
+        },
+        selectedMenuChanged: function(neo, old) {
+            if (old) {
+                old.removeAttribute('selected');
+                this.$[old.dataset.option].setAttribute('hidden', '');
+            }
+            if (neo && !this.hidden) {
+                neo.setAttribute('selected', '');
+                this.$[neo.dataset.option].removeAttribute('hidden');
+            }
+        },
+        _parseFloat: function(data) {
+            var aux = parseFloat(data);
+            aux = isNaN(aux) ? null : aux;
+            return aux;
+        },
+        _createPolarChart: function(row) {
+            var chart = new Highcharts.Chart({
+                chart: {
+                    polar: true,
+                    type: 'line',
+                    renderTo: this.$.overview,
+                    width: 510,
+                    height: 300
+
+                },
+                credits: {
+                    enabled: false
+                },
+                legend: {
+                    enabled:false
+                },
+                title: {
+                    text: row.gene,
+                    x: -80
+                },
+                xAxis: {
+                    categories: ['Sift', 'Polyphen', 'Phylop', 'Phastcons'],
+                    tickmarkPlacement: 'on',
+                    lineWidth: 1
+                },
+
+                yAxis: {
+                    gridLineInterpolation: 'polygon',
+                    lineWidth: 0,
+                },
+
+                series: [{
+                    type: 'area',
+                    name: row.gene,
+                    data: [this._parseFloat(row.sift), 1 - this._parseFloat(row.polyphen), this._parseFloat(row.phylop),
+                        this._parseFloat(row.phastcons)
+                    ],
+                    pointPlacement: 'on'
+                }]
+
+            });
         }
     });
 </script>

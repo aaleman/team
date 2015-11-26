@@ -131,6 +131,12 @@
 
                 this.fire("created-mutation", mut);
 
+            },
+            handleCheck: function(){
+                  var reg = this.chr + ":" + this.pos + "-" + this.pos;
+                  var region = new Region(reg);
+
+                    this.$.gv.genomeViewer.setRegion(region);
             }
         })
     </script>
