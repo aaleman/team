@@ -401,6 +401,9 @@
             },
             handleView: function(e) {
                 this.view = e.target.dataset.value;
+                if (this.view == 'report'){
+                this.$.teamResultReport.computeFilter();
+              }
             },
             computeView: function(view, value) {
                 return view === value;

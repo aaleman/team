@@ -387,19 +387,13 @@
                 notify: true,
 
             },
-            pos: {
-                type: Number,
-                value: 0
-            }
         },
 
         ready: function() {
-          if(localStorage.bioinfo_team_filter_history){
-            this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
-          }
-            this.pos = this.historyFilters.length;
+            // if (localStorage.bioinfo_team_filter_history) {
+            //     this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
+            // }
         },
-
 
         fileChanged: function(neo, old) {
             if (neo) {
@@ -424,14 +418,21 @@
             this.regionValue = "";
             this.geneValue = "";
             this.dpValue = "";
+            this.$.dp_op.value= "<";
             this.qualValue = "";
+            this.$.qual_op.value= "<";
             this.maf1000gValue = "";
+            this.$.maf1000g_op.value= "<";
             this.mafEVSValue = "";
+            this.$.mafEVS_op.value= "<";
             this.siftValue = "";
+            this.$.sift_op.value= "<";
             this.polyphenValue = "";
+            this.$.polyphen_op.value= "<";
             this.phylopValue = "";
+            this.$.phylop_op.value= "<";
             this.phastconsValue = "";
-
+            this.$.phastcons_op.value= "<";
 
             /* Consequence Types */
             var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
@@ -488,7 +489,6 @@
             }
             this.set('query', q);
 
-
             var newFilter = JSON.stringify(q);
             var _load = 0;
             for (var i = 0; i < this.historyFilters.length; i++) {
@@ -499,21 +499,29 @@
             }
             if (_load == 0) {
                 if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
-                  var date = new Date();
-                  date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+                    var date = new Date();
+                    date = date.getDate() + '/' + date.getMonth() + ' ' + date.getHours() + ':' + date.getMinutes();
+                    name=date + " - " +this.loadForm(q);
                     var hf = {};
                     hf = {
                         date: date,
-                        name: newFilter,
+                        name: name,
                         filter: q
                     };
                     //                 splice(path, index, removeCount, [item1, ..., itemN])
 
-                    this.pos = (this.pos == 5) ? 0 : this.pos
-                    console.log(this.pos)
+                    // this.pos = (this.pos == 5) ? 0 : this.pos
+                    //
+                    // this.splice("historyFilters", this.pos, 1, hf);
+                    // this.pos++;
 
-                    this.splice("historyFilters", this.pos, 1, hf);
-                    this.pos++;
+                    var filters= JSON.parse(localStorage.bioinfo_team_filter_history);
+                    for(var i=4; i>0 ; i--){
+                      filters[i]= filters[i-1];
+                    }
+                    this.historyFilters=filters;
+
+                    this.splice("historyFilters", 0, 1, hf);
 
                     localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
                 }
@@ -565,54 +573,78 @@
             return cons;
         },
         loadForm: function(hf) {
+          var filterName=[];
             if (hf.region != null) {
-                this.regionValue = hf.region[0];
-                for (var i = 1; i < hf.region.length; i++) {
-                    this.regionValue += ',' + hf.region[i];
-                }
+                this.regionValue = hf.region.join(",");
+                filterName.push("Chromosomal Location: (" + hf.region.join(" or ") +") ");
             }
             if (hf.gene != null) {
-                this.geneValue = hf.gene[0];
-                for (var i = 1; i < hf.gene.length; i++) {
-                    this.geneValue += ',' + hf.gene[i];
-                }
+                this.geneValue = hf.gene.join(",");
+                filterName.push("Genes: (" + hf.gene.join(" or ") +") ");
             }
             if (hf.dp != null) {
                 this.dpValue = hf.dp;
+                this.$.dp_op.value= hf.dp_op;
+                filterName.push("DP " + hf.dp_op + " " + hf.dp + " ");
             }
             if (hf.qual != null) {
                 this.qualValue = hf.qual;
+                this.$.qual_op.value= hf.qual_op;
+                filterName.push("Qual " + hf.qual_op + " " + hf.qual + " ");
             }
             if (hf.maf1000g != null) {
                 this.maf1000gValue = hf.maf1000g;
+                this.$.maf1000g_op.value= hf.maf1000g_op;
+                filterName.push("MAF 1000G " + hf.maf1000g_op + " " + hf.maf1000g + " ");
             }
             if (hf.mafEVS != null) {
                 this.mafEVSValue = hf.mafEVS;
+                this.$.mafEVS_op.value= hf.mafEVS_op;
+                filterName.push("MAF EVS " + hf.mafEVS_op + " " + hf.mafEVS + " ");
             }
             if (hf.sift != null) {
                 this.siftValue = hf.sift;
+                this.$.sift_op.value= hf.sift_op;
+                filterName.push("Sift " + hf.sift_op + " " + hf.sift + " ");
             }
             if (hf.polyphen != null) {
                 this.polyphenValue = hf.polyphen;
+                this.$.polyphen_op.value= hf.polyphen_op;
+                filterName.push("Polyphen " + hf.polyphen_op + " " + hf.polyphen + " ");
             }
             if (hf.phylop != null) {
                 this.phylopValue = hf.phylop;
+                this.$.phylop_op.value= hf.phylop_op;
+                filterName.push("Phylop " + hf.phylop_op + " " + hf.phylop + " ");
             }
             if (hf.phastcons != null) {
                 this.phastconsValue = hf.phastcons;
+                this.$.phastcons_op.value= hf.phastcons_op;
+                filterName.push("Phastcons " + hf.phastcons_op + " " + hf.phastcons + " ");
             }
             if (hf.ct != null) {
                 var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']");
+                var ctName="";
+                var aux=0;
                 for (var i = 0; i < hf.ct.length; i++) {
                     var cons = hf.ct[i];
                     for (var j = 0; j < els.length; j++) {
                         var el = els[j];
                         if (cons == el.dataset.consequence) {
                             el.checked = true;
+                            if (aux==0){
+                              ctName += el.dataset.consequence;
+                              aux++;
+                            }else{
+                              ctName += " or " + el.dataset.consequence;
+                              aux++;
+                            }
                         }
                     }
                 }
+                filterName.push("Consequence Types: (" + ctName + ")");
             }
-        }
+            return filterName.join(" AND ");
+        },
     });
 </script>

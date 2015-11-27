@@ -101,11 +101,9 @@
             historyFilters: {
                 type: Array,
                 value: function() {
-                    // return [null, null, null, null, null];
                     return [];
                 },
                 notify: true,
-                // oberver:'filterChanged'
             }
         },
         observers: [
@@ -134,6 +132,7 @@
         queryChanged: function(neo, old) {},
         valueChanged: function(neo, old) {},
         filterChanged: function(neo, old) {
+          console.log(this.historyFilters)
         },
         loadFilter: function(e) {
             e.stopPropagation();

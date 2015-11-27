@@ -84,6 +84,14 @@
         #footer {
             text-align: end;
         }
+
+        #reportConclusions {
+            box-sizing: border-box;
+            display: block;
+            width: 95%;
+            height: 100px;
+            margin-top: 5px;
+        }
     </style>
     <template>
         <div id="report">
@@ -121,23 +129,29 @@
                             </th>
                         </tr>
                         <tr>
-                            <td> A: Most Likely Pathogenic </td>
+                            <td><i class="fa fa-filter" style="color:#b30000"></i> A: Most Likely Pathogenic </td>
                             <td class="numbers">{{value.mlp}}</td>
                         </tr>
                         <tr>
-                            <td> B: Potentially Pathogenic </td>
+                            <td><i class="fa fa-filter" style="color:#ff751a"></i> B: Potentially Pathogenic </td>
                             <td class="numbers">{{value.pp}}</td>
                         </tr>
                         <tr>
-                            <td> C: Unkown Significance </td>
+                            <td><i class="fa fa-filter" style="color:#005b99"></i> C: Unkown Significance </td>
                             <td class="numbers">{{value.us}}</td>
                         </tr>
                         <tr>
 
-                            <td> D: Likely Benign </td>
+                            <td><i class="fa fa-filter" style="color:#008000"></i> D: Likely Benign </td>
                             <td class="numbers">{{value.lb}}</td>
                         </tr>
                     </table>
+                </div>
+
+                <div style="margin-top: 10px">
+                    <div>Conclusions:</div>
+                    <textarea id="reportConclusions" class="jso"></textarea>
+
                 </div>
 
                 <div>
@@ -165,7 +179,7 @@
                     <img class="logo" src="../images/logo_cipf.png" />
                     <img class="logo" src="../images/logoBabelomics_positive_trans.svg" />
                     <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
-                    <img class="logo" src="../images/logo_inb.png"/>
+                    <img class="logo" src="../images/logo_inb.png" />
                 </div>
             </div>
             <div id="export2" class="vertical layout export">
@@ -180,9 +194,9 @@
                         ANNEX I: Filters
                     </div>
                     <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada"> Static Filters</div>
-
                     <ul>
-                        A: Most Likely Pathogenic --> sift <= 0.05 && polyphen >= 0.95
+                        A: Most Likely Pathogenic --> sift
+                        <=0 .05 && polyphen>= 0.95
                     </ul>
                     <ul>
                         B: Potentially Pathogenic -->
@@ -195,11 +209,14 @@
                     </ul>
 
                     <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada">Custom Filters</div>
-
                     <ul>
-
+                      <label>Filter Used: </label>
+                        <li>{{filter}}</li>
+                      <label>History Filters: </label>
+                      <template is="dom-repeat" items="{{filters}}">
+                          <li class="filter-name">{{item.name}}</li>
+                      </template>
                     </ul>
-
                 </div>
                 <div class="flex">
 
@@ -210,7 +227,7 @@
                     <img class="logo" src="../images/logo_cipf.png" />
                     <img class="logo" src="../images/logoBabelomics_positive_trans.svg" />
                     <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
-                    <img class="logo" src="../images/logo_inb.png"/>
+                    <img class="logo" src="../images/logo_inb.png" />
                 </div>
             </div>
             <div id="export3" class="vertical layout export">
@@ -238,7 +255,7 @@
                     <img class="logo" src="../images/logo_cipf.png" />
                     <img class="logo" src="../images/logoBabelomics_positive_trans.svg" />
                     <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
-                    <img class="logo" src="../images/logo_inb.png"/>
+                    <img class="logo" src="../images/logo_inb.png" />
                 </div>
             </div>
         </div>
@@ -277,6 +294,16 @@
             },
             date: {
                 type: String
+            },
+            filter:{
+              type:String,
+              value:""
+            },
+            filters:{
+              type: Array,
+              value: function() {
+                  return [];
+              }
             }
         },
         ready: function() {
@@ -311,10 +338,8 @@
 
             var me = this;
 
-
             this.print(this.$.report.innerHTML);
             return;
-
 
             var pdf = new jsPDF('p', 'mm', 'a4');
             var options = {
@@ -360,11 +385,16 @@
             //     margins
             // )
 
-
         },
         _getDate: function() {
             var date = new Date();
             this.date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        },
+        computeFilter: function() {
+            if (localStorage.bioinfo_team_filter_history) {
+                this.filters = JSON.parse(localStorage.bioinfo_team_filter_history);
+            }
+            this.filter=this.filters[0].name;
         }
     });
 </script>
