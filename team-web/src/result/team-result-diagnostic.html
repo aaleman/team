@@ -58,7 +58,7 @@
     </style>
     <template>
         <div class="title">{{title}}</div>
-        <jso-table id="table" data="{{_data}}" enable-paging selectable exportable enable-resize on-rowclick="handleRowClick"></jso-table>
+        <jso-table id="table" data="{{_data}}" enable-paging enable-select exportable enable-resize on-rowclick="handleRowClick"></jso-table>
 
         <div id="menu" class="horizontal layout">
             <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="overview" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">Overview</div>
@@ -224,6 +224,9 @@
         },
         handleRowClick: function(e) {
             var row = e.detail.row;
+            this._rowSelected(row);
+        },
+        _rowSelected: function(row) {
             var reg = row.chr + ":" + row.pos + "-" + row.pos;
             var region = new Region(reg);
 
@@ -246,6 +249,10 @@
                 _data.push(elem);
             };
             this._data = _data;
+            if ( this._data[0] != null){
+            this.$.table.set('selected',[this._data[0]]);
+            this._rowSelected(this._data[0]);
+          }
 
         },
         queryChanged: function(neo, old) {
@@ -260,6 +267,7 @@
                     }
                 };
                 this.set('_data', data);
+                this.$.table.set('selected',[this._data[0]]);
                 this.set('filterData', this._data);
             }
         },

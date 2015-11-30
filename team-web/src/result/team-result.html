@@ -114,10 +114,10 @@
             <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
                 <!-- <jso-variant-filter-form url="{{url}}" file="{{file}}"></jso-variant-filter-form> -->
                 <div id="left">
-                    <team-result-filters data="{{secData}}" query={{query}} value={{value}}></team-result-filters>
+                    <team-result-filters data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}"></team-result-filters>
                 </div>
                 <div id="right" class="flex">
-                    <team-result-diagnostic data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}"></team-result-diagnostic>
+                    <team-result-diagnostic id="secResult" data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}"></team-result-diagnostic>
 
                     <!-- <div id="menu" class="color-2 color-hover-2 horizontal layout">
                                     <div on-click="handleMenuClick" data-option="gv">Genomic context</div>
@@ -293,7 +293,6 @@
                         }
                     });
 
-
                     if (diag != null && sec != null) {
 
                         var diagContent;
@@ -366,7 +365,6 @@
                             }
                         }
 
-
                         for (var i = 1; i < secRaw.length; i++) {
                             if (secRaw[i] != "") {
 
@@ -409,16 +407,15 @@
             },
             handleView: function(e) {
                 this.view = e.target.dataset.value;
-                if (this.view == 'report'){
-                this.$.teamResultReport.computeFilter();
-              }
+                if (this.view == 'report') {
+                    this.$.teamResultReport.computeFilter();
+                }
             },
             computeView: function(view, value) {
                 return view === value;
             },
             valueChanged: function(neo, old) {},
-            filterDataChanged: function(neo, old) {
-            },
+            filterDataChanged: function(neo, old) {},
 
         })
     </script>

@@ -18,26 +18,55 @@
             margin-top: 10px;
             width: 295px;
         }
-        jso-tooltip::shadow #messageInfo::shadow{
-          height: 150px;
-          width: 300px;
-          background-color: #d3d3d3;
-          border: 1px solid #d3d3d3;
+
+        jso-tooltip::shadow #messageInfo::shadow {
+            height: 300px;
+            width: 500px;
+            background-color: #d3d3d3;
+            border: 1px solid #d3d3d3;
+            color: black;
+            font-style: normal;
         }
 
-        jso-tooltip::shadow .closeInfo::shadow{
-          margin-left: 290px;
+        jso-tooltip::shadow .closeInfo::shadow {
+            margin-left: 490px;
         }
-        .filter-name{
-          text-overflow: ellipsis;
-          width: 200px;
-          white-space: nowrap;
-          overflow-x: hidden;
+
+        #filter-name {
+            text-overflow: ellipsis;
+            width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .filterHistory {
+            font-style: italic;
+            margin: 0 auto;
+            color: #a6a6a6;
+        }
+
+        .clear-but {
+            width: 100px;
+            background-color: #f0f4f4 !important;
+        }
+
+        .title {
+            margin-top: 10px;
+            border-bottom: 1px solid #445D76;
+            font-weight: bold;
+        }
+
+        .name {
+            width: 300px;
+        }
+
+        .num {
+            width: 100px;
         }
     </style>
     <template>
         <div id="filters">
-            <div class="horizontal layout">
+            <div class="horizontal layout" style="margin-bottom: 10px;">
                 <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="static" data-checked$="{{computeView(view, 'static')}}">
                     Static Filters
                 </div>
@@ -45,24 +74,30 @@
                     Custom Filters &nbsp;
                 </div>
             </div>
-            <!-- <div class="">
-              Filters History
-            </div> -->
-
             <team-result-static-filters data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
-              <div class="horizontal layout">Filters History &nbsp;
-                <!-- <jso-tooltip title="Filters History"> -->
-                    <!-- <div style="text-align: left"> Filters History </div> -->
-                    <ul>
+                <div class="horizontal layout filterHistory">
+                    Filters History &nbsp;
+                    <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History">
+                        <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
+                            Clear
+                        </div>
+                        <div id="filterHistoryTable" class="horizontal layout flex">
+                            <span class="title num"> Date </span>
+                            <span class="name title"> Name </span>
+                            <span class="title num"> Finded </span>
+                        </div>
                         <template is="dom-repeat" items="{{historyFilters}}">
-                            <li class="filter-name" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">{{item.name}}</li>
+                            <div class="horizontal layout flex" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">
+                                <span class="num">{{item.date}} </span>
+                                <span id="filter-name" class="name">{{item.name}} </span>
+                                <span class="num">{{item.finded}}</span>
+                            </div>
                         </template>
-                    </ul>
-                <!-- </jso-tooltip> -->
+                    </jso-tooltip>
                 </div>
-                <team-result-form id="custom" query={{query}} history-filters="{{historyFilters}}"></team-result-form>
+                <team-result-form id="custom" query={{query}} history-filters="{{historyFilters}}" filter-data="{{filterData}}"></team-result-form>
             </div>
 
 
@@ -104,16 +139,24 @@
                     return [];
                 },
                 notify: true,
-            }
+            },
+            filterData: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true,
+                observer: "filterDataChanged"
+            },
         },
         observers: [
             "filterChanged(historyFilters.splices)"
         ],
 
-        ready: function(){
-          if(localStorage.bioinfo_team_filter_history){
-            this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
-          }
+        ready: function() {
+            if (localStorage.bioinfo_team_filter_history) {
+                this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
+            }
         },
         handleView: function(e) {
             this.view = e.target.dataset.value;
@@ -132,12 +175,23 @@
         queryChanged: function(neo, old) {},
         valueChanged: function(neo, old) {},
         filterChanged: function(neo, old) {
-          console.log(this.historyFilters)
+            console.log(this.historyFilters)
         },
         loadFilter: function(e) {
             e.stopPropagation();
             this.$.custom.clearForm();
             this.$.custom.loadForm(e.currentTarget.dataFilter);
+            this.$.filterHistoryTooltip.handleClose(e);
+
+        },
+        clearFiltersHistory: function(e) {
+            e.stopPropagation();
+            this.historyFilters = [];
+            localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
+
+        },
+        filterDataChanged: function(neo, old) {
+
         }
 
     });

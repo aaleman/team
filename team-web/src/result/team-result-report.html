@@ -48,11 +48,15 @@
             text-align: right;
         }
 
-        table {
+        table, #customFilters {
             margin-top: 20px;
             border: 2px solid #dadada;
             border-collapse: collapse;
             background-color: #fcfcfc;
+        }
+        #customFilters{
+          width: 350px;
+          border: 1px solid #dadada;
         }
 
         th,
@@ -92,6 +96,33 @@
             height: 100px;
             margin-top: 5px;
         }
+
+        #filter-name {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 250px;
+        }
+
+      .titleCustom, .numCustom, .nameCustom{
+        border: 1px solid #dadada;
+        padding: 3px;
+        text-align: center;
+      }
+        .titleCustom {
+            font-weight: bold;
+            background-color: #F1F3F5;
+        }
+
+        .numCustom {
+
+              width: 100px;
+              text-align: right;
+        }
+        .nameCustom {
+              width: 250px;
+        }
+
     </style>
     <template>
         <div id="report">
@@ -148,20 +179,15 @@
                     </table>
                 </div>
 
-                <div>
-                    <table>
-                        <tr>
-                            <th class="title">Custom Filter Used
-                            </th>
-                            <th class="title">Finded Genes
-                            </th>
-                        </tr>
-                        <tr>
-                            <td>{{filter}}</td>
-                            <td class="numbers">{{filterData.length}}</td>
-                        </tr>
-
-                    </table>
+                <div id="customFilters">
+                    <div class="horizontal layout">
+                        <span class="title titleCustom nameCustom"> Custom Filter Used </span>
+                        <span class="title titleCustom numCustom"> Finded Genes </span>
+                    </div>
+                    <div class="horizontal layout">
+                        <span id="filter-name" class="nameCustom" title="{{filter}}">{{filter}}</span>
+                        <span class="numCustom">{{filterData.length}}</span>
+                    </div>
                 </div>
 
                 <div style="margin-top: 10px">
@@ -321,7 +347,7 @@
             },
             filter: {
                 type: String,
-                value: ""
+                value: "-No filter used-"
             },
             filters: {
                 type: Array,
@@ -329,13 +355,14 @@
                     return [];
                 }
             },
+            first: {
+                type: Number,
+                value: 0
+            }
 
         },
         ready: function() {
             this._getDate();
-            if (this.filterData == null) {
-                this.filter = "-No filter used-";
-              }
         },
         print: function(data) {
             var mywindow = window.open('', '', 'height=1000,width=1000');
@@ -418,16 +445,22 @@
             var date = new Date();
             this.date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
         },
-        computeFilter: function() {
-
+        computeFilter: function(aux) {
+            if (aux === 0) {
+                this.clearFilter = 0;
+            } else if (aux === 1) {
+                this.clearFilter = 1;
+            }
             if (localStorage.bioinfo_team_filter_history) {
                 this.filters = JSON.parse(localStorage.bioinfo_team_filter_history);
             }
-            if (this.filterData == null) {
+            if (this.first === 0 || this.clearFilter === 0) {
                 this.filter = "-No filter used-";
-              }else{
+                this.filterData = this.secData;
+                this.first = 1;
+            } else {
                 this.filter = this.filters[0].name;
-              }
+            }
 
         },
         filterDataChanged: function(neo, old) {},

@@ -100,6 +100,7 @@
     <template>
         <div id="filter_form">
             <div id="bar" class="horizontal layout center-justified">
+                <div class="jso-btn jso-btn-shdw" on-click=""><i class="fa fa-filter"></i></div>
                 <div class="jso-btn jso-btn-shdw flex" on-click="clearForm">Clear</div>
                 <div class="jso-btn jso-btn-shdw flex" on-click="submitForm">Search</div>
             </div>
@@ -387,6 +388,14 @@
                 notify: true,
 
             },
+            filterData: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true,
+                observer: "filterDataChanged"
+            },
         },
 
         ready: function() {
@@ -441,6 +450,7 @@
                 el.checked = false;
             }
             this.submitForm();
+            document.getElementById('teamResultReport').computeFilter(0);
         },
         submitForm: function() {
 
@@ -503,14 +513,17 @@
             }
             if (_load == -1) { // This filter is new (has not been selected from the history)
                 if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
-                    var date = new Date();
-                    date = date.getDate() + '/' + date.getMonth() + ' ' + date.getHours() + ':' + date.getMinutes();
-                    name = date + " - " + this.loadForm(q);
+                    var dateAux = new Date();
+                    var date = dateAux.getDate() + '/' + dateAux.getMonth() + ' ' + dateAux.getHours() + ':' + dateAux.getMinutes();
+                    // name = dat + " - " + this.loadForm(q);
+                    name = this.loadForm(q);
+                    var finded= this.filterData.length;
                     var hf = {};
                     hf = {
                         date: date,
                         name: name,
-                        filter: q
+                        filter: q,
+                        finded: finded
                     };
 
                     var filters = new FilterHistory(5, JSON.parse(localStorage.bioinfo_team_filter_history));
@@ -524,9 +537,10 @@
 
                 var filters = new FilterHistory(5, this.historyFilters);
                 var filter = filters[pos];
-                var date = new Date();
-                date = date.getDate() + '/' + date.getMonth() + ' ' + date.getHours() + ':' + date.getMinutes();
-                var name = date + " - " + this.loadForm(q);
+                var dateAux = new Date();
+                var date = dateAux.getDate() + '/' + dateAux.getMonth() + ' ' + dateAux.getHours() + ':' + dateAux.getMinutes();
+                // var name = dat + " - " + this.loadForm(q);
+                var name = this.loadForm(q);
 
                 filter.date = date;
                 filter.name = name;
@@ -538,6 +552,9 @@
                 this.set("historyFilters", filters);
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
 
+            }
+            if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+            document.getElementById('teamResultReport').computeFilter(1);
             }
         },
         inputRegionChange: function() {
@@ -659,5 +676,8 @@
             }
             return filterName.join(" AND ");
         },
+        filterDataChanged: function(neo,old){
+
+        }
     });
 </script>
