@@ -22,7 +22,7 @@
         }
 
         jso-table::shadow,
-         jso-variant-frequencies-grid::shadow jso-table::shadow{
+        jso-variant-frequencies-grid::shadow jso-table::shadow {
             font-size: 11px;
         }
 
@@ -30,9 +30,8 @@
             width: 40px !important;
         }
 
-        jso-variant-frequencies-grid,jso-genome-viewer-element {
-            height: 400px;
-            overflow-y: auto;
+        jso-variant-frequencies-grid,
+        jso-genome-viewer-element {
             margin: 0 auto;
             box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
         }
@@ -62,17 +61,17 @@
         <jso-table id="table" data="{{_data}}" enable-paging selectable exportable enable-resize on-rowclick="handleRowClick"></jso-table>
 
         <div id="menu" class="horizontal layout">
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="overview">Overview</div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="comments">Comments</div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="frequency">Frequencies</div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="gv">Viewer</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="overview" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">Overview</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="comments" data-value="comments" data-checked$="{{computeView(view, 'comments')}}">Comments</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="frequency" data-value="frequency" data-checked$="{{computeView(view, 'frequency')}}">Frequencies</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="gv" data-value="gv" data-checked$="{{computeView(view, 'gv')}}">Viewer</div>
         </div>
 
         <div id="tools">
-            <div id="overview" hidden> </div>
-            <div id="comments" hidden> </div>
-            <jso-variant-frequencies-grid id="frequency" hidden></jso-variant-frequencies-grid>
-            <jso-genome-viewer-element id="gv" hidden></jso-genome-viewer-element>
+            <div id="overview" hidden$="{{!computeView(view, 'overview')}}"> </div>
+            <div id="comments" hidden$="{{!computeView(view, 'comments')}}"> </div>
+            <jso-variant-frequencies-grid id="frequency" hidden$="{{!computeView(view, 'frequency')}}"></jso-variant-frequencies-grid>
+            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}"></jso-genome-viewer-element>
         </div>
     </template>
 </dom-module>
@@ -92,6 +91,7 @@
                 value: function() {
                     return [];
                 },
+                notify: true
             },
             title: {
                 type: String,
@@ -107,6 +107,18 @@
             selectedMenuTool: {
                 type: Object,
                 observer: 'selectedMenuChanged'
+            },
+            view: {
+                type: String,
+                value: 'overview'
+            },
+            filterData: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true,
+                observer: "filterDataChanged"
             },
         },
         _columns: [{
@@ -248,6 +260,7 @@
                     }
                 };
                 this.set('_data', data);
+                this.set('filterData', this._data);
             }
         },
 
@@ -376,7 +389,10 @@
             return false;
         },
         handleMenuClick: function(e) {
-            this.selectedMenuTool = e.currentTarget;
+            this.view = e.target.dataset.value;
+        },
+        computeView: function(view, value) {
+            return view === value;
         },
         selectedMenuChanged: function(neo, old) {
             if (old) {
@@ -407,7 +423,7 @@
                     enabled: false
                 },
                 legend: {
-                    enabled:false
+                    enabled: false
                 },
                 title: {
                     text: row.gene,
@@ -434,6 +450,9 @@
                 }]
 
             });
-        }
+        },
+        filterDataChanged: function(neo, old) {
+          this.set('filterData', this._data);
+        },
     });
 </script>

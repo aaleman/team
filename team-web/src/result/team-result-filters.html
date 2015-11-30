@@ -53,14 +53,14 @@
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
               <div class="horizontal layout">Filters History &nbsp;
-                <jso-tooltip title="Filters History">
-                    <div style="text-align: left"> Filters History </div>
+                <!-- <jso-tooltip title="Filters History"> -->
+                    <!-- <div style="text-align: left"> Filters History </div> -->
                     <ul>
                         <template is="dom-repeat" items="{{historyFilters}}">
                             <li class="filter-name" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">{{item.name}}</li>
                         </template>
                     </ul>
-                </jso-tooltip>
+                <!-- </jso-tooltip> -->
                 </div>
                 <team-result-form id="custom" query={{query}} history-filters="{{historyFilters}}"></team-result-form>
             </div>

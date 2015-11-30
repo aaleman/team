@@ -117,7 +117,7 @@
                     <team-result-filters data="{{secData}}" query={{query}} value={{value}}></team-result-filters>
                 </div>
                 <div id="right" class="flex">
-                    <team-result-diagnostic data="{{secData}}" query="{{query}}" title="Secondary Findings"></team-result-diagnostic>
+                    <team-result-diagnostic data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}"></team-result-diagnostic>
 
                     <!-- <div id="menu" class="color-2 color-hover-2 horizontal layout">
                                     <div on-click="handleMenuClick" data-option="gv">Genomic context</div>
@@ -138,7 +138,7 @@
             </div>
 
             <div hidden$="{{!computeView(view, 'report')}}" id="result">
-                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}"></team-result-report>
+                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}"></team-result-report>
 
             </div>
 
@@ -195,7 +195,15 @@
                     },
                     notify: true,
                     observer: "valueChanged"
-                }
+                },
+                filterData: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    notify: true,
+                    observer: "filterDataChanged"
+                },
 
             },
             created: function() {},
@@ -409,6 +417,8 @@
                 return view === value;
             },
             valueChanged: function(neo, old) {},
+            filterDataChanged: function(neo, old) {
+            },
 
         })
     </script>

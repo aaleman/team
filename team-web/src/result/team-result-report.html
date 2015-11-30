@@ -148,6 +148,22 @@
                     </table>
                 </div>
 
+                <div>
+                    <table>
+                        <tr>
+                            <th class="title">Custom Filter Used
+                            </th>
+                            <th class="title">Finded Genes
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>{{filter}}</td>
+                            <td class="numbers">{{filterData.length}}</td>
+                        </tr>
+
+                    </table>
+                </div>
+
                 <div style="margin-top: 10px">
                     <div>Conclusions:</div>
                     <textarea id="reportConclusions" class="jso"></textarea>
@@ -195,8 +211,8 @@
                     </div>
                     <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada"> Static Filters</div>
                     <ul>
-                        A: Most Likely Pathogenic --> sift
-                        <=0 .05 && polyphen>= 0.95
+                        A: Most Likely Pathogenic --> Sift
+                        <=0 .05 AND Polyphen>= 0.95
                     </ul>
                     <ul>
                         B: Potentially Pathogenic -->
@@ -210,12 +226,13 @@
 
                     <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada">Custom Filters</div>
                     <ul>
-                      <label>Filter Used: </label>
+                        <label>Filter Used: </label>
                         <li>{{filter}}</li>
-                      <label>History Filters: </label>
-                      <template is="dom-repeat" items="{{filters}}">
-                          <li class="filter-name">{{item.name}}</li>
-                      </template>
+                        </br>
+                        <label>History Filters: </label>
+                        <template is="dom-repeat" items="{{filters}}">
+                            <li class="filter-name">{{item.name}}</li>
+                        </template>
                     </ul>
                 </div>
                 <div class="flex">
@@ -292,22 +309,33 @@
                 type: Number,
                 value: "",
             },
+            filterData: {
+                type: Array,
+                // value: function() {
+                //     return [];
+                // },
+                observer: 'filterDataChanged'
+            },
             date: {
                 type: String
             },
-            filter:{
-              type:String,
-              value:""
+            filter: {
+                type: String,
+                value: ""
             },
-            filters:{
-              type: Array,
-              value: function() {
-                  return [];
-              }
-            }
+            filters: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+
         },
         ready: function() {
             this._getDate();
+            if (this.filterData == null) {
+                this.filter = "-No filter used-";
+              }
         },
         print: function(data) {
             var mywindow = window.open('', '', 'height=1000,width=1000');
@@ -391,10 +419,17 @@
             this.date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
         },
         computeFilter: function() {
+
             if (localStorage.bioinfo_team_filter_history) {
                 this.filters = JSON.parse(localStorage.bioinfo_team_filter_history);
             }
-            this.filter=this.filters[0].name;
-        }
+            if (this.filterData == null) {
+                this.filter = "-No filter used-";
+              }else{
+                this.filter = this.filters[0].name;
+              }
+
+        },
+        filterDataChanged: function(neo, old) {},
     });
 </script>
