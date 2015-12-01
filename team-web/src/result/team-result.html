@@ -31,7 +31,6 @@
         }
 
         #menu {
-            /*border-bottom: 1px solid rgba(125, 125, 125, 0.4);*/
             margin-top: 15px;
         }
 
@@ -51,16 +50,6 @@
         #menu > div[selected] {
             border-bottom-color: rgba(125, 125, 125, 0.7);
         }
-
-        #tools {
-            /*height: calc(100% - 375px);*/
-            /*overflow-x: hidden;*/
-        }
-        /*jso-variant-grid,
-        jso-genome-viewer-element,
-        jso-variant-effect-grid {
-            box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
-        }*/
 
         team-result-diagnostic {
             height: 400px;
@@ -82,8 +71,6 @@
         }
     }
     .value {
-        /*background-color: #d0d0d0;*/
-
         border: 1px solid #d0d0d0;
         box-sizing: border-box;
         height: 20px;
@@ -112,28 +99,12 @@
                 <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic"></team-result-diagnostic>
             </div>
             <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
-                <!-- <jso-variant-filter-form url="{{url}}" file="{{file}}"></jso-variant-filter-form> -->
                 <div id="left">
                     <team-result-filters data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}"></team-result-filters>
                 </div>
                 <div id="right" class="flex">
                     <team-result-diagnostic id="secResult" data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}"></team-result-diagnostic>
 
-                    <!-- <div id="menu" class="color-2 color-hover-2 horizontal layout">
-                                    <div on-click="handleMenuClick" data-option="gv">Genomic context</div>
-                                    <div on-click="handleMenuClick" data-option="frequency">Frequencies</div>
-                                    <div on-click="handleMenuClick" data-option="phenotype">Phenotype</div>
-                                    <div on-click="handleMenuClick" data-option="effect">Effect</div>
-                                    <div on-click="handleMenuClick" data-option="stats">Stats</div>
-                                </div>
-                                <br>
-                                <div id="tools">
-                                    <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
-                                    <jso-variant-frequencies-grid id="frequency" hidden></jso-variant-frequencies-grid>
-                                    <jso-variant-phenotype-grid id="phenotype" hidden></jso-variant-phenotype-grid>
-                                    <jso-variant-effect-grid id="effect" hidden></jso-variant-effect-grid>
-                                    <jso-variant-stats id="stats" hidden></jso-variant-stats>
-                                </div> -->
                 </div>
             </div>
 
@@ -208,55 +179,9 @@
             },
             created: function() {},
             ready: function() {
-                //     var me = this;
-                //     this.async(function() {
-                //         this.$.gv.createGenomeViewer();
-                //         var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
-                //         this.$.gv.genomeViewer.draw();
-                //
-                //         this.genomeViewer = this.$.gv.genomeViewer;
-                //     });
-                //
+
             },
-            // selectedMenuChanged: function(neo, old) {
-            //     if (old) {
-            //         old.removeAttribute('selected');
-            //         this.$[old.dataset.option].setAttribute('hidden', '');
-            //     }
-            //     if (neo) {
-            //         neo.setAttribute('selected', '');
-            //         this.$[neo.dataset.option].removeAttribute('hidden');
-            //     }
-            // },
-            // handleMenuClick: function(e) {
-            //     this.selectedMenuTool = e.currentTarget;
-            // },
-            // handleRowClick: function(e) {
-            //     this.$.gv.genomeViewer.setRegion(e.detail.row);
-            //     this.$.effect.row = e.detail.row;
-            //     this.$.frequency.row = e.detail.row;
-            //     this.$.phenotype.row = e.detail.row;
-            //     this.$.stats.row = e.detail.row;
-            // },
-            // _old_ready: function() {
-            //     var me = this;
-            //
-            // },
-            // selectedTabChanged: function(oldValue, newValue) {
-            //     console.log(newValue);
-            // },
-            // handleDataGridSelected: function(oldValue, newValue) {
-            //     var me = this;
-            //     var reg = newValue.chr + ":" + newValue.start + "-" + newValue.end;
-            //     var region = new Region(reg);
-            //
-            //     // update Effect
-            //     var variant = newValue.chr + ":" + newValue.start + ":" + newValue.reference + ":" + newValue.alternate;
-            //     this.variantEffect = variant;
-            //     this.$.jsoVariantStats.stats = newValue.sourceEntries[me.studyId + "_" + me.fileId].stats;
-            //
-            //     this.$.gvEl.genomeViewer.setRegion(region);
-            // },
+
             jobChanged: function(neo, old) {
                 if (neo.output) {
 
