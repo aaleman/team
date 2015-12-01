@@ -77,7 +77,7 @@
             <team-result-static-filters data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
-                <div class="horizontal layout filterHistory">
+                <!-- <div class="horizontal layout filterHistory">
                     Filters History &nbsp;
                     <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History">
                         <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
@@ -96,8 +96,8 @@
                             </div>
                         </template>
                     </jso-tooltip>
-                </div>
-                <team-result-form id="custom" query={{query}} history-filters="{{historyFilters}}" filter-data="{{filterData}}"></team-result-form>
+                </div> -->
+                <team-result-form id="custom" query={{query}} filter-data="{{filterData}}"></team-result-form>
             </div>
 
 
@@ -133,13 +133,13 @@
                 notify: true,
                 observer: 'valueChanged'
             },
-            historyFilters: {
-                type: Array,
-                value: function() {
-                    return [];
-                },
-                notify: true,
-            },
+            // historyFilters: {
+            //     type: Array,
+            //     value: function() {
+            //         return [];
+            //     },
+            //     notify: true,
+            // },
             filterData: {
                 type: Array,
                 value: function() {
@@ -149,14 +149,14 @@
                 observer: "filterDataChanged"
             },
         },
-        observers: [
-            "filterChanged(historyFilters.splices)"
-        ],
+        // observers: [
+        //     "filterChanged(historyFilters.splices)"
+        // ],
 
         ready: function() {
-            if (localStorage.bioinfo_team_filter_history) {
-                this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
-            }
+            // if (localStorage.bioinfo_team_filter_history) {
+            //     this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
+            // }
         },
         handleView: function(e) {
             this.view = e.target.dataset.value;
@@ -174,22 +174,22 @@
         },
         queryChanged: function(neo, old) {},
         valueChanged: function(neo, old) {},
-        filterChanged: function(neo, old) {
-            console.log(this.historyFilters)
-        },
-        loadFilter: function(e) {
-            e.stopPropagation();
-            this.$.custom.clearForm();
-            this.$.custom.loadForm(e.currentTarget.dataFilter);
-            this.$.filterHistoryTooltip.handleClose(e);
-
-        },
-        clearFiltersHistory: function(e) {
-            e.stopPropagation();
-            this.historyFilters = [];
-            localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
-
-        },
+        // filterChanged: function(neo, old) {
+        //     console.log(this.historyFilters)
+        // },
+        // loadFilter: function(e) {
+        //     e.stopPropagation();
+        //     this.$.custom.clearForm();
+        //     this.$.custom.loadForm(e.currentTarget.dataFilter);
+        //     this.$.filterHistoryTooltip.handleClose(e);
+        //
+        // },
+        // clearFiltersHistory: function(e) {
+        //     e.stopPropagation();
+        //     this.historyFilters = [];
+        //     localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
+        //
+        // },
         filterDataChanged: function(neo, old) {
 
         }

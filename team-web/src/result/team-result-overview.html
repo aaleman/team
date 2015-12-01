@@ -27,7 +27,7 @@
         }
 
         #stadistics {
-          margin-top:20px;
+            margin-top: 20px;
             font-size: 15px;
             color: #737373;
         }
@@ -35,11 +35,21 @@
         .numbers {
             color: black;
         }
+
+        #filterChart {
+            height: 300px;
+            width: 500px;
+            padding: 10px;
+            border: 1px solid #d0d0d0;
+            margin-top: 10px;
+        }
     </style>
     <template>
         <div id="overview">
             <ul>
-                <strong><div id="name">{{job.name}}</div></strong>
+                <strong>
+                    <div id="name">{{job.name}}</div>
+                </strong>
 
                 <div id="description">{{job.description}}</div>
 
@@ -54,6 +64,10 @@
                         <span class="numbers">{{secData.length}}</span>
                     </div>
                 </ul>
+
+                <div id="filterChart">
+
+                </div>
             </ul>
 
         </div>
@@ -84,9 +98,81 @@
             totalData: {
                 type: Number,
                 value: "",
-            }
+            },
+
+            value: {
+                type: Object,
+                observer: 'valueChange'
+            },
         },
+        ready: function() {
 
+        },
+        _createPolarChart: function(value) {
+            var chart = new Highcharts.Chart({
+                chart: {
+                    type: 'column',
+                    renderTo: this.$.filterChart,
 
+                },
+                credits: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false
+                },
+                title: {
+                    text: "Static Filters",
+                    x: -80
+                },
+                xAxis: {
+                    type: 'category'
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Finded Genes'
+                    },
+                    min: 0
+                },
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                        }
+                    }
+                },
+              
+
+                series: [{
+                    name: "Static Filters",
+                    colorByPoint: true,
+                    data: [{
+                        name: 'A: Most Likely Pathogenic',
+                        y: value.mlp,
+                        color: '#b30000'
+                    }, {
+                        name: 'B: Potentially Pathogenic',
+                        y: value.pp,
+                        color: '#ff751a'
+                    }, {
+                        name: 'C: Unkown Significance',
+                        y: value.us,
+                        color: '#005b99'
+                    }, {
+                        name: 'D: Likely Benign',
+                        y: value.lb,
+                        color: '#008000'
+                    }]
+                }]
+
+            });
+        },
+        valueChange: function(neo, old) {
+            if (this.value.mlp != null) {
+                this._createPolarChart(this.value);
+            }
+        }
     });
 </script>

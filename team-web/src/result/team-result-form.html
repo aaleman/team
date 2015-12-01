@@ -96,11 +96,71 @@
             width: 45px;
             margin-right: 3px;
         }
+
+        #filter-name {
+            text-overflow: ellipsis;
+            width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .tit {
+            margin-top: 10px;
+            border-bottom: 1px solid #445D76;
+            font-weight: bold;
+        }
+
+        .name {
+            width: 300px;
+        }
+
+        .num {
+            width: 100px;
+        }
+        .clear-but {
+            width: 100px;
+            background-color: #f0f4f4 !important;
+        }
+        jso-tooltip::shadow #messageInfo::shadow {
+            height: 300px;
+            width: 500px;
+            background-color: #e2e9e9;
+            border: 1px solid #e2e9e9;
+            color: black;
+            font-style: normal;
+        }
+
+        jso-tooltip::shadow .closeInfo::shadow {
+            margin-left: 490px;
+        }
+        #filterHistoryTable > div:hover{
+          background-color: #8ba7a7;
+          border: 1px solid #8ba7a7;
+        }
+
     </style>
     <template>
         <div id="filter_form">
             <div id="bar" class="horizontal layout center-justified">
-                <div class="jso-btn jso-btn-shdw" on-click=""><i class="fa fa-filter"></i></div>
+                  <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History" icon="filter">
+                      <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
+                          Clear
+                      </div>
+                      <div class="horizontal layout flex">
+                          <span class="tit num"> Date </span>
+                          <span class="name tit"> Name </span>
+                          <span class="tit num"> Finded </span>
+                      </div>
+                      <div id="filterHistoryTable">
+                      <template is="dom-repeat" items="{{historyFilters}}">
+                          <div class="horizontal layout flex" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">
+                              <span class="num">{{item.date}} </span>
+                              <span id="filter-name" class="name">{{item.name}} </span>
+                              <span class="num">{{item.finded}}</span>
+                          </div>
+                      </template>
+                      </div>
+                  </jso-tooltip>
                 <div class="jso-btn jso-btn-shdw flex" on-click="clearForm">Clear</div>
                 <div class="jso-btn jso-btn-shdw flex" on-click="submitForm">Search</div>
             </div>
@@ -308,8 +368,6 @@
                     <div class="input_container vertical layout">
                     </div>
                 </div>
-
-
             </div>
         </div>
     </template>
@@ -382,7 +440,6 @@
             historyFilters: {
                 type: Array,
                 value: function() {
-                    // return [null, null, null, null, null];
                     return [];
                 },
                 notify: true,
@@ -399,9 +456,9 @@
         },
 
         ready: function() {
-            // if (localStorage.bioinfo_team_filter_history) {
-            //     this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
-            // }
+          if (localStorage.bioinfo_team_filter_history) {
+              this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
+          }
         },
 
         fileChanged: function(neo, old) {
@@ -517,7 +574,7 @@
                     var date = dateAux.getDate() + '/' + dateAux.getMonth() + ' ' + dateAux.getHours() + ':' + dateAux.getMinutes();
                     // name = dat + " - " + this.loadForm(q);
                     name = this.loadForm(q);
-                    var finded= this.filterData.length;
+                    var finded = this.filterData.length;
                     var hf = {};
                     hf = {
                         date: date,
@@ -554,7 +611,7 @@
 
             }
             if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
-            document.getElementById('teamResultReport').computeFilter(1);
+                document.getElementById('teamResultReport').computeFilter(1);
             }
         },
         inputRegionChange: function() {
@@ -676,8 +733,19 @@
             }
             return filterName.join(" AND ");
         },
-        filterDataChanged: function(neo,old){
+        filterDataChanged: function(neo, old) {},
+        loadFilter: function(e) {
+            e.stopPropagation();
+            this.clearForm();
+            this.loadForm(e.currentTarget.dataFilter);
+            this.$.filterHistoryTooltip.handleClose(e);
 
-        }
+        },
+        clearFiltersHistory: function(e) {
+            e.stopPropagation();
+            this.historyFilters = [];
+            localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
+
+        },
     });
 </script>

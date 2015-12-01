@@ -1,3 +1,4 @@
+<link rel="import" href="report-page.html">
 <dom-module id="team-result-report">
     <style>
         :host {
@@ -17,16 +18,7 @@
             background-color: white;
         }
 
-        .export {
-            padding: 20px;
-            margin: 10px;
-            width: 650px;
-            height: 900px;
-            border: 1px solid #d0d0d0;
-            background-color: white;
-        }
-
-        #header {
+        .jobName {
             font-size: 25px;
             color: #445D76;
             font-weight: bold;
@@ -48,15 +40,17 @@
             text-align: right;
         }
 
-        table, #customFilters {
+        table,
+        #customFilters {
             margin-top: 20px;
             border: 2px solid #dadada;
             border-collapse: collapse;
             background-color: #fcfcfc;
         }
-        #customFilters{
-          width: 350px;
-          border: 1px solid #dadada;
+
+        #customFilters {
+            width: 350px;
+            border: 1px solid #dadada;
         }
 
         th,
@@ -80,15 +74,6 @@
             margin-top: 30px;
         }
 
-        .logo {
-            margin: 3px;
-            height: 25px;
-        }
-
-        #footer {
-            text-align: end;
-        }
-
         #reportConclusions {
             box-sizing: border-box;
             display: block;
@@ -104,37 +89,40 @@
             width: 250px;
         }
 
-      .titleCustom, .numCustom, .nameCustom{
-        border: 1px solid #dadada;
-        padding: 3px;
-        text-align: center;
-      }
+        .titleCustom,
+        .numCustom,
+        .nameCustom {
+            border: 1px solid #dadada;
+            padding: 3px;
+            text-align: center;
+        }
+
         .titleCustom {
             font-weight: bold;
             background-color: #F1F3F5;
         }
 
         .numCustom {
-
-              width: 100px;
-              text-align: right;
+            width: 100px;
+            text-align: right;
         }
+
         .nameCustom {
-              width: 250px;
+            width: 250px;
         }
 
+        #diagnosticResult {
+            transform: rotate(-90deg);
+        }
+        #secondaryResult {
+            transform: rotate(-90deg);
+        }
     </style>
     <template>
         <div id="report">
-            <div id="export1" class="vertical layout export">
-                <div class="horizontal layout" style="line-height: 50px;">
-                    <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
-                    <div id="header" class="flex">{{job.name}}</div>
-                    <div class="">{{date}}
-                    </div>
-                </div>
+            <report-page>
+                <div class="flex jobName">{{job.name}}</div>
                 <div class="description">{{job.description}}</div>
-
                 <div>
                     <table id="stadistics">
                         <tr>
@@ -178,7 +166,6 @@
                         </tr>
                     </table>
                 </div>
-
                 <div id="customFilters">
                     <div class="horizontal layout">
                         <span class="title titleCustom nameCustom"> Custom Filter Used </span>
@@ -189,124 +176,74 @@
                         <span class="numCustom">{{filterData.length}}</span>
                     </div>
                 </div>
-
                 <div style="margin-top: 10px">
                     <div>Conclusions:</div>
                     <textarea id="reportConclusions" class="jso"></textarea>
+                </div>
+            </report-page>
 
+            <report-page>
+                <div id="diagnosticResult">
+                  <table id="secData">
+                      <tr>
+                          <th class="title"> Diagnostic Table</th>
+                      </tr>
+                  </table>
+                    <!-- <team-result-diagnostic data="{{diagData}}" title="Diagnostic"></team-result-diagnostic> -->
                 </div>
+            </report-page>
+            <report-page>
+                <div id="secondaryResult">
+                  <table>
+                      <tr>
+                          <th class="title"> Secondary Table</th>
+                      </tr>
+                  </table>
+                    <!-- <team-result-diagnostic data="{{secData}}" title="Secondary Findings"></team-result-diagnostic> -->
+                </div>
+            </report-page>
 
-                <div>
-                    <table id="diagData">
-                        <tr>
-                            <th class="title"> Diagnostic Table</th>
-                        </tr>
+            <report-page>
+                <div class="description">
+                    ANNEX I: Filters
+                </div>
+                <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada"> Static Filters</div>
+                <ul>
+                    A: Most Likely Pathogenic --> Sift
+                    <=0 .05 AND Polyphen>= 0.95
+                </ul>
+                <ul>
+                    B: Potentially Pathogenic -->
+                </ul>
+                <ul>
+                    C: Unkown Significance -->
+                </ul>
+                <ul>
+                    D: Likely Benign --> else
+                </ul>
 
-                    </table>
-                </div>
-                <div>
-                    <table id="secData">
-                        <tr>
-                            <th class="title"> Secondary Findings Table</th>
-                        </tr>
-
-                    </table>
-                </div>
-                <div class="flex">
-
-                </div>
-                <div id="footer">
-                    <img class="logo" src="../images/logobier.jpg" />
-                    <img class="logo" src="../images/logo_ciberer.jpg" />
-                    <img class="logo" src="../images/logo_cipf.png" />
-                    <img class="logo" src="../images/logoBabelomics_negative_noFondo.svg" />
-                    <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
-                    <img class="logo" src="../images/logo_inb.png" />
-                </div>
-            </div>
-            <div id="export2" class="vertical layout export">
-                <div class="horizontal layout" style="line-height: 50px;">
-                    <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
-                    <div id="header" class="flex">{{job.name}}</div>
-                    <div class="">{{date}}
-                    </div>
-                </div>
-                <div>
-                    <div class="description">
-                        ANNEX I: Filters
-                    </div>
-                    <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada"> Static Filters</div>
-                    <ul>
-                        A: Most Likely Pathogenic --> Sift
-                        <=0 .05 AND Polyphen>= 0.95
-                    </ul>
-                    <ul>
-                        B: Potentially Pathogenic -->
-                    </ul>
-                    <ul>
-                        C: Unkown Significance -->
-                    </ul>
-                    <ul>
-                        D: Likely Benign --> else
-                    </ul>
-
-                    <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada">Custom Filters</div>
-                    <ul>
-                        <label>Filter Used: </label>
-                        <li>{{filter}}</li>
-                        </br>
-                        <label>History Filters: </label>
-                        <template is="dom-repeat" items="{{filters}}">
-                            <li class="filter-name">{{item.name}}</li>
-                        </template>
-                    </ul>
-                </div>
-                <div class="flex">
-
-                </div>
-                <div id="footer">
-                    <img class="logo" src="../images/logobier.jpg" />
-                    <img class="logo" src="../images/logo_ciberer.jpg" />
-                    <img class="logo" src="../images/logo_cipf.png" />
-                    <img class="logo" src="../images/logoBabelomics_negative_noFondo.svg" />
-                    <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
-                    <img class="logo" src="../images/logo_inb.png" />
-                </div>
-            </div>
-            <div id="export3" class="vertical layout export">
-                <div class="horizontal layout" style="line-height: 50px;">
-                    <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
-                    <div id="header" class="flex">{{job.name}}</div>
-                    <div class="">{{date}}
-                    </div>
+                <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada">Custom Filters</div>
+                <ul>
+                    <li style="font-weight:bold">Filter Used: </li>
+                    <div>{{filter}}</div>
+                    </br>
+                    <li style="font-weight:bold">History Filters: </li>
+                    <template is="dom-repeat" items="{{filters}}">
+                        <div class="filter-name">{{item.name}}</div>
+                    </template>
+                </ul>
+            </report-page>
+            <report-page>
+                <div class="description">
+                    ANNEX II: Panels
                 </div>
                 <div>
-                    <div class="description">
-                        ANNEX II: Panels
-                    </div>
-                    <div class="title" style="margin-top:5px">
-
-                    </div>
-
                 </div>
-                <div class="flex">
-
-                </div>
-                <div id="footer">
-                    <img class="logo" src="../images/logobier.jpg" />
-                    <img class="logo" src="../images/logo_ciberer.jpg" />
-                    <img class="logo" src="../images/logo_cipf.png" />
-                    <img class="logo" src="../images/logoBabelomics_negative_noFondo.svg" />
-                    <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
-                    <img class="logo" src="../images/logo_inb.png" />
-                </div>
-            </div>
+            </report-page>
         </div>
 
+        <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF">Export to PDF</div>
 
-        <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF">Export to PDF
-
-        </div>
     </template>
 </dom-module>
 <script>
@@ -342,9 +279,6 @@
                 // },
                 observer: 'filterDataChanged'
             },
-            date: {
-                type: String
-            },
             filter: {
                 type: String,
                 value: "-No filter used-"
@@ -358,11 +292,11 @@
             first: {
                 type: Number,
                 value: 0
-            }
+            },
+            value: {
+                type: Object,
+            },
 
-        },
-        ready: function() {
-            this._getDate();
         },
         print: function(data) {
             var mywindow = window.open('', '', 'height=1000,width=1000');
@@ -440,10 +374,6 @@
             //     margins
             // )
 
-        },
-        _getDate: function() {
-            var date = new Date();
-            this.date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
         },
         computeFilter: function(aux) {
             if (aux === 0) {
