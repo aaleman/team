@@ -79,7 +79,6 @@
     <script src="lib/jsorolla/src/lib/opencga-manager.js"></script>
     <script src="lib/jsorolla/src/lib/cellbase-manager.js"></script>
 
-
     <link rel="import" href="src/team-element.html">
 
     <link rel="import" href="conf/theme.html">
@@ -104,15 +103,29 @@
         ga('create', 'UA-48766088-1', 'auto');
         ga('send', 'pageview');
 
-
         window.addEventListener('WebComponentsReady', function(e) {
+            var speciesReady = false;
+            var panelsReady = false;
             getSpecies(function(s) {
                 AVAILABLE_SPECIES = s;
                 DEFAULT_SPECIES = AVAILABLE_SPECIES.vertebrates[0];
-                team = document.createElement('team-element');
-                document.body.appendChild(team);
+                speciesReady = true;
+                if (speciesReady && panelsReady) {
+                    init();
+                }
+            });
+            getAppPanels(function() {
+                panelsReady = true;
+                if (speciesReady && panelsReady) {
+                    init();
+                }
             });
         });
+
+        function init() {
+            team = document.createElement('team-element');
+            document.body.appendChild(team);
+        };
 
         function getSpecies(callback) {
             CellBaseManager.get({
@@ -137,6 +150,39 @@
                     callback(taxonomies);
                 }
             });
+        };
+
+        function getAppPanels(callback) {
+          var div= document.createElement("div");
+          div.innerHTML='<i class="fa fa-circle-o-notch fa-spin"></i> &nbsp; Loading Panels...';
+          div.style.position = "fixed";
+          // div.style.top = '100px';
+          div.style.backgroundColor = '#204854';
+          div.style.color='white';
+          div.style.padding = "10px";
+          div.style.margin = "0 auto";
+          div.style.width = "180px";
+
+          document.body.appendChild(div);
+            if (localStorage.bioinfo_team_panelapp_diseases != null) {
+                BIOINFO_TEAM_PANELAPP_DISEASES = JSON.parse(localStorage.bioinfo_team_panelapp_diseases).result;
+                document.body.removeChild(div);
+                callback();
+            } else {
+                var url = "https://bioinfo.extge.co.uk/crowdsourcing/WebServices/list_panels?format=json";
+                var request = new XMLHttpRequest();
+                request.onload = function() {
+                    localStorage.bioinfo_team_panelapp_diseases = this.response;
+                    BIOINFO_TEAM_PANELAPP_DISEASES = JSON.parse(localStorage.bioinfo_team_panelapp_diseases).result;
+                    document.body.removeChild(div);
+                    callback();
+                };
+                request.onerror = function() {
+                    console.log('Error loading panels.')
+                };
+                request.open('GET', url);
+                request.send();
+            }
         }
     </script>
 

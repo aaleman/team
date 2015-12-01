@@ -605,6 +605,7 @@
     </template>
 </dom-module>
 <script>
+
     Polymer({
         is: "team-panel-form-wizard",
         properties: {
@@ -725,10 +726,7 @@
                 type: Array,
             },
             panelAppDiseases: {
-                type: Array,
-                value: function () {
-                    return [];
-                }
+                type: Array
             },
             panelAppGenes: {
                 type: Array,
@@ -757,6 +755,7 @@
         },
 
         ready: function () {
+           this.panelAppDiseases = BIOINFO_TEAM_PANELAPP_DISEASES;
 
             var me = this;
 
@@ -928,23 +927,6 @@
                 width: 100
             }];
 
-            if (localStorage.bioinfo_team_panelapp_diseases) {
-                this.panelAppDiseases = JSON.parse(localStorage.bioinfo_team_panelapp_diseases);
-            } else {
-                $.ajax({
-                    url: "https://bioinfo.extge.co.uk/crowdsourcing/WebServices/list_panels?format=json",
-                    dataType: 'json',
-                    async: false,
-                    success: function (response, textStatus, jqXHR) {
-                        var result = response.result;
-                        if (result.length > 0) {
-                            me.panelAppDiseases = result;
-                            localStorage.bioinfo_team_panelapp_diseases = JSON.stringify(result);
-                        }
-                    }
-                });
-
-            }
 
         },
         _setQuickSearchMenu: function (query) {
