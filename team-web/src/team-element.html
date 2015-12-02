@@ -2,6 +2,7 @@
 <script src="../lib/jsorolla/bower_components/LineReader/LineReader.js"></script>
 
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-application-behavior.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-manager-behavior.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-wizard.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-tooltip.html">
@@ -383,7 +384,8 @@
             // this.homeHidden = true;
         },
         handleLogout: function() {
-            // this.selectedOption = "home";
+            this.$.browserPanel.hide();
+            this.$.jobBrowserPanel.hide();
         },
         annonymousLogin: function() {
             this.$.jsoHeader.anonymousSign();

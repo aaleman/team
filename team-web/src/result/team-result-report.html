@@ -111,11 +111,24 @@
             width: 250px;
         }
 
-        #diagnosticResult {
+        #diagnosticResult,
+        .secResult {
             transform: rotate(-90deg);
+            position: relative;
+            top: 300px;
+            width: 700px;
+            font-size: 10px;
         }
-        #secondaryResult {
-            transform: rotate(-90deg);
+
+        #diagnosticResult {
+            top: 300px;
+        }
+
+        .colum {
+            /*text-overflow: ellipsis;
+            white-space: nowrap;*/
+            overflow: hidden;
+            max-width: 100px;
         }
     </style>
     <template>
@@ -183,25 +196,77 @@
             </report-page>
 
             <report-page>
+                <div class="title">
+                    Diagnostic Table
+                </div>
                 <div id="diagnosticResult">
-                  <table id="secData">
-                      <tr>
-                          <th class="title"> Diagnostic Table</th>
-                      </tr>
-                  </table>
-                    <!-- <team-result-diagnostic data="{{diagData}}" title="Diagnostic"></team-result-diagnostic> -->
+                    <table>
+                        <tr>
+                            <template is="dom-repeat" items="{{_columns}}">
+                                <th class="">{{item.title}}</th>
+                            </template>
+                        </tr>
+                        <template is="dom-repeat" items="{{diagData}}">
+                            <tr>
+                                <td class="colum" style="max-width: 25px;">{{item.chr}}</td>
+                                <td class="colum">{{item.pos}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.ref}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.alt}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.id}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.qual}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.dp}}</td>
+                                <td class="colum" style="max-width: 35px;">{{item.gene}}</td>
+                                <td class="colum">{{item.ct}}</td>
+                                <td class="colum">{{item.phylop}}</td>
+                                <td class="colum">{{item.phastcons}}</td>
+                                <td class="colum">{{item.sift}}</td>
+                                <td class="colum">{{item.polyphen}}</td>
+                                <td class="colum">{{item.maf1000G}}</td>
+                                <td class="colum">{{item.maf1000GP3}}</td>
+                                <td class="colum">{{item.phenotype}}</td>
+                                <td class="colum">{{item.source}}</td>
+                            </tr>
+                        </template>
+                    </table>
                 </div>
             </report-page>
-            <report-page>
-                <div id="secondaryResult">
-                  <table>
-                      <tr>
-                          <th class="title"> Secondary Table</th>
-                      </tr>
-                  </table>
-                    <!-- <team-result-diagnostic data="{{secData}}" title="Secondary Findings"></team-result-diagnostic> -->
-                </div>
-            </report-page>
+            <template is="dom-repeat" items="{{secDataDiv}}" as='secondarydata'>
+                <report-page>
+                    <div class="title">
+                        Secondary Filter Data Table
+                    </div>
+                    <div class="secResult" style$="{{computeTopSize(secondarydata.length)}}">
+                        <table>
+                            <tr>
+                                <template is="dom-repeat" items="{{_columns}}">
+                                    <th class="">{{item.title}}</th>
+                                </template>
+                            </tr>
+                            <template is="dom-repeat" items="{{secondarydata}}" as='data'>
+                                <tr>
+                                    <td class="colum" style="max-width: 25px;">{{data.chr}}</td>
+                                    <td class="colum">{{data.pos}}</td>
+                                    <td class="colum" style="max-width: 25px;">{{data.ref}}</td>
+                                    <td class="colum" style="max-width: 25px;">{{data.alt}}</td>
+                                    <td class="colum" style="max-width: 25px;">{{data.id}}</td>
+                                    <td class="colum" style="max-width: 25px;">{{data.qual}}</td>
+                                    <td class="colum" style="max-width: 25px;">{{data.dp}}</td>
+                                    <td class="colum" style="max-width: 35px;">{{data.gene}}</td>
+                                    <td class="colum">{{data.ct}}</td>
+                                    <td class="colum">{{data.phylop}}</td>
+                                    <td class="colum">{{data.phastcons}}</td>
+                                    <td class="colum">{{data.sift}}</td>
+                                    <td class="colum">{{data.polyphen}}</td>
+                                    <td class="colum">{{data.maf1000G}}</td>
+                                    <td class="colum">{{data.maf1000GP3}}</td>
+                                    <td class="colum">{{data.phenotype}}</td>
+                                    <td class="colum">{{data.source}}</td>
+                                </tr>
+                            </template>
+                        </table>
+                    </div>
+                </report-page>
+            </template>
 
             <report-page>
                 <div class="description">
@@ -272,6 +337,10 @@
                 type: Number,
                 value: "",
             },
+            secDataDiv: {
+                type: Array,
+                value: []
+            },
             filterData: {
                 type: Array,
                 // value: function() {
@@ -297,7 +366,64 @@
                 type: Object,
             },
 
+            _columns: {
+                type: Array,
+                value: [{
+                    name: 'chr',
+                    title: "Chr",
+                }, {
+                    name: 'pos',
+                    title: "Pos",
+                }, {
+                    name: 'ref',
+                    title: "Ref",
+                }, {
+                    name: 'alt',
+                    title: "Alt",
+                }, {
+                    name: 'id',
+                    title: 'SNP Id',
+                }, {
+                    name: 'qual',
+                    title: 'Qual',
+                }, {
+                    name: 'dp',
+                    title: 'DP',
+                }, {
+                    name: 'gene',
+                    title: 'Gene',
+                }, {
+                    name: 'ct',
+                    title: 'Conseq. Type',
+                }, {
+                    name: 'phylop',
+                    title: 'phyloP',
+                }, {
+                    name: 'phastcons',
+                    title: 'Phastcons',
+                }, {
+                    name: 'sift',
+                    title: 'SIFT',
+                }, {
+                    name: 'polyphen',
+                    title: 'Polyphen',
+                }, {
+                    name: 'maf1000G',
+                    title: 'MAF 1000G',
+                }, {
+                    name: 'maf1000GP3',
+                    title: 'MAF 1000G Phase 3',
+                }, {
+                    name: 'phenotype',
+                    title: 'Phenotype',
+                }, {
+                    name: 'source',
+                    title: 'Source',
+                }]
+            }
+
         },
+
         print: function(data) {
             var mywindow = window.open('', '', 'height=1000,width=1000');
             mywindow.document.write('<html><head><title>Report</title>');
@@ -393,6 +519,28 @@
             }
 
         },
-        filterDataChanged: function(neo, old) {},
+        filterDataChanged: function(neo, old) {
+            for (j = 0; j < neo.length; j++) {
+                if (isNaN(neo[j].qual)) {
+                    neo[j].qual = ".";
+                } else {
+                  neo[j].qual= parseFloat(neo[j].qual, 3);
+                }
+            }
+            this.secDataDiv = [];
+            // var top = [];
+            // var n=0;
+            for (var i = 0; i < neo.length; i += 25) {
+                this.push('secDataDiv', neo.slice(i, 25 + i));
+                // top[n]=350 - 10 * this.secDataDiv[n].length;
+                // n++
+
+            }
+
+        },
+        computeTopSize: function(n) {
+
+            return 'top: ' + (350 - 10 * n) + 'px';
+        }
     });
 </script>

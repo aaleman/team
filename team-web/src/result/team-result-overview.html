@@ -10,8 +10,8 @@
         #overview {
             padding: 10px;
             border: 1px solid #d0d0d0;
-            width: 600px;
-            height: 750px;
+            width: 80%;
+            height: 780px;
             margin: 0 auto;
         }
 
@@ -27,7 +27,7 @@
         }
 
         #stadistics {
-            margin-top: 20px;
+            margin-top: 10px;
             font-size: 15px;
             color: #737373;
         }
@@ -36,12 +36,18 @@
             color: black;
         }
 
-        #filterChart {
-            height: 300px;
-            width: 500px;
+        .chart {
+            height: 280px;
+            width: 400px;
             padding: 10px;
             border: 1px solid #d0d0d0;
             margin-top: 10px;
+        }
+
+        .down {
+            color: #445D76;
+            margin: 10px;
+            margin-right: 50px;
         }
     </style>
     <template>
@@ -64,9 +70,17 @@
                         <span class="numbers">{{secData.length}}</span>
                     </div>
                 </ul>
-
-                <div id="filterChart">
-
+                <div class="horizontal layout">
+                    <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{diag}}">
+                        <i class="fa fa-cloud-download"></i> &nbsp; Download Diagnostic File
+                    </div>
+                    <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{sec}}">
+                        <i class="fa fa-cloud-download"></i> &nbsp; Download Secundary Findings File
+                    </div>
+                    <div id="filterChart" class="chart">
+                    </div>
+                </div>
+                <div id="genesChart" class="chart" style="width: 1200px;">
                 </div>
             </ul>
 
@@ -76,6 +90,7 @@
 <script>
     Polymer({
         is: "team-result-overview",
+        behaviors: [JsoOpencgaManagerBehavior],
         properties: {
             job: {
                 type: Object,
@@ -93,7 +108,8 @@
                 type: Array,
                 value: function() {
                     return [];
-                }
+                },
+                observer: 'secDataChange'
             },
             totalData: {
                 type: Number,
@@ -108,7 +124,7 @@
         ready: function() {
 
         },
-        _createPolarChart: function(value) {
+        _createFilterChart: function(value) {
             var chart = new Highcharts.Chart({
                 chart: {
                     type: 'column',
@@ -123,7 +139,6 @@
                 },
                 title: {
                     text: "Static Filters",
-                    x: -80
                 },
                 xAxis: {
                     type: 'category'
@@ -143,7 +158,6 @@
                         }
                     }
                 },
-              
 
                 series: [{
                     name: "Static Filters",
@@ -169,10 +183,86 @@
 
             });
         },
+        _createGenesChart: function(map, gen) {
+            var value = [];
+            for (var i = 0; i < gen.length; i++) {
+                var key = gen[i];
+                value[i] = map[key];
+            }
+            var chart = new Highcharts.Chart({
+                chart: {
+                    type: 'column',
+                    renderTo: this.$.genesChart,
+
+                },
+                credits: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false
+                },
+                title: {
+                    text: "Number of Variants/GEN",
+                },
+                xAxis: {
+                    categories: gen,
+                    labels: {
+                        rotation: -45,
+                        style: {
+                            fontSize: '10px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    },
+                    title: {
+                        text: null
+                    }
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Variants'
+                    },
+                    min: 0
+                },
+
+                series: [{
+                    name: "Variants",
+                    data: value,
+                }]
+
+            });
+        },
         valueChange: function(neo, old) {
             if (this.value.mlp != null) {
-                this._createPolarChart(this.value);
+                this._createFilterChart(this.value);
             }
+        },
+        secDataChange: function(neo, old) {
+            var map = {};
+            var gen = "";
+            var geneNames = [];
+            var n = 0;
+            for (var i = 0; i < neo.length; i++) {
+                var genes = neo[i].gene.split(',');
+                for (var j = 0; j < genes.length; j++) {
+                    gen = genes[j];
+                    if (map[gen] == null) {
+                        map[gen] = 1;
+                        geneNames[n] = gen;
+                        n++;
+                    } else {
+                        map[gen]++;
+
+                    }
+                }
+            }
+            if (map[gen] != null) {
+                this._createGenesChart(map, geneNames.sort());
+            }
+        },
+        downloadFiles: function(e) {
+            var fileId = e.currentTarget.dataFile.id;
+            this._downloadFile(fileId);
         }
     });
 </script>

@@ -93,7 +93,7 @@
                     Report
                 </div>
             </div>
-            <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
+            <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'diagnostic')}}">
                 <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic"></team-result-diagnostic>
@@ -219,7 +219,8 @@
                     });
 
                     if (diag != null && sec != null) {
-
+                        this.diag = diag;
+                        this.sec = sec;
                         var diagContent;
                         var secContent;
                         OpencgaManager.files.content({
