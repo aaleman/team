@@ -150,7 +150,7 @@
                             <div class="horizontal layout">
                                 <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; Panel List</div>
                             </div>
-                            <jso-select-box style="margin:10px" options="{{panels}}" title-attribute="name"
+                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{panels}}" data-panels="{{panels}}" title-attribute="name"
                                             on-select="handlePanelClick"></jso-select-box>
 
                             <div class="flex"></div>
@@ -168,7 +168,7 @@
                             <div class="titlePreview">
                                 <i class="fa fa-eye"></i>&nbsp; Panel Preview
                             </div>
-                            <team-panel-preview selected-panel="{{selectedPanel}}" style="width:95%;">
+                            <team-panel-preview id="newDiagnosticPanelPreview" data-panel="{{selectedPanel}}" selected-panel="{{selectedPanel}}" style="width:95%;">
                             </team-panel-preview>
                         </div>
                     </div>

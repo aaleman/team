@@ -83,10 +83,8 @@
         }
 
         #filter-name {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-            width: 250px;
+            word-wrap: break-word;
+            width: 300px;
         }
 
         .titleCustom,
@@ -108,7 +106,7 @@
         }
 
         .nameCustom {
-            width: 250px;
+            width: 300px;
         }
 
         #diagnosticResult,
@@ -125,11 +123,24 @@
         }
 
         .colum {
-            /*text-overflow: ellipsis;
-            white-space: nowrap;*/
+            /*text-overflow: ellipsis;*/
+            /*white-space: nowrap;*/
             overflow: hidden;
-            max-width: 100px;
+            max-width: 170px;
+            max-height: 50px!important;
         }
+
+        jso-table {
+            font-size: 10px;
+        }
+
+        .reportPanelInfo {
+            margin: 5px;
+            width: 90%;
+        }
+        /*report-page{
+          page-break-inside: avoid;
+        }*/
     </style>
     <template>
         <div id="report">
@@ -215,7 +226,7 @@
                                 <td class="colum" style="max-width: 25px;">{{item.id}}</td>
                                 <td class="colum" style="max-width: 25px;">{{item.qual}}</td>
                                 <td class="colum" style="max-width: 25px;">{{item.dp}}</td>
-                                <td class="colum" style="max-width: 35px;">{{item.gene}}</td>
+                                <td class="colum" style="max-width: 50px;">{{item.gene}}</td>
                                 <td class="colum">{{item.ct}}</td>
                                 <td class="colum">{{item.phylop}}</td>
                                 <td class="colum">{{item.phastcons}}</td>
@@ -243,7 +254,7 @@
                                 </template>
                             </tr>
                             <template is="dom-repeat" items="{{secondarydata}}" as='data'>
-                                <tr>
+                                <tr style="max-height: 50px;">
                                     <td class="colum" style="max-width: 25px;">{{data.chr}}</td>
                                     <td class="colum">{{data.pos}}</td>
                                     <td class="colum" style="max-width: 25px;">{{data.ref}}</td>
@@ -251,7 +262,7 @@
                                     <td class="colum" style="max-width: 25px;">{{data.id}}</td>
                                     <td class="colum" style="max-width: 25px;">{{data.qual}}</td>
                                     <td class="colum" style="max-width: 25px;">{{data.dp}}</td>
-                                    <td class="colum" style="max-width: 35px;">{{data.gene}}</td>
+                                    <td class="colum" style="max-width: 50px;">{{data.gene}}</td>
                                     <td class="colum">{{data.ct}}</td>
                                     <td class="colum">{{data.phylop}}</td>
                                     <td class="colum">{{data.phastcons}}</td>
@@ -293,16 +304,26 @@
                     <div>{{filter}}</div>
                     </br>
                     <li style="font-weight:bold">History Filters: </li>
-                    <template is="dom-repeat" items="{{filters}}">
-                        <div class="filter-name">{{item.name}}</div>
-                    </template>
+                    <ul>
+                        <template is="dom-repeat" items="{{filters}}">
+                            <li class="filter-name">{{item.name}}</li>
+                        </template>
+                    </ul>
                 </ul>
             </report-page>
             <report-page>
                 <div class="description">
                     ANNEX II: Panels
                 </div>
-                <div>
+                <div class="reportPanelInfo">
+                    <label class="title">Diseases</label>
+                    <div id="reportDiseases">
+                    </div>
+                    <!-- <jso-table id="reportDiseasesJSOPanel" columns="{{diseaseColumns}}" data="{{diseases}}" hide-column-selector hidden></jso-table> -->
+                    <label class="title">Genes</label>
+                    <jso-table columns="{{geneColumns}}" data="{{genes}}" hide-column-selector> </jso-table>
+                    <label class="title">Mutations</label>
+                    <jso-table columns="{{mutationColumns}}" data="{{mutations}}" hide-column-selector></jso-table>
                 </div>
             </report-page>
         </div>
@@ -365,6 +386,15 @@
             value: {
                 type: Object,
             },
+            diseases: {
+                type: Array,
+            },
+            genes: {
+                type: Array,
+            },
+            mutations: {
+                type: Array,
+            },
 
             _columns: {
                 type: Array,
@@ -422,6 +452,54 @@
                 }]
             }
 
+        },
+        ready: function() {
+            this.geneColumns = [{
+                name: 'name',
+                title: 'Name',
+            }, {
+                name: 'chr',
+                title: 'Chr',
+                defaultValue: '.',
+            }, {
+                name: 'start',
+                title: 'Start',
+                defaultValue: '.',
+            }, {
+                name: 'end',
+                title: 'End',
+                defaultValue: '.',
+            }];
+            this.mutationColumns = [{
+                name: 'chr',
+                title: 'Chr',
+            }, {
+                name: 'pos',
+                title: 'Pos',
+            }, {
+                name: 'ref',
+                title: 'Ref',
+            }, {
+                name: 'alt',
+                title: 'Alt',
+            }, {
+                name: 'phe',
+                title: 'Phenotype',
+            }, {
+                name: 'src',
+                title: 'Source',
+            }];
+            this.diseaseColumns = [{
+                name: 'phenotype',
+                title: 'Phenotype',
+                type: 'text',
+                width: 300
+            }, {
+                name: 'source',
+                title: 'Source',
+                type: 'select',
+                options: ["clinvar", "gwas"],
+            }];
         },
 
         print: function(data) {
@@ -517,30 +595,70 @@
             } else {
                 this.filter = this.filters[0].name;
             }
-
+            this.getSecDataDiv(Utils.clone(this.filterData));
+            this.getJobPanel();
         },
-        filterDataChanged: function(neo, old) {
-            for (j = 0; j < neo.length; j++) {
-                if (isNaN(neo[j].qual)) {
-                    neo[j].qual = ".";
-                } else {
-                  neo[j].qual= parseFloat(neo[j].qual, 3);
-                }
+        filterDataChanged: function(neo, old) {},
+        getSecDataDiv: function(auxDataFilter) {
+            for (j = 0; j < auxDataFilter.length; j++) {
+                // if (isNaN(auxDataFilter[j].qual)) {
+                //     auxDataFilter[j].qual = ".";
+                // } else {
+                //     auxDataFilter[j].qual = parseFloat(auxDataFilter[j].qual, 3);
+                // }
+                auxDataFilter[j].gene = Utils.formatText(auxDataFilter[j].gene, ",");
+                auxDataFilter[j].ct = Utils.formatText(auxDataFilter[j].ct, ",").toLowerCase();
             }
             this.secDataDiv = [];
-            // var top = [];
-            // var n=0;
-            for (var i = 0; i < neo.length; i += 25) {
-                this.push('secDataDiv', neo.slice(i, 25 + i));
-                // top[n]=350 - 10 * this.secDataDiv[n].length;
-                // n++
+            for (var i = 0; i < auxDataFilter.length; i += 10) {
+                this.push('secDataDiv', auxDataFilter.slice(i, 10 + i));
 
             }
-
         },
         computeTopSize: function(n) {
+            return 'top: ' + (350 - 25 * n) + 'px';
+        },
+        getJobPanel: function() {
+            b = document.getElementById('newDiagnosticPanels');
+            var jobPanel = {};
+            var panels = b.dataPanels;
+            for (var i = 0; i < panels.length; i++) {
+                var panel = panels[i];
+                var name = panel.file.name;
+                if (this.job.commandLine.search(name) >= 0) {
+                    var panelId = panel.file.id;
+                    var data;
 
-            return 'top: ' + (350 - 10 * n) + 'px';
+                    OpencgaManager.files.content({
+                        id: panelId,
+                        query: {
+                            sid: Cookies('bioinfo_sid'),
+                            limit: 100
+                        },
+                        request: {
+                            async: false,
+                            success: function(response) {
+                                data = response;
+                            },
+                            error: function() {}
+                        }
+                    });
+
+                    if (data) {
+                        jobPanel = JSON.parse(data);
+                    }
+                }
+            }
+            console.log(jobPanel)
+            this.set('diseases', jobPanel.diseases);
+            this.set('genes', jobPanel.genes);
+            this.set('mutations', jobPanel.mutations);
+
+            var jsoTable = document.createElement("jso-table");
+            jsoTable.columns = this.diseaseColumns;
+            jsoTable.data = jobPanel.diseases;
+
+            Polymer.dom(this.$.reportDiseases).appendChild(jsoTable.exportToTable())
         }
     });
 </script>

@@ -145,6 +145,7 @@
                             <div class="name flex">{{item.name}}</div>
                             <div class="version" title="Version">{{item.version}}</div>
                             <!-- <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i> -->
+                            <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.file.id}}" on-click="handleEditPanel">&nbsp;</i>
                             <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
                             <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
                         </div>
@@ -186,7 +187,7 @@
         </div>
         <jso-panel modal movable expandible closable id="newPanelPanel" hidden>
             <div class="header" style="text-align:left;font-size:15px;">
-                <i class="fa fa-plus"></i> New Panel
+                <i class$="{{computeMode(mode)}}"></i>&nbsp;<span>{{mode}}</span>&nbsp;<span>Panel</span>
             </div>
             <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
         </jso-panel>
@@ -252,6 +253,10 @@
                     return {};
                 }
             },
+            mode:{
+              type:String,
+              value: ""
+            }
 
         },
 
@@ -323,7 +328,6 @@
             var me = this;
             var fileId = e.currentTarget.dataset.file;
 
-
             var panelContent = "";
             OpencgaManager.files.content({
                 id: fileId,
@@ -390,7 +394,42 @@
         // },
 
         handleNewPanel: function(e) {
+            this.set('mode',"New");
             this.$.newPanelPanel.hidden = false;
+        },
+        handleEditPanel: function(e) {
+            e.stopPropagation();
+            this.set('mode',"Edit");
+            var me = this;
+            var fileId = e.currentTarget.dataset.file;
+
+            var panelContent = "";
+            OpencgaManager.files.content({
+                id: fileId,
+                query: {
+                    sid: Cookies('bioinfo_sid')
+                },
+                request: {
+                    async: false,
+                    success: function(response) {
+                        panelContent = response;
+                    },
+                    error: function() {
+                    }
+                }
+            });
+            if (panelContent != "") {
+                var selectedPanel = JSON.parse(panelContent);
+                this.$.newPanelPanel.hidden = false;
+                this.$.formWizard.addFromPanelManager(selectedPanel);
+            }
+        },
+        computeMode: function(mode) {
+            if (mode== "Edit") {
+                return "fa fa-pencil-square-o"
+            } else if(mode== "New") {
+                return "fa fa-plus"
+            }
         }
     });
 </script>

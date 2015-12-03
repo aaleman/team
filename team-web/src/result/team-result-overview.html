@@ -47,7 +47,7 @@
         .down {
             color: #445D76;
             margin: 10px;
-            margin-right: 50px;
+            margin-left: 50px;
         }
     </style>
     <template>
@@ -71,13 +71,16 @@
                     </div>
                 </ul>
                 <div class="horizontal layout">
+                    <div id="filterChart" class="chart">
+                    </div>
+                    <div class="vertical layout">
+
                     <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{diag}}">
                         <i class="fa fa-cloud-download"></i> &nbsp; Download Diagnostic File
                     </div>
                     <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{sec}}">
                         <i class="fa fa-cloud-download"></i> &nbsp; Download Secundary Findings File
                     </div>
-                    <div id="filterChart" class="chart">
                     </div>
                 </div>
                 <div id="genesChart" class="chart" style="width: 1200px;">
