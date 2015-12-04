@@ -136,7 +136,7 @@
             margin-left: 490px;
         }
 
-        #filterHistoryTable > div:hover {
+        z #filterHistoryTable > div:hover {
             background-color: #8ba7a7;
             border: 1px solid #8ba7a7;
         }
@@ -156,7 +156,7 @@
                     <div class="horizontal layout flex">
                         <span class="tit num"> Date </span>
                         <span class="name tit"> Name </span>
-                        <span class="tit num"> Finded </span>
+                        <span class="tit num"> Find</span>
                     </div>
                     <div id="filterHistoryTable">
                         <template is="dom-repeat" items="{{historyFilters}}">
@@ -592,7 +592,11 @@
                         finded: finded
                     };
 
-                    var filters = new FilterHistory(5, JSON.parse(localStorage.bioinfo_team_filter_history));
+                    var filterHistory = [];
+                    if (localStorage.bioinfo_team_filter_history) {
+                        filterHistory = JSON.parse(localStorage.bioinfo_team_filter_history);
+                    }
+                    var filters = new FilterHistory(5, filterHistory);
                     filters.unshift(hf);
                     this.set("historyFilters", filters);
 
