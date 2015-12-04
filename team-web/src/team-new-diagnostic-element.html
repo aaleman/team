@@ -26,21 +26,6 @@
             overflow-y: auto;
         }
 
-        .panel-item {
-            padding: 2px 5px;
-        }
-
-        .panel-item {
-            color: #555;
-        }
-
-        .panel-item:hover {
-            background-color: #eee;
-        }
-
-        .panel-item[data-checked] {
-            background-color: #ddd;
-        }
 
         label.jso {
             display: block;
@@ -119,6 +104,38 @@
             margin: 5px;
             width: 100px;
         }
+
+        jso-select-box {
+            overflow-y: auto;
+            height: 400px;
+        }
+        #examplePanels {
+            height: 130px;
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border: 1px solid var(--divider-color);
+            background-color: #FFF;
+            margin:10px;
+        }
+
+        .jso-formtitle {
+            font-size: 13px;
+        }
+
+        .panel-item {
+          padding: 2px 5px;
+          cursor: pointer;
+        }
+
+        .panel-item[selected] {
+            background-color: #ddd;
+        }
+        .panel-item:hover {
+              background-color: var(--hover-color);
+        }
+
     </style>
     <template>
 
@@ -138,8 +155,7 @@
                 <div class="step">
                     <div class="jso-formcontent" style="padding:0">
                         <!--<jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>-->
-                        <jso-opencga-sample-browser class="container" id="sampleBrowser" projects="{{projects}}"
-                                                    on-sampleselected="handleSampleSelected"></jso-opencga-sample-browser>
+                        <jso-opencga-sample-browser class="container" id="sampleBrowser" projects="{{projects}}" on-sampleselected="handleSampleSelected"></jso-opencga-sample-browser>
 
                     </div>
                 </div>
@@ -148,21 +164,29 @@
                         <!-- <div class="vertical layout"> -->
                         <div class="selbox vertical layout" id="panelSelector">
                             <div class="horizontal layout">
-                                <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; Panel List</div>
+                                <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
                             </div>
-                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{panels}}" data-panels="{{panels}}" title-attribute="name"
-                                            on-select="handlePanelClick"></jso-select-box>
+                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{panels}}" data-panels="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
 
-                            <div class="flex"></div>
+
+                            <div class="horizontal layout">
+                                <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
+                            </div>
+                            <!-- <jso-select-box id="examplePanels" style="margin:10px" options="{{examplePanels}}" title-attribute="name" on-select="handlePanelExampleSelected"></jso-select-box> -->
+                            <div id="examplePanels">
+                                <template is="dom-repeat" items="{{examplePanels}}">
+                                    <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
+                                        <div class="flex" style="color:black;">{{item.name}}</div>
+                                    </div>
+                                </template>
+                            </div>
                             <div class="newPanelButon horizontal layout">
                                 <div class="flex" style="font-size:13px;">Or create a New Panel &nbsp;</div>
-                                <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel"
-                                     on-click="handleNewPanel">
+                                <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
                                     <i class="fa fa-plus"></i>&nbsp; Panel
                                 </div>
                             </div>
                         </div>
-                        <!-- </div> -->
 
                         <div id="panelPreview">
                             <div class="titlePreview">
@@ -176,26 +200,20 @@
                         <div class="header" style="text-align:left;font-size:15px;">
                             <i class="fa fa-plus"></i> New Panel
                         </div>
-                        <team-panel-form-wizard id="formWizard" class="container"
-                                                team-config-folder="{{teamConfigFolder}}"
-                                                default-study="{{defaultStudy}}"
-                                                panels="{{panels}}"></team-panel-form-wizard>
+                        <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
                     </jso-panel>
 
                 </div>
                 <div class="step">
                     <div class="jso-formcontent vertical layout" id="personalData">
                         <div style="color:#666;margin-top:5px;">Job name</div>
-                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName"
-                               value="{{jobName::change}}" required>
+                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
 
                         <div class="data">Description</label>
-                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}"
-                                      required></textarea>
+                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}" required></textarea>
                         </div>
                         <div class="horizontal layout">
-                            <div class="jso-btn jso-btn-shdw file" style="width:200px;margin: 0 auto;margin-top:10px;"
-                                 on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                            <div class="jso-btn jso-btn-shdw file" style="width:200px;margin: 0 auto;margin-top:10px;" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
                             </div>
                             <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
                         </div>
@@ -212,14 +230,14 @@
         properties: {
             panels: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
 
             },
             projects: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
@@ -234,19 +252,19 @@
             },
             bioformats: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             defaultStudy: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
             analysisFolder: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
@@ -263,20 +281,24 @@
             },
             selectedSample: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
-            }
+            },
+            examplePanels: {
+                type: Array,
+                value: function() {
+                    return EXAMPLE_PANELS;
+                }
+            },
 
         },
         observers: [
             "handlePanelsChanged(panels.splices)"
         ],
 
-        ready: function () {
-
-        },
-        handlePanelsChanged: function (value) {
+        ready: function() {},
+        handlePanelsChanged: function(value) {
             var aux = 0;
             if (this.panels == "") {
                 this.set('selectedPanel', null);
@@ -294,10 +316,10 @@
             }
 
         },
-        isPanel: function (item) {
+        isPanel: function(item) {
             return item.file.name.indexOf("panel") == 0;
         },
-        handleForm: function (e) {
+        handleForm: function(e) {
             var me = this;
 
             if (this.selectedSample.id == null) {
@@ -312,7 +334,6 @@
 
                 var studyId = this.$.sampleBrowser.selectedStudy.study.id;
                 this.selectedStudy = this.$.sampleBrowser.selectedStudy;
-
 
                 var query = {
                     sid: Cookies("bioinfo_sid"),
@@ -331,19 +352,17 @@
                     query: query,
                     request: {
                         //method: 'POST',
-                        success: function (response) {
+                        success: function(response) {
                             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                                 var userId = response.response[0].result[0].id;
                                 me.fire('run');
-                            } else {
-                            }
+                            } else {}
                         },
-                        error: function () {
+                        error: function() {
                             me.message = 'Server error, try again later.';
                         }
                     }
                 });
-
 
             } else {
                 this.errorMessage = "There are errors in the form. Correct them before launching work.";
@@ -351,15 +370,14 @@
             this.set('jobName', "TEAM Diagnosis");
             this.set('jobDescription', "New Diagnosis");
         },
-        handleClose: function (e) {
+        handleClose: function(e) {
             this.fire('close');
         },
-        handlePanelClick: function (e) {
-
+        handlePanelClick: function(e) {
             this.selectedPanelId = e.detail.file.id;
             this.errorMessagePanel = " ";
-            if(this.selectedSample=!null){
-              this.errorMessage="";
+            if (this.selectedSample = !null) {
+                this.errorMessage = "";
             }
 
             var data;
@@ -372,36 +390,50 @@
                 },
                 request: {
                     async: false,
-                    success: function (response) {
+                    success: function(response) {
                         data = response;
                     },
-                    error: function () {
-                    }
+                    error: function() {}
                 }
             });
-
+            var selectedExample = this.$.examplePanels.querySelector('div[selected]');
+            if (selectedExample != null) {
+                selectedExample.removeAttribute("selected", "");
+            }
             if (data) {
                 this.selectedPanel = JSON.parse(data);
             }
 
         },
-        handleSelectedPanelChanged: function (neo, old) {
+        handleSelectedPanelChanged: function(neo, old) {
             console.log(this.selectedPanelId);
             console.log(this.selectedPanel);
         },
-        handleFileSelected: function (e) {
+        handleFileSelected: function(e) {
             this.inputSelectedFile = e.detail;
             this.errorMessageFile = " ";
         },
-        handleSampleSelected: function (e) {
+        handleSampleSelected: function(e) {
             this.selectedSample = e.detail;
             this.errorMessageFile = " ";
-            if(this.selectedPanelId=!""){
-              this.errorMessage="";
+            if (this.selectedPanelId = !"") {
+                this.errorMessage = "";
             }
         },
-        handleNewPanel: function (e) {
+        handleNewPanel: function(e) {
             this.$.newPanelPanel.hidden = false;
+        },
+        handlePanelExampleSelected: function(e) {
+            this.set('selectedPanel', e.currentTarget.dataFile);
+            var selectedExample = this.$.examplePanels.querySelector('div[selected]');
+            var selectedUser = this.$.newDiagnosticPanels.querySelector('div[data-checked]');
+            if (selectedUser != null) {
+                selectedUser.removeAttribute("data-checked", "");
+            }
+            if (selectedExample != null) {
+                selectedExample.removeAttribute("selected", "");
+            }
+            e.currentTarget.setAttribute("selected", "");
         }
 
     });

@@ -117,16 +117,25 @@
             margin: 5px;
             width: 100px;
         }
+
+        #userPanels {
+            overflow-y: auto;
+            height: 300px;
+        }
+
+        #examplePanels {
+            height: 130px;
+            overflow-y: auto;
+        }
+
+        .jso-formtitle {
+            font-size: 13px;
+        }
     </style>
     <template>
         <div id="main" class="horizontal layout flex">
-
             <div id="left" class="vertical layout">
-                <!-- <div class="horizontal layout">-->
-                <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Panel List</div>
-                <!--<div id="botbar" class="jso-btn jso-btn-shdw file" on-click="handleNewPanel">
-                      <i class="fa fa-plus-square-o"></i>&nbsp; New Panel</div>
-              </div> -->
+                <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
                 <div class="horizontal layout">
                     <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
                         Main Panels
@@ -135,37 +144,39 @@
                         Archived Panels
                     </div>
                 </div>
-
+                <div class="jso-formcontent" id="userPanels">
+                    <template is="dom-if" if="{{computeView(view, 'main')}}">
+                        <template is="dom-repeat" items="{{panels}}" filter="isArchived" observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
+                                <div class="name flex">{{item.name}}</div>
+                                <div class="version" title="Version">{{item.version}}</div>
+                                <!-- <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i> -->
+                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.file.id}}" on-click="handleEditPanel">&nbsp;</i>
+                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                                <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
+                            </div>
+                        </template>
+                    </template>
+                    <template is="dom-if" if="{{computeView(view, 'archived')}}">
+                        <template is="dom-repeat" items="{{panels}}" filter="isNotArchived" observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
+                                <div class="name flex">{{item.name}}</div>
+                                <div class="version" title="Version">{{item.version}}</div>
+                                <!-- <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i> -->
+                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                                <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
+                            </div>
+                        </template>
+                    </template>
+                </div>
                 <br>
-
-                <template is="dom-if" if="{{computeView(view, 'main')}}">
-
-                    <template is="dom-repeat" items="{{panels}}" filter="isArchived" observe="type archived">
-                        <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
+                <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
+                <div class="jso-formcontent" id="examplePanels">
+                    <template is="dom-repeat" items="{{examplePanels}}">
+                        <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
                             <div class="name flex">{{item.name}}</div>
-                            <div class="version" title="Version">{{item.version}}</div>
-                            <!-- <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i> -->
-                            <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.file.id}}" on-click="handleEditPanel">&nbsp;</i>
-                            <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
-                            <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
                         </div>
                     </template>
-
-
-                </template>
-
-                <template is="dom-if" if="{{computeView(view, 'archived')}}">
-                    <template is="dom-repeat" items="{{panels}}" filter="isNotArchived" observe="type archived">
-                        <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
-                            <div class="name flex">{{item.name}}</div>
-                            <div class="version" title="Version">{{item.version}}</div>
-                            <!-- <i class="fa fa-files-o" title="Clone Panel" data-file$="{{item.file.id}}" on-click="handleClonePanel">&nbsp;</i> -->
-                            <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
-                            <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
-                        </div>
-                    </template>
-                </template>
-                <div class="flex">
                 </div>
                 <div class="newPanelButon horizontal layout">
                     <div class="flex" style="font-size:13px;">Or create a New Panel &nbsp;</div>
@@ -187,7 +198,9 @@
         </div>
         <jso-panel modal movable expandible closable id="newPanelPanel" hidden>
             <div class="header" style="text-align:left;font-size:15px;">
-                <i class$="{{computeMode(mode)}}"></i>&nbsp;<span>{{mode}}</span>&nbsp;<span>Panel</span>
+                <i class$="{{computeMode(mode)}}"></i>&nbsp;
+                <span>{{mode}}</span>&nbsp;
+                <span>Panel</span>
             </div>
             <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
         </jso-panel>
@@ -208,6 +221,12 @@
                 type: Array,
                 value: function() {
                     return [];
+                }
+            },
+            examplePanels: {
+                type: Array,
+                value: function() {
+                    return EXAMPLE_PANELS;
                 }
             },
             selectedPanel: {
@@ -253,9 +272,9 @@
                     return {};
                 }
             },
-            mode:{
-              type:String,
-              value: ""
+            mode: {
+                type: String,
+                value: ""
             }
 
         },
@@ -349,6 +368,15 @@
                 this.selectedPanel.fileId = fileId;
                 selectedPanel = this.selectedPanel;
             }
+            var selectedUser = this.$.userPanels.querySelector('div[selected]');
+            var selectedExample = this.$.examplePanels.querySelector('div[selected]');
+            if (selectedUser != null) {
+                selectedUser.removeAttribute("selected", "");
+            }
+            if (selectedExample != null) {
+                selectedExample.removeAttribute("selected", "");
+            }
+            e.currentTarget.setAttribute("selected", "");
 
         },
         _replacer: function(match, pIndent, pKey, pVal, pEnd) {
@@ -394,12 +422,12 @@
         // },
 
         handleNewPanel: function(e) {
-            this.set('mode',"New");
+            this.set('mode', "New");
             this.$.newPanelPanel.hidden = false;
         },
         handleEditPanel: function(e) {
             e.stopPropagation();
-            this.set('mode',"Edit");
+            this.set('mode', "Edit");
             var me = this;
             var fileId = e.currentTarget.dataset.file;
 
@@ -414,8 +442,7 @@
                     success: function(response) {
                         panelContent = response;
                     },
-                    error: function() {
-                    }
+                    error: function() {}
                 }
             });
             if (panelContent != "") {
@@ -425,11 +452,24 @@
             }
         },
         computeMode: function(mode) {
-            if (mode== "Edit") {
+            if (mode == "Edit") {
                 return "fa fa-pencil-square-o"
-            } else if(mode== "New") {
+            } else if (mode == "New") {
                 return "fa fa-plus"
             }
+        },
+        handlePanelExampleSelected: function(e) {
+            e.stopPropagation();
+            this.set('selectedPanel', e.currentTarget.dataFile);
+            var selectedUser = this.$.userPanels.querySelector('div[selected]');
+            var selectedExample = this.$.examplePanels.querySelector('div[selected]');
+            if (selectedUser != null) {
+                selectedUser.removeAttribute("selected", "");
+            }
+            if (selectedExample != null) {
+                selectedExample.removeAttribute("selected", "");
+            }
+            e.currentTarget.setAttribute("selected", "");
         }
     });
 </script>
