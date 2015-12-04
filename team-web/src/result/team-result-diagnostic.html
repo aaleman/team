@@ -34,6 +34,8 @@
         jso-genome-viewer-element {
             margin: 0 auto;
             box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+            height: 370px;
         }
 
         #menu {
@@ -46,10 +48,6 @@
 
         #menu > div[selected] {
             background-color: rgba(125, 125, 125, 0.4);
-        }
-
-        jso-variant-frequencies-grid {
-            border: 1px solid var(--divider-color);
         }
 
         #tools {
@@ -401,11 +399,11 @@
                 //         return true;
                 //     }
             } else if (query === "filterD") {
-              if (sift <= "0.05" && polyphen >= "0.95") {
-                  return false;
-              }else{
-                return true;
-              }
+                if (sift <= "0.05" && polyphen >= "0.95") {
+                    return false;
+                } else {
+                    return true;
+                }
 
             }
             return false;

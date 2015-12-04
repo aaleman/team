@@ -1206,6 +1206,8 @@
             }
             this.formData = new Panel();
             this.$.formWizard.goToStep(1);
+            a=document.getElementById("manager");
+            a.$.newPanelPanel.hidden=true;
         },
         uploadFile: function(fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({
