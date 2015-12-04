@@ -10,12 +10,15 @@
 
         #report {
             border: 1px solid #d0d0d0;
-            width: 750px;
+            width: 50%;
+            /*width: 750px;*/
             height: 750px;
             margin: 0 auto;
             margin-top: 10px;
             overflow-y: auto;
             background-color: white;
+            padding: 20px;
+            page-break-inside: avoid;
         }
 
         .jobName {
@@ -40,17 +43,13 @@
             text-align: right;
         }
 
-        table,
-        #customFilters {
+        table        {
             margin-top: 20px;
             border: 2px solid #dadada;
             border-collapse: collapse;
             background-color: #fcfcfc;
-        }
-
-        #customFilters {
-            width: 350px;
-            border: 1px solid #dadada;
+            font-size: 10px;
+            word-wrap: break-word;
         }
 
         th,
@@ -69,9 +68,11 @@
         }
 
         .exportBut {
-            width: 150px;
+            width: 200px;
             margin: 0 auto;
-            margin-top: 30px;
+            margin-top: 10px;
+            color: #445D76;
+            font-weight: bold;
         }
 
         #reportConclusions {
@@ -80,33 +81,6 @@
             width: 95%;
             height: 100px;
             margin-top: 5px;
-        }
-
-        #filter-name {
-            word-wrap: break-word;
-            width: 300px;
-        }
-
-        .titleCustom,
-        .numCustom,
-        .nameCustom {
-            border: 1px solid #dadada;
-            padding: 3px;
-            text-align: center;
-        }
-
-        .titleCustom {
-            font-weight: bold;
-            background-color: #F1F3F5;
-        }
-
-        .numCustom {
-            width: 100px;
-            text-align: right;
-        }
-
-        .nameCustom {
-            width: 300px;
         }
 
         #diagnosticResult,
@@ -119,13 +93,14 @@
         }
 
         #diagnosticResult {
-            top: 300px;
+            top: 350px;
         }
 
         .colum {
             /*text-overflow: ellipsis;*/
             /*white-space: nowrap;*/
-            overflow: hidden;
+            /*overflow: hidden;*/
+            word-wrap: break-word;
             max-width: 170px;
             max-height: 50px!important;
         }
@@ -138,197 +113,213 @@
             margin: 5px;
             width: 90%;
         }
-        /*report-page{
-          page-break-inside: avoid;
-        }*/
+
+        div {
+            margin-top: 10px;
+        }
     </style>
     <template>
         <div id="report">
-            <report-page>
-                <div class="flex jobName">{{job.name}}</div>
-                <div class="description">{{job.description}}</div>
-                <div>
-                    <table id="stadistics">
-                        <tr>
-                            <td> Total Genes </td>
-                            <td class="numbers"> {{totalData}} </td>
-                        </tr>
-                        <tr>
-                            <td> Diagnostic Genes </td>
-                            <td class="numbers"> {{diagData.length}} </td>
-                        </tr>
-                        <tr>
-                            <td> Secondary Genes </td>
-                            <td class="numbers"> {{secData.length}} </td>
-                        </tr>
-                    </table>
-                </div>
-                <div>
-                    <table id="values">
-                        <tr>
-                            <th class="title">Static Filters
-                            </th>
-                            <th class="title">Finded Genes
-                            </th>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-filter" style="color:#b30000"></i> A: Most Likely Pathogenic </td>
-                            <td class="numbers">{{value.mlp}}</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-filter" style="color:#ff751a"></i> B: Potentially Pathogenic </td>
-                            <td class="numbers">{{value.pp}}</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-filter" style="color:#005b99"></i> C: Unkown Significance </td>
-                            <td class="numbers">{{value.us}}</td>
-                        </tr>
-                        <tr>
+            <!-- <report-page> -->
+            <div class="flex jobName">{{job.name}}</div>
+            <div class="description">{{job.description}}</div>
+            <div>
+                <table id="stadistics">
+                    <tr>
+                        <td> Total Genes </td>
+                        <td class="numbers"> {{totalData}} </td>
+                    </tr>
+                    <tr>
+                        <td> Diagnostic Genes </td>
+                        <td class="numbers"> {{diagData.length}} </td>
+                    </tr>
+                    <tr>
+                        <td> Secondary Genes </td>
+                        <td class="numbers"> {{secData.length}} </td>
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <table id="values">
+                    <tr>
+                        <th class="title">Static Filters
+                        </th>
+                        <th class="title">Finded Genes
+                        </th>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-filter" style="color:#b30000"></i> A: Most Likely Pathogenic </td>
+                        <td class="numbers">{{value.mlp}}</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-filter" style="color:#ff751a"></i> B: Potentially Pathogenic </td>
+                        <td class="numbers">{{value.pp}}</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-filter" style="color:#005b99"></i> C: Unkown Significance </td>
+                        <td class="numbers">{{value.us}}</td>
+                    </tr>
+                    <tr>
 
-                            <td><i class="fa fa-filter" style="color:#008000"></i> D: Likely Benign </td>
-                            <td class="numbers">{{value.lb}}</td>
-                        </tr>
-                    </table>
-                </div>
-                <div id="customFilters">
-                    <div class="horizontal layout">
-                        <span class="title titleCustom nameCustom"> Custom Filter Used </span>
-                        <span class="title titleCustom numCustom"> Finded Genes </span>
-                    </div>
-                    <div class="horizontal layout">
-                        <span id="filter-name" class="nameCustom" title="{{filter}}">{{filter}}</span>
-                        <span class="numCustom">{{filterData.length}}</span>
-                    </div>
-                </div>
-                <div style="margin-top: 10px">
-                    <div>Conclusions:</div>
-                    <textarea id="reportConclusions" class="jso"></textarea>
-                </div>
-            </report-page>
-
-            <report-page>
-                <div class="title">
-                    Diagnostic Table
-                </div>
-                <div id="diagnosticResult">
-                    <table>
-                        <tr>
-                            <template is="dom-repeat" items="{{_columns}}">
-                                <th class="">{{item.title}}</th>
-                            </template>
-                        </tr>
-                        <template is="dom-repeat" items="{{diagData}}">
-                            <tr>
-                                <td class="colum" style="max-width: 25px;">{{item.chr}}</td>
-                                <td class="colum">{{item.pos}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.ref}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.alt}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.id}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.qual}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.dp}}</td>
-                                <td class="colum" style="max-width: 50px;">{{item.gene}}</td>
-                                <td class="colum">{{item.ct}}</td>
-                                <td class="colum">{{item.phylop}}</td>
-                                <td class="colum">{{item.phastcons}}</td>
-                                <td class="colum">{{item.sift}}</td>
-                                <td class="colum">{{item.polyphen}}</td>
-                                <td class="colum">{{item.maf1000G}}</td>
-                                <td class="colum">{{item.maf1000GP3}}</td>
-                                <td class="colum">{{item.phenotype}}</td>
-                                <td class="colum">{{item.source}}</td>
-                            </tr>
-                        </template>
-                    </table>
-                </div>
-            </report-page>
-            <template is="dom-repeat" items="{{secDataDiv}}" as='secondarydata'>
-                <report-page>
-                    <div class="title">
-                        Secondary Filter Data Table
-                    </div>
-                    <div class="secResult" style$="{{computeTopSize(secondarydata.length)}}">
-                        <table>
-                            <tr>
-                                <template is="dom-repeat" items="{{_columns}}">
-                                    <th class="">{{item.title}}</th>
-                                </template>
-                            </tr>
-                            <template is="dom-repeat" items="{{secondarydata}}" as='data'>
-                                <tr style="max-height: 50px;">
-                                    <td class="colum" style="max-width: 25px;">{{data.chr}}</td>
-                                    <td class="colum">{{data.pos}}</td>
-                                    <td class="colum" style="max-width: 25px;">{{data.ref}}</td>
-                                    <td class="colum" style="max-width: 25px;">{{data.alt}}</td>
-                                    <td class="colum" style="max-width: 25px;">{{data.id}}</td>
-                                    <td class="colum" style="max-width: 25px;">{{data.qual}}</td>
-                                    <td class="colum" style="max-width: 25px;">{{data.dp}}</td>
-                                    <td class="colum" style="max-width: 50px;">{{data.gene}}</td>
-                                    <td class="colum">{{data.ct}}</td>
-                                    <td class="colum">{{data.phylop}}</td>
-                                    <td class="colum">{{data.phastcons}}</td>
-                                    <td class="colum">{{data.sift}}</td>
-                                    <td class="colum">{{data.polyphen}}</td>
-                                    <td class="colum">{{data.maf1000G}}</td>
-                                    <td class="colum">{{data.maf1000GP3}}</td>
-                                    <td class="colum">{{data.phenotype}}</td>
-                                    <td class="colum">{{data.source}}</td>
-                                </tr>
-                            </template>
-                        </table>
-                    </div>
-                </report-page>
-            </template>
-
-            <report-page>
-                <div class="description">
-                    ANNEX I: Filters
-                </div>
-                <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada"> Static Filters</div>
+                        <td><i class="fa fa-filter" style="color:#008000"></i> D: Likely Benign </td>
+                        <td class="numbers">{{value.lb}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <table id="customFilters">
+                    <tr>
+                        <th class="title"> Custom Filter Used </th>
+                        <th class="title"> Finded Genes </th>
+                    </tr>
+                    <tr>
+                        <td class="numbers">{{filter}}</td>
+                        <td class="numbers">{{filterData.length}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="margin-top: 10px">
+                <div>Conclusions:</div>
+                <textarea id="reportConclusions" class="jso"></textarea>
+            </div>
+            <!-- </report-page> -->
+            <!-- <report-page> -->
+            <div class="title">
+                Diagnostic Table
+            </div>
+            <!-- <div id="diagnosticResult"> -->
+            <table>
+                <tr>
+                    <template is="dom-repeat" items="{{_columns}}">
+                        <th class="">{{item.title}}</th>
+                    </template>
+                </tr>
+                <template is="dom-repeat" items="{{diagData}}">
+                    <tr>
+                        <td class="colum" style="max-width: 25px;">{{item.chr}}</td>
+                        <td class="colum">{{item.pos}}</td>
+                        <td class="colum" style="max-width: 25px;">{{item.ref}}</td>
+                        <td class="colum" style="max-width: 25px;">{{item.alt}}</td>
+                        <td class="colum" style="max-width: 25px;">{{item.id}}</td>
+                        <td class="colum" style="max-width: 25px;">{{item.qual}}</td>
+                        <td class="colum" style="max-width: 25px;">{{item.dp}}</td>
+                        <td class="colum" style="max-width: 50px;">{{item.gene}}</td>
+                        <td class="colum">{{item.ct}}</td>
+                        <td class="colum">{{item.phylop}}</td>
+                        <td class="colum">{{item.phastcons}}</td>
+                        <td class="colum">{{item.sift}}</td>
+                        <td class="colum">{{item.polyphen}}</td>
+                        <td class="colum">{{item.maf1000G}}</td>
+                        <td class="colum">{{item.maf1000GP3}}</td>
+                        <td class="colum">{{item.phenotype}}</td>
+                        <td class="colum">{{item.source}}</td>
+                    </tr>
+                </template>
+            </table>
+            <!-- </div> -->
+            <!-- </report-page> -->
+            <!-- <template is="dom-repeat" items="{{secDataDiv}}" as='secondarydata'> -->
+            <!-- <report-page> -->
+            <div class="title">
+                Secondary Filter Data Table
+            </div>
+            <!-- <div class="secResult" style$="{{computeTopSize(secondarydata.length)}}"> -->
+            <table>
+                <tr>
+                    <template is="dom-repeat" items="{{_columns}}">
+                        <th class="">{{item.title}}</th>
+                    </template>
+                </tr>
+                <!-- <template is="dom-repeat" items="{{secondarydata}}" as='data'> -->
+                <template is="dom-repeat" items="{{filterData}}" as='data'>
+                    <tr style="max-height: 50px;">
+                        <td class="colum" style="max-width: 25px;">{{data.chr}}</td>
+                        <td class="colum">{{data.pos}}</td>
+                        <td class="colum" style="max-width: 25px;">{{data.ref}}</td>
+                        <td class="colum" style="max-width: 25px;">{{data.alt}}</td>
+                        <td class="colum" style="max-width: 25px;">{{data.id}}</td>
+                        <td class="colum" style="max-width: 25px;">{{data.qual}}</td>
+                        <td class="colum" style="max-width: 25px;">{{data.dp}}</td>
+                        <td class="colum" style="max-width: 50px;">{{data.gene}}</td>
+                        <td class="colum">{{data.ct}}</td>
+                        <td class="colum">{{data.phylop}}</td>
+                        <td class="colum">{{data.phastcons}}</td>
+                        <td class="colum">{{data.sift}}</td>
+                        <td class="colum">{{data.polyphen}}</td>
+                        <td class="colum">{{data.maf1000G}}</td>
+                        <td class="colum">{{data.maf1000GP3}}</td>
+                        <td class="colum">{{data.phenotype}}</td>
+                        <td class="colum">{{data.source}}</td>
+                    </tr>
+                </template>
+            </table>
+            <!-- </div> -->
+            <!-- </report-page> -->
+            <!-- </template> -->
+            <!-- <report-page> -->
+            <div class="description">
+                ANNEX I: Filters
+            </div>
+            <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada"> Static Filters</div>
+            <ul>
+                A: Most Likely Pathogenic --> Sift
+                <=0 .05 AND Polyphen>= 0.95
+            </ul>
+            <ul>
+                B: Potentially Pathogenic -->
+            </ul>
+            <ul>
+                C: Unkown Significance -->
+            </ul>
+            <ul>
+                D: Likely Benign --> else
+            </ul>
+            <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada">Custom Filters</div>
+            <ul>
+                <li style="font-weight:bold">Filter Used: </li>
+                <div>{{filter}}</div>
+                </br>
+                <li style="font-weight:bold">History Filters: </li>
                 <ul>
-                    A: Most Likely Pathogenic --> Sift
-                    <=0 .05 AND Polyphen>= 0.95
+                    <template is="dom-repeat" items="{{filters}}">
+                        <li class="filter-name">{{item.name}}</li>
+                    </template>
                 </ul>
-                <ul>
-                    B: Potentially Pathogenic -->
-                </ul>
-                <ul>
-                    C: Unkown Significance -->
-                </ul>
-                <ul>
-                    D: Likely Benign --> else
-                </ul>
-
-                <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada">Custom Filters</div>
-                <ul>
-                    <li style="font-weight:bold">Filter Used: </li>
-                    <div>{{filter}}</div>
-                    </br>
-                    <li style="font-weight:bold">History Filters: </li>
-                    <ul>
-                        <template is="dom-repeat" items="{{filters}}">
-                            <li class="filter-name">{{item.name}}</li>
-                        </template>
-                    </ul>
-                </ul>
-            </report-page>
-            <report-page>
-                <div class="description">
-                    ANNEX II: Panels
+            </ul>
+            <!-- </report-page> -->
+            <!-- <report-page> -->
+            <div class="description">
+                ANNEX II: Panel Used - Diseases
+            </div>
+            <div class="reportPanelInfo">
+                <div class="title">Diseases</div>
+                <div id="reportDiseases">
                 </div>
-                <div class="reportPanelInfo">
-                    <label class="title">Diseases</label>
-                    <div id="reportDiseases">
-                    </div>
-                    <!-- <jso-table id="reportDiseasesJSOPanel" columns="{{diseaseColumns}}" data="{{diseases}}" hide-column-selector hidden></jso-table> -->
-                    <label class="title">Genes</label>
-                    <jso-table columns="{{geneColumns}}" data="{{genes}}" hide-column-selector> </jso-table>
-                    <label class="title">Mutations</label>
-                    <jso-table columns="{{mutationColumns}}" data="{{mutations}}" hide-column-selector></jso-table>
+            </div>
+            <!-- </report-page> -->
+            <!-- <report-page> -->
+            <div class="description">
+                ANNEX II: Panel Used - Genes
+            </div>
+            <div class="reportPanelInfo">
+                <div class="title">Genes</div>
+                <div id="reportGenes">
                 </div>
-            </report-page>
+            </div>
+            <!-- </report-page> -->
+            <!-- <report-page> -->
+            <div class="description">
+                ANNEX II: Panel Used - Mutations
+            </div>
+            <div class="reportPanelInfo">
+                <div class="title">Mutations</div>
+                <div id="reportMutations">
+                </div>
+            </div>
+            <!-- </report-page> -->
         </div>
 
-        <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF">Export to PDF</div>
+        <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export to PDF/Print</div>
 
     </template>
 </dom-module>
@@ -493,13 +484,14 @@
                 name: 'phenotype',
                 title: 'Phenotype',
                 type: 'text',
-                width: 300
+                width: 500
             }, {
                 name: 'source',
                 title: 'Source',
                 type: 'select',
                 options: ["clinvar", "gwas"],
             }];
+            this.auxGetTable = 0;
         },
 
         print: function(data) {
@@ -600,15 +592,15 @@
         },
         filterDataChanged: function(neo, old) {},
         getSecDataDiv: function(auxDataFilter) {
-            for (j = 0; j < auxDataFilter.length; j++) {
-                // if (isNaN(auxDataFilter[j].qual)) {
-                //     auxDataFilter[j].qual = ".";
-                // } else {
-                //     auxDataFilter[j].qual = parseFloat(auxDataFilter[j].qual, 3);
-                // }
-                auxDataFilter[j].gene = Utils.formatText(auxDataFilter[j].gene, ",");
-                auxDataFilter[j].ct = Utils.formatText(auxDataFilter[j].ct, ",").toLowerCase();
-            }
+            // for (j = 0; j < auxDataFilter.length; j++) {
+            // if (isNaN(auxDataFilter[j].qual)) {
+            //     auxDataFilter[j].qual = ".";
+            // } else {
+            //     auxDataFilter[j].qual = parseFloat(auxDataFilter[j].qual, 3);
+            // }
+            //     auxDataFilter[j].gene = Utils.formatText(auxDataFilter[j].gene, ",");
+            //     auxDataFilter[j].ct = Utils.formatText(auxDataFilter[j].ct, ",").toLowerCase();
+            // }
             this.secDataDiv = [];
             for (var i = 0; i < auxDataFilter.length; i += 10) {
                 this.push('secDataDiv', auxDataFilter.slice(i, 10 + i));
@@ -650,15 +642,18 @@
                 }
             }
             console.log(jobPanel)
-            this.set('diseases', jobPanel.diseases);
-            this.set('genes', jobPanel.genes);
-            this.set('mutations', jobPanel.mutations);
-
+            if (this.auxGetTable === 0) {
+                this._getTable(this.diseaseColumns, jobPanel.diseases, this.$.reportDiseases);
+                this._getTable(this.geneColumns, jobPanel.genes, this.$.reportGenes);
+                this._getTable(this.mutationColumns, jobPanel.mutations, this.$.reportMutations);
+                this.auxGetTable++;
+            }
+        },
+        _getTable: function(columns, data, ref) {
             var jsoTable = document.createElement("jso-table");
-            jsoTable.columns = this.diseaseColumns;
-            jsoTable.data = jobPanel.diseases;
-
-            Polymer.dom(this.$.reportDiseases).appendChild(jsoTable.exportToTable())
+            jsoTable.columns = columns;
+            jsoTable.data = data;
+            Polymer.dom(ref).appendChild(jsoTable.exportToTable())
         }
     });
 </script>
