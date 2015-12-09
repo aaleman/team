@@ -38,10 +38,18 @@
 
         .chart {
             height: 280px;
-            width: 400px;
             padding: 10px;
             border: 1px solid #d0d0d0;
             margin-top: 10px;
+            overflow-x: auto;
+        }
+
+        #filterChart {
+            width: 55%;
+        }
+
+        #genesChart {
+            width: 95%;
         }
 
         .down {
@@ -75,15 +83,15 @@
                     </div>
                     <div class="vertical layout">
 
-                    <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{diag}}">
-                        <i class="fa fa-cloud-download"></i> &nbsp; Download Diagnostic File
-                    </div>
-                    <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{sec}}">
-                        <i class="fa fa-cloud-download"></i> &nbsp; Download Secundary Findings File
-                    </div>
+                        <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{diag}}">
+                            <i class="fa fa-cloud-download"></i> &nbsp; Download Diagnostic File
+                        </div>
+                        <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{sec}}">
+                            <i class="fa fa-cloud-download"></i> &nbsp; Download Secundary Findings File
+                        </div>
                     </div>
                 </div>
-                <div id="genesChart" class="chart" style="width: 1200px;">
+                <div id="genesChart" class="chart">
                 </div>
             </ul>
 
@@ -133,6 +141,9 @@
                     type: 'column',
                     renderTo: this.$.filterChart,
 
+                },
+                pane:{
+                  size:80
                 },
                 credits: {
                     enabled: false
@@ -196,7 +207,6 @@
                 chart: {
                     type: 'column',
                     renderTo: this.$.genesChart,
-
                 },
                 credits: {
                     enabled: false
