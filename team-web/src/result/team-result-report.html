@@ -332,6 +332,7 @@
                 value: function() {
                     return {};
                 },
+                observer: 'jobChanged',
             },
             diagData: {
                 type: Array,
@@ -571,14 +572,15 @@
             // )
 
         },
-        computeFilter: function(aux) {
+        computeFilter: function(aux,jobId) {
             if (aux === 0) {
                 this.clearFilter = 0;
             } else if (aux === 1) {
                 this.clearFilter = 1;
             }
             if (localStorage.bioinfo_team_filter_history) {
-                this.filters = JSON.parse(localStorage.bioinfo_team_filter_history);
+              var hash=JSON.parse(localStorage.bioinfo_team_filter_history);
+                this.filters = hash[jobId];
             }
             if (this.first === 0 || this.clearFilter === 0) {
                 this.filter = "-No filter used-";
@@ -588,7 +590,8 @@
                 this.filter = this.filters[0].name;
             }
             this.getSecDataDiv(Utils.clone(this.filterData));
-            this.getJobPanel();
+            // this.getJobPanel();
+
         },
         filterDataChanged: function(neo, old) {},
         getSecDataDiv: function(auxDataFilter) {
@@ -654,6 +657,11 @@
             jsoTable.columns = columns;
             jsoTable.data = data;
             Polymer.dom(ref).appendChild(jsoTable.exportToTable())
+        },
+        jobChanged: function(neo, old) {
+          if(neo.id){
+          this.getJobPanel();
+        }
         }
     });
 </script>

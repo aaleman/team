@@ -454,6 +454,12 @@
                 notify: true,
 
             },
+            hash: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+            },
             filterData: {
                 type: Array,
                 value: function() {
@@ -467,13 +473,22 @@
                 value: function() {
                     return {};
                 },
-                observer: 'jobChanged'
+                observer: 'jobChanged',
+            },
+            jobId: {
+                type: Number,
+                value: 0
+
             }
         },
 
         ready: function() {
             if (localStorage.bioinfo_team_filter_history) {
-                this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
+                this.hash = JSON.parse(localStorage.bioinfo_team_filter_history);
+                if (Array.isArray(this.hash)) {
+                    localStorage.bioinfo_team_filter_history = "";
+                    this.hash = {};
+                }
             }
         },
 
@@ -523,10 +538,10 @@
                 el.checked = false;
             }
             this.submitForm();
-            document.getElementById('teamResultReport').computeFilter(0);
+            document.getElementById('teamResultReport').computeFilter(0, this.jobId);
         },
         submitForm: function() {
-
+            var hash = {};
             var q = {};
             if (this.regionValue) {
                 q["region"] = this.inputRegionChange();
@@ -573,6 +588,12 @@
             }
             this.set('query', q);
 
+            var filterHistory = [];
+            if (this.jobId in this.hash) {
+                filterHistory = this.hash[this.jobId];
+            }
+            this.set("historyFilters", filterHistory);
+
             var newFilter = JSON.stringify(q);
             var _load = -1;
             for (var i = 0; i < this.historyFilters.length && _load == -1; i++) { // Check if the fitler has been selected from the history
@@ -584,11 +605,15 @@
                     }
                 }
             }
+
             if (_load == -1) { // This filter is new (has not been selected from the history)
                 if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
                     var dateAux = new Date();
-                    var date = dateAux.getDate() + '/' + dateAux.getMonth() + ' ' + dateAux.getHours() + ':' + dateAux.getMinutes();
-                    // name = dat + " - " + this.loadForm(q);
+                    var minAux=dateAux.getMinutes();
+                    if(minAux<10){
+                      minAux="0"+minAux;
+                    }
+                    var date = dateAux.getDate() + '/' + (dateAux.getMonth()+1) + ' ' + dateAux.getHours() + ':' + minAux;
                     name = this.loadForm(q);
                     var finded = this.filterData.length;
                     var hf = {};
@@ -599,33 +624,12 @@
                         finded: finded
                     };
 
-                    // Comprobar si es Array y si es Array borrar el localStorage.bioinfo_team_filter_history
-                    // var a = localStorage.bioinfo_team_filter_history
-                    // if(Array.isArray(a)){}... sabemos que es una versión vieja.
-                    // hash = {}
-                    // hash[this.job.id] = []
-                    // para saber si una "key" está en el hash  se usa "key" in hash
-
-
-
-                    var filterHistory = [];
-                    if (localStorage.bioinfo_team_filter_history) {
-                        filterHistory = JSON.parse(localStorage.bioinfo_team_filter_history);
-                    }
-
-                    // comprobar si this.job.id está dentro de hash
-                    // filters = newFilterHistory(5, hash[this.job.id]);
-
                     var filters = new FilterHistory(5, filterHistory);
                     filters.unshift(hf);
                     this.set("historyFilters", filters);
+                    this.hash[this.jobId] = this.historyFilters;
 
-                    // hash[this.job.id] = filters;
-                    // this.set("historyFilters", hash);
-
-                    localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
-
-                    // localStorage = JSON.stringify(hash);
+                    localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
                 }
             } else { // HistoryFilter contains this filter. We need to change the date and push to top
                 var pos = _load;
@@ -633,23 +637,26 @@
                 var filters = new FilterHistory(5, this.historyFilters);
                 var filter = filters[pos];
                 var dateAux = new Date();
-                var date = dateAux.getDate() + '/' + dateAux.getMonth() + ' ' + dateAux.getHours() + ':' + dateAux.getMinutes();
-                // var name = dat + " - " + this.loadForm(q);
-                var name = this.loadForm(q);
+                var minAux=dateAux.getMinutes();
+                if(minAux<10){
+                  minAux="0"+minAux;
+                }
+                var date = dateAux.getDate() + '/' + (dateAux.getMonth()+1) + ' ' + dateAux.getHours() + ':' + minAux;
 
                 filter.date = date;
-                filter.name = name;
 
                 var aux = filters[pos];
                 filters[pos] = filters[0];
                 filters[0] = aux;
 
                 this.set("historyFilters", filters);
-                localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
+                this.hash[this.jobId] = this.historyFilters;
+
+                localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
             if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
-                document.getElementById('teamResultReport').computeFilter(1);
+                document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
         inputRegionChange: function() {
@@ -783,11 +790,15 @@
         clearFiltersHistory: function(e) {
             e.stopPropagation();
             this.historyFilters = [];
-            localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
+            this.hash[this.jobId] = this.historyFilters;
+            localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
         },
         jobChanged: function(neo, old) {
-            debugger
+            this.set('jobId', neo.id);
+            if (this.jobId) {
+                this.clearForm();
+            }
         }
     });
 </script>
