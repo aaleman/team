@@ -156,7 +156,7 @@
                     <div class="horizontal layout flex">
                         <span class="tit num"> Date </span>
                         <span class="name tit"> Name </span>
-                        <span class="tit num"> Find</span>
+                        <span class="tit num"> Found</span>
                     </div>
                     <div id="filterHistoryTable">
                         <template is="dom-repeat" items="{{historyFilters}}">
@@ -462,6 +462,13 @@
                 notify: true,
                 observer: "filterDataChanged"
             },
+            job: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                observer: 'jobChanged'
+            }
         },
 
         ready: function() {
@@ -592,15 +599,33 @@
                         finded: finded
                     };
 
+                    // Comprobar si es Array y si es Array borrar el localStorage.bioinfo_team_filter_history
+                    // var a = localStorage.bioinfo_team_filter_history
+                    // if(Array.isArray(a)){}... sabemos que es una versión vieja.
+                    // hash = {}
+                    // hash[this.job.id] = []
+                    // para saber si una "key" está en el hash  se usa "key" in hash
+
+
+
                     var filterHistory = [];
                     if (localStorage.bioinfo_team_filter_history) {
                         filterHistory = JSON.parse(localStorage.bioinfo_team_filter_history);
                     }
+
+                    // comprobar si this.job.id está dentro de hash
+                    // filters = newFilterHistory(5, hash[this.job.id]);
+
                     var filters = new FilterHistory(5, filterHistory);
                     filters.unshift(hf);
                     this.set("historyFilters", filters);
 
+                    // hash[this.job.id] = filters;
+                    // this.set("historyFilters", hash);
+
                     localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
+
+                    // localStorage = JSON.stringify(hash);
                 }
             } else { // HistoryFilter contains this filter. We need to change the date and push to top
                 var pos = _load;
@@ -752,6 +777,7 @@
             this.clearForm();
             this.loadForm(e.currentTarget.dataFilter);
             this.$.filterHistoryTooltip.handleClose(e);
+            this.submitForm();
 
         },
         clearFiltersHistory: function(e) {
@@ -760,5 +786,8 @@
             localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
 
         },
+        jobChanged: function(neo, old) {
+            debugger
+        }
     });
 </script>

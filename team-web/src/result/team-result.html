@@ -100,7 +100,7 @@
             </div>
             <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
                 <div id="left">
-                    <team-result-filters data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}"></team-result-filters>
+                    <team-result-filters data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}" job="{{job}}"></team-result-filters>
                 </div>
                 <div id="right" class="flex">
                     <team-result-diagnostic id="secResult" data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}"></team-result-diagnostic>

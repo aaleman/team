@@ -11,7 +11,7 @@
             padding: 10px;
             border: 1px solid #d0d0d0;
             width: 80%;
-            height: 780px;
+            /*height: 780px;*/
             margin: 0 auto;
         }
 
@@ -44,8 +44,8 @@
             overflow-x: auto;
         }
 
-        #filterChart {
-            width: 55%;
+        #filterChart,#consTypeChart {
+            width: 50%;
         }
 
         #genesChart {
@@ -92,6 +92,8 @@
                     </div>
                 </div>
                 <div id="genesChart" class="chart">
+                </div>
+                <div id="consTypeChart" class="chart">
                 </div>
             </ul>
 
@@ -142,8 +144,8 @@
                     renderTo: this.$.filterChart,
 
                 },
-                pane:{
-                  size:80
+                pane: {
+                    size: 80
                 },
                 credits: {
                     enabled: false
@@ -197,7 +199,15 @@
 
             });
         },
-        _createGenesChart: function(map, gen) {
+        _createGenesChart: function(map, gen, op) {
+
+            if (op === 1) {
+                var renderTo = this.$.genesChart;
+                var title="Number of Variants/GEN";
+            } else if (op === 0) {
+                var renderTo = this.$.consTypeChart;
+                var title="Number of Variants/Consecuence Type";
+            }
             var value = [];
             for (var i = 0; i < gen.length; i++) {
                 var key = gen[i];
@@ -206,7 +216,7 @@
             var chart = new Highcharts.Chart({
                 chart: {
                     type: 'column',
-                    renderTo: this.$.genesChart,
+                    renderTo: renderTo,
                 },
                 credits: {
                     enabled: false
@@ -215,7 +225,7 @@
                     enabled: false
                 },
                 title: {
-                    text: "Number of Variants/GEN",
+                    text: title,
                 },
                 xAxis: {
                     categories: gen,
@@ -255,8 +265,13 @@
             var gen = "";
             var geneNames = [];
             var n = 0;
+            var mapCT = {};
+            var ct = "";
+            var ctNames = [];
+            var m = 0;
             for (var i = 0; i < neo.length; i++) {
                 var genes = neo[i].gene.split(',');
+                var cts = neo[i].ct.split(',');
                 for (var j = 0; j < genes.length; j++) {
                     gen = genes[j];
                     if (map[gen] == null) {
@@ -268,10 +283,24 @@
 
                     }
                 }
+                for (var k = 0; k < cts.length; k++) {
+                    ct = cts[k];
+                    if (mapCT[ct] == null) {
+                        mapCT[ct] = 1;
+                        ctNames[m] = ct;
+                        m++;
+                    } else {
+                        mapCT[ct]++;
+                    }
+                }
             }
             if (map[gen] != null) {
-                this._createGenesChart(map, geneNames.sort());
+                this._createGenesChart(map, geneNames.sort(), 1);
             }
+            if (mapCT[ct] != null) {
+                this._createGenesChart(mapCT, ctNames.sort(), 0);
+            }
+
         },
         downloadFiles: function(e) {
             var fileId = e.currentTarget.dataFile.id;
