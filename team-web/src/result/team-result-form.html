@@ -790,7 +790,7 @@
         clearFiltersHistory: function(e) {
             e.stopPropagation();
             this.historyFilters = [];
-            this.hash[this.jobId] = this.historyFilters;
+            delete(this.hash[this.job.id]);
             localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
         },
