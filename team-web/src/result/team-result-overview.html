@@ -44,7 +44,9 @@
             overflow-x: auto;
         }
 
-        #filterChart,#consTypeChart {
+        #filterChart,
+        #consTypeChart,
+        #qualChart {
             width: 50%;
         }
 
@@ -94,6 +96,10 @@
                 <div id="genesChart" class="chart">
                 </div>
                 <div id="consTypeChart" class="chart">
+                </div>
+                <div id="qualChart" class="chart" hidden>
+                </div>
+                <div id="depthChart" class="chart" hidden>
                 </div>
             </ul>
 
@@ -201,12 +207,12 @@
         },
         _createGenesChart: function(map, gen, op) {
 
-            if (op === 1) {
+            if (op === "gene") {
                 var renderTo = this.$.genesChart;
-                var title="Number of Variants/GEN";
-            } else if (op === 0) {
+                var title = "Number of Variants/GEN";
+            } else if (op === "ct") {
                 var renderTo = this.$.consTypeChart;
-                var title="Number of Variants/Consecuence Type";
+                var title = "Number of Variants/Consecuence Type";
             }
             var value = [];
             for (var i = 0; i < gen.length; i++) {
@@ -261,50 +267,117 @@
             }
         },
         secDataChange: function(neo, old) {
-            var map = {};
-            var gen = "";
-            var geneNames = [];
-            var n = 0;
-            var mapCT = {};
-            var ct = "";
-            var ctNames = [];
-            var m = 0;
-            for (var i = 0; i < neo.length; i++) {
-                var genes = neo[i].gene.split(',');
-                var cts = neo[i].ct.split(',');
-                for (var j = 0; j < genes.length; j++) {
-                    gen = genes[j];
-                    if (map[gen] == null) {
-                        map[gen] = 1;
-                        geneNames[n] = gen;
-                        n++;
-                    } else {
-                        map[gen]++;
-
-                    }
-                }
-                for (var k = 0; k < cts.length; k++) {
-                    ct = cts[k];
-                    if (mapCT[ct] == null) {
-                        mapCT[ct] = 1;
-                        ctNames[m] = ct;
-                        m++;
-                    } else {
-                        mapCT[ct]++;
-                    }
-                }
-            }
-            if (map[gen] != null) {
-                this._createGenesChart(map, geneNames.sort(), 1);
-            }
-            if (mapCT[ct] != null) {
-                this._createGenesChart(mapCT, ctNames.sort(), 0);
-            }
-
+            this.$.qualChart.hidden = true;
+            this.$.depthChart.hidden = true;
+            this._getMapForChart(neo, "gene");
+            this._getMapForChart(neo, "ct");
+            this._getIntervalData(neo,"qual");
+            this._getIntervalData(neo,"dp");
         },
         downloadFiles: function(e) {
             var fileId = e.currentTarget.dataFile.id;
             this._downloadFile(fileId);
-        }
+        },
+        _getMapForChart: function(neo, option) {
+            var map = {};
+            var value = "";
+            var valueNames = [];
+            var n = 0;
+            for (var i = 0; i < neo.length; i++) {
+                var opts = neo[i];
+                opts = opts[option].split(',');
+                for (var j = 0; j < opts.length; j++) {
+                    value = opts[j];
+                    if (map[value] == null) {
+                        map[value] = 1;
+                        valueNames[n] = value;
+                        n++;
+                    } else {
+                        map[value]++;
+
+                    }
+                }
+            }
+            if (map[value] != null) {
+                this._createGenesChart(map, valueNames.sort(), option);
+            }
+
+        },
+        _getIntervalData: function(neo,option) {
+            var qualValues = [];
+            var qualInterval = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            for (var i = 0; i < neo.length; i++) {
+              var d=neo[i];
+                if (!isNaN(d[option])) {
+                    qualValues[i] = d[option];
+                }
+            }
+            if (qualValues[0]) {
+                var start = Math.min.apply(null, qualValues);
+                var end = Math.max.apply(null, qualValues);
+                var step = Math.round((end - start) / 9);
+                for (var i = 0; i < qualValues.length; i++) {
+                    var value = Math.floor(qualValues[i] / step);
+                    qualInterval[value]++;
+
+                }
+                var categories = [0 + "-" + step, step + "-" + step * 2, step * 2 + "-" + step * 3, step * 3 + "-" + step * 4, step * 4 + "-" + step * 5, step * 5 + "-" + step * 6,
+                    step * 6 + "-" + step * 7, step * 7 + "-" + step * 8, step * 8 + "-" + step * 9, step * 9 + "-" + step * 10
+                ];
+                this._createQualChart(qualInterval, categories,option);
+            }
+        },
+        _createQualChart: function(data, categories,op) {
+          if (op === "qual") {
+              var renderTo = this.$.qualChart;
+              var title = "Qual/Variants";
+              this.$.qualChart.hidden = false;
+          } else if (op === "dp") {
+              var renderTo = this.$.depthChart;
+              var title = "Depth/Variants";
+              this.$.depthChart.hidden = false;
+          }
+
+            var chart = new Highcharts.Chart({
+                chart: {
+                    type: 'column',
+                    renderTo: renderTo,
+                },
+                credits: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false
+                },
+                title: {
+                    text: title,
+                },
+                xAxis: {
+                    categories: categories,
+                    labels: {
+                        style: {
+                            fontSize: '10px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    },
+                    title: {
+                        text: "Qual"
+                    }
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Nº of Variants'
+                    },
+                    min: 0
+                },
+
+                series: [{
+                    name: "Variants",
+                    data: data,
+                }]
+
+            });
+        },
     });
 </script>
