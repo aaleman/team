@@ -131,7 +131,6 @@
             color: #445D76;
             margin-top: 5px;
             margin-bottom: 5px;
-            /*text-align: center;*/
             border-bottom: 1px solid #445D76;
             padding: 2px;
         }
@@ -150,6 +149,11 @@
             height: 15px;
             border: 1px solid #dadada;
             padding: 1px 0 1px 0;
+        }
+
+        .commment {
+            font-style: italic;
+            margin: 5px;
         }
     </style>
     <template>
@@ -261,8 +265,8 @@
                 </div>
                 <div id="reportConclusions" style="margin-top: 10px" hidden>
                     <div>Conclusions:
-                    <textarea id="textConclusions" class="conclusions"></textarea>
-                    <div id="divConclusions" class="conclusions" hidden>{{divConclusions}}</div>
+                        <textarea id="textConclusions" class="conclusions"></textarea>
+                        <div id="divConclusions" class="conclusions" hidden>{{divConclusions}}</div>
                     </div>
                 </div>
                 <!-- </report-page> -->
@@ -271,6 +275,11 @@
                     <div class="title">
                         Diagnostic Table
                     </div>
+                    <ul>
+                        <div class="commment">Comments: &nbsp;
+                        <span style:"color:gray">{{comDiag}}</span></div>
+                    </ul>
+
                     <!-- <div id="diagnosticResult"> -->
                     <table>
                         <tr>
@@ -310,6 +319,10 @@
                         Secondary Filter Data Table
                     </div>
                     <!-- <div class="secResult" style$="{{computeTopSize(secondarydata.length)}}"> -->
+                    <ul>
+                        <div class="commment">Comments: &nbsp;
+                        <span style:"color:gray">{{comSec}}</span></div>
+                    </ul>
                     <table>
                         <tr>
                             <template is="dom-repeat" items="{{_columns}}">
@@ -348,7 +361,6 @@
                     <div class="description">
                         ANNEX I: Static Filters
                     </div>
-                    <!-- <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada"> Static Filters</div> -->
                     <ul>
                         A: Most Likely Pathogenic --> Sift
                         <=0 .05 AND Polyphen>= 0.95
@@ -362,18 +374,6 @@
                     <ul>
                         D: Likely Benign --> else
                     </ul>
-                    <!-- <div class="title" style="margin-top:5px;border-bottom: 1px solid #dadada">Custom Filters</div>
-            <ul>
-                <li style="font-weight:bold">Filter Used: </li>
-                <div>{{filter}}</div>
-                </br>
-                <li style="font-weight:bold">History Filters: </li>
-                <ul>
-                    <template is="dom-repeat" items="{{filters}}">
-                        <li class="filter-name">{{item.name}}</li>
-                    </template>
-                </ul>
-            </ul> -->
                     <!-- </report-page> -->
                     <!-- <report-page> -->
                 </div>
@@ -682,24 +682,13 @@
                 this.filter = this.filters[0].name;
             }
             this.getSecDataDiv(Utils.clone(this.filterData));
-            // this.getJobPanel();
 
         },
         filterDataChanged: function(neo, old) {},
         getSecDataDiv: function(auxDataFilter) {
-            // for (j = 0; j < auxDataFilter.length; j++) {
-            // if (isNaN(auxDataFilter[j].qual)) {
-            //     auxDataFilter[j].qual = ".";
-            // } else {
-            //     auxDataFilter[j].qual = parseFloat(auxDataFilter[j].qual, 3);
-            // }
-            //     auxDataFilter[j].gene = Utils.formatText(auxDataFilter[j].gene, ",");
-            //     auxDataFilter[j].ct = Utils.formatText(auxDataFilter[j].ct, ",").toLowerCase();
-            // }
             this.secDataDiv = [];
             for (var i = 0; i < auxDataFilter.length; i += 10) {
                 this.push('secDataDiv', auxDataFilter.slice(i, 10 + i));
-
             }
         },
         computeTopSize: function(n) {
@@ -753,36 +742,41 @@
         jobChanged: function(neo, old) {
             if (neo.id) {
                 this.getJobPanel();
-                var inputValues=this.$.reportOptions.querySelectorAll('input');
-                for(i=0; i<inputValues.length;i++){
-                  inputValues[i].checked=false;
+                var inputValues = this.$.reportOptions.querySelectorAll('input');
+                for (i = 0; i < inputValues.length; i++) {
+                    inputValues[i].checked = false;
                 }
-                inputValues[0].checked=true;
-                inputValues[1].checked=true;
-                inputValues[2].checked=true;
-                inputValues[3].checked=true;
-                inputValues[5].checked=true;
-                inputValues[7].checked=true;
+                inputValues[0].checked = true;
+                inputValues[1].checked = true;
+                inputValues[2].checked = true;
+                inputValues[3].checked = true;
+                inputValues[5].checked = true;
+                inputValues[7].checked = true;
 
-                this.$.reportConclusions.hidden=true;
-                this.$.secResult.hidden=true;
-                this.$.anexII.hidden=true;
-                this.$.diseases.hidden=true;
-                this.$.genes.hidden=true;
-                this.$.mutations.hidden=true;
+                this.$.reportConclusions.hidden = true;
+                this.$.secResult.hidden = true;
+                this.$.anexII.hidden = true;
+                this.$.diseases.hidden = true;
+                this.$.genes.hidden = true;
+                this.$.mutations.hidden = true;
+                var comments = document.getElementsByClassName('commentsTextArea');
+                comments[0].value="";
+                comments[1].value="";
+                this.comDiag = "";
+                this.comSec = "";
             }
         },
         showInReport: function(e) {
             var divId = e.currentTarget.value;
             this.$[divId].hidden = !this.$[divId].hidden;
-            if(divId==="anexII"){
-              this.$.diseases.hidden=true;
-              this.$.genes.hidden=true;
-              this.$.mutations.hidden=true;
-              var aux=this.$.panelsInfo.querySelectorAll('input');
-              for(i=0; i<aux.length;i++){
-                aux[i].checked=false;
-              }
+            if (divId === "anexII") {
+                this.$.diseases.hidden = true;
+                this.$.genes.hidden = true;
+                this.$.mutations.hidden = true;
+                var aux = this.$.panelsInfo.querySelectorAll('input');
+                for (i = 0; i < aux.length; i++) {
+                    aux[i].checked = false;
+                }
             }
         },
         _getTextInfo: function() {
@@ -801,6 +795,11 @@
 
             return;
 
+        },
+        _getCommentsInfo: function() {
+            var comments = document.getElementsByClassName('commentsTextArea');
+            this.comDiag = comments[0].value;
+            this.comSec = comments[1].value;
         }
     });
 </script>

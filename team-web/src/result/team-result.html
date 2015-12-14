@@ -336,6 +336,8 @@
                 this.view = e.target.dataset.value;
                 if (this.view == 'report') {
                     this.$.teamResultReport.computeFilter();
+                    this.$.teamResultReport._getCommentsInfo();                    
+
                 }
             },
             computeView: function(view, value) {
