@@ -82,6 +82,8 @@
             width: 95%;
             height: 100px;
             margin-top: 5px;
+            resize: none;
+            border: 1px solid #d0d0d0;
         }
 
         #diagnosticResult,
@@ -133,6 +135,22 @@
             border-bottom: 1px solid #445D76;
             padding: 2px;
         }
+
+        #aditional {
+            margin-left: 20px;
+        }
+
+        #aditional input {
+            width: 200px;
+        }
+
+        .infoPatient {
+            display: inline-block;
+            width: 200px;
+            height: 15px;
+            border: 1px solid #dadada;
+            padding: 1px 0 1px 0;
+        }
     </style>
     <template>
         <div class="horizontal layout">
@@ -146,6 +164,8 @@
                     <div class="">
                         <input on-click="showInReport" type="checkbox" value="customFilters" checked> Custom Filter Resume Table</div>
                     <div class="">
+                        <input on-click="showInReport" type="checkbox" value="aditional" checked> Aditional Patient Data</div>
+                    <div class="">
                         <input on-click="showInReport" type="checkbox" value="reportConclusions"> Editable Conslusions</div>
                     <div class="">
                         <input on-click="showInReport" type="checkbox" value="diagResult" checked> Diagnostic Table</div>
@@ -155,7 +175,7 @@
                         <input on-click="showInReport" type="checkbox" value="anexI" checked> Annex I: Static Filters (decision umbrals)</div>
                     <div class="">
                         <input on-click="showInReport" type="checkbox" value="anexII"> Annex II: Panels</div>
-                    <ul>
+                    <ul id="panelsInfo">
                         <div class="">
                             <input on-click="showInReport" type="checkbox" value="diseases"> Diseases</div>
                         <div class="">
@@ -171,7 +191,7 @@
                 <!-- <report-page> -->
                 <div class="flex jobName">{{job.name}}</div>
                 <div class="description">{{job.description}}</div>
-                <div>
+                <div class="horizontal layout">
                     <table id="stadistics">
                         <tr>
                             <td> Total Genes </td>
@@ -186,6 +206,19 @@
                             <td class="numbers"> {{secData.length}} </td>
                         </tr>
                     </table>
+                    <div class="flex">
+
+                    </div>
+                    <div id="aditional">
+                        <div class="">Patient Name:
+                            <input type="text">
+                            <span id="div0Aditional" class="infoPatient" hidden>{{div0Aditional}}</span>
+                        </div>
+                        <div class="">Patient Diagnostic:
+                            <input type="text">
+                            <span id="div1Aditional" class="infoPatient" hidden>{{div1Aditional}}</span>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <table id="values">
@@ -227,8 +260,10 @@
                     </table>
                 </div>
                 <div id="reportConclusions" style="margin-top: 10px" hidden>
-                    <div>Conclusions:</div>
-                    <textarea class="jso conclusions"></textarea>
+                    <div>Conclusions:
+                    <textarea id="textConclusions" class="conclusions"></textarea>
+                    <div id="divConclusions" class="conclusions" hidden>{{divConclusions}}</div>
+                    </div>
                 </div>
                 <!-- </report-page> -->
                 <!-- <report-page> -->
@@ -353,7 +388,7 @@
                     </div>
                     <!-- </report-page> -->
                     <!-- <report-page> -->
-                    <div id="genes"class="reportPanelInfo" hidden>
+                    <div id="genes" class="reportPanelInfo" hidden>
                         <div class="title">Genes</div>
                         <div id="reportGenes">
                         </div>
@@ -562,34 +597,42 @@
 
             mywindow.document.close(); // necessary for IE >= 10
             mywindow.focus(); // necessary for IE >= 10
-
             mywindow.print();
             mywindow.close();
+
+            this.$.textConclusions.hidden = false;
+            this.$.divConclusions.hidden = true;
+            elem = this.$.aditional.querySelectorAll('input');
+            elem[0].hidden = false;
+            this.$.div0Aditional.hidden = true;
+            elem[1].hidden = false;
+            this.$.div1Aditional.hidden = true;
 
             return true;
         },
 
         handleExportPDF: function(e) {
-
+            this._getTextInfo();
             var me = this;
-
             this.print(this.$.report.innerHTML);
             return;
 
-            var pdf = new jsPDF('p', 'mm', 'a4');
+            var pdf = new jsPDF('p', 'px', 'a4');
             var options = {
-                background: '#fff',
+                // background: '#fff',
                 pagesplit: true,
             };
             pdf.addHTML(me.$.report, options, function() {
                 // pdf.addPage();
-                pdf.save('web.pdf');
-                // pdf.addHTML(me.$.export2, options, function() {
-                //         pdf.addPage();
-                //         pdf.addHTML(me.$.export3, options, function() {
-                //         })
-                //     })
-                //     // pdf.output('dataurlnewwindow');
+                // pdf.save('web.pdf');
+                var string = pdf.output('datauristring');
+                pdf.output('save', 'sample-file.pdf');
+                //     // pdf.addHTML(me.$.export2, options, function() {
+                //     //         pdf.addPage();
+                //     //         pdf.addHTML(me.$.export3, options, function() {
+                //     //         })
+                //     //     })
+                //     //     // pdf.output('dataurlnewwindow');
             });
 
             // pdf.addHTML(me.$.export1, options, function() {
@@ -710,11 +753,54 @@
         jobChanged: function(neo, old) {
             if (neo.id) {
                 this.getJobPanel();
+                var inputValues=this.$.reportOptions.querySelectorAll('input');
+                for(i=0; i<inputValues.length;i++){
+                  inputValues[i].checked=false;
+                }
+                inputValues[0].checked=true;
+                inputValues[1].checked=true;
+                inputValues[2].checked=true;
+                inputValues[3].checked=true;
+                inputValues[5].checked=true;
+                inputValues[7].checked=true;
+
+                this.$.reportConclusions.hidden=true;
+                this.$.secResult.hidden=true;
+                this.$.anexII.hidden=true;
+                this.$.diseases.hidden=true;
+                this.$.genes.hidden=true;
+                this.$.mutations.hidden=true;
             }
         },
-        showInReport: function(e){
-          var divId=e.currentTarget.value;
-          this.$[divId].hidden=!this.$[divId].hidden;
+        showInReport: function(e) {
+            var divId = e.currentTarget.value;
+            this.$[divId].hidden = !this.$[divId].hidden;
+            if(divId==="anexII"){
+              this.$.diseases.hidden=true;
+              this.$.genes.hidden=true;
+              this.$.mutations.hidden=true;
+              var aux=this.$.panelsInfo.querySelectorAll('input');
+              for(i=0; i<aux.length;i++){
+                aux[i].checked=false;
+              }
+            }
+        },
+        _getTextInfo: function() {
+            var text = this.$.textConclusions.value;
+            this.$.textConclusions.hidden = true;
+            this.divConclusions = text;
+            this.$.divConclusions.hidden = false;
+
+            elem = this.$.aditional.querySelectorAll('input');
+            this.div0Aditional = elem[0].value;
+            elem[0].hidden = true;
+            this.$.div0Aditional.hidden = false;
+            this.div1Aditional = elem[1].value;
+            elem[1].hidden = true;
+            this.$.div1Aditional.hidden = false;
+
+            return;
+
         }
     });
 </script>
