@@ -51,7 +51,7 @@
         }
 
         #genesChart {
-            width: 95%;
+            width: 90%;
         }
 
         .down {
@@ -148,7 +148,7 @@
                 chart: {
                     type: 'column',
                     renderTo: this.$.filterChart,
-
+                    width:600
                 },
                 pane: {
                     size: 80
@@ -210,9 +210,11 @@
             if (op === "gene") {
                 var renderTo = this.$.genesChart;
                 var title = "Number of Variants/GEN";
+                var w=1100;
             } else if (op === "ct") {
                 var renderTo = this.$.consTypeChart;
                 var title = "Number of Variants/Consecuence Type";
+                var w=600;
             }
             var value = [];
             for (var i = 0; i < gen.length; i++) {
@@ -223,6 +225,7 @@
                 chart: {
                     type: 'column',
                     renderTo: renderTo,
+                    width:w
                 },
                 credits: {
                     enabled: false
@@ -345,6 +348,7 @@
                 chart: {
                     type: 'column',
                     renderTo: renderTo,
+                    width:600
                 },
                 credits: {
                     enabled: false
