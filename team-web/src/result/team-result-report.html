@@ -77,8 +77,6 @@
         }
 
         .conclusions {
-            box-sizing: border-box;
-            display: block;
             width: 95%;
             height: 100px;
             margin-top: 5px;
@@ -193,7 +191,10 @@
 
             <div id="report">
                 <!-- <report-page> -->
-                <div class="flex jobName">{{job.name}}</div>
+                <div class="">
+                <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
+                <span class="flex jobName">{{job.name}}</span>
+                </div>
                 <div class="description">{{job.description}}</div>
                 <div class="horizontal layout">
                     <table id="stadistics">
@@ -265,7 +266,7 @@
                 </div>
                 <div id="reportConclusions" style="margin-top: 10px" hidden>
                     <div>Conclusions:
-                        <textarea id="textConclusions" class="conclusions"></textarea>
+                        <textarea class="conclusions"></textarea>
                         <div id="divConclusions" class="conclusions" hidden>{{divConclusions}}</div>
                     </div>
                 </div>
@@ -600,7 +601,7 @@
             mywindow.print();
             mywindow.close();
 
-            this.$.textConclusions.hidden = false;
+            this.$.reportConclusions.querySelector('textarea').hidden = false;
             this.$.divConclusions.hidden = true;
             elem = this.$.aditional.querySelectorAll('input');
             elem[0].hidden = false;
@@ -764,6 +765,13 @@
                 comments[1].value="";
                 this.comDiag = "";
                 this.comSec = "";
+                this.$.reportConclusions.querySelector('textarea').value="";
+                this.divConclusions="";
+                elem = this.$.aditional.querySelectorAll('input');
+                elem[0].value="";
+                elem[1].value="";
+                this.div0Aditional ="";
+                this.div1Aditional ="";
             }
         },
         showInReport: function(e) {
@@ -780,9 +788,8 @@
             }
         },
         _getTextInfo: function() {
-            var text = this.$.textConclusions.value;
-            this.$.textConclusions.hidden = true;
-            this.divConclusions = text;
+            this.divConclusions = this.$.reportConclusions.querySelector('textarea').value;
+            this.$.reportConclusions.querySelector('textarea').hidden = true;
             this.$.divConclusions.hidden = false;
 
             elem = this.$.aditional.querySelectorAll('input');
