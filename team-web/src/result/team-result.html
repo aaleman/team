@@ -184,6 +184,7 @@
             },
 
             jobChanged: function(neo, old) {
+              this.view='overview';
                 if (neo.output) {
 
                     var files = [];
@@ -336,7 +337,7 @@
                 this.view = e.target.dataset.value;
                 if (this.view == 'report') {
                     this.$.teamResultReport.computeFilter();
-                    this.$.teamResultReport._getCommentsInfo();                    
+                    this.$.teamResultReport._getCommentsInfo();
 
                 }
             },

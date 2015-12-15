@@ -74,7 +74,11 @@
         </div>
 
         <div id="tools">
-            <div id="overview" hidden$="{{!computeView(view, 'overview')}}"> </div>
+            <div hidden$="{{!computeView(view, 'overview')}}">
+              <div id="overview">
+              </div>
+              <div style="font-style:italic">Graphic weighted between zero and one</div>
+            </div>
             <div id="comments" hidden$="{{!computeView(view, 'comments')}}">
                 <div style="margin-top: 10px">
                     <textarea id="commentsTextArea" class="jso commentsTextArea" placeholder="Comments..."></textarea>
@@ -430,6 +434,15 @@
             return aux;
         },
         _createPolarChart: function(row) {
+          var phylop=Math.abs(row.phylop);
+          if(phylop>1){
+            phylop=1/phylop;
+          }
+          var phastcons=Math.abs(row.phastcons);
+          if(phastcons>1){
+            phastcons=1/phastcons;
+          }
+
             var chart = new Highcharts.Chart({
                 chart: {
                     polar: true,
@@ -458,13 +471,15 @@
                 yAxis: {
                     gridLineInterpolation: 'polygon',
                     lineWidth: 0,
+                    min:0,
+                    max:1
                 },
 
                 series: [{
                     type: 'area',
                     name: row.gene,
-                    data: [this._parseFloat(row.sift), 1 - this._parseFloat(row.polyphen), this._parseFloat(row.phylop),
-                        this._parseFloat(row.phastcons)
+                    data: [this._parseFloat(row.sift), 1 - this._parseFloat(row.polyphen), this._parseFloat(phylop),
+                        this._parseFloat(phastcons)
                     ],
                     pointPlacement: 'on'
                 }]

@@ -81,7 +81,7 @@
                     </div>
                 </ul>
                 <div class="horizontal layout">
-                    <div id="filterChart" class="chart">
+                    <div id="filterChart" class="chart" hidden>
                     </div>
                     <div class="vertical layout">
 
@@ -93,9 +93,9 @@
                         </div>
                     </div>
                 </div>
-                <div id="genesChart" class="chart">
+                <div id="genesChart" class="chart" hidden>
                 </div>
-                <div id="consTypeChart" class="chart">
+                <div id="consTypeChart" class="chart" hidden>
                 </div>
                 <div id="qualChart" class="chart" hidden>
                 </div>
@@ -144,11 +144,13 @@
 
         },
         _createFilterChart: function(value) {
+            this.$.filterChart.hidden = false;
+
             var chart = new Highcharts.Chart({
                 chart: {
                     type: 'column',
                     renderTo: this.$.filterChart,
-                    width:600
+                    width: 600
                 },
                 pane: {
                     size: 80
@@ -210,11 +212,13 @@
             if (op === "gene") {
                 var renderTo = this.$.genesChart;
                 var title = "Number of Variants/GEN";
-                var w=1100;
+                var w = 1100;
+                this.$.genesChart.hidden = false;
             } else if (op === "ct") {
                 var renderTo = this.$.consTypeChart;
                 var title = "Number of Variants/Consecuence Type";
-                var w=600;
+                var w = 600;
+                this.$.consTypeChart.hidden = false;
             }
             var value = [];
             for (var i = 0; i < gen.length; i++) {
@@ -225,7 +229,7 @@
                 chart: {
                     type: 'column',
                     renderTo: renderTo,
-                    width:w
+                    width: w
                 },
                 credits: {
                     enabled: false
@@ -268,17 +272,20 @@
             });
         },
         valueChange: function(neo, old) {
+            this.$.filterChart.hidden = true;
             if (this.value.mlp != null) {
                 this._createFilterChart(this.value);
             }
         },
         secDataChange: function(neo, old) {
+            this.$.genesChart.hidden = true;
+            this.$.consTypeChart.hidden = true;
             this.$.qualChart.hidden = true;
             this.$.depthChart.hidden = true;
             this._getMapForChart(neo, "gene");
             this._getMapForChart(neo, "ct");
-            this._getIntervalData(neo,"qual");
-            this._getIntervalData(neo,"dp");
+            this._getIntervalData(neo, "qual");
+            this._getIntervalData(neo, "dp");
         },
         downloadFiles: function(e) {
             var fileId = e.currentTarget.dataFile.id;
@@ -309,11 +316,11 @@
             }
 
         },
-        _getIntervalData: function(neo,option) {
+        _getIntervalData: function(neo, option) {
             var qualValues = [];
             var qualInterval = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             for (var i = 0; i < neo.length; i++) {
-              var d=neo[i];
+                var d = neo[i];
                 if (!isNaN(d[option])) {
                     qualValues[i] = d[option];
                 }
@@ -330,25 +337,25 @@
                 var categories = [0 + "-" + step, step + "-" + step * 2, step * 2 + "-" + step * 3, step * 3 + "-" + step * 4, step * 4 + "-" + step * 5, step * 5 + "-" + step * 6,
                     step * 6 + "-" + step * 7, step * 7 + "-" + step * 8, step * 8 + "-" + step * 9, step * 9 + "-" + step * 10
                 ];
-                this._createQualChart(qualInterval, categories,option);
+                this._createQualChart(qualInterval, categories, option);
             }
         },
-        _createQualChart: function(data, categories,op) {
-          if (op === "qual") {
-              var renderTo = this.$.qualChart;
-              var title = "Qual/Variants";
-              this.$.qualChart.hidden = false;
-          } else if (op === "dp") {
-              var renderTo = this.$.depthChart;
-              var title = "Depth/Variants";
-              this.$.depthChart.hidden = false;
-          }
+        _createQualChart: function(data, categories, op) {
+            if (op === "qual") {
+                var renderTo = this.$.qualChart;
+                var title = "Qual/Variants";
+                this.$.qualChart.hidden = false;
+            } else if (op === "dp") {
+                var renderTo = this.$.depthChart;
+                var title = "Depth/Variants";
+                this.$.depthChart.hidden = false;
+            }
 
             var chart = new Highcharts.Chart({
                 chart: {
                     type: 'column',
                     renderTo: renderTo,
-                    width:600
+                    width: 600
                 },
                 credits: {
                     enabled: false
