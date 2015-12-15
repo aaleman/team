@@ -283,6 +283,10 @@
                 this.set('_data', data);
                 this.$.table.set('selected', [this._data[0]]);
                 this.set('filterData', this._data);
+                if(neo['filterView']!=null && neo['filterView']=='filterA'){
+                  var report=document.getElementById('teamResultReport');
+                  report._getMostPathogenic(this.filterData);
+                }
             }
         },
 

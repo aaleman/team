@@ -172,6 +172,8 @@
                     <div class="">
                         <input on-click="showInReport" type="checkbox" value="diagResult" checked> Diagnostic Table</div>
                     <div class="">
+                        <input on-click="showInReport" type="checkbox" value="mostPathogenicResult"> Most Pathogenic Table</div>
+                    <div class="">
                         <input on-click="showInReport" type="checkbox" value="secResult"> Secondary Findinds (with last custom filter used)</div>
                     <div class="">
                         <input on-click="showInReport" type="checkbox" value="anexI" checked> Annex I: Static Filters (decision umbrals)</div>
@@ -192,8 +194,8 @@
             <div id="report">
                 <!-- <report-page> -->
                 <div class="">
-                <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
-                <span class="flex jobName">{{job.name}}</span>
+                    <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
+                    <span class="flex jobName">{{job.name}}</span>
                 </div>
                 <div class="description">{{job.description}}</div>
                 <div class="horizontal layout">
@@ -278,7 +280,8 @@
                     </div>
                     <ul>
                         <div class="commment">Comments: &nbsp;
-                        <span style:"color:gray">{{comDiag}}</span></div>
+                            <span style: "color:gray">{{comDiag}}</span>
+                        </div>
                     </ul>
 
                     <!-- <div id="diagnosticResult"> -->
@@ -315,6 +318,39 @@
                     <!-- <template is="dom-repeat" items="{{secDataDiv}}" as='secondarydata'> -->
                     <!-- <report-page> -->
                 </div>
+                <div id="mostPathogenicResult" hidden>
+                    <div class="title">
+                        Most Pathogenic Data Table
+                    </div>
+                    <table>
+                        <tr>
+                            <template is="dom-repeat" items="{{_columns}}">
+                                <th class="">{{item.title}}</th>
+                            </template>
+                        </tr>
+                        <template is="dom-repeat" items="{{mostPathogenicData}}">
+                            <tr>
+                                <td class="colum" style="max-width: 25px;">{{item.chr}}</td>
+                                <td class="colum">{{item.pos}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.ref}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.alt}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.id}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.qual}}</td>
+                                <td class="colum" style="max-width: 25px;">{{item.dp}}</td>
+                                <td class="colum" style="max-width: 50px;">{{item.gene}}</td>
+                                <td class="colum">{{item.ct}}</td>
+                                <td class="colum">{{item.phylop}}</td>
+                                <td class="colum">{{item.phastcons}}</td>
+                                <td class="colum">{{item.sift}}</td>
+                                <td class="colum">{{item.polyphen}}</td>
+                                <td class="colum">{{item.maf1000G}}</td>
+                                <td class="colum">{{item.maf1000GP3}}</td>
+                                <td class="colum">{{item.phenotype}}</td>
+                                <td class="colum">{{item.source}}</td>
+                            </tr>
+                        </template>
+                    </table>
+                </div>
                 <div id="secResult" hidden>
                     <div class="title">
                         Secondary Filter Data Table
@@ -322,7 +358,8 @@
                     <!-- <div class="secResult" style$="{{computeTopSize(secondarydata.length)}}"> -->
                     <ul>
                         <div class="commment">Comments: &nbsp;
-                        <span style:"color:gray">{{comSec}}</span></div>
+                            <span style: "color:gray">{{comSec}}</span>
+                        </div>
                     </ul>
                     <table>
                         <tr>
@@ -420,6 +457,12 @@
                 observer: 'jobChanged',
             },
             diagData: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+            mostPathogenicData: {
                 type: Array,
                 value: function() {
                     return [];
@@ -752,26 +795,28 @@
                 inputValues[2].checked = true;
                 inputValues[3].checked = true;
                 inputValues[5].checked = true;
-                inputValues[7].checked = true;
+                inputValues[8].checked = true;
 
                 this.$.reportConclusions.hidden = true;
+                this.$.mostPathogenicResult.hidden = true;
                 this.$.secResult.hidden = true;
                 this.$.anexII.hidden = true;
                 this.$.diseases.hidden = true;
                 this.$.genes.hidden = true;
                 this.$.mutations.hidden = true;
                 var comments = document.getElementsByClassName('commentsTextArea');
-                comments[0].value="";
-                comments[1].value="";
+                comments[0].value = "";
+                comments[1].value = "";
                 this.comDiag = "";
                 this.comSec = "";
-                this.$.reportConclusions.querySelector('textarea').value="";
-                this.divConclusions="";
+                this.$.reportConclusions.querySelector('textarea').value = "";
+                this.divConclusions = "";
                 elem = this.$.aditional.querySelectorAll('input');
-                elem[0].value="";
-                elem[1].value="";
-                this.div0Aditional ="";
-                this.div1Aditional ="";
+                elem[0].value = "";
+                elem[1].value = "";
+                this.div0Aditional = "";
+                this.div1Aditional = "";
+                this.mostPathogenicData="";
             }
         },
         showInReport: function(e) {
@@ -807,6 +852,9 @@
             var comments = document.getElementsByClassName('commentsTextArea');
             this.comDiag = comments[0].value;
             this.comSec = comments[1].value;
+        },
+        _getMostPathogenic: function(mostPathogenicData) {
+            this.mostPathogenicData=mostPathogenicData;
         }
     });
 </script>
