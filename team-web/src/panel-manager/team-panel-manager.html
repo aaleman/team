@@ -396,6 +396,8 @@
         handleNewPanel: function(e) {
             this.set('mode', "New");
             this.$.newPanelPanel.hidden = false;
+            var selectedPanel= new Panel();
+            this.$.formWizard.addFromPanelManager(selectedPanel,"new");
         },
         handleEditPanel: function(e) {
             e.stopPropagation();
@@ -418,9 +420,23 @@
                 }
             });
             if (panelContent != "") {
-                var selectedPanel = JSON.parse(panelContent);
+                var selectedPanel = new Panel();
+                var panelAux=JSON.parse(panelContent);
+                selectedPanel.id=panelAux.id;
+                selectedPanel.name=panelAux.name;
+                selectedPanel.author=panelAux.author;
+                selectedPanel.description=panelAux.description;
+                selectedPanel.diseases = panelAux.diseases;
+                selectedPanel.genes = panelAux.genes;
+                selectedPanel.mutations = panelAux.mutations;
+                selectedPanel.date = panelAux.date;
+                selectedPanel.disease = panelAux.disease;
+                selectedPanel.version =panelAux.version;
+                selectedPanel.archived = panelAux.archived;
+
+
                 this.$.newPanelPanel.hidden = false;
-                this.$.formWizard.addFromPanelManager(selectedPanel);
+                this.$.formWizard.addFromPanelManager(selectedPanel,"edit");
             }
         },
         computeMode: function(mode) {

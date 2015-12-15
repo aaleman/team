@@ -695,6 +695,12 @@
                     return [];
                 }
             },
+            editingPanel: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
+            }
 
         },
         observers: [
@@ -1192,22 +1198,27 @@
         },
         handleClickSavePanel: function(e) {
             if (this.formData.name == "") {
-                alert("The Panel name is mandatory!!");
+                alert("The Panel name is mandatory");
                 return;
             }
-            if (confirm("Are you sure?")) {
-                if (this.defaultStudy && this.teamConfigFolder) {
-                    //                    var content = pako.deflate(JSON.stringify(this.formData));
-                    content = JSON.stringify(this.formData);
-                    var separator = "-_-";
-                    var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived;
-                    this.uploadFile(content, fileName, this.defaultStudy.id);
+            if (JSON.stringify(this.formData) === JSON.stringify(this.editingPanel)) {
+                debugger
+                alert("The Panel is the same, edit the panel or close edit window");
+            } else {
+                if (confirm("Are you sure?")) {
+                    if (this.defaultStudy && this.teamConfigFolder) {
+                        //                    var content = pako.deflate(JSON.stringify(this.formData));
+                        content = JSON.stringify(this.formData);
+                        var separator = "-_-";
+                        var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived;
+                        this.uploadFile(content, fileName, this.defaultStudy.id);
+                    }
                 }
+                this.formData = new Panel();
+                this.$.formWizard.goToStep(1);
+                a = document.getElementById("manager");
+                a.$.newPanelPanel.hidden = true;
             }
-            this.formData = new Panel();
-            this.$.formWizard.goToStep(1);
-            a=document.getElementById("manager");
-            a.$.newPanelPanel.hidden=true;
         },
         uploadFile: function(fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({
@@ -1492,14 +1503,20 @@
         handlePanelAppSelectedGen: function(e) {
             this.errorAddGenes = "";
         },
-        addFromPanelManager: function(selectedPanel) {
-            this.set('formData',selectedPanel);
-            this.set('formData.version',(selectedPanel.version+1));
+        addFromPanelManager: function(selectedPanel, op) {
+            this.set('formData', selectedPanel);
+            this.set('formData.version', (selectedPanel.version + 1));
+            this.editingPanel = Utils.clone(this.formData);
+            this.formData.polymer=this;
             // this.set('formData.id',Utils.genId("Panel"));
-
-            var aux=this.$.personalData.querySelectorAll("input");
-            aux[0].disabled=true;
-            aux[1].disabled=true;
+            var aux = this.$.personalData.querySelectorAll("input");
+            if (op == "edit") {
+                aux[0].disabled = true;
+                aux[1].disabled = true;
+            } else if (op == "new") {
+              aux[0].disabled = false;
+              aux[1].disabled = false;
+            }
         },
     });
 </script>
