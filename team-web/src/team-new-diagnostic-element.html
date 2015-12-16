@@ -320,7 +320,6 @@
             return item.file.name.indexOf("panel") == 0;
         },
         handleForm: function(e) {
-          debugger
             var me = this;
 
             if (this.selectedSample.id == null) {
@@ -375,7 +374,6 @@
             this.fire('close');
         },
         handlePanelClick: function(e) {
-          debugger
             this.selectedPanelId = e.detail.file.id;
             this.errorMessagePanel = " ";
             if (this.selectedSample = !null) {
@@ -408,7 +406,6 @@
 
         },
         handleSelectedPanelChanged: function(neo, old) {
-          debugger
             console.log(this.selectedPanelId);
             console.log(this.selectedPanel);
         },
@@ -417,7 +414,6 @@
             this.errorMessageFile = " ";
         },
         handleSampleSelected: function(e) {
-          debugger
             this.selectedSample = e.detail;
             this.errorMessageFile = " ";
             if (this.selectedPanelId != "") {
