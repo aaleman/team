@@ -74,7 +74,7 @@
                     Custom Filters &nbsp;
                 </div>
             </div>
-            <team-result-static-filters data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
+            <team-result-static-filters id="teamResultStaticFilters" data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
                 <!-- <div class="horizontal layout filterHistory">
@@ -166,6 +166,7 @@
         },
         handleView: function(e) {
             this.view = e.target.dataset.value;
+            this.$.teamResultStaticFilters.ready();
             this._clearFilter();
         },
         _clearFilter: function() {
@@ -198,6 +199,11 @@
         // },
         filterDataChanged: function(neo, old) {
 
+        },
+        initialWhenJobChanges: function(){
+          this.view='static';
+          this.$.teamResultStaticFilters.ready();
+          this.$.custom.clearForm();
         }
 
     });

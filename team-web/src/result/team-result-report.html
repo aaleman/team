@@ -83,8 +83,7 @@
             resize: none;
             border: 1px solid #d0d0d0;
         }
-
-        #diagnosticResult,
+        /*#diagnosticResult,
         .secResult {
             transform: rotate(-90deg);
             position: relative;
@@ -95,7 +94,7 @@
 
         #diagnosticResult {
             top: 350px;
-        }
+        }*/
 
         .colum {
             /*text-overflow: ellipsis;*/
@@ -107,7 +106,12 @@
         }
 
         jso-table {
+            margin-top: 20px;
+            border: 2px solid #dadada;
+            border-collapse: collapse;
+            background-color: #fcfcfc;
             font-size: 10px;
+            word-wrap: break-word;
         }
 
         .reportPanelInfo {
@@ -152,6 +156,18 @@
         .commment {
             font-style: italic;
             margin: 5px;
+        }
+
+        .tableStyle > td {
+            border: 1px solid #dadada;
+            padding: 3px;
+            max-width: 50px;
+        }
+
+        .tableStyle > tr {
+            border: 1px solid #dadada;
+            padding: 3px;
+            max-height: 50px!important;
         }
     </style>
     <template>
@@ -283,73 +299,18 @@
                             <span style: "color:gray">{{comDiag}}</span>
                         </div>
                     </ul>
-
                     <!-- <div id="diagnosticResult"> -->
-                    <table>
-                        <tr>
-                            <template is="dom-repeat" items="{{_columns}}">
-                                <th class="">{{item.title}}</th>
-                            </template>
-                        </tr>
-                        <template is="dom-repeat" items="{{diagData}}">
-                            <tr>
-                                <td class="colum" style="max-width: 25px;">{{item.chr}}</td>
-                                <td class="colum">{{item.pos}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.ref}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.alt}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.id}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.qual}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.dp}}</td>
-                                <td class="colum" style="max-width: 50px;">{{item.gene}}</td>
-                                <td class="colum">{{item.ct}}</td>
-                                <td class="colum">{{item.phylop}}</td>
-                                <td class="colum">{{item.phastcons}}</td>
-                                <td class="colum">{{item.sift}}</td>
-                                <td class="colum">{{item.polyphen}}</td>
-                                <td class="colum">{{item.maf1000G}}</td>
-                                <td class="colum">{{item.maf1000GP3}}</td>
-                                <td class="colum">{{item.phenotype}}</td>
-                                <td class="colum">{{item.source}}</td>
-                            </tr>
-                        </template>
-                    </table>
+                    <div id="reportDiagnostic" class="tableStyle">
+                    </div>
                     <!-- </div> -->
                     <!-- </report-page> -->
                     <!-- <template is="dom-repeat" items="{{secDataDiv}}" as='secondarydata'> -->
                     <!-- <report-page> -->
                 </div>
-                <div id="mostPathogenicResult" hidden>
-                    <div class="title">
-                        Most Pathogenic Data Table
+                <div id="mostPathogenicResult" class="reportPanelInfo" hidden>
+                    <div class="title">Most Pathogenic Data Table</div>
+                    <div id="reportMostPathogenic" class="tableStyle">
                     </div>
-                    <table>
-                        <tr>
-                            <template is="dom-repeat" items="{{_columns}}">
-                                <th class="">{{item.title}}</th>
-                            </template>
-                        </tr>
-                        <template is="dom-repeat" items="{{mostPathogenicData}}">
-                            <tr>
-                                <td class="colum" style="max-width: 25px;">{{item.chr}}</td>
-                                <td class="colum">{{item.pos}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.ref}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.alt}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.id}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.qual}}</td>
-                                <td class="colum" style="max-width: 25px;">{{item.dp}}</td>
-                                <td class="colum" style="max-width: 50px;">{{item.gene}}</td>
-                                <td class="colum">{{item.ct}}</td>
-                                <td class="colum">{{item.phylop}}</td>
-                                <td class="colum">{{item.phastcons}}</td>
-                                <td class="colum">{{item.sift}}</td>
-                                <td class="colum">{{item.polyphen}}</td>
-                                <td class="colum">{{item.maf1000G}}</td>
-                                <td class="colum">{{item.maf1000GP3}}</td>
-                                <td class="colum">{{item.phenotype}}</td>
-                                <td class="colum">{{item.source}}</td>
-                            </tr>
-                        </template>
-                    </table>
                 </div>
                 <div id="secResult" hidden>
                     <div class="title">
@@ -361,13 +322,15 @@
                             <span style: "color:gray">{{comSec}}</span>
                         </div>
                     </ul>
-                    <table>
+                    <div id="reportSecondary" class="tableStyle">
+                    </div>
+                    <!-- <table>
                         <tr>
                             <template is="dom-repeat" items="{{_columns}}">
                                 <th class="">{{item.title}}</th>
                             </template>
                         </tr>
-                        <!-- <template is="dom-repeat" items="{{secondarydata}}" as='data'> -->
+                         //<template is="dom-repeat" items="{{secondarydata}}" as='data'>
                         <template is="dom-repeat" items="{{filterData}}" as='data'>
                             <tr style="max-height: 50px;">
                                 <td class="colum" style="max-width: 25px;">{{data.chr}}</td>
@@ -389,7 +352,7 @@
                                 <td class="colum">{{data.source}}</td>
                             </tr>
                         </template>
-                    </table>
+                    </table> -->
                     <!-- </div> -->
                     <!-- </report-page> -->
                     <!-- </template> -->
@@ -460,7 +423,8 @@
                 type: Array,
                 value: function() {
                     return [];
-                }
+                },
+                observer: 'diagDataChange',
             },
             mostPathogenicData: {
                 type: Array,
@@ -521,54 +485,77 @@
                 value: [{
                     name: 'chr',
                     title: "Chr",
+                    width: 25
                 }, {
                     name: 'pos',
                     title: "Pos",
+                    width: 50
                 }, {
                     name: 'ref',
                     title: "Ref",
+                    width: 25
+
                 }, {
                     name: 'alt',
                     title: "Alt",
+                    width: 25
+
                 }, {
                     name: 'id',
                     title: 'SNP Id',
+                    width: 25
+
                 }, {
                     name: 'qual',
                     title: 'Qual',
+                    width: 25
+
                 }, {
                     name: 'dp',
                     title: 'DP',
+                    width: 25
+
                 }, {
                     name: 'gene',
                     title: 'Gene',
+                    width: 50
+
                 }, {
                     name: 'ct',
                     title: 'Conseq. Type',
+                    width: 75
                 }, {
                     name: 'phylop',
                     title: 'phyloP',
+                    width: 50
                 }, {
                     name: 'phastcons',
                     title: 'Phastcons',
+                    width: 50
                 }, {
                     name: 'sift',
                     title: 'SIFT',
+                    width: 50
                 }, {
                     name: 'polyphen',
                     title: 'Polyphen',
+                    width: 50
                 }, {
                     name: 'maf1000G',
                     title: 'MAF 1000G',
+                    width: 50
                 }, {
                     name: 'maf1000GP3',
                     title: 'MAF 1000G Phase 3',
+                    width: 50
                 }, {
                     name: 'phenotype',
                     title: 'Phenotype',
+                    width: 75
                 }, {
                     name: 'source',
                     title: 'Source',
+                    width: 50
                 }]
             }
 
@@ -620,7 +607,7 @@
                 type: 'select',
                 options: ["clinvar", "gwas"],
             }];
-            this.auxGetTable = 0;
+            
         },
 
         print: function(data) {
@@ -726,7 +713,7 @@
                 this.filter = this.filters[0].name;
             }
             this.getSecDataDiv(Utils.clone(this.filterData));
-
+            this._getTable(this._columns, this.filterData, this.$.reportSecondary);
         },
         filterDataChanged: function(neo, old) {},
         getSecDataDiv: function(auxDataFilter) {
@@ -770,18 +757,19 @@
                 }
             }
             console.log(jobPanel)
-            if (this.auxGetTable === 0) {
-                this._getTable(this.diseaseColumns, jobPanel.diseases, this.$.reportDiseases);
-                this._getTable(this.geneColumns, jobPanel.genes, this.$.reportGenes);
-                this._getTable(this.mutationColumns, jobPanel.mutations, this.$.reportMutations);
-                this.auxGetTable++;
-            }
+            this._getTable(this.diseaseColumns, jobPanel.diseases, this.$.reportDiseases);
+            this._getTable(this.geneColumns, jobPanel.genes, this.$.reportGenes);
+            this._getTable(this.mutationColumns, jobPanel.mutations, this.$.reportMutations);
         },
         _getTable: function(columns, data, ref) {
+            var table = ref.querySelector('table');
+            if (table != null) {
+                ref.removeChild(table);
+            }
             var jsoTable = document.createElement("jso-table");
             jsoTable.columns = columns;
             jsoTable.data = data;
-            Polymer.dom(ref).appendChild(jsoTable.exportToTable())
+            Polymer.dom(ref).appendChild(jsoTable.exportToTable());
         },
         jobChanged: function(neo, old) {
             if (neo.id) {
@@ -816,7 +804,7 @@
                 elem[1].value = "";
                 this.div0Aditional = "";
                 this.div1Aditional = "";
-                this.mostPathogenicData="";
+                this.mostPathogenicData = "";
             }
         },
         showInReport: function(e) {
@@ -854,7 +842,12 @@
             this.comSec = comments[1].value;
         },
         _getMostPathogenic: function(mostPathogenicData) {
-            this.mostPathogenicData=mostPathogenicData;
+            this._getTable(this._columns, mostPathogenicData, this.$.reportMostPathogenic);
+        },
+        diagDataChange: function(neo, old) {
+            if (neo[0] != null) {
+                this._getTable(this._columns, neo, this.$.reportDiagnostic);
+            }
         }
     });
 </script>

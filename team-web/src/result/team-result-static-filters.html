@@ -130,6 +130,17 @@
 
         ready: function() {
             this.countFilterData();
+            var els = this.$.filters.querySelectorAll(".filterBut");
+            for (var i = 0; i < els.length; i++) {
+                var el = els[i];
+                if(el.dataset.value=="none"){
+                  el.classList.add("but");
+                  el.classList.remove("jso-btn", "jso-btn-shdw");
+                }else{
+                  el.classList.remove("but");
+                  el.classList.add("jso-btn", "jso-btn-shdw");
+                }
+            }
         },
         handleView: function(e) {
             var els = this.$.filters.querySelectorAll(".filterBut");

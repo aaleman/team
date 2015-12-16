@@ -100,7 +100,7 @@
             </div>
             <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
                 <div id="left">
-                    <team-result-filters data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}" job="{{job}}"></team-result-filters>
+                    <team-result-filters id="teamResultFilters" data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}" job="{{job}}"></team-result-filters>
                 </div>
                 <div id="right" class="flex">
                     <team-result-diagnostic id="secResult" data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}"></team-result-diagnostic>
@@ -176,6 +176,11 @@
                     notify: true,
                     observer: "filterDataChanged"
                 },
+                jobId: {
+                    type: Number,
+                    value: 0
+
+                }
 
             },
             created: function() {},
@@ -184,6 +189,7 @@
             },
 
             jobChanged: function(neo, old) {
+              this.set('jobId', neo.id);
               this.view='overview';
                 if (neo.output) {
 
@@ -336,9 +342,12 @@
             handleView: function(e) {
                 this.view = e.target.dataset.value;
                 if (this.view == 'report') {
-                    this.$.teamResultReport.computeFilter();
+                    this.$.teamResultReport.computeFilter(2,this.jobId);
                     this.$.teamResultReport._getCommentsInfo();
 
+                }
+                if (this.view == 'secondary') {
+                    this.$.teamResultFilters.initialWhenJobChanges();
                 }
             },
             computeView: function(view, value) {
