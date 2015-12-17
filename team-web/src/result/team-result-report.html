@@ -186,7 +186,7 @@
                     <div class="">
                         <input on-click="showInReport" type="checkbox" value="reportConclusions"> Editable Conslusions</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="diagResult" checked> Diagnostic Table</div>
+                        <input id="diagCheck" on-click="showInReport" type="checkbox" value="diagResult" checked> Diagnostic Table</div>
                     <div class="">
                         <input on-click="showInReport" type="checkbox" value="mostPathogenicResult"> Most Pathogenic Table</div>
                     <div class="">
@@ -814,7 +814,11 @@
         },
         diagDataChange: function(neo, old) {
             if (neo[0] != null) {
+              this.$.diagResult.hidden=false;
                 this._getTable(this._columns, neo, this.$.reportDiagnostic);
+            }else{
+              this.$.diagResult.hidden=true;
+              this.$.diagCheck.checked=false;
             }
         }
     });
