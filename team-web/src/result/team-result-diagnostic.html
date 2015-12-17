@@ -77,7 +77,7 @@
             <div hidden$="{{!computeView(view, 'overview')}}">
               <div id="overview">
               </div>
-              <div style="font-style:italic">Graphic weighted between zero and one</div>
+              <div style="font-style:italic">{{overviewComent}}</div>
             </div>
             <div id="comments" hidden$="{{!computeView(view, 'comments')}}">
                 <div style="margin-top: 10px">
@@ -253,7 +253,8 @@
                 alternate: row.alt
             };
             this.$.frequency.row = rowFreq;
-
+            this.view='overview';
+            this.overviewComent="Graphic weighted between zero and one"
             this._createPolarChart(row);
         },
         dataChanged: function(neo, old) {
@@ -262,10 +263,15 @@
                 var elem = this.data[i];
                 _data.push(elem);
             };
+            this.view='overview';
             this._data = _data;
             if (this._data[0] != null) {
                 this.$.table.set('selected', [this._data[0]]);
+                this.$.overview.hidden=false;
                 this._rowSelected(this._data[0]);
+            }else{
+              this.$.overview.hidden=true;
+              this.overviewComent="No data found";
             }
 
         },
@@ -417,7 +423,9 @@
             return false;
         },
         handleMenuClick: function(e) {
+          if (this._data[0]!=null){
             this.view = e.target.dataset.value;
+          }
         },
         computeView: function(view, value) {
             return view === value;
@@ -491,7 +499,15 @@
             });
         },
         filterDataChanged: function(neo, old) {
-            this.set('filterData', this._data);
+            this.set('filterData', neo);
+            if (this.filterData[0] != null) {
+                this.$.table.set('selected', [this.filterData[0]]);
+                this.$.overview.hidden=false;
+                this._rowSelected(this.filterData[0]);
+            }else{
+              this.$.overview.hidden=true;
+              this.overviewComent="";
+            }
         },
     });
 </script>
