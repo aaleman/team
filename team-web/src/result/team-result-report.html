@@ -169,6 +169,7 @@
             padding: 3px;
             max-height: 50px!important;
         }
+        
     </style>
     <template>
         <div class="horizontal layout">
@@ -372,6 +373,7 @@
                     <!-- </report-page> -->
                 </div>
             </div>
+
         </div>
 
     </template>
@@ -814,11 +816,11 @@
         },
         diagDataChange: function(neo, old) {
             if (neo[0] != null) {
-              this.$.diagResult.hidden=false;
+                this.$.diagResult.hidden = false;
                 this._getTable(this._columns, neo, this.$.reportDiagnostic);
-            }else{
-              this.$.diagResult.hidden=true;
-              this.$.diagCheck.checked=false;
+            } else {
+                this.$.diagResult.hidden = true;
+                this.$.diagCheck.checked = false;
             }
         }
     });
