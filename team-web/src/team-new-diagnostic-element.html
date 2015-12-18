@@ -26,7 +26,6 @@
             overflow-y: auto;
         }
 
-
         label.jso {
             display: block;
         }
@@ -109,6 +108,7 @@
             overflow-y: auto;
             height: 400px;
         }
+
         #examplePanels {
             height: 130px;
             display: block;
@@ -117,7 +117,7 @@
             overflow-y: auto;
             border: 1px solid var(--divider-color);
             background-color: #FFF;
-            margin:10px;
+            margin: 10px;
         }
 
         .jso-formtitle {
@@ -125,17 +125,17 @@
         }
 
         .panel-item {
-          padding: 2px 5px;
-          cursor: pointer;
+            padding: 2px 5px;
+            cursor: pointer;
         }
 
         .panel-item[selected] {
             background-color: #ddd;
         }
-        .panel-item:hover {
-              background-color: var(--hover-color);
-        }
 
+        .panel-item:hover {
+            background-color: var(--hover-color);
+        }
     </style>
     <template>
 
@@ -426,10 +426,8 @@
         handlePanelExampleSelected: function(e) {
             this.set('selectedPanel', e.currentTarget.dataFile);
             var selectedExample = this.$.examplePanels.querySelector('div[selected]');
-            var selectedUser = this.$.newDiagnosticPanels.querySelector('div[data-checked]');
-            if (selectedUser != null) {
-                selectedUser.removeAttribute("data-checked", "");
-            }
+            this.$.newDiagnosticPanels.set('selected', null);
+
             if (selectedExample != null) {
                 selectedExample.removeAttribute("selected", "");
             }
