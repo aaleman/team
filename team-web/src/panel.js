@@ -11,6 +11,7 @@ function Panel(args) {
     this.disease = "";
     this.version = 1;
     this.archived = false;
+    this.used = false;
     this.polymer;
 
     _.extend(this, args);
@@ -274,6 +275,7 @@ Panel.prototype = {
             disease: this.disease,
             version: this.version,
             archived: this.archived,
+            used: this.used,
             diseases: this.diseases,
             genes: this.genes,
             mutations: this.mutations

@@ -1209,7 +1209,8 @@
                         //                    var content = pako.deflate(JSON.stringify(this.formData));
                         content = JSON.stringify(this.formData);
                         var separator = "-_-";
-                        var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived;
+                        var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived
+                        + separator + this.formData.used;
                         this.uploadFile(content, fileName, this.defaultStudy.id);
                     }
                 }
@@ -1504,18 +1505,19 @@
         },
         addFromPanelManager: function(selectedPanel, op) {
             this.set('formData', selectedPanel);
-            this.set('formData.version', (selectedPanel.version + 1));
+            this.set('formData.name', (selectedPanel.name +"_2"));
+            // this.set('formData.version', (selectedPanel.version + 1));
             this.editingPanel = Utils.clone(this.formData);
             this.formData.polymer=this;
             // this.set('formData.id',Utils.genId("Panel"));
-            var aux = this.$.personalData.querySelectorAll("input");
-            if (op == "edit") {
-                aux[0].disabled = true;
-                aux[1].disabled = true;
-            } else if (op == "new") {
-              aux[0].disabled = false;
-              aux[1].disabled = false;
-            }
+            // var aux = this.$.personalData.querySelectorAll("input");
+            // if (op == "edit") {
+            //     aux[0].disabled = true;
+            //     aux[1].disabled = true;
+            // } else if (op == "new") {
+            //   aux[0].disabled = false;
+            //   aux[1].disabled = false;
+            // }
         },
     });
 </script>

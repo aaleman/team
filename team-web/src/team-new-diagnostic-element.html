@@ -331,7 +331,8 @@
 
             if (this.selectedSample.id != null && this.selectedPanelId != "") {
                 this.errorMessage = " ";
-
+                this.selectedPanel.used=true;
+                console.log(this.panels)
                 var studyId = this.$.sampleBrowser.selectedStudy.study.id;
                 this.selectedStudy = this.$.sampleBrowser.selectedStudy;
 
@@ -376,7 +377,7 @@
         handlePanelClick: function(e) {
             this.selectedPanelId = e.detail.file.id;
             this.errorMessagePanel = " ";
-            if (this.selectedSample = !null) {
+            if (this.selectedSample != null) {
                 this.errorMessage = "";
             }
 
