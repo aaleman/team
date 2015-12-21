@@ -332,6 +332,12 @@
             if (this.selectedSample.id != null && this.selectedPanelId != "") {
                 this.errorMessage = " ";
                 this.selectedPanel.used=true;
+                for(var i=0;i<this.panels.length;i++){
+                  panel=this.panels[i];
+                  if(panel.name==this.selectedPanel.name){
+                    panel.used="true";
+                  }
+                }
                 console.log(this.panels)
                 var studyId = this.$.sampleBrowser.selectedStudy.study.id;
                 this.selectedStudy = this.$.sampleBrowser.selectedStudy;

@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class Panel {
     public boolean archived;
+    public boolean used;
     public String author;
     public String date;
     public String description;
@@ -25,6 +26,13 @@ public class Panel {
     }
 
 
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
+    }
     public boolean isArchived() {
         return archived;
     }
@@ -128,6 +136,7 @@ public class Panel {
                 ", description='" + description + '\'' +
                 ", name='" + name + '\'' +
                 ", version=" + version +
+                ", used=" + used +
                 ", diseases=" + diseases +
                 ", genes=" + genes +
                 ", mutations=" + mutations +

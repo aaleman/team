@@ -169,7 +169,6 @@
             padding: 3px;
             max-height: 50px!important;
         }
-        
     </style>
     <template>
         <div class="horizontal layout">
@@ -195,7 +194,7 @@
                     <div class="">
                         <input on-click="showInReport" type="checkbox" value="anexI" checked> Annex I: Static Filters (decision umbrals)</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="anexII"> Annex II: Panels</div>
+                        <input id="panelsInfoAnexII" on-click="showInReport" type="checkbox" value="anexII"> Annex II: Panels</div>
                     <ul id="panelsInfo">
                         <div class="">
                             <input on-click="showInReport" type="checkbox" value="diseases"> Diseases</div>
@@ -775,19 +774,42 @@
                 this.div0Aditional = "";
                 this.div1Aditional = "";
                 this.mostPathogenicData = "";
+
+                var tableSec = this.$.reportSecondary.querySelector('table');
+                if (tableSec != null) {
+                    this.$.reportSecondary.removeChild(tableSec);
+                }
+                var tableMost = this.$.reportMostPathogenic.querySelector('table');
+                if (tableMost != null) {
+                    this.$.reportMostPathogenic.removeChild(tableMost);
+                }
             }
         },
         showInReport: function(e) {
             var divId = e.currentTarget.value;
             this.$[divId].hidden = !this.$[divId].hidden;
             if (divId === "anexII") {
-                this.$.diseases.hidden = true;
-                this.$.genes.hidden = true;
-                this.$.mutations.hidden = true;
-                var aux = this.$.panelsInfo.querySelectorAll('input');
-                for (i = 0; i < aux.length; i++) {
-                    aux[i].checked = false;
+                if (this.$.anexII.hidden == true) {
+                    this.$.diseases.hidden = true;
+                    this.$.genes.hidden = true;
+                    this.$.mutations.hidden = true;
+                    var aux = this.$.panelsInfo.querySelectorAll('input');
+                    for (i = 0; i < aux.length; i++) {
+                        aux[i].checked = false;
+                    }
+                }else{
+                  this.$.diseases.hidden = false;
+                  this.$.genes.hidden = false;
+                  this.$.mutations.hidden = false;
+                  var aux = this.$.panelsInfo.querySelectorAll('input');
+                  for (i = 0; i < aux.length; i++) {
+                      aux[i].checked = true;
+                  }
                 }
+            }
+            if (divId === "diseases" || divId === "genes" || divId === "mutations") {
+                this.$.panelsInfoAnexII.checked = true;
+                this.$.anexII.hidden = false;
             }
         },
         _getTextInfo: function() {
@@ -821,6 +843,10 @@
             } else {
                 this.$.diagResult.hidden = true;
                 this.$.diagCheck.checked = false;
+                var table = this.$.reportDiagnostic.querySelector('table');
+                if (table != null) {
+                    this.$.reportDiagnostic.removeChild(table);
+                }
             }
         }
     });

@@ -146,7 +146,7 @@
                             <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
                                 <div class="name flex">{{item.name}}</div>
                                 <div class="version" title="Version">{{item.version}}</div>
-                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.file.id}}" on-click="handleEditPanel">&nbsp;</i>
+                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.file.id}}" data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
                                 <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
                                 <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
                             </div>
@@ -404,6 +404,7 @@
             this.set('mode', "Edit");
             var me = this;
             var fileId = e.currentTarget.dataset.file;
+            var used = e.currentTarget.dataset.used;
 
             var panelContent = "";
             OpencgaManager.files.content({
@@ -433,6 +434,7 @@
                 selectedPanel.disease = panelAux.disease;
                 selectedPanel.version =panelAux.version;
                 selectedPanel.archived = panelAux.archived;
+                selectedPanel.used = used;
 
 
                 this.$.newPanelPanel.hidden = false;

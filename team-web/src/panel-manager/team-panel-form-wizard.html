@@ -556,7 +556,9 @@
                             <div class="data" for="">Description &nbsp; </div>
                             <textarea class="jso sgenesTextArea" style="height: 120px" name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
 
-                            <div class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save
+                            <div id="savePanel" class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save
+                            </div>
+                            <div id="saveAsPanel" class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel" hidden><i class="fa fa-floppy-o"></i>&nbsp; Save As
                             </div>
                         </div>
                     </div>
@@ -1201,24 +1203,30 @@
                 alert("The Panel name is mandatory");
                 return;
             }
-            if (JSON.stringify(this.formData) === JSON.stringify(this.editingPanel)) {
-                alert("The Panel is the same, edit the panel or close edit window");
-            } else {
-                if (confirm("Are you sure?")) {
-                    if (this.defaultStudy && this.teamConfigFolder) {
-                        //                    var content = pako.deflate(JSON.stringify(this.formData));
-                        content = JSON.stringify(this.formData);
-                        var separator = "-_-";
-                        var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived
-                        + separator + this.formData.used;
-                        this.uploadFile(content, fileName, this.defaultStudy.id);
-                    }
+            for (var i = 0; i < this.panels.length; i++) {
+                if (this.formData.name === this.panels[i].name) {
+                    alert("The Panel name already exists");
+                    return;
                 }
-                this.formData = new Panel();
-                this.$.formWizard.goToStep(1);
-                a = document.getElementById("manager");
-                a.$.newPanelPanel.hidden = true;
             }
+            if (JSON.stringify(this.formData) === JSON.stringify(this.editingPanel)) {
+                alert("The panel hasn't been modified");
+                return;
+            }
+            if (confirm("Are you sure?")) {
+                if (this.defaultStudy && this.teamConfigFolder) {
+                    //                    var content = pako.deflate(JSON.stringify(this.formData));
+                    content = JSON.stringify(this.formData);
+                    var separator = "-_-";
+                    var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived + separator + this.formData.used;
+                    this.uploadFile(content, fileName, this.defaultStudy.id);
+                }
+            }
+            this.formData = new Panel();
+            this.$.formWizard.goToStep(1);
+            var a = document.getElementById("manager");
+            a.$.newPanelPanel.hidden = true;
+
         },
         uploadFile: function(fileContent, fileName, studyId) {
             var url = OpencgaManager.files.upload({
@@ -1505,19 +1513,29 @@
         },
         addFromPanelManager: function(selectedPanel, op) {
             this.set('formData', selectedPanel);
-            this.set('formData.name', (selectedPanel.name +"_2"));
+            this.set('formData.name', (selectedPanel.name + "_2"));
             // this.set('formData.version', (selectedPanel.version + 1));
             this.editingPanel = Utils.clone(this.formData);
-            this.formData.polymer=this;
+            this.formData.polymer = this;
             // this.set('formData.id',Utils.genId("Panel"));
             // var aux = this.$.personalData.querySelectorAll("input");
-            // if (op == "edit") {
-            //     aux[0].disabled = true;
-            //     aux[1].disabled = true;
-            // } else if (op == "new") {
-            //   aux[0].disabled = false;
-            //   aux[1].disabled = false;
-            // }
+            if (op == "edit") {
+                //     aux[0].disabled = true;
+                //     aux[1].disabled = true;
+                if (this.formData.used == true) {
+                    this.set('formData.name', (selectedPanel.name + "_2"));
+                    this.$.saveAsPanel.hidden = false;
+                    this.$.savePanel.hidden = true;
+                } else {
+                    this.$.saveAsPanel.hidden = true;
+                    this.$.savePanel.hidden = false;
+                }
+            } else if (op == "new") {
+                //   aux[0].disabled = false;
+                // aux[1].disabled = false;
+                this.$.saveAsPanel.hidden = true;
+                this.$.savePanel.hidden = false;
+            }
         },
     });
 </script>
