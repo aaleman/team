@@ -892,7 +892,6 @@
                     this.push('dataListPhenotype', row);
                 }
             }
-            console.log(this.dataListPhenotype);
         },
 
         collapseMenu: function(menuHidden, searchingFlag) {
@@ -911,12 +910,12 @@
             this.$.selectedDiseases.setLoading(true);
 
             setTimeout(function() {
-                for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
-                    var row = me.currentSelectedDiseasesData[i];
-                    if (!me.formData.containsDisease(row)) {
-                        me.formData.addDisease(row);
-                    }
-                }
+              me.formData.addDiseases(me.currentSelectedDiseasesData);
+                //
+                // for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
+                //     var row = me.currentSelectedDiseasesData[i];
+                //     me.formData.addDisease(row);
+                // }
                 me.$.selectedDiseases.setLoading(false);
             }, 50)
         },
@@ -1223,7 +1222,6 @@
                     url: true
                 }
             });
-            console.log(url);
             var blob = new Blob([fileContent], {
                 type: 'text/plain'
             });
@@ -1254,7 +1252,7 @@
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, false);
             xhr.onloadend = function(e) {
-                console.log('upload Done!');
+                // console.log('upload Done!');
             };
             xhr.send(formData);
         },

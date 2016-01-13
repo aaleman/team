@@ -19,69 +19,163 @@ function Panel(args) {
     this.modCount = 0;
 };
 Panel.prototype = {
-    _incModCount: function() {
+    _incModCount: function () {
         this.modCount++;
-        //console.log("Panel changed!!");
     },
-    addDisease: function(disease) {
+    addDiseases: function (diseases) {
+        var me = this;
+        var genes = [];
+
+        for (var i = 0; i < diseases.length; i++) {
+            var disease = diseases[i];
+            if (!this.containsDisease(disease)) {
+                delete disease._filtered;
+                this.polymer.push('formData.diseases', disease);
+
+                if (disease.associatedGenes && disease.associatedGenes.length > 0) {
+                    for (var j = 0; j < disease.associatedGenes.length; j++) {
+                        var assocGene = disease.associatedGenes[j];
+                        if (!this._checkGenes(assocGene, this.genes)) {
+                            genes.push(assocGene);
+                        }
+                    }
+                }
+
+                if (disease.source == "clinvar") {
+
+                    CellBaseManager.get({
+                        species: 'hsapiens',
+                        category: 'feature',
+                        subCategory: 'clinical',
+                        resource: 'all',
+                        async: false,
+                        params: {
+                            source: 'clinvar',
+                            phenotype: disease.phenotype,
+                            exclude: "annot,clinvarSet"
+                        },
+                        success: function (data) {
+                            if (data.response && data.response.length > 0) {
+                                var result = data.response[0].result;
+                                for (var i = 0; i < result.length; i++) {
+                                    var row = result[i];
+                                    var mut = {
+
+                                        chr: row.chromosome,
+                                        pos: row.start,
+                                        ref: row.reference,
+                                        alt: row.alternate,
+                                        phe: disease.phenotype,
+                                        src: disease.source
+                                    }
+                                    me.addMutation(mut);
+
+                                }
+                            }
+                        }
+                    });
+                }
+
+            }
+
+        }
+
+        Utils.applyFunctionBatch(genes, 5, function (genes) {
+            CellBaseManager.get({
+                species: 'hsapiens',
+                category: 'feature',
+                subCategory: 'gene',
+                resource: 'info',
+                async: false,
+                query: genes.join(","),
+                params: {
+                    include: "name,chromosome,start,end"
+                },
+                success: function (data) {
+
+                    if (data.response && data.response.length > 0) {
+
+                        for (var i = 0; i < data.response.length; i++) {
+                            var geneElem = data.response[i];
+
+                            if (geneElem.result.length > 0) {
+                                var row = data.response[i].result[0];
+                                var gene = {
+                                    name: geneElem.id,
+                                    chr: row.chromosome,
+                                    start: row.start,
+                                    end: row.end
+                                };
+                                me.addGene(gene);
+
+                            } else {
+                                me.addGene({
+                                    name: geneElem.id
+                                });
+                            }
+
+                        }
+                    }
+                }
+            });
+        });
+        this._incModCount();
+
+    },
+    addDisease: function (disease) {
         var me = this;
         if (!this.containsDisease(disease)) {
             delete disease._filtered
-            this.polymer.push('formData.diseases', disease)
+            this.polymer.push('formData.diseases', disease);
 
             if (disease.associatedGenes && disease.associatedGenes.length > 0) {
-                console.log(disease.associatedGenes);
                 var genes = [];
-                console.log(disease.associatedGenes);
                 for (var j = 0; j < disease.associatedGenes.length; j++) {
                     var assocGene = disease.associatedGenes[j];
                     if (!this._checkGenes(assocGene, this.genes)) {
                         genes.push(assocGene);
                     }
                 }
-                console.log(genes);
+                if (genes.length > 0) {
 
-                if(genes.length > 0){
+                    CellBaseManager.get({
+                        species: 'hsapiens',
+                        category: 'feature',
+                        subCategory: 'gene',
+                        resource: 'info',
+                        async: false,
+                        query: genes.join(","),
+                        params: {
+                            include: "name,chromosome,start,end"
+                        },
+                        success: function (data) {
 
-                CellBaseManager.get({
-                    species: 'hsapiens',
-                    category: 'feature',
-                    subCategory: 'gene',
-                    resource: 'info',
-                    async: false,
-                    query: genes.join(","),
-                    params: {
-                        include: "name,chromosome,start,end"
-                    },
-                    success: function(data) {
+                            if (data.response && data.response.length > 0) {
 
-                        if (data.response && data.response.length > 0) {
+                                for (var i = 0; i < data.response.length; i++) {
+                                    var geneElem = data.response[i];
+                                    if (geneElem.result.length > 0) {
+                                        var row = data.response[i].result[0];
+                                        var gene = {
+                                            name: geneElem.id,
+                                            chr: row.chromosome,
+                                            start: row.start,
+                                            end: row.end
+                                        };
+                                        me.addGene(gene);
 
-                            for (var i = 0; i < data.response.length; i++) {
-                                var geneElem = data.response[i];
-                                if (geneElem.result.length > 0) {
-                                    var row = data.response[i].result[0];
-                                    var gene = {
-                                        name: geneElem.id,
-                                        chr: row.chromosome,
-                                        start: row.start,
-                                        end: row.end
-                                    };
-                                    me.addGene(gene);
+                                    } else {
+                                        me.addGene({
+                                            name: geneElem.id
+                                        });
+                                    }
 
-                                } else {
-                                    me.addGene({
-                                        name: geneElem.id
-                                    });
                                 }
-
-
                             }
                         }
-                    }
-                });
+                    });
 
-              }
+                }
             }
 
             if (disease.source == "clinvar") {
@@ -97,7 +191,7 @@ Panel.prototype = {
                         phenotype: disease.phenotype,
                         exclude: "annot,clinvarSet"
                     },
-                    success: function(data) {
+                    success: function (data) {
                         if (data.response && data.response.length > 0) {
                             var result = data.response[0].result;
                             for (var i = 0; i < result.length; i++) {
@@ -119,11 +213,10 @@ Panel.prototype = {
                 });
             }
 
-
             this._incModCount();
         }
     },
-    _checkGenes: function(assocGen, genes) {
+    _checkGenes: function (assocGen, genes) {
         for (var j = 0; j < genes.length; j++) {
             if (assocGen == genes[j].name) {
                 return true;
@@ -131,13 +224,13 @@ Panel.prototype = {
         }
         return false;
     },
-    addAllDiseases: function(diseases) {
+    addAllDiseases: function (diseases) {
         for (var i = 0; i < diseases.length; i++) {
             var disease = diseases[i];
             this.addDisease(disease);
         }
     },
-    containsDisease: function(disease) {
+    containsDisease: function (disease) {
         for (var i = 0; i < this.diseases.length; i++) {
             var elem = this.diseases[i];
             if (elem === disease) {
@@ -146,7 +239,7 @@ Panel.prototype = {
         }
         return false;
     },
-    clearDiseases: function() {
+    clearDiseases: function () {
         for (var i = 0; i < this.diseases.length; i++) {
             var disease = this.diseases[i];
             this.removeGenesFromDisease(disease);
@@ -156,17 +249,17 @@ Panel.prototype = {
         this.polymer.notifyPath('formData.diseases', this.diseases);
         this._incModCount();
     },
-    clearGenes: function() {
+    clearGenes: function () {
         this.genes = [];
         this.polymer.notifyPath('formData.genes', this.genes);
         this._incModCount();
     },
-    clearMutations: function() {
+    clearMutations: function () {
         this.mutations = [];
         this.polymer.notifyPath('formData.mutations', this.mutations);
         this._incModCount();
     },
-    addGene: function(gene) {
+    addGene: function (gene) {
         var auxGene = this.containsGene(gene);
 
         if (auxGene) {
@@ -178,13 +271,13 @@ Panel.prototype = {
         }
         this._incModCount();
     },
-    addAllGenes: function(genes) {
+    addAllGenes: function (genes) {
         for (var i = 0; i < genes.length; i++) {
             var elem = genes[i];
             this.addGene(elem);
         }
     },
-    containsGene: function(gene) {
+    containsGene: function (gene) {
         for (var i = 0; i < this.genes.length; i++) {
             var elem = this.genes[i];
             if (elem.name === gene.name) {
@@ -193,13 +286,13 @@ Panel.prototype = {
         }
         return null;
     },
-    addMutation: function(mutation) {
+    addMutation: function (mutation) {
         if (!this.containsMutation(mutation)) {
             this.polymer.push('formData.mutations', mutation);
             this._incModCount();
         }
     },
-    containsMutation: function(mutation) {
+    containsMutation: function (mutation) {
         for (var i = 0; i < this.mutations.length; i++) {
             var elem = this.mutations[i];
             if (elem.chr == mutation.chr &&
@@ -213,7 +306,7 @@ Panel.prototype = {
         }
         return false;
     },
-    removeGenesFromDisease: function(disease) {
+    removeGenesFromDisease: function (disease) {
         if (disease.associatedGenes && disease.associatedGenes.length > 0) {
             for (var j = 0; j < disease.associatedGenes.length; j++) {
                 var elem = disease.associatedGenes[j];
@@ -234,7 +327,7 @@ Panel.prototype = {
         }
 
     },
-    removeMutationsFromDisease: function(disease) {
+    removeMutationsFromDisease: function (disease) {
         var mutations = [];
         for (var i = 0; i < this.mutations.length; i++) {
             var mutation = this.mutations[i];
@@ -245,7 +338,7 @@ Panel.prototype = {
         }
         this.polymer.set('formData.mutations', mutations);
     },
-    removeGene: function(gene) {
+    removeGene: function (gene) {
         var index = -1;
         var g = null;
         for (var i = 0; g == null && i < this.genes.length; i++) {
@@ -265,7 +358,7 @@ Panel.prototype = {
             this._incModCount();
         }
     },
-    toJSON: function() {
+    toJSON: function () {
         return {
             id: this.id,
             name: this.name,
