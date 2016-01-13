@@ -158,11 +158,6 @@
           div.innerHTML='<i class="fa fa-circle-o-notch fa-spin"></i> &nbsp; Loading Panels... Wait a minute, please';
 
           document.body.appendChild(div);
-            if (localStorage.bioinfo_team_panelapp_diseases != null) {
-                BIOINFO_TEAM_PANELAPP_DISEASES = JSON.parse(localStorage.bioinfo_team_panelapp_diseases).result;
-                document.body.removeChild(div);
-                callback();
-            } else {
                 var url = "https://bioinfo.extge.co.uk/crowdsourcing/WebServices/list_panels?format=json";
                 var request = new XMLHttpRequest();
                 request.onload = function() {
@@ -173,10 +168,12 @@
                 };
                 request.onerror = function() {
                     console.log('Error loading panels.')
+                    BIOINFO_TEAM_PANELAPP_DISEASES = JSON.parse(localStorage.bioinfo_team_panelapp_diseases).result;
+                    document.body.removeChild(div);
+                    callback();
                 };
                 request.open('GET', url);
                 request.send();
-            }
         }
     </script>
 
