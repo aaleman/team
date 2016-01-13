@@ -193,35 +193,21 @@
             font-style: italic;
         }
 
-        #panelAppSelectedGenes::shadow .column-LevelOfConfidence[title="4"]::after {
+        #panelAppSelectedGenes::shadow .column-LevelOfConfidence[title="HighEvidence"]::after {
             color: #16D824;
             font-family: FontAwesome;
             margin-left: 5px;
             content: '\f012';
         }
 
-        #panelAppSelectedGenes::shadow .column-LevelOfConfidence[title="3"]::after {
-            color: #16D824;
-            font-family: FontAwesome;
-            margin-left: 5px;
-            content: '\f012';
-        }
-
-        #panelAppSelectedGenes::shadow .column-LevelOfConfidence[title="2"]::after {
+        #panelAppSelectedGenes::shadow .column-LevelOfConfidence[title="ModerateEvidence"]::after {
             color: #FF7C00;
             font-family: FontAwesome;
             margin-left: 5px;
             content: '\f012';
         }
 
-        #panelAppSelectedGenes::shadow .column-LevelOfConfidence[title="1"]::after {
-            color: #FF2600;
-            font-family: FontAwesome;
-            margin-left: 5px;
-            content: '\f012';
-        }
-
-        #panelAppSelectedGenes::shadow .column-LevelOfConfidence[title="0"]::after {
+        #panelAppSelectedGenes::shadow .column-LevelOfConfidence[title="LowEvidence"]::after {
             color: #FF2600;
             font-family: FontAwesome;
             margin-left: 5px;
@@ -1065,7 +1051,7 @@
             this.$.geneBedFileInput.value = "";
         },
         handleImportAppPanel: function(e) {
-            // this.$.appPanel.hidden = false;
+            this.$.appPanel.hidden = false;
         },
         handleClickGeneListClear: function(e) {
             this.formData.clearGenes();
