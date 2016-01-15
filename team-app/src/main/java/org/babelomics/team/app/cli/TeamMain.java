@@ -167,7 +167,10 @@ public class TeamMain {
                     Set<String> traits = new HashSet<>();
                     for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
                         for (String trait : clinvar.getTraits()) {
-                            traits.add(trait);
+                            // Not Specified,not specified,AllHighlyPenetrant,not provided
+                            if (!trait.equalsIgnoreCase("Not Specified") && !trait.equalsIgnoreCase("not provided") && !trait.equalsIgnoreCase("AllHighlyPenetrant")) {
+                                traits.add(trait);
+                            }
                         }
                     }
                     teamVariant.setClinvar(Joiner.on(",").join(traits));
