@@ -449,12 +449,12 @@
                 type: Array,
             },
 
-            _columns: {
+            _columnsDiag: {
                 type: Array,
                 value: [{
                     name: 'chr',
                     title: "Chr",
-                    width: 25
+                    width: 50
                 }, {
                     name: 'pos',
                     title: "Pos",
@@ -462,71 +462,183 @@
                 }, {
                     name: 'ref',
                     title: "Ref",
-                    width: 25
-
+                    width: 50
                 }, {
                     name: 'alt',
                     title: "Alt",
-                    width: 25
-
+                    width: 50
                 }, {
                     name: 'id',
                     title: 'SNP Id',
-                    width: 25
-
+                    width: 50,
+                    defaultValue: '.'
                 }, {
                     name: 'qual',
                     title: 'Qual',
-                    width: 25
+                    width: 50,
+                    defaultValue: '.',
+                    formula: function(row) {
+                        if (isNaN(row.qual)) {
+                            return ".";
+                        }
+                        return parseFloat(row.qual, 3);
 
+                    }
                 }, {
                     name: 'dp',
                     title: 'DP',
-                    width: 25
-
+                    width: 50,
+                    defaultValue: '.'
                 }, {
                     name: 'gene',
                     title: 'Gene',
-                    width: 50
-
+                    width: 70,
+                    defaultValue: '.'
                 }, {
                     name: 'ct',
                     title: 'Conseq. Type',
-                    width: 75
+                    width: 100,
+                    defaultValue: '.'
                 }, {
                     name: 'phylop',
                     title: 'phyloP',
-                    width: 50
+                    width: 50,
+                    defaultValue: '.'
                 }, {
                     name: 'phastcons',
                     title: 'Phastcons',
-                    width: 50
+                    width: 50,
+                    defaultValue: '.'
                 }, {
                     name: 'sift',
                     title: 'SIFT',
-                    width: 50
+                    width: 50,
+                    defaultValue: '.'
                 }, {
                     name: 'polyphen',
                     title: 'Polyphen',
-                    width: 50
+                    width: 50,
+                    defaultValue: '.'
                 }, {
                     name: 'maf1000G',
                     title: 'MAF 1000G',
-                    width: 50
+                    width: 50,
+                    defaultValue: '.'
                 }, {
                     name: 'maf1000GP3',
                     title: 'MAF 1000G Phase 3',
-                    width: 50
+                    width: 50,
+                    defaultValue: '.'
                 }, {
                     name: 'phenotype',
                     title: 'Phenotype',
-                    width: 75
+                    width: 100,
+                    defaultValue: '.'
                 }, {
                     name: 'source',
                     title: 'Source',
-                    width: 50
+                    width: 70,
+                    defaultValue: '.'
                 }]
-            }
+
+            },
+            _columnsSec:{
+              type: Array,
+              value: [{
+                name: 'chr',
+                title: "Chr",
+                width: 50
+            }, {
+                name: 'pos',
+                title: "Pos",
+                width: 50
+            }, {
+                name: 'ref',
+                title: "Ref",
+                width: 50
+            }, {
+                name: 'alt',
+                title: "Alt",
+                width: 50
+            }, {
+                name: 'id',
+                title: 'SNP Id',
+                width: 50,
+                defaultValue: '.'
+            }, {
+                name: 'qual',
+                title: 'Qual',
+                width: 50,
+                defaultValue: '.',
+                formula: function(row) {
+                    if (isNaN(row.qual)) {
+                        return ".";
+                    }
+                    return parseFloat(row.qual, 3);
+
+                }
+            }, {
+                name: 'dp',
+                title: 'DP',
+                width: 50,
+                defaultValue: '.'
+            }, {
+                name: 'gene',
+                title: 'Gene',
+                width: 70,
+                defaultValue: '.'
+            }, {
+                name: 'ct',
+                title: 'Conseq. Type',
+                width: 100,
+                defaultValue: '.'
+            }, {
+                name: 'phylop',
+                title: 'phyloP',
+                width: 50,
+                defaultValue: '.'
+            }, {
+                name: 'phastcons',
+                title: 'Phastcons',
+                width: 50,
+                defaultValue: '.'
+            }, {
+                name: 'sift',
+                title: 'SIFT',
+                width: 50,
+                defaultValue: '.'
+            }, {
+                name: 'polyphen',
+                title: 'Polyphen',
+                width: 50,
+                defaultValue: '.'
+            }, {
+                name: 'maf1000G',
+                title: 'MAF 1000G',
+                width: 50,
+                defaultValue: '.'
+            }, {
+                name: 'maf1000GP3',
+                title: 'MAF 1000G Phase 3',
+                width: 50,
+                defaultValue: '.'
+            }, {
+                name: 'clinvar',
+                title: 'Clinvar',
+                width: 70,
+                defaultValue: '.'
+            }, {
+                name: 'gwas',
+                title: 'Gwas',
+                width: 70,
+                defaultValue: '.'
+            }, {
+                name: 'cosmic',
+                title: 'Cosmic',
+                width: 70,
+                defaultValue: '.'
+            }]
+          }
 
         },
         ready: function() {
@@ -682,7 +794,7 @@
                 this.filter = this.filters[0].name;
             }
             this.getSecDataDiv(Utils.clone(this.filterData));
-            this._getTable(this._columns, this.filterData, this.$.reportSecondary);
+            this._getTable(this._columnsSec, this.filterData, this.$.reportSecondary);
         },
         filterDataChanged: function(neo, old) {},
         getSecDataDiv: function(auxDataFilter) {
@@ -797,14 +909,14 @@
                     for (i = 0; i < aux.length; i++) {
                         aux[i].checked = false;
                     }
-                }else{
-                  this.$.diseases.hidden = false;
-                  this.$.genes.hidden = false;
-                  this.$.mutations.hidden = false;
-                  var aux = this.$.panelsInfo.querySelectorAll('input');
-                  for (i = 0; i < aux.length; i++) {
-                      aux[i].checked = true;
-                  }
+                } else {
+                    this.$.diseases.hidden = false;
+                    this.$.genes.hidden = false;
+                    this.$.mutations.hidden = false;
+                    var aux = this.$.panelsInfo.querySelectorAll('input');
+                    for (i = 0; i < aux.length; i++) {
+                        aux[i].checked = true;
+                    }
                 }
             }
             if (divId === "diseases" || divId === "genes" || divId === "mutations") {
@@ -834,12 +946,12 @@
             this.comSec = comments[1].value;
         },
         _getMostPathogenic: function(mostPathogenicData) {
-            this._getTable(this._columns, mostPathogenicData, this.$.reportMostPathogenic);
+            this._getTable(this._columnsSec, mostPathogenicData, this.$.reportMostPathogenic);
         },
         diagDataChange: function(neo, old) {
             if (neo[0] != null) {
                 this.$.diagResult.hidden = false;
-                this._getTable(this._columns, neo, this.$.reportDiagnostic);
+                this._getTable(this._columnsDiag, neo, this.$.reportDiagnostic);
             } else {
                 this.$.diagResult.hidden = true;
                 this.$.diagCheck.checked = false;
