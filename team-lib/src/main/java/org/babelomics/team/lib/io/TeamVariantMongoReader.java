@@ -9,7 +9,6 @@ import org.opencb.opencga.catalog.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
 import org.opencb.opencga.catalog.models.DataStore;
 import org.opencb.opencga.catalog.models.File;
-import org.opencb.opencga.catalog.models.Study;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.StorageManagerFactory;
 import org.opencb.opencga.storage.core.config.StorageConfiguration;
@@ -66,9 +65,10 @@ public class TeamVariantMongoReader implements VariantReader {
 
             q.append(String.valueOf(VariantDBAdaptor.VariantQueryParams.RETURNED_STUDIES), this.studyId);
 
-            iterator = dbAdaptor.iterator(q, new QueryOptions());
 
-            Study study = catalogManager.getStudy(studyId, sessionId).getResult().get(0);
+            iterator = dbAdaptor.iterator(new QueryOptions());
+
+//            Study study = catalogManager.getStudy(studyId, sessionId).getResult().get(0);
 
         } catch (CatalogException | ClassNotFoundException | StorageManagerException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();

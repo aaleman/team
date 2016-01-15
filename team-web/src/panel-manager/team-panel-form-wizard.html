@@ -558,6 +558,12 @@
     Polymer({
         is: "team-panel-form-wizard",
         properties: {
+            userData: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
+            },
             step: {
                 type: Number,
                 value: 1
@@ -910,7 +916,7 @@
             this.$.selectedDiseases.setLoading(true);
 
             setTimeout(function() {
-              me.formData.addDiseases(me.currentSelectedDiseasesData);
+                me.formData.addDiseases(me.currentSelectedDiseasesData);
                 //
                 // for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
                 //     var row = me.currentSelectedDiseasesData[i];
@@ -1184,6 +1190,7 @@
             this.$.mutationGVPhe.value = "";
         },
         handleClickSavePanel: function(e) {
+            var me = this;
             if (this.formData.name == "") {
                 alert("The Panel name is mandatory");
                 return;
@@ -1203,8 +1210,73 @@
                     //                    var content = pako.deflate(JSON.stringify(this.formData));
                     content = JSON.stringify(this.formData);
                     var separator = "-_-";
-                    var fileName = "panel" + separator + this.formData.name + separator + this.formData.version + separator + this.formData.archived + separator + this.formData.used;
-                    this.uploadFile(content, fileName, this.defaultStudy.id);
+                    var fileName = "panel" + separator + this.formData.name + separator + this.formData.version;
+                    var jsonPanelData = {
+                        "n": this.formData.name,
+                        "v": this.formData.version,
+                        "a": false,
+                        "u": 0
+                    };
+
+                    this.uploadFile(content, fileName, this.defaultStudy.id, function(id) {
+                        var _me = me;
+
+                        console.log(id)
+                        console.log(jsonPanelData);
+                        var userData = _me.userData;
+                        if (!("team" in userData.attributes)) {
+                            userData.attributes.team = {};
+                            if (!("panels" in userData.attributes.team)) {
+                                userData.attributes.team.panels = [];
+                            }
+                        }
+                        userData.attributes.team.panels.push(jsonPanelData);
+
+                        var url = OpencgaManager.users.update({
+                            id: userData.id,
+                            query: {
+                                sid: Cookies('bioinfo_sid'),
+                            },
+                            request: {
+                                url: true
+                            }
+                        });
+
+                        var data = {
+                            attributes: userData.attributes
+                        };
+
+                        // var xhr = new XMLHttpRequest();
+                        //
+                        // xhr.addEventListener("error", function(e){
+                        //   debugger
+                        // });
+                        //
+                        // xhr.open('POST', url, false);
+                        // xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                        // xhr.onloadend = function(e) {
+                        //     debugger
+                        // };
+                        // xhr.onloaderror = function(e){
+                        // }
+                        // xhr.send({"attributes":{"test":"pepeasdfasdfadfasafd"}});
+
+                        $.ajax({
+                            type: "POST",
+                            url: "http://test.babelomics.org/opencga-0.7-dev/webservices/rest/v1/users/aleman/update?sid=Cegv0eBkzh4WwYvtN3C4",
+                            data: {"attributes": {"a":"b"}},
+                            dataType: "json",
+                            crossDomain: true,
+                            processData: false, // tell jQuery not to process the data
+                            contentType: "application/json; charset=utf-8",
+                            success: function(response) {
+                                debugger
+                            },
+                            error: function(error) {
+                                debugger
+                            }
+                        });
+                    });
                 }
             }
             this.formData = new Panel();
@@ -1213,7 +1285,7 @@
             a.$.newPanelPanel.hidden = true;
 
         },
-        uploadFile: function(fileContent, fileName, studyId) {
+        uploadFile: function(fileContent, fileName, studyId, callback) {
             var url = OpencgaManager.files.upload({
                 query: {
                     sid: Cookies("bioinfo_sid")
@@ -1252,7 +1324,14 @@
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, false);
             xhr.onloadend = function(e) {
-                // console.log('upload Done!');
+                var response = JSON.parse(e.srcElement.response);
+                try {
+                    var id = response.response[0].result[0].id;
+                    callback(id);
+                } catch (c) {
+
+                }
+                console.log('upload Done!');
             };
             xhr.send(formData);
         },

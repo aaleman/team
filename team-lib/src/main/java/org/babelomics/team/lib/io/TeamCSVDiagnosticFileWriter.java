@@ -22,16 +22,16 @@ import java.util.Set;
 /**
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
  */
-public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
+public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
 
-    private PrintWriter printer;
-    private Sample sample;
     private String filename;
-    private static final String SEPARATOR = "\t";
-    private DecimalFormat df;
+    protected DecimalFormat df;
+    protected PrintWriter printer;
+    protected Sample sample;
+    protected static final String SEPARATOR = "\t";
 
 
-    public TeamCSVFileWriter(Sample sample, String filename) {
+    public TeamCSVDiagnosticFileWriter(Sample sample, String filename) {
         this.sample = sample;
 
         this.filename = filename;
@@ -81,9 +81,6 @@ public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
 
         sb.append("phenotype").append(SEPARATOR);
         sb.append("source").append(SEPARATOR);
-
-//        sb.append("MAF EVS").append(SEPARATOR);
-//        sb.append("MAF EVS (Allele)").append(SEPARATOR);
 
         printer.println(sb.toString());
 
@@ -175,7 +172,7 @@ public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
         return true;
     }
 
-    private Maf getMAF(List<PopulationFrequency> popFreqs, String study, String population) {
+    protected Maf getMAF(List<PopulationFrequency> popFreqs, String study, String population) {
 
         if (popFreqs != null && popFreqs.size() > 0) {
             for (PopulationFrequency pf : popFreqs) {
@@ -191,7 +188,7 @@ public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
         return null;
     }
 
-    private String getProteinSubstitutionScores(List<ConsequenceType> consequenceTypes, String source) {
+    protected String getProteinSubstitutionScores(List<ConsequenceType> consequenceTypes, String source) {
 
         if (consequenceTypes != null && consequenceTypes.size() > 0) {
             for (ConsequenceType consequenceType : consequenceTypes) {
@@ -209,7 +206,7 @@ public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
         return ".";
     }
 
-    private String getConservedRegionScore(List<Score> conservedRegionScores, String source) {
+    protected String getConservedRegionScore(List<Score> conservedRegionScores, String source) {
         if (conservedRegionScores != null && conservedRegionScores.size() > 0) {
             for (Score score : conservedRegionScores) {
                 if (score.getSource().equalsIgnoreCase(source)) {
@@ -220,7 +217,7 @@ public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
         return ".";
     }
 
-    private String getConsequenceTypes(List<ConsequenceType> consequenceTypes) {
+    protected String getConsequenceTypes(List<ConsequenceType> consequenceTypes) {
         if (consequenceTypes != null && consequenceTypes.size() > 0) {
             Set<String> cts = new HashSet<>();
             for (ConsequenceType ct : consequenceTypes) {
@@ -233,7 +230,7 @@ public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
         return ".";
     }
 
-    private String getGenes(List<ConsequenceType> consequenceTypes) {
+    protected String getGenes(List<ConsequenceType> consequenceTypes) {
         if (consequenceTypes != null && consequenceTypes.size() > 0) {
             Set<String> genes = new HashSet<>();
             for (ConsequenceType ct : consequenceTypes) {
@@ -255,7 +252,7 @@ public class TeamCSVFileWriter implements DataWriter<TeamVariant> {
     }
 
 
-    private class Maf {
+    protected class Maf {
         public String allele;
         public double maf;
 
