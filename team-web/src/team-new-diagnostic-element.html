@@ -166,7 +166,7 @@
                             <div class="horizontal layout">
                                 <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
                             </div>
-                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{panels}}" data-panels="{{panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{configPanel.panels}}" data-panels="{{configPanel.panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
 
 
                             <div class="horizontal layout">
@@ -200,7 +200,7 @@
                         <div class="header" style="text-align:left;font-size:15px;">
                             <i class="fa fa-plus"></i> New Panel
                         </div>
-                        <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
+                        <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" config-panel="{{configPanel}}"></team-panel-form-wizard>
                     </jso-panel>
 
                 </div>
@@ -228,10 +228,10 @@
     Polymer({
         is: "team-new-diagnostic-element",
         properties: {
-            panels: {
-                type: Array,
+            panelConfig: {
+                type: Object,
                 value: function() {
-                    return [];
+                    return {};
                 },
 
             },
@@ -303,8 +303,8 @@
             if (this.panels == "") {
                 this.set('selectedPanel', null);
             } else {
-                for (var i = 0; i < this.panels.length; i++) {
-                    if (this.panels[i].file.id == this.selectedPanelId) {
+                for (var i = 0; i < this.configPanel.panels.length; i++) {
+                    if (this.configPanel.panels[i].fileId == this.selectedPanelId) {
                         aux = 1;
                     }
                 }
@@ -331,14 +331,13 @@
 
             if (this.selectedSample.id != null && this.selectedPanelId != "") {
                 this.errorMessage = " ";
-                this.selectedPanel.used=true;
-                for(var i=0;i<this.panels.length;i++){
-                  panel=this.panels[i];
-                  if(panel.name==this.selectedPanel.name){
-                    panel.used="true";
-                  }
+                this.selectedPanel.used = true;
+                for (var i = 0; i < this.configPanel.panels.length; i++) {
+                    panel = this.configPanel.panels[i];
+                    if (panel.name == this.selectedPanel.name) {
+                        panel.used++;
+                    }
                 }
-                console.log(this.panels)
                 var studyId = this.$.sampleBrowser.selectedStudy.study.id;
                 this.selectedStudy = this.$.sampleBrowser.selectedStudy;
 
@@ -362,6 +361,8 @@
                         success: function(response) {
                             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                                 var userId = response.response[0].result[0].id;
+
+                                me.panelConfig.savePanelConfig();
                                 me.fire('run');
                             } else {}
                         },
