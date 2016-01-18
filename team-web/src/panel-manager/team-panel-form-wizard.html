@@ -562,7 +562,8 @@
                 type: Object,
                 value: function() {
                     return {};
-                }
+                },
+                observer: 'userDataChanged'
             },
             step: {
                 type: Number,
@@ -723,6 +724,10 @@
 
             this.formData = new Panel();
             this.formData.polymer = this;
+
+            // TEST CODE
+            // this.formData.name = "test";
+            this.$.formWizard.goToStep(4);
 
             this.$.allDiseases.setLoading(true);
 
@@ -1221,61 +1226,12 @@
                     this.uploadFile(content, fileName, this.defaultStudy.id, function(id) {
                         var _me = me;
 
-                        console.log(id)
-                        console.log(jsonPanelData);
                         var userData = _me.userData;
-                        if (!("team" in userData.attributes)) {
-                            userData.attributes.team = {};
-                            if (!("panels" in userData.attributes.team)) {
-                                userData.attributes.team.panels = [];
-                            }
-                        }
-                        userData.attributes.team.panels.push(jsonPanelData);
 
-                        var url = OpencgaManager.users.update({
-                            id: userData.id,
-                            query: {
-                                sid: Cookies('bioinfo_sid'),
-                            },
-                            request: {
-                                url: true
-                            }
-                        });
+                        jsonPanelData.fid = id;
+                        // userData.attributes.team.panels.push(jsonPanelData);
+                        _me.panelConfig.addPanelConfig(jsonPanelData);
 
-                        var data = {
-                            attributes: userData.attributes
-                        };
-
-                        // var xhr = new XMLHttpRequest();
-                        //
-                        // xhr.addEventListener("error", function(e){
-                        //   debugger
-                        // });
-                        //
-                        // xhr.open('POST', url, false);
-                        // xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                        // xhr.onloadend = function(e) {
-                        //     debugger
-                        // };
-                        // xhr.onloaderror = function(e){
-                        // }
-                        // xhr.send({"attributes":{"test":"pepeasdfasdfadfasafd"}});
-
-                        $.ajax({
-                            type: "POST",
-                            url: "http://test.babelomics.org/opencga-0.7-dev/webservices/rest/v1/users/aleman/update?sid=Cegv0eBkzh4WwYvtN3C4",
-                            data: {"attributes": {"a":"b"}},
-                            dataType: "json",
-                            crossDomain: true,
-                            processData: false, // tell jQuery not to process the data
-                            contentType: "application/json; charset=utf-8",
-                            success: function(response) {
-                                debugger
-                            },
-                            error: function(error) {
-                                debugger
-                            }
-                        });
                     });
                 }
             }
@@ -1323,6 +1279,7 @@
 
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, false);
+
             xhr.onloadend = function(e) {
                 var response = JSON.parse(e.srcElement.response);
                 try {
@@ -1600,5 +1557,10 @@
                 this.$.savePanel.hidden = false;
             }
         },
+        userDataChanged: function(neo, old) {
+            if (neo && neo.id != null && neo.id != "") {
+                this.panelConfig = new PanelConfig(neo);
+            }
+        }
     });
 </script>

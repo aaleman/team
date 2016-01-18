@@ -375,3 +375,88 @@ Panel.prototype = {
         }
     }
 };
+
+function PanelConfig(args) {
+    this.id = Utils.genId("Panel");
+    this.panels = [];
+    this.panelHash = {};
+    this.userInfo = args;
+
+    var attrs = this.userInfo.attributes;
+
+    if (!("team" in attrs)) {
+        attrs.team = {};
+    }
+
+    if (!("panels" in attrs.team)) {
+        attrs.team.panels = [];
+    }
+
+    this.panels = attrs.team.panels;
+
+    for (var i = 0; i < this.panels.length; i++) {
+        var panel = this.panels[i];
+        this.panelHash[panel.fid] = panel;
+    }
+
+    this._modCount = 0;
+};
+PanelConfig.prototype = {
+
+    addPanelConfig: function (newPanelConfig) {
+        if (newPanelConfig) {
+            this.panels.push(newPanelConfig);
+            this.panelHash[newPanelConfig.fid] = newPanelConfig;
+            this.savePanelConfig();
+        }
+    },
+    savePanelConfig: function () {
+
+        var url = OpencgaManager.users.update({
+            id: this.userInfo.id,
+            query: {
+                sid: Cookies('bioinfo_sid'),
+            },
+            request: {
+                url: true
+            }
+        });
+
+        console.log(url);
+        var data = {
+            'attributes': {
+                "team": this.userInfo.attributes.team
+            }
+        };
+
+        function createCORSRequest(method, url) {
+            var xhr = new XMLHttpRequest();
+            if ("withCredentials" in xhr) {
+                xhr.open(method, url, true);
+            } else if (typeof XDomainRequest != "undefined") {
+                xhr = new XDomainRequest();
+                xhr.open(method, url);
+            } else {
+                xhr = null;
+            }
+            return xhr;
+        }
+
+        var request = createCORSRequest("POST", url);
+        if (request) {
+            request.setRequestHeader("Content-Type", "application/json");
+
+            request.onloadend = function (e) {
+                var response = JSON.parse(e.srcElement.response);
+                //do something with request.responseText
+            };
+            request.onerror = function () {
+                console.log("Error")
+                debugger
+            }
+            request.send(JSON.stringify(data));
+
+        }
+
+    }
+}
