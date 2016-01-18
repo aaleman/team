@@ -304,7 +304,7 @@
                                 <jso-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
                                     <jso-option value="none"></jso-option>
                                     <template is="dom-repeat" items="{{panelConfig.panels}}">
-                                        <jso-option value$="{{item.file.id}}">{{item.name}}</jso-option>
+                                        <jso-option value$="{{item.fileId}}">{{item.name}}</jso-option>
                                     </template>
                                 </jso-select>
 
@@ -488,7 +488,7 @@
                                         <jso-select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
                                             <jso-option value="none"></jso-option>
                                             <template is="dom-repeat" items="{{panelConfig.panels}}">
-                                                <jso-option value$="{{item.file.id}}">{{item.name}}</jso-option>
+                                                <jso-option value$="{{item.fileId}}">{{item.name}}</jso-option>
                                             </template>
                                         </jso-select>
                                         <div class="horizontal layout">
@@ -726,7 +726,7 @@
 
             // TEST CODE
             // this.formData.name = "test";
-            this.$.formWizard.goToStep(4);
+            // this.$.formWizard.goToStep(4);
 
             this.$.allDiseases.setLoading(true);
 
@@ -1328,7 +1328,7 @@
                 var fileId = parseInt(this.$.importGenesFromPanel.value);
                 for (var i = 0; i < this.panelConfig.panels.length; i++) {
                     var panel = this.panelConfig.panels[i];
-                    if (panel.file.id === fileId) {
+                    if (panel.fileId === fileId) {
                         var panelContent = "";
                         OpencgaManager.files.content({
                             id: fileId,
@@ -1386,7 +1386,7 @@
                 var fileId = parseInt(this.$.importMutationsFromPanel.value);
                 for (var i = 0; i < this.panelConfig.panels.length; i++) {
                     var panel = this.panelConfig.panels[i];
-                    if (panel.file.id === fileId) {
+                    if (panel.fileId === fileId) {
                         var panelContent = "";
                         OpencgaManager.files.content({
                             id: fileId,
