@@ -381,6 +381,7 @@ function PanelConfig(args) {
     this.panels = [];
     this.panelHash = {};
     this.userInfo = args;
+    this.polymer;
 
     var attrs = this.userInfo.attributes;
 
@@ -396,7 +397,7 @@ function PanelConfig(args) {
 
     for (var i = 0; i < this.panels.length; i++) {
         var panel = this.panels[i];
-        this.panelHash[panel.fid] = panel;
+        this.panelHash[panel.fileId] = panel;
     }
 
     this._modCount = 0;
@@ -405,9 +406,12 @@ PanelConfig.prototype = {
 
     addPanelConfig: function (newPanelConfig) {
         if (newPanelConfig) {
-            this.panels.push(newPanelConfig);
-            this.panelHash[newPanelConfig.fid] = newPanelConfig;
+            //this.panels.push(newPanelConfig);
+            this.polymer.push("panelConfig.panels", newPanelConfig);
+            this.panelHash[newPanelConfig.fileId] = newPanelConfig;
             this.savePanelConfig();
+
+            debugger
         }
     },
     savePanelConfig: function () {
@@ -458,5 +462,21 @@ PanelConfig.prototype = {
 
         }
 
+    },
+    archivePanel: function(fileId){
+        this.panelHash[fileId].archived = !this.panelHash[fileId].archived;
+        this.polymer.notifyPath('panelConfig.panels', this.panels);
+
+        this._updatePanels();
+        this.savePanelConfig();
+    },
+    _updatePanels: function(){
+        var panels = [];
+        for (var i = 0; i < this.panels.length; i++) {
+            var panel = this.panels[i];
+            panels.push(panel);
+        }
+        this.polymer.set('configPanel.panels', panels);
+    
     }
 }

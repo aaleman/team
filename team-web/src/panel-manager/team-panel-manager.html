@@ -142,22 +142,22 @@
                 </div>
                 <div class="jso-formcontent" id="userPanels">
                     <template is="dom-if" if="{{computeView(view, 'main')}}">
-                        <template is="dom-repeat" items="{{panels}}" filter="isArchived" observe="type archived">
-                            <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
+                        <template is="dom-repeat" items="{{panelConfig.panels}}" filter="isArchived" observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
                                 <div class="name flex">{{item.name}}</div>
                                 <!-- <div class="version" title="Version">{{item.version}}</div> -->
-                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.file.id}}" data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
-                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.fileId}}" data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
+                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
                                 <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
                             </div>
                         </template>
                     </template>
                     <template is="dom-if" if="{{computeView(view, 'archived')}}">
-                        <template is="dom-repeat" items="{{panels}}" filter="isNotArchived" observe="type archived">
-                            <div class="panel-item horizontal layout center" data-file$="{{item.file.id}}" on-click="handlePanelSelected">
+                        <template is="dom-repeat" items="{{panelConfig.panels}}" filter="isNotArchived" observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
                                 <div class="name flex">{{item.name}}</div>
                                 <!-- <div class="version" title="Version">{{item.version}}</div> -->
-                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.file.id}}" on-click="handleArchivedPanel">&nbsp;</i>
+                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
                                 <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
                             </div>
                         </template>
@@ -211,10 +211,10 @@
                 notify: true,
                 observer: 'projectsChanged'
             },
-            panels: {
-                type: Array,
+            panelConfig: {
+                type: Object,
                 value: function() {
-                    return [];
+                    return {};
                 }
             },
             examplePanels: {
@@ -308,17 +308,9 @@
             }
         },
         handleArchivedPanel: function(e) {
-
             e.stopPropagation();
             var fileId = parseInt(e.currentTarget.dataset.file);
-
-            for (var i = 0; i < this.panels.length; i++) {
-                var panel = this.panels[i];
-                if (panel.file.id === fileId) {
-                    var archived = (panel.archived === "true") ? "false" : "true";
-                    this.set('panels.' + i + '.archived', archived);
-                }
-            }
+            this.panelConfig.archivePanel(fileId);
         },
         handlePanelSelected: function(e) {
             e.stopPropagation();
@@ -382,12 +374,11 @@
             return view === value;
         },
         isArchived: function(item) {
-            // return item.archived;
-            // debugger
-            return !(item.archived === "true");
+          console.log("ARCHIVED: " + item.archived);
+            return !(item.archived === true);
         },
         isNotArchived: function(item) {
-            return (item.archived === "true");
+            return (item.archived === true);
         },
         handleSelectedPanelChanged: function(neo, old) {
             // debugger

@@ -194,7 +194,7 @@
             <div class="header" style="text-align:left;font-size:15px;">
                 <i class="fa fa-plus"></i> New Panel
             </div>
-            <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}" user-data="{{userData}}"></team-panel-form-wizard>
+            <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panel-config="{{panelConfig}}" user-data="{{userData}}"></team-panel-form-wizard>
         </jso-panel>
 
 
@@ -202,7 +202,7 @@
             <div class="header" style="text-align:left;font-size:15px;">
                 <i class="fa fa-folder-open-o"></i> Panel Manager
             </div>
-            <team-panel-manager class="container" id="manager" projects="{{projects}}" panels="{{panels}}" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}">
+            <team-panel-manager class="container" id="manager" projects="{{projects}}" panel-config="{{panelConfig}}" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}">
             </team-panel-manager>
         </jso-panel>
 
@@ -317,9 +317,16 @@
 
             },
             panels: {
-                type: Array,
+                type: Object,
                 value: function() {
                     return [];
+                },
+                notify: true
+            },
+            panelConfig: {
+                type: Object,
+                value: function() {
+                    return {};
                 },
                 notify: true
             },
@@ -364,6 +371,11 @@
                 type: Object,
                 observer: 'handleRunJob'
             },
+            userData: {
+                type: Object,
+                notify: true,
+                observer: 'handleUserDataChanged'
+            }
         },
         ready: function() {
 
@@ -373,16 +385,10 @@
                 this.setMenu('home');
             }
         },
-        // computeHome: function() {
-        //     return this.selectedOption != "home";
-        // },
-        // computeFooter: function() {
-        //     return this.selectedOption != "home";
-        // },
-
         handleLogin: function() {
             // this.selectedOption = "panels";
             // this.homeHidden = true;
+
         },
         handleLogout: function() {
             this.$.browserPanel.hide();
@@ -424,8 +430,8 @@
                     this.teamConfigFolder = teamConfigFolder;
                     this.analysisFolder = analysisFolder;
 
-                    var panels = this._getPanelFiles(defaultStudy, teamConfigFolder);
-                    this.set('panels', panels);
+                    // var panels = this._getPanelFiles(defaultStudy, teamConfigFolder);
+                    // this.set('panels', panels);
                     this.$.jobBrowser._getJobs(this.defaultStudy.id)
                 }
             }
@@ -574,7 +580,6 @@
         },
         handleMenuChanged: function(e) {
             var menuOption = e.detail.option;
-            q
             console.log(menuOption)
             for (var i = 0; i < this.$.content.children.length; i++) {
                 var elem = this.$.content.children[i]
@@ -585,15 +590,18 @@
                 }
             };
         },
-        handleCloseFiles: function(e) {
-            // this.$.teamMenuBar.toggleElement("files");
-        },
         handleRunJob: function(e) {
             this.selectedOption = "";
             this.$.jobBrowserPanel.hidden = false;
             this.$.content.hidden = false;
             this.$.newDiagnosticElement.$.formWizard.goToStep(1);
             this.$.jobBrowser.selectStudyById(this.$.newDiagnosticElement.selectedStudy.study.id);
+        },
+        handleUserDataChanged: function(neo, old) {
+            if (neo && neo.id != null && neo.id != "") {
+                this.panelConfig = new PanelConfig(neo);
+                this.panelConfig.polymer = this;
+            }
         }
     });
 </script>

@@ -303,7 +303,7 @@
 
                                 <jso-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
                                     <jso-option value="none"></jso-option>
-                                    <template is="dom-repeat" items="{{panels}}">
+                                    <template is="dom-repeat" items="{{panelConfig.panels}}">
                                         <jso-option value$="{{item.file.id}}">{{item.name}}</jso-option>
                                     </template>
                                 </jso-select>
@@ -487,7 +487,7 @@
                                     <div class="" id="mutation-tab-config-panel" style="margin:5px">
                                         <jso-select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
                                             <jso-option value="none"></jso-option>
-                                            <template is="dom-repeat" items="{{panels}}">
+                                            <template is="dom-repeat" items="{{panelConfig.panels}}">
                                                 <jso-option value$="{{item.file.id}}">{{item.name}}</jso-option>
                                             </template>
                                         </jso-select>
@@ -563,7 +563,6 @@
                 value: function() {
                     return {};
                 },
-                observer: 'userDataChanged'
             },
             step: {
                 type: Number,
@@ -663,10 +662,10 @@
                     return [];
                 }
             },
-            panels: {
-                type: Array,
+            panelConfig: {
+                type: Object,
                 value: function() {
-                    return [];
+                    return {};
                 }
             },
             selectedPanel: {
@@ -1200,8 +1199,8 @@
                 alert("The Panel name is mandatory");
                 return;
             }
-            for (var i = 0; i < this.panels.length; i++) {
-                if (this.formData.name === this.panels[i].name) {
+            for (var i = 0; i < this.panelConfig.panels.length; i++) {
+                if (this.formData.name === this.panelConfig.panels[i].name) {
                     alert("The Panel name already exists");
                     return;
                 }
@@ -1217,10 +1216,11 @@
                     var separator = "-_-";
                     var fileName = "panel" + separator + this.formData.name + separator + this.formData.version;
                     var jsonPanelData = {
-                        "n": this.formData.name,
-                        "v": this.formData.version,
-                        "a": false,
-                        "u": 0
+                        "name": this.formData.name,
+                        "version": this.formData.version,
+                        "archived": false,
+                        "used": 0,
+                        "fileId": null
                     };
 
                     this.uploadFile(content, fileName, this.defaultStudy.id, function(id) {
@@ -1228,8 +1228,7 @@
 
                         var userData = _me.userData;
 
-                        jsonPanelData.fid = id;
-                        // userData.attributes.team.panels.push(jsonPanelData);
+                        jsonPanelData.fileId = id;
                         _me.panelConfig.addPanelConfig(jsonPanelData);
 
                     });
@@ -1327,8 +1326,8 @@
             var me = this;
             if (this.$.importGenesFromPanel.value != "none") {
                 var fileId = parseInt(this.$.importGenesFromPanel.value);
-                for (var i = 0; i < this.panels.length; i++) {
-                    var panel = this.panels[i];
+                for (var i = 0; i < this.panelConfig.panels.length; i++) {
+                    var panel = this.panelConfig.panels[i];
                     if (panel.file.id === fileId) {
                         var panelContent = "";
                         OpencgaManager.files.content({
@@ -1385,8 +1384,8 @@
             var me = this;
             if (this.$.importMutationsFromPanel.value != "none") {
                 var fileId = parseInt(this.$.importMutationsFromPanel.value);
-                for (var i = 0; i < this.panels.length; i++) {
-                    var panel = this.panels[i];
+                for (var i = 0; i < this.panelConfig.panels.length; i++) {
+                    var panel = this.panelConfig.panels[i];
                     if (panel.file.id === fileId) {
                         var panelContent = "";
                         OpencgaManager.files.content({
@@ -1555,11 +1554,6 @@
                 // aux[1].disabled = false;
                 this.$.saveAsPanel.hidden = true;
                 this.$.savePanel.hidden = false;
-            }
-        },
-        userDataChanged: function(neo, old) {
-            if (neo && neo.id != null && neo.id != "") {
-                this.panelConfig = new PanelConfig(neo);
             }
         }
     });
