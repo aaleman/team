@@ -573,6 +573,7 @@
             var job = e.detail;
             if (job.status === "READY") {
                 this.$.teamResult.job = job;
+                this.$.teamResult.panelConfig = this.panelConfig;
                 this.selectedOption = "result";
                 this.$.jobBrowserPanel.hidden = true;
 

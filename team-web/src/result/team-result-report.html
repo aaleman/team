@@ -700,9 +700,10 @@
             var panels = b.dataPanels;
             for (var i = 0; i < panels.length; i++) {
                 var panel = panels[i];
-                var name = panel.file.name;
-                if (this.job.commandLine.search(name) >= 0) {
-                    var panelId = panel.file.id;
+                // var name = panel.file.name;
+                // if (this.job.commandLine.search(name) >= 0) {
+                if (this.job.input.indexOf(panel.fileId) >= 0) {
+                    var panelId = panel.fileId;
                     var data;
 
                     OpencgaManager.files.content({
@@ -797,14 +798,14 @@
                     for (i = 0; i < aux.length; i++) {
                         aux[i].checked = false;
                     }
-                }else{
-                  this.$.diseases.hidden = false;
-                  this.$.genes.hidden = false;
-                  this.$.mutations.hidden = false;
-                  var aux = this.$.panelsInfo.querySelectorAll('input');
-                  for (i = 0; i < aux.length; i++) {
-                      aux[i].checked = true;
-                  }
+                } else {
+                    this.$.diseases.hidden = false;
+                    this.$.genes.hidden = false;
+                    this.$.mutations.hidden = false;
+                    var aux = this.$.panelsInfo.querySelectorAll('input');
+                    for (i = 0; i < aux.length; i++) {
+                        aux[i].checked = true;
+                    }
                 }
             }
             if (divId === "diseases" || divId === "genes" || divId === "mutations") {

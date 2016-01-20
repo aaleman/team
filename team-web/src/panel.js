@@ -411,7 +411,6 @@ PanelConfig.prototype = {
             this.panelHash[newPanelConfig.fileId] = newPanelConfig;
             this.savePanelConfig();
 
-            debugger
         }
     },
     savePanelConfig: function () {
@@ -477,6 +476,6 @@ PanelConfig.prototype = {
             panels.push(panel);
         }
         this.polymer.set('configPanel.panels', panels);
-    
+
     }
 }

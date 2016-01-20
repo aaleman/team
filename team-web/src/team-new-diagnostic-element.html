@@ -166,7 +166,7 @@
                             <div class="horizontal layout">
                                 <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
                             </div>
-                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{configPanel.panels}}" data-panels="{{configPanel.panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{panelConfig.panels}}" data-panels="{{panelConfig.panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
 
 
                             <div class="horizontal layout">
@@ -332,8 +332,8 @@
             if (this.selectedSample.id != null && this.selectedPanelId != "") {
                 this.errorMessage = " ";
                 this.selectedPanel.used = true;
-                for (var i = 0; i < this.configPanel.panels.length; i++) {
-                    panel = this.configPanel.panels[i];
+                for (var i = 0; i < this.panelConfig.panels.length; i++) {
+                    panel = this.panelConfig.panels[i];
                     if (panel.name == this.selectedPanel.name) {
                         panel.used++;
                     }
@@ -382,7 +382,7 @@
             this.fire('close');
         },
         handlePanelClick: function(e) {
-            this.selectedPanelId = e.detail.file.id;
+            this.selectedPanelId = e.detail.fileId;
             this.errorMessagePanel = " ";
             if (this.selectedSample != null) {
                 this.errorMessage = "";
