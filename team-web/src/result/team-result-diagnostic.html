@@ -75,9 +75,9 @@
 
         <div id="tools">
             <div hidden$="{{!computeView(view, 'overview')}}">
-              <div id="overview">
-              </div>
-              <div style="font-style:italic">{{overviewComent}}</div>
+                <div id="overview">
+                </div>
+                <div style="font-style:italic">{{overviewComent}}</div>
             </div>
             <div id="comments" hidden$="{{!computeView(view, 'comments')}}">
                 <div style="margin-top: 10px">
@@ -134,8 +134,12 @@
                 notify: true,
                 observer: "filterDataChanged"
             },
+            typeData: {
+                type: String,
+                value: ""
+            }
         },
-        _columns: [{
+        _columnsDiag: [{
             name: 'chr',
             title: "Chr",
             width: 100
@@ -225,8 +229,107 @@
             defaultValue: '.'
         }],
 
+        _columnsSec: [{
+            name: 'chr',
+            title: "Chr",
+            width: 100
+        }, {
+            name: 'pos',
+            title: "Pos",
+            width: 100
+        }, {
+            name: 'ref',
+            title: "Ref",
+            width: 100
+        }, {
+            name: 'alt',
+            title: "Alt",
+            width: 100
+        }, {
+            name: 'id',
+            title: 'SNP Id',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'qual',
+            title: 'Qual',
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+                if (isNaN(row.qual)) {
+                    return ".";
+                }
+                return parseFloat(row.qual, 3);
+
+            }
+        }, {
+            name: 'dp',
+            title: 'DP',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'gene',
+            title: 'Gene',
+            width: 200,
+            defaultValue: '.'
+        }, {
+            name: 'ct',
+            title: 'Conseq. Type',
+            width: 300,
+            defaultValue: '.'
+        }, {
+            name: 'phylop',
+            title: 'phyloP',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'phastcons',
+            title: 'Phastcons',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'sift',
+            title: 'SIFT',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'polyphen',
+            title: 'Polyphen',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'maf1000G',
+            title: 'MAF 1000G',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'maf1000GP3',
+            title: 'MAF 1000G Phase 3',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'clinvar',
+            title: 'Clinvar',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'gwas',
+            title: 'Gwas',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'cosmic',
+            title: 'Cosmic',
+            width: 100,
+            defaultValue: '.'
+        }],
+
         ready: function() {
-            this.$.table.columns = this._columns;
+                if (this.typeData == "diagnostic") {
+                    this.$.table.columns = this._columnsDiag;
+                } else if (this.typeData == "secondary") {
+                    this.$.table.columns = this._columnsSec;
+                }
             var me = this;
             this.async(function() {
                 this.$.gv.createGenomeViewer();
@@ -253,8 +356,8 @@
                 alternate: row.alt
             };
             this.$.frequency.row = rowFreq;
-            this.view='overview';
-            this.overviewComent="Graphic weighted between zero and one"
+            this.view = 'overview';
+            this.overviewComent = "Graphic weighted between zero and one"
             this._createPolarChart(row);
         },
         dataChanged: function(neo, old) {
@@ -263,15 +366,15 @@
                 var elem = this.data[i];
                 _data.push(elem);
             };
-            this.view='overview';
+            this.view = 'overview';
             this._data = _data;
             if (this._data[0] != null) {
                 this.$.table.set('selected', [this._data[0]]);
-                this.$.overview.hidden=false;
+                this.$.overview.hidden = false;
                 this._rowSelected(this._data[0]);
-            }else{
-              this.$.overview.hidden=true;
-              this.overviewComent="No data found";
+            } else {
+                this.$.overview.hidden = true;
+                this.overviewComent = "No data found";
             }
 
         },
@@ -289,9 +392,9 @@
                 this.set('_data', data);
                 this.$.table.set('selected', [this._data[0]]);
                 this.set('filterData', this._data);
-                if(neo['filterView']!=null && neo['filterView']=='filterA'){
-                  var report=document.getElementById('teamResultReport');
-                  report._getMostPathogenic(this.filterData);
+                if (neo['filterView'] != null && neo['filterView'] == 'filterA') {
+                    var report = document.getElementById('teamResultReport');
+                    report._getMostPathogenic(this.filterData);
                 }
             }
         },
@@ -423,9 +526,9 @@
             return false;
         },
         handleMenuClick: function(e) {
-          if (this._data[0]!=null){
-            this.view = e.target.dataset.value;
-          }
+            if (this._data[0] != null) {
+                this.view = e.target.dataset.value;
+            }
         },
         computeView: function(view, value) {
             return view === value;
@@ -446,14 +549,14 @@
             return aux;
         },
         _createPolarChart: function(row) {
-          var phylop=Math.abs(row.phylop);
-          if(phylop>1){
-            phylop=1/phylop;
-          }
-          var phastcons=Math.abs(row.phastcons);
-          if(phastcons>1){
-            phastcons=1/phastcons;
-          }
+            var phylop = Math.abs(row.phylop);
+            if (phylop > 1) {
+                phylop = 1 / phylop;
+            }
+            var phastcons = Math.abs(row.phastcons);
+            if (phastcons > 1) {
+                phastcons = 1 / phastcons;
+            }
 
             var chart = new Highcharts.Chart({
                 chart: {
@@ -483,8 +586,8 @@
                 yAxis: {
                     gridLineInterpolation: 'polygon',
                     lineWidth: 0,
-                    min:0,
-                    max:1
+                    min: 0,
+                    max: 1
                 },
 
                 series: [{
@@ -502,11 +605,11 @@
             this.set('filterData', neo);
             if (this.filterData[0] != null) {
                 this.$.table.set('selected', [this.filterData[0]]);
-                this.$.overview.hidden=false;
+                this.$.overview.hidden = false;
                 this._rowSelected(this.filterData[0]);
-            }else{
-              this.$.overview.hidden=true;
-              this.overviewComent="";
+            } else {
+                this.$.overview.hidden = true;
+                this.overviewComent = "";
             }
         },
     });

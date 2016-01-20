@@ -96,14 +96,14 @@
             <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'diagnostic')}}">
-                <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic"></team-result-diagnostic>
+                <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic" type-data="diagnostic"></team-result-diagnostic>
             </div>
             <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
                 <div id="left">
                     <team-result-filters id="teamResultFilters" data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}" job="{{job}}"></team-result-filters>
                 </div>
                 <div id="right" class="flex">
-                    <team-result-diagnostic id="secResult" data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}"></team-result-diagnostic>
+                    <team-result-diagnostic id="secResult" data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}" type-data="secondary"></team-result-diagnostic>
 
                 </div>
             </div>
@@ -293,6 +293,9 @@
                                     amaf1000GP3: splits[16],
                                     phenotype: splits[17],
                                     source: splits[18]
+                                    // clinvar: splits[17],
+                                    // cosmic: splits[18],
+                                    // gwas: splits[19],
 
                                 };
                                 diagData.push(elem);
@@ -322,8 +325,9 @@
                                     amaf1000G: splits[14],
                                     maf1000GP3: splits[15],
                                     amaf1000GP3: splits[16],
-                                    phenotype: splits[17],
-                                    source: splits[18]
+                                    clinvar: splits[17],
+                                    cosmic: splits[18],
+                                    gwas: splits[19],
 
                                 };
                                 secData.push(elem);

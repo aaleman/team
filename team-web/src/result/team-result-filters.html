@@ -63,6 +63,11 @@
         .num {
             width: 100px;
         }
+        /*#loading {
+            position: absolute;
+            left: 180px;
+            top: 35px;
+        }*/
     </style>
     <template>
         <div id="filters">
@@ -76,7 +81,7 @@
             </div>
             <team-result-static-filters id="teamResultStaticFilters" data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
-            <div class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
+            <div id="teamResultCustomFilters" class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
                 <!-- <div class="horizontal layout filterHistory">
                     Filters History &nbsp;
                     <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History">
@@ -100,6 +105,9 @@
                 <team-result-form id="custom" query={{query}} filter-data="{{filterData}}" job="{{job}}"></team-result-form>
             </div>
 
+            <div id="loading" hidden$="{{!loading}}">
+                <i class="fa fa-circle-o-notch fa-spin"></i> Loading...
+            </div>
 
         </div>
     </template>
@@ -154,6 +162,10 @@
                 notify: true,
                 observer: "filterDataChanged"
             },
+            loading: {
+                type: Boolean,
+                value: false
+            }
         },
         // observers: [
         //     "filterChanged(historyFilters.splices)"
@@ -165,9 +177,18 @@
             // }
         },
         handleView: function(e) {
-            this.view = e.target.dataset.value;
-            this.$.teamResultStaticFilters.ready();
-            this._clearFilter();
+            var me = this;
+            this.$.teamResultStaticFilters.hidden = true;
+            this.$.teamResultCustomFilters.hidden = true;
+            this.loading = true;
+            setTimeout(function() {
+                me.$.teamResultStaticFilters.ready();
+                me._clearFilter();
+                me.loading = false;
+                me.view = e.target.dataset.value;
+            }, 50)
+
+
         },
         _clearFilter: function() {
             this.query = {};
@@ -200,10 +221,10 @@
         filterDataChanged: function(neo, old) {
 
         },
-        initialWhenJobChanges: function(){
-          this.view='static';
-          this.$.teamResultStaticFilters.ready();
-          this.$.custom.clearForm();
+        initialWhenJobChanges: function() {
+            this.view = 'static';
+            this.$.teamResultStaticFilters.ready();
+            this.$.custom.clearForm();
         }
 
     });
