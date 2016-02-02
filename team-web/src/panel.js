@@ -468,10 +468,7 @@ PanelConfig.prototype = {
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.onload = function (e) {
-            debugger
-            // chunk.done = true;
-            // console.log("chunk done");
-            // callback(JSON.parse(xhr.responseText));
+            console(JSON.parse(xhr.srcElement.response));
         };
         xhr.send(JSON.stringify(data));
 

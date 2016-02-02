@@ -55,6 +55,7 @@
         pre {
             margin: 20px;
         }
+
         /* NEW */
 
         #left {
@@ -133,41 +134,52 @@
             <div id="left" class="vertical layout">
                 <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
                 <div class="horizontal layout">
-                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main"
+                         data-checked$="{{computeView(view, 'main')}}">
                         Main Panels
                     </div>
-                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="archived" data-checked$="{{computeView(view, 'archived')}}">
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="archived"
+                         data-checked$="{{computeView(view, 'archived')}}">
                         Archived Panels
                     </div>
                 </div>
                 <div class="jso-formcontent" id="userPanels">
                     <template is="dom-if" if="{{computeView(view, 'main')}}">
-                        <template is="dom-repeat" items="{{panelConfig.panels}}" filter="isArchived" observe="type archived">
-                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
+                        <template is="dom-repeat" items="{{panelConfig.panels}}" filter="isArchived"
+                                  observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}"
+                                 on-click="handlePanelSelected">
                                 <div class="name flex">{{item.name}}</div>
                                 <!-- <div class="version" title="Version">{{item.version}}</div> -->
-                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.fileId}}" data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
-                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
+                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.fileId}}"
+                                   data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
+                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.fileId}}"
+                                   on-click="handleArchivedPanel">&nbsp;</i>
                                 <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
                             </div>
                         </template>
                     </template>
                     <template is="dom-if" if="{{computeView(view, 'archived')}}">
-                        <template is="dom-repeat" items="{{panelConfig.panels}}" filter="isNotArchived" observe="type archived">
-                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
+                        <template is="dom-repeat" items="{{panelConfig.panels}}" filter="isNotArchived"
+                                  observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}"
+                                 on-click="handlePanelSelected">
                                 <div class="name flex">{{item.name}}</div>
                                 <!-- <div class="version" title="Version">{{item.version}}</div> -->
-                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
+                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.fileId}}"
+                                   on-click="handleArchivedPanel">&nbsp;</i>
                                 <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
                             </div>
                         </template>
                     </template>
                 </div>
                 <br>
+
                 <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
                 <div class="jso-formcontent" id="examplePanels">
                     <template is="dom-repeat" items="{{examplePanels}}">
-                        <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
+                        <div class="panel-item horizontal layout center" data-file="{{item}}"
+                             on-click="handlePanelExampleSelected">
                             <div class="name flex">{{item.name}}</div>
                         </div>
                     </template>
@@ -175,7 +187,8 @@
                 <div class="newPanelButon horizontal layout">
                     <div class="flex" style="font-size:13px;">Or create a New Panel &nbsp;</div>
                     <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
-                        <i class="fa fa-plus"></i>&nbsp; Panel</div>
+                        <i class="fa fa-plus"></i>&nbsp; Panel
+                    </div>
                 </div>
             </div>
 
@@ -196,7 +209,9 @@
                 <span>{{mode}}</span>&nbsp;
                 <span>Panel</span>
             </div>
-            <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
+            <team-panel-form-wizard panel-config="{{panelConfig}}" id="formWizard" class="container"
+                                    team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}"
+                                    panels="{{panels}}"></team-panel-form-wizard>
         </jso-panel>
 
     </template>
@@ -213,19 +228,19 @@
             },
             panelConfig: {
                 type: Object,
-                value: function() {
+                value: function () {
                     return {};
                 }
             },
             examplePanels: {
                 type: Array,
-                value: function() {
+                value: function () {
                     return EXAMPLE_PANELS;
                 }
             },
             selectedPanel: {
                 type: Object,
-                value: function() {
+                value: function () {
                     return {};
                 },
                 observer: 'handleSelectedPanelChanged'
@@ -237,32 +252,32 @@
 
             geneColumns: {
                 type: Array,
-                value: function() {
+                value: function () {
                     return [];
                 }
             },
             mutationColumns: {
                 type: Array,
-                value: function() {
+                value: function () {
                     return [];
                 }
             },
             formData: {
                 type: Object,
-                value: function() {
+                value: function () {
                     return {};
                 },
                 notify: true
             },
             teamConfigFolder: {
                 type: Object,
-                value: function() {
+                value: function () {
                     return {};
                 }
             },
             defaultStudy: {
                 type: Object,
-                value: function() {
+                value: function () {
                     return {};
                 }
             },
@@ -273,17 +288,17 @@
 
         },
 
-        ready: function() {
+        ready: function () {
             this.formData = new Panel();
             this.formData.polymer = this;
 
         },
 
-        projectsChanged: function(neo, old) {
+        projectsChanged: function (neo, old) {
 
         },
         /* Private methods */
-        handleDeletePanel: function(e) {
+        handleDeletePanel: function (e) {
             e.stopPropagation();
 
             var fileId = parseInt(e.currentTarget.dataset.file);
@@ -307,12 +322,12 @@
                 }
             }
         },
-        handleArchivedPanel: function(e) {
+        handleArchivedPanel: function (e) {
             e.stopPropagation();
             var fileId = parseInt(e.currentTarget.dataset.file);
             this.panelConfig.archivePanel(fileId);
         },
-        handlePanelSelected: function(e) {
+        handlePanelSelected: function (e) {
             e.stopPropagation();
             var me = this;
             var fileId = e.currentTarget.dataset.file;
@@ -325,10 +340,10 @@
                 },
                 request: {
                     async: false,
-                    success: function(response) {
+                    success: function (response) {
                         panelContent = response;
                     },
-                    error: function() {
+                    error: function () {
 
                     }
                 }
@@ -349,7 +364,7 @@
             e.currentTarget.setAttribute("selected", "");
 
         },
-        _replacer: function(match, pIndent, pKey, pVal, pEnd) {
+        _replacer: function (match, pIndent, pKey, pVal, pEnd) {
             var key = '<span class="json-key">';
             var val = '<span class="json-value">';
             var str = '<span class="json-string">';
@@ -360,37 +375,37 @@
                 r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
             return r + (pEnd || '');
         },
-        _prettyPrint: function(obj) {
+        _prettyPrint: function (obj) {
             var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
             return JSON.stringify(obj, null, 3)
-                .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
-                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(jsonLine, this._replacer);
+                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(jsonLine, this._replacer);
         },
-        handleView: function(e) {
+        handleView: function (e) {
             this.view = e.target.dataset.value;
         },
-        computeView: function(view, value) {
+        computeView: function (view, value) {
             return view === value;
         },
-        isArchived: function(item) {
-          console.log("ARCHIVED: " + item.archived);
+        isArchived: function (item) {
+            console.log("ARCHIVED: " + item.archived);
             return !(item.archived === true);
         },
-        isNotArchived: function(item) {
+        isNotArchived: function (item) {
             return (item.archived === true);
         },
-        handleSelectedPanelChanged: function(neo, old) {
+        handleSelectedPanelChanged: function (neo, old) {
             // debugger
         },
 
-        handleNewPanel: function(e) {
+        handleNewPanel: function (e) {
             this.set('mode', "New");
             this.$.newPanelPanel.hidden = false;
-            var selectedPanel= new Panel();
-            this.$.formWizard.addFromPanelManager(selectedPanel,"new");
+            var selectedPanel = new Panel();
+            this.$.formWizard.addFromPanelManager(selectedPanel, "new");
         },
-        handleEditPanel: function(e) {
+        handleEditPanel: function (e) {
             e.stopPropagation();
             this.set('mode', "Edit");
             var me = this;
@@ -405,41 +420,42 @@
                 },
                 request: {
                     async: false,
-                    success: function(response) {
+                    success: function (response) {
                         panelContent = response;
                     },
-                    error: function() {}
+                    error: function () {
+                    }
                 }
             });
             if (panelContent != "") {
                 var selectedPanel = new Panel();
-                var panelAux=JSON.parse(panelContent);
-                selectedPanel.id=panelAux.id;
-                selectedPanel.name=panelAux.name;
-                selectedPanel.author=panelAux.author;
-                selectedPanel.description=panelAux.description;
+                var panelAux = JSON.parse(panelContent);
+                selectedPanel.id = panelAux.id;
+                selectedPanel.name = panelAux.name;
+                selectedPanel.author = panelAux.author;
+                selectedPanel.description = panelAux.description;
                 selectedPanel.diseases = panelAux.diseases;
                 selectedPanel.genes = panelAux.genes;
                 selectedPanel.mutations = panelAux.mutations;
                 selectedPanel.date = panelAux.date;
                 selectedPanel.disease = panelAux.disease;
-                selectedPanel.version =panelAux.version;
+                selectedPanel.version = panelAux.version;
                 selectedPanel.archived = panelAux.archived;
                 selectedPanel.used = used;
 
 
                 this.$.newPanelPanel.hidden = false;
-                this.$.formWizard.addFromPanelManager(selectedPanel,"edit");
+                this.$.formWizard.addFromPanelManager(selectedPanel, "edit");
             }
         },
-        computeMode: function(mode) {
+        computeMode: function (mode) {
             if (mode == "Edit") {
                 return "fa fa-pencil-square-o"
             } else if (mode == "New") {
                 return "fa fa-plus"
             }
         },
-        handlePanelExampleSelected: function(e) {
+        handlePanelExampleSelected: function (e) {
             e.stopPropagation();
             this.set('selectedPanel', e.currentTarget.dataFile);
             var selectedUser = this.$.userPanels.querySelector('div[selected]');
