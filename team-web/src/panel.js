@@ -468,7 +468,7 @@ PanelConfig.prototype = {
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.onload = function (e) {
-            console(JSON.parse(xhr.srcElement.response));
+            console.log(JSON.parse(e.srcElement.response));
         };
         xhr.send(JSON.stringify(data));
 

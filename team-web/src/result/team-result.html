@@ -22,6 +22,7 @@
         #right {
             margin-left: 5px;
             margin-right: 5px;
+            width: 83%;
         }
 
         #left {
@@ -99,7 +100,7 @@
                 <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic" type-data="diagnostic"></team-result-diagnostic>
             </div>
             <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
-                <div id="left">
+                <div id="left" class="flex">
                     <team-result-filters id="teamResultFilters" data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}" job="{{job}}"></team-result-filters>
                 </div>
                 <div id="right" class="flex">
