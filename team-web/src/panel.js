@@ -421,6 +421,7 @@ PanelConfig.prototype = {
                 sid: Cookies('bioinfo_sid'),
             },
             request: {
+                method: "POST",
                 url: true
             }
         });
@@ -432,44 +433,57 @@ PanelConfig.prototype = {
             }
         };
 
-        function createCORSRequest(method, url) {
-            var xhr = new XMLHttpRequest();
-            if ("withCredentials" in xhr) {
-                xhr.open(method, url, true);
-            } else if (typeof XDomainRequest != "undefined") {
-                xhr = new XDomainRequest();
-                xhr.open(method, url);
-            } else {
-                xhr = null;
-            }
-            return xhr;
-        }
+        //function createCORSRequest(method, url) {
+        //    var xhr = new XMLHttpRequest();
+        //    if ("withCredentials" in xhr) {
+        //        xhr.open(method, url, true);
+        //    } else if (typeof XDomainRequest != "undefined") {
+        //        xhr = new XDomainRequest();
+        //        xhr.open(method, url);
+        //    } else {
+        //        xhr = null;
+        //    }
+        //    return xhr;
+        //}
+        //
+        //var request = createCORSRequest("POST", url);
+        //if (request) {
+        //    request.setRequestHeader("Content-Type", "application/json");
+        //
+        //    request.onload = function (e) {
+        //        var response = JSON.parse(e.srcElement.response);
+        //        //do something with request.responseText
+        //    };
+        //    request.onerror = function () {
+        //        console.log("Error")
+        //        debugger
+        //    }
+        //    request.send(JSON.stringify(data));
+        //
+        //}
 
-        var request = createCORSRequest("POST", url);
-        if (request) {
-            request.setRequestHeader("Content-Type", "application/json");
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        // xhr.setRequestHeader("Content-Type", "text/plain");
+        xhr.setRequestHeader("Content-Type", "application/json");
 
-            request.onloadend = function (e) {
-                var response = JSON.parse(e.srcElement.response);
-                //do something with request.responseText
-            };
-            request.onerror = function () {
-                console.log("Error")
-                debugger
-            }
-            request.send(JSON.stringify(data));
-
-        }
+        xhr.onload = function (e) {
+            debugger
+            // chunk.done = true;
+            // console.log("chunk done");
+            // callback(JSON.parse(xhr.responseText));
+        };
+        xhr.send(JSON.stringify(data));
 
     },
-    archivePanel: function(fileId){
+    archivePanel: function (fileId) {
         this.panelHash[fileId].archived = !this.panelHash[fileId].archived;
         this.polymer.notifyPath('panelConfig.panels', this.panels);
 
         this._updatePanels();
         this.savePanelConfig();
     },
-    _updatePanels: function(){
+    _updatePanels: function () {
         var panels = [];
         for (var i = 0; i < this.panels.length; i++) {
             var panel = this.panels[i];
