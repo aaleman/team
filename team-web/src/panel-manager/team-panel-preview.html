@@ -1,0 +1,201 @@
+<dom-module id="team-panel-preview">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            margin: 5px;
+            width: 600px;
+            padding: 10px;
+            /*height: 500px;*/
+        }
+
+        jso-table {
+            height: 480px;
+        }
+
+        .data {
+            color: #666;
+        }
+
+        #table {
+            border: 1px solid #d0d0d0;
+            margin-top: 5px;
+        }
+
+        jso-table::shadow .table-row {
+            height: 25px;
+        }
+
+        jso-table::shadow {
+            font-size: 11px;
+        }
+
+        jso-table::shadow .table-pager > input {
+            width: 40px !important;
+        }
+    </style>
+    <template>
+        <div style="margin:5px">
+            <div class="horizontal layout" style="line-height: 25px;">
+                <div class="data">Name: &nbsp;</div>
+                <div class="flex">{{namePanel}}</div>
+
+
+                <div class="data">Author: &nbsp;</div>
+                <div class="flex">{{author}}</div>
+
+                <div class="data">Version: &nbsp;</div>
+                <div>{{vers}}</div>
+            </div>
+            <div class="horizontal layout" style="line-height: 25px;">
+                <div class="data">Description: &nbsp;</div>
+                <div>{{desc}}</div>
+            </div>
+        </div>
+
+        <div class="horizontal layout" style="margin-top:10px">
+            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
+                Diseases
+            </div>
+            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="genes" data-checked$="{{computeOptions(option, 'genes')}}">
+                Genes/Regions
+            </div>
+            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="mutations" data-checked$="{{computeOptions(option, 'mutations')}}">
+                Mutations
+            </div>
+        </div>
+
+        <div id="table">
+            <template is="dom-if" if="{{computeOptions(option, 'diseases')}}">
+                <jso-table columns="{{diseaseColumns}}" data="{{diseases}}" hide-column-selector></jso-table>
+            </template>
+            <template is="dom-if" if="{{computeOptions(option, 'genes')}}">
+                <jso-table columns="{{geneColumns}}" data="{{genes}}" hide-column-selector> </jso-table>
+            </template>
+            <template is="dom-if" if="{{computeOptions(option, 'mutations')}}">
+                <jso-table columns="{{mutationColumns}}" data="{{mutations}}" hide-column-selector></jso-table>
+            </template>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "team-panel-preview",
+            properties: {
+                option: {
+                    type: String,
+                    value: 'diseases'
+                },
+                diseases: {
+                    type: Array,
+                },
+                genes: {
+                    type: Array,
+                },
+                mutations: {
+                    type: Array,
+                },
+                selectedPanel: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    observer: 'selectedPanelChanged'
+                },
+
+            },
+            ready: function() {
+                this.geneColumns = [{
+                    name: 'name',
+                    title: 'Name',
+                    width: 200
+                }, {
+                    name: 'chr',
+                    title: 'Chr',
+                    defaultValue: '.',
+                    width: 120
+                }, {
+                    name: 'start',
+                    title: 'Start',
+                    defaultValue: '.',
+                    width: 160
+                }, {
+                    name: 'end',
+                    title: 'End',
+                    defaultValue: '.',
+                    width: 160
+                }];
+                this.mutationColumns = [{
+                    name: 'chr',
+                    title: 'Chr',
+                    width:70
+                }, {
+                    name: 'pos',
+                    title: 'Pos',
+                    width: 100
+                }, {
+                    name: 'ref',
+                    title: 'Ref',
+                    width: 85
+                }, {
+                    name: 'alt',
+                    title: 'Alt',
+                    width: 85
+                }, {
+                    name: 'phe',
+                    title: 'Phenotype',
+                    width: 200
+                }, {
+                    name: 'src',
+                    title: 'Source',
+                    width: 100
+                }];
+                this.diseaseColumns = [{
+                    name: 'phenotype',
+                    title: 'Phenotype',
+                    type: 'text',
+                    width: 400
+                }, {
+                    name: 'source',
+                    title: 'Source',
+                    type: 'select',
+                    options: ["clinvar", "gwas"],
+                    width: 240
+                }];
+
+
+            },
+
+            handleOptions: function(e) {
+                this.option = e.target.dataset.value;
+                this.diseases = this.selectedPanel.diseases;
+                this.genes = this.selectedPanel.genes;
+                this.mutations = this.selectedPanel.mutations;
+            },
+            computeOptions: function(option, value) {
+                return option === value;
+            },
+            selectedPanelChanged: function(neo, old) {
+                if (neo) {
+                    this.namePanel = this.selectedPanel.name;
+                    this.vers = this.selectedPanel.version;
+                    this.author = this.selectedPanel.author;
+                    this.desc = this.selectedPanel.description;
+                    this.diseases = neo.diseases;
+                    this.genes = neo.genes;
+                    this.mutations = neo.mutations;
+                } else {
+                    this.namePanel = "";
+                    this.vers = "";
+                    this.author = "";
+                    this.desc = "";
+                    this.diseases = "";
+                    this.genes = "";
+                    this.mutations = "";
+                }
+            },
+        })
+    </script>
+</dom-module>

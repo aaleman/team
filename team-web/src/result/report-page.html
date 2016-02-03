@@ -1,0 +1,90 @@
+<dom-module id="report-page">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .header {
+            color: #445D76;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        #page {
+            padding: 20px;
+            margin: 10px;
+            width: 650px;
+            height: 900px;
+            border: 1px solid #d0d0d0;
+            background-color: white;
+        }
+
+        #footer {
+            text-align: end;
+        }
+
+        .logo {
+            margin: 3px;
+            height: 25px;
+        }
+
+        #container {
+            page-break-inside: avoid;
+            max-width: 400px;
+            max-height: 600px;
+        }
+
+        table.jso-table {
+            color: red;
+            page-break-inside: auto;
+        }
+    </style>
+    <template>
+        <div id="page" class="vertical layout">
+
+            <div id="header" class="horizontal layout" style="line-height: 50px;">
+                <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
+                <div class="flex header"> TEAM</div>
+                <div>{{date}}</div>
+            </div>
+
+            <div id="container" class="flex">
+                <content class=".container"></content>
+            </div>
+
+            <div class="flex">
+
+            </div>
+
+            <div id="footer">
+                <img class="logo" src="../images/logobier.jpg" />
+                <img class="logo" src="../images/logo_ciberer.jpg" />
+                <img class="logo" src="../images/logo_cipf.png" />
+                <img class="logo" src="../images/logoBabelomics_negative_noFondo.svg" />
+                <img class="logo" src="../images/LOGO_Micinn_Isciii.jpg" />
+                <img class="logo" src="../images/logo_inb.png" />
+            </div>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: "report-page",
+            properties: {
+                date: {
+                    type: String
+                },
+            },
+            ready: function() {
+                this._getDate();
+            },
+            _getDate: function() {
+                var date = new Date();
+                this.date = date.getDate() + '/' + date.getMonth() + "/" + date.getFullYear() + '   ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+            },
+
+        })
+    </script>
+</dom-module>

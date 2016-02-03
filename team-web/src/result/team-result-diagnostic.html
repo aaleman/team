@@ -1,0 +1,616 @@
+<dom-module id="team-result-diagnostic">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .title {
+            font-size: 22px;
+            border-bottom: thin solid #edebe3;
+            /*margin: 7px 5px;*/
+        }
+
+        jso-table {
+            height: 365px;
+            border: 1px solid #d0d0d0;
+        }
+
+        jso-table::shadow .table-row {
+            height: 25px;
+        }
+
+        jso-table::shadow,
+        jso-variant-frequencies-grid::shadow jso-table::shadow {
+            font-size: 11px;
+        }
+
+        jso-table::shadow .table-pager > input {
+            width: 40px !important;
+        }
+
+        jso-variant-frequencies-grid,
+        jso-genome-viewer-element {
+            margin: 0 auto;
+            box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+            /*overflow-y: auto;*/
+            /*height: 370px;*/
+        }
+
+        #menu {
+            margin-top: 5px;
+        }
+
+        #menu > div:hover {
+            background-color: rgba(125, 125, 125, 0.4);
+        }
+
+        #menu > div[selected] {
+            background-color: rgba(125, 125, 125, 0.4);
+        }
+
+        #tools {
+            margin-top: 5px;
+        }
+
+        #commentsTextArea {
+            box-sizing: border-box;
+            display: block;
+            width: 50%;
+            height: 200px;
+            margin-top: 10px;
+        }
+    </style>
+    <template>
+        <div class="title">{{title}}</div>
+        <jso-table id="table" data="{{_data}}" enable-paging enable-select enable-export enable-resize on-rowclick="handleRowClick"></jso-table>
+
+        <div id="menu" class="horizontal layout">
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="overview" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">Overview</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="comments" data-value="comments" data-checked$="{{computeView(view, 'comments')}}">Comments</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="frequency" data-value="frequency" data-checked$="{{computeView(view, 'frequency')}}">Frequencies</div>
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="gv" data-value="gv" data-checked$="{{computeView(view, 'gv')}}">Viewer</div>
+        </div>
+
+        <div id="tools">
+            <div hidden$="{{!computeView(view, 'overview')}}">
+                <div id="overview">
+                </div>
+                <div style="font-style:italic">{{overviewComent}}</div>
+            </div>
+            <div id="comments" hidden$="{{!computeView(view, 'comments')}}">
+                <div style="margin-top: 10px">
+                    <textarea id="commentsTextArea" class="jso commentsTextArea" placeholder="Comments..."></textarea>
+                </div>
+            </div>
+            <jso-variant-frequencies-grid id="frequency" hidden$="{{!computeView(view, 'frequency')}}"></jso-variant-frequencies-grid>
+            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}"></jso-genome-viewer-element>
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "team-result-diagnostic",
+        properties: {
+            data: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                observer: 'dataChanged'
+            },
+            _data: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true
+            },
+            title: {
+                type: String,
+                value: ""
+            },
+            query: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                observer: 'queryChanged'
+            },
+            selectedMenuTool: {
+                type: Object,
+                observer: 'selectedMenuChanged'
+            },
+            view: {
+                type: String,
+                value: 'overview'
+            },
+            filterData: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true,
+                observer: "filterDataChanged"
+            },
+            typeData: {
+                type: String,
+                value: ""
+            }
+        },
+        _columnsDiag: [{
+            name: 'chr',
+            title: "Chr",
+            width: 100
+        }, {
+            name: 'pos',
+            title: "Pos",
+            width: 100
+        }, {
+            name: 'ref',
+            title: "Ref",
+            width: 100
+        }, {
+            name: 'alt',
+            title: "Alt",
+            width: 100
+        }, {
+            name: 'id',
+            title: 'SNP Id',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'qual',
+            title: 'Qual',
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+                if (isNaN(row.qual)) {
+                    return ".";
+                }
+                return parseFloat(row.qual, 3);
+
+            }
+        }, {
+            name: 'dp',
+            title: 'DP',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'gene',
+            title: 'Gene',
+            width: 200,
+            defaultValue: '.'
+        }, {
+            name: 'ct',
+            title: 'Conseq. Type',
+            width: 300,
+            defaultValue: '.'
+        }, {
+            name: 'phylop',
+            title: 'phyloP',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'phastcons',
+            title: 'Phastcons',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'sift',
+            title: 'SIFT',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'polyphen',
+            title: 'Polyphen',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'maf1000G',
+            title: 'MAF 1000G',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'maf1000GP3',
+            title: 'MAF 1000G Phase 3',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'phenotype',
+            title: 'Phenotype',
+            width: 400,
+            defaultValue: '.'
+        }, {
+            name: 'source',
+            title: 'Source',
+            width: 100,
+            defaultValue: '.'
+        }],
+
+        _columnsSec: [{
+            name: 'chr',
+            title: "Chr",
+            width: 100
+        }, {
+            name: 'pos',
+            title: "Pos",
+            width: 100
+        }, {
+            name: 'ref',
+            title: "Ref",
+            width: 100
+        }, {
+            name: 'alt',
+            title: "Alt",
+            width: 100
+        }, {
+            name: 'id',
+            title: 'SNP Id',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'qual',
+            title: 'Qual',
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+                if (isNaN(row.qual)) {
+                    return ".";
+                }
+                return parseFloat(row.qual, 3);
+
+            }
+        }, {
+            name: 'dp',
+            title: 'DP',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'gene',
+            title: 'Gene',
+            width: 200,
+            defaultValue: '.'
+        }, {
+            name: 'ct',
+            title: 'Conseq. Type',
+            width: 300,
+            defaultValue: '.'
+        }, {
+            name: 'phylop',
+            title: 'phyloP',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'phastcons',
+            title: 'Phastcons',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'sift',
+            title: 'SIFT',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'polyphen',
+            title: 'Polyphen',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'maf1000G',
+            title: 'MAF 1000G',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'maf1000GP3',
+            title: 'MAF 1000G Phase 3',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'clinvar',
+            title: 'Clinvar',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'gwas',
+            title: 'Gwas',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'cosmic',
+            title: 'Cosmic',
+            width: 100,
+            defaultValue: '.'
+        }],
+
+        ready: function() {
+                if (this.typeData == "diagnostic") {
+                    this.$.table.columns = this._columnsDiag;
+                } else if (this.typeData == "secondary") {
+                    this.$.table.columns = this._columnsSec;
+                }
+            var me = this;
+            this.async(function() {
+                this.$.gv.createGenomeViewer();
+                var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
+                this.$.gv.genomeViewer.draw();
+
+                this.genomeViewer = this.$.gv.genomeViewer;
+            });
+        },
+        handleRowClick: function(e) {
+            var row = e.detail.row;
+            this._rowSelected(row);
+        },
+        _rowSelected: function(row) {
+            var reg = row.chr + ":" + row.pos + "-" + row.pos;
+            var region = new Region(reg);
+
+            this.$.gv.genomeViewer.setRegion(region);
+
+            var rowFreq = {
+                chromosome: row.chr,
+                start: row.pos,
+                reference: row.ref,
+                alternate: row.alt
+            };
+            this.$.frequency.row = rowFreq;
+            this.view = 'overview';
+            this.overviewComent = "Graphic weighted between zero and one"
+            this._createPolarChart(row);
+        },
+        dataChanged: function(neo, old) {
+            var _data = [];
+            for (var i = 0; i < this.data.length; i++) {
+                var elem = this.data[i];
+                _data.push(elem);
+            };
+            this.view = 'overview';
+            this._data = _data;
+            if (this._data[0] != null) {
+                this.$.table.set('selected', [this._data[0]]);
+                this.$.overview.hidden = false;
+                this._rowSelected(this._data[0]);
+            } else {
+                this.$.overview.hidden = true;
+                this.overviewComent = "No data found";
+            }
+
+        },
+        queryChanged: function(neo, old) {
+            if (neo) {
+                // neo => query
+                console.log(neo);
+                var data = [];
+                for (var i = 0; i < this.data.length; i++) {
+                    var elem = this.data[i];
+                    if (this._applyFilters(elem, neo) == 1) {
+                        data.push(elem);
+                    }
+                };
+                this.set('_data', data);
+                this.$.table.set('selected', [this._data[0]]);
+                this.set('filterData', this._data);
+                if (neo['filterView'] != null && neo['filterView'] == 'filterA') {
+                    var report = document.getElementById('teamResultReport');
+                    report._getMostPathogenic(this.filterData);
+                }
+            }
+        },
+
+        _applyFilters: function(data, filters) {
+            // data = row
+            var filtered = true;
+            for (var key in filters) {
+                var query = filters[key]; // query => value
+                var match = false;
+                if (key === "filterView") {
+                    match = this._checkData(data, query);
+
+                } else if (key === "region") {
+                    match = this._checkPosition(data.chr, data.pos, query);
+                } else if (key === "gene") {
+                    var gene_aux = data.gene.toUpperCase().split(",");
+                    match = this._checkValue(gene_aux, query);
+                } else if (key === "dp") {
+                    match = this._computeInputOption(data.dp, query, filters["dp_op"]);
+                } else if (key === "qual") {
+                    match = this._computeInputOption(data.qual, query, filters["qual_op"]);
+                } else if (key === "maf1000g") {
+                    match = this._computeInputOption(data.maf1000g, query, filters["maf1000g_op"]);
+                } else if (key === "mafEVS") {
+                    // match = this._computeInputOption(data.mafEVS, query, filters["mafEVS_op"]);
+                    match = true;
+                } else if (key === "sift") {
+                    match = this._computeInputOption(data.sift, query, filters["sift_op"]);
+                } else if (key === "polyphen") {
+                    match = this._computeInputOption(data.polyphen, query, filters["polyphen_op"]);
+                } else if (key === "phylop") {
+                    match = this._computeInputOption(data.phylop, query, filters["phylop_op"]);
+                } else if (key === "phastcons") {
+                    match = this._computeInputOption(data.phastcons, query, filters["phastcons_op"]);
+                } else if (key === "ct") {
+                    ct_aux = data.ct.split(",");
+                    match = this._checkValue(ct_aux, query);
+                } else if (key.endsWith("_op")) {
+                    continue;
+                }
+                filtered &= match;
+            }
+            return filtered;
+        },
+        _computeInputOption: function(value, query, op) {
+            var aux = false;
+            if (value === ".") {
+                aux = true;
+            }
+            value = parseFloat(value);
+            if (op == "==") {
+                if (value == query) {
+                    aux = true;
+                }
+            } else if (op == "!=") {
+                if (value != query) {
+                    aux = true;
+                }
+            } else if (op == "<") {
+                if (value < query) {
+                    aux = true;
+                }
+            } else if (op == "<=") {
+                if (value <= query) {
+                    aux = true;
+                }
+            } else if (op == ">") {
+                if (value > query) {
+                    aux = true;
+                }
+            } else if (op == ">=") {
+                if (value >= query) {
+                    aux = true;
+                }
+            }
+            return aux;
+        },
+        _checkValue: function(value, query) {
+            for (var i = 0; i < query.length; i++) {
+                for (var j = 0; j < value.length; j++) {
+                    if (value[j] == query[i]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+        _checkPosition: function(chr, position, query) {
+            for (var i = 0; i < query.length; i++) {
+                var a = query[i].split(":");
+                var chr_aux = a[0];
+                if (chr == chr_aux) {
+                    var pos = a[1].split("-");
+                    var start = parseInt(pos[0]);
+                    var end = parseInt(pos[1]);
+                    if (position >= start && position <= end) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
+        _checkData: function(data, query) {
+            var sift = data.sift;
+            var polyphen = data.polyphen;
+            if (query === "none") {
+                return true;
+            } else if (query === "filterA") {
+                if (sift <= "0.05" && polyphen >= "0.95") {
+                    return true;
+                }
+                //}else if (query === "filterB") {
+                //     if ((sift <= "0.25" && sift > "0.05") && (polyphen < "0.95" && polyphen >= "0.75")) {
+                //         return true;
+                //     }
+                // } else if (query === "filterC") {
+                //     if (((sift <= "0.50" && sift > "0.25") && (polyphen < "0.75" && polyphen >= "0.50")) || sift=='.' || polyphen=='.') {
+                //         return true;
+                //     }
+            } else if (query === "filterD") {
+                if (sift <= "0.05" && polyphen >= "0.95") {
+                    return false;
+                } else {
+                    return true;
+                }
+
+            }
+            return false;
+        },
+        handleMenuClick: function(e) {
+            if (this._data[0] != null) {
+                this.view = e.target.dataset.value;
+            }
+        },
+        computeView: function(view, value) {
+            return view === value;
+        },
+        selectedMenuChanged: function(neo, old) {
+            if (old) {
+                old.removeAttribute('selected');
+                this.$[old.dataset.option].setAttribute('hidden', '');
+            }
+            if (neo && !this.hidden) {
+                neo.setAttribute('selected', '');
+                this.$[neo.dataset.option].removeAttribute('hidden');
+            }
+        },
+        _parseFloat: function(data) {
+            var aux = parseFloat(data);
+            aux = isNaN(aux) ? null : aux;
+            return aux;
+        },
+        _createPolarChart: function(row) {
+            var phylop = Math.abs(row.phylop);
+            if (phylop > 1) {
+                phylop = 1 / phylop;
+            }
+            var phastcons = Math.abs(row.phastcons);
+            if (phastcons > 1) {
+                phastcons = 1 / phastcons;
+            }
+
+            var chart = new Highcharts.Chart({
+                chart: {
+                    polar: true,
+                    type: 'line',
+                    renderTo: this.$.overview,
+                    width: 510,
+                    height: 300
+
+                },
+                credits: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false
+                },
+                title: {
+                    text: row.gene,
+                    x: -80
+                },
+                xAxis: {
+                    categories: ['Sift', 'Polyphen', 'Phylop', 'Phastcons'],
+                    tickmarkPlacement: 'on',
+                    lineWidth: 1
+                },
+
+                yAxis: {
+                    gridLineInterpolation: 'polygon',
+                    lineWidth: 0,
+                    min: 0,
+                    max: 1
+                },
+
+                series: [{
+                    type: 'area',
+                    name: row.gene,
+                    data: [this._parseFloat(row.sift), 1 - this._parseFloat(row.polyphen), this._parseFloat(phylop),
+                        this._parseFloat(phastcons)
+                    ],
+                    pointPlacement: 'on'
+                }]
+
+            });
+        },
+        filterDataChanged: function(neo, old) {
+            this.set('filterData', neo);
+            if (this.filterData[0] != null) {
+                this.$.table.set('selected', [this.filterData[0]]);
+                this.$.overview.hidden = false;
+                this._rowSelected(this.filterData[0]);
+            } else {
+                this.$.overview.hidden = true;
+                this.overviewComent = "";
+            }
+        },
+    });
+</script>

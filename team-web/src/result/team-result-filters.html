@@ -1,0 +1,231 @@
+<link rel="import" href="team-result-static-filters.html">
+<link rel="import" href="team-result-form.html">
+
+<dom-module id="team-result-filters">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            margin: 10px;
+        }
+
+        #filters {
+            width: 250px;
+        }
+
+        team-result-form {
+            margin-top: 10px;
+            width: 260px;
+        }
+
+        jso-tooltip::shadow #messageInfo::shadow {
+            height: 300px;
+            width: 500px;
+            background-color: #d3d3d3;
+            border: 1px solid #d3d3d3;
+            color: black;
+            font-style: normal;
+        }
+
+        jso-tooltip::shadow .closeInfo::shadow {
+            margin-left: 490px;
+        }
+
+        #filter-name {
+            text-overflow: ellipsis;
+            width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .filterHistory {
+            font-style: italic;
+            margin: 0 auto;
+            color: #a6a6a6;
+        }
+
+        .clear-but {
+            width: 100px;
+            background-color: #f0f4f4 !important;
+        }
+
+        .title {
+            margin-top: 10px;
+            border-bottom: 1px solid #445D76;
+            font-weight: bold;
+        }
+
+        .name {
+            width: 300px;
+        }
+
+        .num {
+            width: 100px;
+        }
+        /*#loading {
+            position: absolute;
+            left: 180px;
+            top: 35px;
+        }*/
+    </style>
+    <template>
+        <div id="filters">
+            <div class="horizontal layout" style="margin-bottom: 10px;">
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="static" data-checked$="{{computeView(view, 'static')}}">
+                    Static Filters
+                </div>
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="custom" data-checked$="{{computeView(view, 'custom')}}">
+                    Custom Filters &nbsp;
+                </div>
+            </div>
+            <team-result-static-filters id="teamResultStaticFilters" data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
+
+            <div id="teamResultCustomFilters" class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
+                <!-- <div class="horizontal layout filterHistory">
+                    Filters History &nbsp;
+                    <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History">
+                        <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
+                            Clear
+                        </div>
+                        <div id="filterHistoryTable" class="horizontal layout flex">
+                            <span class="title num"> Date </span>
+                            <span class="name title"> Name </span>
+                            <span class="title num"> Finded </span>
+                        </div>
+                        <template is="dom-repeat" items="{{historyFilters}}">
+                            <div class="horizontal layout flex" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">
+                                <span class="num">{{item.date}} </span>
+                                <span id="filter-name" class="name">{{item.name}} </span>
+                                <span class="num">{{item.finded}}</span>
+                            </div>
+                        </template>
+                    </jso-tooltip>
+                </div> -->
+                <team-result-form id="custom" query={{query}} filter-data="{{filterData}}" job="{{job}}"></team-result-form>
+            </div>
+
+            <div id="loading" hidden$="{{!loading}}">
+                <i class="fa fa-circle-o-notch fa-spin"></i> Loading...
+            </div>
+
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "team-result-filters",
+        properties: {
+            view: {
+                type: String,
+                value: 'static'
+            },
+            query: {
+                type: Object,
+                notify: true,
+                oberver: 'queryChanged'
+            },
+            data: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true,
+                observer: 'dataChanged'
+            },
+            value: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                notify: true,
+                observer: 'valueChanged'
+            },
+            job: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
+            },
+            // historyFilters: {
+            //     type: Array,
+            //     value: function() {
+            //         return [];
+            //     },
+            //     notify: true,
+            // },
+            filterData: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true,
+                observer: "filterDataChanged"
+            },
+            loading: {
+                type: Boolean,
+                value: false
+            }
+        },
+        // observers: [
+        //     "filterChanged(historyFilters.splices)"
+        // ],
+
+        ready: function() {
+            // if (localStorage.bioinfo_team_filter_history) {
+            //     this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
+            // }
+        },
+        handleView: function(e) {
+            var me = this;
+            this.$.teamResultStaticFilters.hidden = true;
+            this.$.teamResultCustomFilters.hidden = true;
+            this.loading = true;
+            setTimeout(function() {
+                me.$.teamResultStaticFilters.ready();
+                me._clearFilter();
+                me.loading = false;
+                me.view = e.target.dataset.value;
+            }, 50)
+
+
+        },
+        _clearFilter: function() {
+            this.query = {};
+            this.$.custom.clearForm();
+        },
+        computeView: function(view, value) {
+            return view === value;
+        },
+        dataChanged: function(neo, old) {
+
+        },
+        queryChanged: function(neo, old) {},
+        valueChanged: function(neo, old) {},
+        // filterChanged: function(neo, old) {
+        //     console.log(this.historyFilters)
+        // },
+        // loadFilter: function(e) {
+        //     e.stopPropagation();
+        //     this.$.custom.clearForm();
+        //     this.$.custom.loadForm(e.currentTarget.dataFilter);
+        //     this.$.filterHistoryTooltip.handleClose(e);
+        //
+        // },
+        // clearFiltersHistory: function(e) {
+        //     e.stopPropagation();
+        //     this.historyFilters = [];
+        //     localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
+        //
+        // },
+        filterDataChanged: function(neo, old) {
+
+        },
+        initialWhenJobChanges: function() {
+            this.view = 'static';
+            this.$.teamResultStaticFilters.ready();
+            this.$.custom.clearForm();
+        }
+
+    });
+</script>

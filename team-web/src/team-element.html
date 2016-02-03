@@ -1,0 +1,625 @@
+<script src="../bower_components/file-saver.js/FileSaver.js"></script>
+<script src="../lib/jsorolla/bower_components/LineReader/LineReader.js"></script>
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-application-behavior.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-manager-behavior.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-wizard.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-tooltip.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-select.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/variant/jso-variant-frequencies-grid.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/table/jso-table.html">
+<link rel="import" href="../lib/jsorolla/src/lib/validator/jso-validator.html">
+
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/samples/jso-opencga-sample-browser.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-upload-file.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-create-study.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-create-project.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+
+
+<script src="panel.js"></script>
+<script src="example-panels.js"></script>
+<script src="FilterHistory.js"></script>
+
+<link rel="import" href="team-home.html">
+<link rel="import" href="panel-manager/team-panel-manager.html">
+<link rel="import" href="panel-manager/team-panel-form-wizard.html">
+<link rel="import" href="team-new-diagnostic-element.html">
+<link rel="import" href="result/team-result.html">
+
+<dom-module id="team-element">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            cursor: default;
+            font-size: 13px;
+            background-color: var(--default-primary-color);
+            height: 100%;
+            width: 100%;
+        }
+
+        #menu div.option {
+            box-sizing: border-box;
+            margin-right: 1vw;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 30px;
+            padding: 0 5px;
+        }
+
+        #menu div.option:hover {
+            border-bottom: 1px solid var(--divider-color);
+        }
+
+        #menu div.option[active] {
+            font-weight: normal;
+            border-bottom: 2px solid var(--accent-color);
+        }
+
+        /*#content {
+            background-color: inherit;
+            position: absolute;
+            top: 60px;
+            width: 100%;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }*/
+
+        .content {
+            position: absolute;
+            width: 100%;
+            top: 60px;
+            height: calc(100vh - 60px);
+            /*background-color: transparent;*/
+        }
+
+        jso-opencga-header {
+            position: absolute;
+            top: 0;
+        }
+
+        jso-opencga-footer {
+            position: absolute;
+            bottom: 0;
+        }
+
+        jso-variant-browser {
+            height: calc(100vh - 60px);
+        }
+
+        #jobBrowserPanel {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 600px;
+        }
+
+        #browserPanel {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 600px;
+        }
+
+        #sampleBrowserPanel {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 600px;
+        }
+
+        #jobBrowser {
+            height: 800px;
+        }
+
+        #newDiagnosisPanel,
+        #newPanelPanel,
+        #panelManager {
+            top: 60px;
+            width: 50%;
+            min-width: 1000px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
+        }
+
+        #browser {
+            width: 100%;
+            border-top: 1px solid var(--divider-color);
+            height: 600px;
+        }
+
+        #manager {
+            width: 100%;
+            border-top: 1px solid var(--divider-color);
+            height: 700px;
+        }
+
+        team-result {
+            height: 100%;
+        }
+
+        #newDiagnosticElement {
+            height: 700px;
+        }
+
+        @media (max-width: 1100px) {
+            .option-text {
+                display: none;
+            }
+        }
+
+        .userid {
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+
+        div.icon {
+            margin-left: 15px;
+        }
+
+        div.menu-button {
+            padding: 0 10px;
+        }
+
+        div.menu-button:hover {
+            background-color: rgba(0, 0, 0, 0.20);
+        }
+    </style>
+    <template>
+
+        <div class="content" menu-option="home">
+            <team-home data-option="home"></team-home>
+        </div>
+
+
+        <jso-panel movable expandible closable id="newDiagnosisPanel" on-close="returnHome" menu-option="newdiagnostic">
+            <div class="header" style="text-align:left;font-size:15px;">
+                <i class="fa fa-plus"></i> New Diagnosis
+            </div>
+            <team-new-diagnostic-element id="newDiagnosticElement" class="container" panel-config="{{panelConfig}}"
+                                         projects="{{projects}}" bioformats="{{bioformats}}"
+                                         default-study="{{defaultStudy}}" analysis-folder="{{analysisFolder}}"
+                                         on-run="handleRunJob"></team-new-diagnostic-element>
+        </jso-panel>
+
+
+        <jso-panel movable expandible closable id="newPanelPanel" on-close="returnHome" menu-option="newpanel">
+            <div class="header" style="text-align:left;font-size:15px;">
+                <i class="fa fa-plus"></i> New Panel
+            </div>
+            <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}"
+                                    default-study="{{defaultStudy}}" panel-config="{{panelConfig}}"
+                                    user-data="{{userData}}"></team-panel-form-wizard>
+        </jso-panel>
+
+
+        <jso-panel movable expandible closable id="panelManager" on-close="returnHome" menu-option="panels">
+            <div class="header" style="text-align:left;font-size:15px;">
+                <i class="fa fa-folder-open-o"></i> Panel Manager
+            </div>
+            <team-panel-manager class="container" id="manager" projects="{{projects}}" panel-config="{{panelConfig}}"
+                                team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}">
+            </team-panel-manager>
+        </jso-panel>
+
+
+        <div id="content" class="content" menu-option="newdiagnostic,newpanel,panels,home,result">
+            <jso-panel hidden collapsible closable movable id="browserPanel" on-hidden="handlePanelHidden">
+                <div class="header">
+                    <i class="fa fa-folder-open-o"></i> File Browser
+                </div>
+                <jso-opencga-browser enable-auto-index class="container" id="browser" projects="{{projects}}" bioformats="{{bioformats}}"
+                                     mode="file"></jso-opencga-browser>
+            </jso-panel>
+
+
+            <jso-panel hidden collapsible closable movable id="sampleBrowserPanel" on-hidden="handlePanelHidden">
+                <div class="header">
+                    <i class="fa fa-folder-open-o"></i> Sample Browser
+                </div>
+                <jso-opencga-sample-browser disable-case-control class="container" id="sampleBrowser"
+                                            projects="{{projects}}"></jso-opencga-sample-browser>
+
+            </jso-panel>
+
+            <jso-panel hidden collapsible movable closable id="jobBrowserPanel" on-hidden="handlePanelHidden">
+                <div class="header">Diagnoses Browser</div>
+                <jso-opencga-job-browser class="container" id="jobBrowser" on-jobselect="handleJobSelect"
+                                         projects="{{projects}}" bioformats="{{bioformats}}"
+                                         allowed-tools="{{allowedTools}}"></jso-opencga-job-browser>
+            </jso-panel>
+        </div>
+
+        <div class="content" menu-option="result">
+            <team-result id="teamResult"></team-result>
+        </div>
+
+
+        <jso-opencga-header id="jsoHeader" selected-option="{{selectedOption}}" user-data="{{userData}}"
+
+                            on-login="handleLogin" on-logout="handleLogout" hide-jobs hide-browse show-menu-on-login>
+            <div class="icon">
+                <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
+            </div>
+            <span class="title">TEAM</span>
+            <span class="description">1.1.0</span>
+
+            <div id="menu" class="menu horizontal layout flex">
+                <!-- <div style="margin-left:4vw;"></div> -->
+                <div style="margin-left:2vw;"></div>
+
+                <div title="New Diagnosis" class="option" on-click="handleMenuOption" data-option="newdiagnostic">
+                    <i class="fa fa-plus"></i>
+                    <span class="option-text">Diagnosis</span>
+                </div>
+
+                <div title="New Panel" class="option" on-click="handleMenuOption" data-option="newpanel">
+                    <i class="fa fa-plus"></i>
+                    <span class="option-text">Panel</span>
+                </div>
+
+                <div title="Panels" class="option" on-click="handleMenuOption" data-option="panels">
+                    <i class="fa fa-list-alt"></i>
+                    <span class="option-text">Panels</span>
+                </div>
+
+                <div class="flex"></div>
+                <div title="Browse my data" class="option" on-click="handleLoggedOnlyMenuPanel"
+                     data-panel="browserPanel">
+                    <i class="fa fa-folder-open-o"></i>
+                    <span class="option-text">My data</span>
+                </div>
+
+                <div title="Browse samples" class="option" on-click="handleLoggedOnlyMenuPanel"
+                     data-panel="sampleBrowserPanel">
+                    <i class="fa fa-users"></i>
+                    <span class="option-text">Samples</span>
+                </div>
+
+                <div title="Show diagnoses" class="option" on-click="handleLoggedOnlyMenuPanel"
+                     data-panel="jobBrowserPanel">
+                    <i class="fa fa-user-md"></i>
+                    <span class="option-text">Diagnoses</span>
+                </div>
+                <div class="flex"></div>
+            </div>
+
+            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
+                <a href="https://github.com/babelomics/team/wiki" target="_blank">
+                    <i class="fa fa-book"></i> &nbsp; Documentation
+                </a>
+                <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
+                    <i class="fa fa-compass"></i> &nbsp; Tutorial
+                </a>
+                <a href="https://github.com/babelomics/team/" target="_blank">
+                    <i class="fa fa-github"></i> &nbsp; Source code
+                </a>
+            </jso-help-menu>
+        </jso-opencga-header>
+
+
+        <jso-opencga-footer menu-option="home,loging,singup,profile,remember">
+            TEAM: created by Computational Genomics Department
+            <br> Centro de Investigación Principe Felipe
+            <br> 2015
+        </jso-opencga-footer>
+
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'team-element',
+        behaviors: [JsoApplicationBehavior],
+        properties: {
+            projects: {
+                type: Array,
+                notify: true,
+                observer: 'projectsChanged'
+            },
+            homeHidden: {
+                type: Boolean,
+                value: false
+
+            },
+            panels: {
+                type: Object,
+                value: function () {
+                    return [];
+                },
+                notify: true
+            },
+            panelConfig: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
+            allowedTools: {
+                type: Array,
+                value: function () {
+                    /*return ["opencga-storage.sh", "team"];*/
+                    return ["team"];
+                }
+            },
+            bioformats: {
+                type: Array,
+                value: [{
+                    text: "VCF 4.0",
+                    value: "VARIANT",
+                    validator: VCFValidator
+                }]
+            },
+            defaultStudy: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            teamConfigFolder: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            analysisFolder: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            hideTeamResult: {
+                type: Boolean,
+                value: true
+            },
+            selectedStudy: {
+                type: Object,
+                observer: 'handleRunJob'
+            },
+            userData: {
+                type: Object,
+                notify: true,
+                observer: 'handleUserDataChanged'
+            }
+        },
+        ready: function () {
+
+        },
+        returnHome: function (e) {
+            if (e.target == e.currentTarget) {
+                this.setMenu('home');
+            }
+        },
+        handleLogin: function () {
+            // this.selectedOption = "panels";
+            // this.homeHidden = true;
+
+        },
+        handleLogout: function () {
+            this.$.browserPanel.hide();
+            this.$.jobBrowserPanel.hide();
+        },
+        annonymousLogin: function () {
+            this.$.jsoHeader.anonymousSign();
+        },
+        projectsChanged: function (neo, old) {
+
+            if (neo.length > 0) {
+                var projects = neo;
+
+                var defaultProject = null;
+                var defaultStudy = null;
+
+                for (var i = 0; defaultProject == null && projects && i < projects.length; i++) {
+                    var proj = projects[i];
+                    if (proj.alias === "defaultPr") {
+                        defaultProject = proj;
+                        for (var j = 0; defaultStudy == null && defaultProject.studies && j < defaultProject.studies.length; j++) {
+                            var stu = defaultProject.studies[j];
+                            if (stu.alias === "defaultSt") {
+                                defaultStudy = stu;
+                            }
+                        }
+                    }
+                }
+
+                if (defaultProject != null && defaultStudy != null) {
+                    var teamConfigFolder = this._getTEAMConfigFolder(defaultStudy.id);
+                    var analysisFolder = this._getAnalysisFolder(defaultStudy.id);
+
+                    if (teamConfigFolder == null) {
+                        teamConfigFolder = this._createTEAMConfigFolder(defaultStudy.id);
+
+                    }
+                    this.defaultStudy = defaultStudy;
+                    this.teamConfigFolder = teamConfigFolder;
+                    this.analysisFolder = analysisFolder;
+
+                    // var panels = this._getPanelFiles(defaultStudy, teamConfigFolder);
+                    // this.set('panels', panels);
+                    this.$.jobBrowser._getJobs(this.defaultStudy.id)
+                }
+            }
+        },
+        _getPanelFiles: function (study, folder) {
+            var me = this;
+            var panels = [];
+            var separator = "-_-";
+            OpencgaManager.files.list({
+                id: folder.id,
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    studyId: study.id
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            var data = response.response[0].result;
+
+                            for (var i = 0; i < data.length; i++) {
+                                var file = data[i];
+
+                                var fileName = file.name;
+                                var splits = fileName.split(separator);
+                                var panelName = splits[1];
+                                var version = splits[2];
+                                var archived = splits[3];
+                                var used = splits[4];
+
+                                var panel = {
+                                    name: panelName,
+                                    version: version,
+                                    archived: archived,
+                                    used: used,
+                                    file: file
+                                };
+
+                                panels.push(panel);
+                            }
+
+                        } else {
+                            me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+                        me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return panels
+        },
+        _getTEAMConfigFolder: function (studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.search({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    studyId: studyId,
+                    name: '.team_config'
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+                            // me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+                        // me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        _getAnalysisFolder: function (studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.search({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    studyId: studyId,
+                    name: 'analysis'
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        console.log(response);
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+                            //                                me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+                        //                            me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        _createTEAMConfigFolder: function (studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.createFolder({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    folder: '.team_config',
+                    studyId: studyId
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+                            //                                me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function () {
+                        //                             me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        handleNewDiagnostic: function (e) {
+            console.log("NEw Diagnostic");
+
+            this.$.ironpages.select("newdiagnostic")
+            console.log(this.selectedOption);
+        },
+        handleJobSelect: function (e) {
+
+            var job = e.detail;
+            if (job.status === "READY") {
+                this.$.teamResult.job = job;
+                this.$.teamResult.panelConfig = this.panelConfig;
+                this.selectedOption = "result";
+                this.$.jobBrowserPanel.hidden = true;
+
+            }
+        },
+        handleMenuChanged: function (e) {
+            var menuOption = e.detail.option;
+            console.log(menuOption)
+            for (var i = 0; i < this.$.content.children.length; i++) {
+                var elem = this.$.content.children[i]
+                if ("option" in elem.dataset) {
+                    if (elem.dataset.option === menuOption) {
+                        elem.hidden = !elem.hidden;
+                    }
+                }
+            }
+            ;
+        },
+        handleRunJob: function (e) {
+            this.selectedOption = "";
+            this.$.jobBrowserPanel.hidden = false;
+            this.$.content.hidden = false;
+            this.$.newDiagnosticElement.$.formWizard.goToStep(1);
+            this.$.jobBrowser.selectStudyById(this.$.newDiagnosticElement.selectedStudy.study.id);
+        },
+        handleUserDataChanged: function (neo, old) {
+            if (neo && neo.id != null && neo.id != "") {
+                this.panelConfig = new PanelConfig(neo);
+                this.panelConfig.polymer = this;
+            }
+        }
+    });
+</script>

@@ -1,0 +1,365 @@
+<link rel="import" href="team-result-overview.html">
+<link rel="import" href="team-result-diagnostic.html">
+<link rel="import" href="team-result-filters.html">
+<link rel="import" href="team-result-report.html">
+<dom-module id="team-result">
+    <style>
+    :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            height: 100%;
+            background-color: #fff;
+            overflow-y: scroll;
+        }
+
+        .title {
+            box-sizing: border-box;
+            font-size: 22px;
+            padding: 3px 18px;
+        }
+
+        #right {
+            margin-left: 5px;
+            margin-right: 5px;
+            width: 83%;
+        }
+
+        #left {
+            margin: 5px;
+            width: 270px;
+        }
+
+        #menu {
+            margin-top: 15px;
+        }
+
+        #menu > div {
+            font-size: 17px;
+            padding: 5px 5px;
+            margin: 0 20px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.1s;
+            cursor: pointer;
+        }
+
+        #menu > div:hover {
+            border-bottom-color: rgba(125, 125, 125, 0.4);
+        }
+
+        #menu > div[selected] {
+            border-bottom-color: rgba(125, 125, 125, 0.7);
+        }
+
+        team-result-diagnostic {
+            height: 400px;
+        }
+
+        #diagnosticResult {
+            margin: 15px 45px;
+        }
+
+        #secondary {
+            margin: 10px;
+        }
+
+        .tabs {
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+            width: 150px;
+        }
+    }
+    .value {
+        border: 1px solid #d0d0d0;
+        box-sizing: border-box;
+        height: 20px;
+        font-size: 13px;
+    }
+    </style>
+    <template>
+        <div class="vertical layout flex">
+            <div class="horizontal layout">
+                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
+                    Overview
+                </div>
+                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
+                    Diagnostic
+                </div>
+                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
+                    Secondary Findings
+                </div>
+                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
+                    Report
+                </div>
+            </div>
+            <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
+
+            <div class="vertical layout" hidden$="{{!computeView(view, 'diagnostic')}}">
+                <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic" type-data="diagnostic"></team-result-diagnostic>
+            </div>
+            <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
+                <div id="left">
+                    <team-result-filters id="teamResultFilters" data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}" job="{{job}}"></team-result-filters>
+                </div>
+                <div id="right" class="flex">
+                    <team-result-diagnostic id="secResult" data="{{secData}}" query="{{query}}" title="Secondary Findings" filter-data="{{filterData}}" type-data="secondary"></team-result-diagnostic>
+
+                </div>
+            </div>
+
+            <div hidden$="{{!computeView(view, 'report')}}" id="result">
+                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}"></team-result-report>
+
+            </div>
+
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'team-result',
+            properties: {
+                url: {
+                    type: String,
+                    notify: true,
+                    value: ''
+                },
+                file: {
+                    type: Object
+                },
+                selectedMenuTool: {
+                    type: Object,
+                    observer: 'selectedMenuChanged'
+                },
+                query: {
+                    type: Object,
+                    notify: true,
+                    oberver: 'queryChanged'
+                },
+                job: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    observer: 'jobChanged',
+                    notify:true
+                },
+                diagData: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+                secData: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
+                },
+                view: {
+                    type: String,
+                    value: 'overview'
+                },
+                value: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    notify: true,
+                    observer: "valueChanged"
+                },
+                filterData: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    },
+                    notify: true,
+                    observer: "filterDataChanged"
+                },
+                jobId: {
+                    type: Number,
+                    value: 0
+
+                }
+
+            },
+            created: function() {},
+            ready: function() {
+
+            },
+
+            jobChanged: function(neo, old) {
+              this.set('jobId', neo.id);
+              this.view='overview';
+                if (neo.output) {
+
+                    var files = [];
+                    for (var i = 0; i < neo.output.length; i++) {
+                        var f = neo.output[i];
+                        files.push(f);
+
+                    }
+
+                    var diag;
+                    var sec;
+
+                    OpencgaManager.files.info({
+                        id: files.join(","),
+                        query: {
+                            sid: Cookies('bioinfo_sid')
+                        },
+                        request: {
+                            async: false,
+                            success: function(response) {
+                                if (response.response) {
+                                    for (var i = 0; i < response.response.length; i++) {
+                                        var file = response.response[i].result[0];
+                                        if (file.name === "diagnostic.csv") {
+                                            diag = file;
+                                        } else if (file.name === "secondary.csv") {
+                                            sec = file;
+                                        }
+                                    }
+                                }
+                            },
+                            error: function() {}
+                        }
+                    });
+
+                    if (diag != null && sec != null) {
+                        this.diag = diag;
+                        this.sec = sec;
+                        var diagContent;
+                        var secContent;
+                        OpencgaManager.files.content({
+                            id: diag.id,
+                            query: {
+                                sid: Cookies('bioinfo_sid')
+                            },
+                            request: {
+                                async: false,
+                                success: function(response) {
+                                    diagContent = response;
+                                },
+                                error: function() {
+
+                                }
+                            }
+                        });
+                        OpencgaManager.files.content({
+                            id: sec.id,
+                            query: {
+                                sid: Cookies('bioinfo_sid')
+                            },
+                            request: {
+                                async: false,
+                                success: function(response) {
+                                    secContent = response;
+                                },
+                                error: function() {
+
+                                }
+                            }
+                        });
+
+                        var diagData = [];
+                        var secData = [];
+
+                        var diagRaw = diagContent.split("\n");
+                        var secRaw = secContent.split("\n");
+
+                        for (var i = 1; i < diagRaw.length; i++) {
+                            if (diagRaw[i] != "") {
+
+                                var splits = diagRaw[i].split("\t");
+
+                                var elem = {
+                                    chr: splits[0],
+                                    pos: splits[1],
+                                    ref: splits[2],
+                                    alt: splits[3],
+                                    qual: splits[4],
+                                    dp: splits[5],
+                                    id: splits[6],
+                                    gene: splits[7],
+                                    ct: splits[8],
+                                    phylop: splits[9],
+                                    phastcons: splits[10],
+                                    sift: splits[11],
+                                    polyphen: splits[12],
+                                    maf1000G: splits[13],
+                                    amaf1000G: splits[14],
+                                    maf1000GP3: splits[15],
+                                    amaf1000GP3: splits[16],
+                                    phenotype: splits[17],
+                                    source: splits[18]
+                                    // clinvar: splits[17],
+                                    // cosmic: splits[18],
+                                    // gwas: splits[19],
+
+                                };
+                                diagData.push(elem);
+                            }
+                        }
+
+                        for (var i = 1; i < secRaw.length; i++) {
+                            if (secRaw[i] != "") {
+
+                                var splits = secRaw[i].split("\t");
+
+                                var elem = {
+                                    chr: splits[0],
+                                    pos: splits[1],
+                                    ref: splits[2],
+                                    alt: splits[3],
+                                    qual: splits[4],
+                                    dp: splits[5],
+                                    id: splits[6],
+                                    gene: splits[7],
+                                    ct: splits[8],
+                                    phylop: splits[9],
+                                    phastcons: splits[10],
+                                    sift: splits[11],
+                                    polyphen: splits[12],
+                                    maf1000G: splits[13],
+                                    amaf1000G: splits[14],
+                                    maf1000GP3: splits[15],
+                                    amaf1000GP3: splits[16],
+                                    clinvar: splits[17],
+                                    cosmic: splits[18],
+                                    gwas: splits[19],
+
+                                };
+                                secData.push(elem);
+                            }
+                        }
+
+                        this.set('diagData', diagData);
+                        this.set('secData', secData);
+                        this.totalData = diagData.length + secData.length;
+                    }
+                }
+            },
+            queryChanged: function(neo, old) {
+
+            },
+            handleView: function(e) {
+                this.view = e.target.dataset.value;
+                if (this.view == 'report') {
+                    this.$.teamResultReport.computeFilter(2,this.jobId);
+                    this.$.teamResultReport._getCommentsInfo();
+
+                }
+                if (this.view == 'secondary') {
+                    this.$.teamResultFilters.initialWhenJobChanges();
+                }
+            },
+            computeView: function(view, value) {
+                return view === value;
+            },
+            valueChanged: function(neo, old) {},
+            filterDataChanged: function(neo, old) {},
+
+        })
+    </script>
+</dom-module>
