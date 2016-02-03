@@ -27,7 +27,6 @@
 
         #left {
             margin: 5px;
-            overflow-y: auto;
             width: 270px;
         }
 
@@ -100,7 +99,7 @@
                 <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic" type-data="diagnostic"></team-result-diagnostic>
             </div>
             <div id="secondary" class="horizontal layout" hidden$="{{!computeView(view, 'secondary')}}">
-                <div id="left" class="flex">
+                <div id="left">
                     <team-result-filters id="teamResultFilters" data="{{secData}}" query={{query}} value={{value}} filter-data="{{filterData}}" job="{{job}}"></team-result-filters>
                 </div>
                 <div id="right" class="flex">
