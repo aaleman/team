@@ -1,22 +1,12 @@
-<!-- <link rel="import" href="jso-opencga-project-tree.html">
-<link rel="import" href="jso-opencga-upload-file.html">
-<link rel="import" href="jso-opencga-folder-list.html">
-<link rel="import" href="jso-opencga-create-study.html">
-<link rel="import" href="jso-opencga-create-project.html">
- -->
+<link rel="import" href="team-panel-preview.html">
+
 <dom-module id="team-panel-manager">
     <style>
         :host {
             display: block;
             position: relative;
             box-sizing: border-box;
-
-            /*left: 0;*/
-            /*right: 0;*/
-            /*margin: 0px auto 0px auto;*/
-
             height: 100%;
-
             transition: all 0.2s;
             background-color: inherit;
             width: 600px;
@@ -24,55 +14,14 @@
         }
 
         #main {
-            position: relative;
             height: 100%;
-        }
-
-        #mainmenu {
-            position: absolute;
-            box-sizing: border-box;
-            width: 250px;
-            height: 100%;
-
-            border-right: 1px solid rgba(130, 130, 130, 0.4);
-        }
-
-        #mainmenubar {
-            box-sizing: border-box;
-            background-color: rgba(125, 125, 125, 0.1);
-            padding: 3px 7px;
-            height: 30px;
-            border-bottom: 1px solid rgba(125, 125, 125, 0.5);
-        }
-
-        #mainmenucontent {
-            height: calc(100% - 30px);
-            overflow-y: auto;
+            width: 100%;
         }
 
         #maincontent {
-            position: absolute;
-            left: 250px;
-            top: 0;
-            width: calc(100% - 250px);
-            height: 100%;
-            /*white-space: nowrap;*/
-        }
-
-        #maininfo {
-            box-sizing: border-box;
-            width: 150px;
-            height: 100%;
-            border-left: 1px solid rgba(130, 130, 130, 0.4);;
-            word-wrap: break-word;
-        }
-
-        .project-menu-item {
-
-        }
-
-        .bar > div {
-            margin-right: 5px;
+            margin: 8px;
+            height: 80%;
+            width: 70%;
         }
 
         .panel-item {
@@ -82,6 +31,7 @@
             padding: 3px;
             margin: 4px;
             border: 1px solid #d0d0d0;
+            cursor: pointer;
         }
 
         .panel-item:hover {
@@ -98,7 +48,7 @@
         }
 
         .panel-item > i:hover {
-            color: #d3d3d3;
+            color: #666;
             cursor: pointer;
         }
 
@@ -106,36 +56,163 @@
             margin: 20px;
         }
 
+        /* NEW */
+
+        #left {
+            padding: 10px;
+            width: 280px;
+            border-right: 1px solid #d3d3d3;
+            box-sizing: border-box;
+        }
+
+        #left > div {
+            margin-top: 3px;
+        }
+
+        #table {
+            width: 100%;
+            height: 500px;
+            font-size: 12px;
+            margin-top: 10px;
+            border: 1px solid #d3d3d3;
+        }
+
+        .file {
+            text-align: center;
+            color: #445D76;
+            width: 100px;
+            margin-top: 5px;
+        }
+
+        #newPanelPanel {
+            width: 50%;
+            min-width: 1000px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
+        }
+
+        .titlePreview {
+            font-size: 15px;
+            color: #445D76;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #445D76;
+            padding: 2px;
+        }
+
+        .newPanelButon {
+            border: 1px solid #d3d3d3;
+            margin-bottom: 10px;
+            padding-left: 5px;
+            line-height: 30px;
+            background-color: #E5E8EA;
+        }
+
+        #botbar {
+            text-align: center;
+            color: #445D76;
+            margin: 5px;
+            width: 100px;
+        }
+
+        #userPanels {
+            overflow-y: auto;
+            height: 300px;
+        }
+
+        #examplePanels {
+            height: 130px;
+            overflow-y: auto;
+        }
+
+        .jso-formtitle {
+            font-size: 13px;
+        }
     </style>
     <template>
-        <div id="main" class="flex">
-            <div id="mainmenu">
-                <div id="mainmenubar" class="horizontal layout">
-                    <div class="bar horizontal layout flex">
-                        View Archived / View Main
+        <div id="main" class="horizontal layout flex">
+            <div id="left" class="vertical layout">
+                <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
+                <div class="horizontal layout">
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main"
+                         data-checked$="{{computeView(view, 'main')}}">
+                        Main Panels
                     </div>
-                    <div class="bar horizontal layout">
+                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="archived"
+                         data-checked$="{{computeView(view, 'archived')}}">
+                        Archived Panels
                     </div>
                 </div>
-                <div id="mainmenucontent">
-                    <template is="dom-repeat" items="{{panels}}">
-                        <div class="panel-item horizontal layout" data-file$="{{item.file.id}}"
-                             on-click="handlePanelSelected">
+                <div class="jso-formcontent" id="userPanels">
+                    <template is="dom-if" if="{{computeView(view, 'main')}}">
+                        <template is="dom-repeat" items="{{panelConfig.panels}}" filter="isArchived"
+                                  observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}"
+                                 on-click="handlePanelSelected">
+                                <div class="name flex">{{item.name}}</div>
+                                <!-- <div class="version" title="Version">{{item.version}}</div> -->
+                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.fileId}}"
+                                   data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
+                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.fileId}}"
+                                   on-click="handleArchivedPanel">&nbsp;</i>
+                                <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
+                            </div>
+                        </template>
+                    </template>
+                    <template is="dom-if" if="{{computeView(view, 'archived')}}">
+                        <template is="dom-repeat" items="{{panelConfig.panels}}" filter="isNotArchived"
+                                  observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}"
+                                 on-click="handlePanelSelected">
+                                <div class="name flex">{{item.name}}</div>
+                                <!-- <div class="version" title="Version">{{item.version}}</div> -->
+                                <i class="fa fa-archive" title="Archive Panel" data-file$="{{item.fileId}}"
+                                   on-click="handleArchivedPanel">&nbsp;</i>
+                                <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
+                            </div>
+                        </template>
+                    </template>
+                </div>
+                <br>
+
+                <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
+                <div class="jso-formcontent" id="examplePanels">
+                    <template is="dom-repeat" items="{{examplePanels}}">
+                        <div class="panel-item horizontal layout center" data-file="{{item}}"
+                             on-click="handlePanelExampleSelected">
                             <div class="name flex">{{item.name}}</div>
-                            <div class="version">{{item.version}}</div>
-                            <i class="fa fa-trash-o" on-click="handleDeletePanel"></i>
                         </div>
                     </template>
                 </div>
+                <div class="newPanelButon horizontal layout">
+                    <div class="flex" style="font-size:13px;">Or create a New Panel &nbsp;</div>
+                    <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
+                        <i class="fa fa-plus"></i>&nbsp; Panel
+                    </div>
+                </div>
             </div>
-            <div id="maincontent">
-                <pre><code id="test"></code></pre>
+
+            <div id="maincontent" class="vertical layout">
+                <div class="titlePreview">
+                    <i class="fa fa-eye"></i>&nbsp; Panel Preview
+                </div>
+                <team-panel-preview selected-panel="{{selectedPanel}}" style="width:95%;">
+                </team-panel-preview>
+
             </div>
-        </div>
 
 
-        <div id="botbar" class="horizontal layout end-justified">
         </div>
+        <jso-panel modal movable expandible closable id="newPanelPanel" hidden>
+            <div class="header" style="text-align:left;font-size:15px;">
+                <i class$="{{computeMode(mode)}}"></i>&nbsp;
+                <span>{{mode}}</span>&nbsp;
+                <span>Panel</span>
+            </div>
+            <team-panel-form-wizard panel-config="{{panelConfig}}" id="formWizard" class="container"
+                                    team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}"
+                                    panels="{{panels}}"></team-panel-form-wizard>
+        </jso-panel>
 
     </template>
 
@@ -149,28 +226,110 @@
                 notify: true,
                 observer: 'projectsChanged'
             },
-            panels: {
+            panelConfig: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            examplePanels: {
                 type: Array,
                 value: function () {
-                    return [];
+                    return EXAMPLE_PANELS;
                 }
             },
             selectedPanel: {
                 type: Object,
                 value: function () {
                     return {};
+                },
+                observer: 'handleSelectedPanelChanged'
+            },
+            view: {
+                type: String,
+                value: 'main'
+            },
+
+            geneColumns: {
+                type: Array,
+                value: function () {
+                    return [];
                 }
+            },
+            mutationColumns: {
+                type: Array,
+                value: function () {
+                    return [];
+                }
+            },
+            formData: {
+                type: Object,
+                value: function () {
+                    return {};
+                },
+                notify: true
+            },
+            teamConfigFolder: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            defaultStudy: {
+                type: Object,
+                value: function () {
+                    return {};
+                }
+            },
+            mode: {
+                type: String,
+                value: ""
             }
+
         },
+
+        ready: function () {
+            this.formData = new Panel();
+            this.formData.polymer = this;
+
+        },
+
         projectsChanged: function (neo, old) {
 
         },
         /* Private methods */
         handleDeletePanel: function (e) {
             e.stopPropagation();
+
+            var fileId = parseInt(e.currentTarget.dataset.file);
+
+            var find = false;
+            var index = -1;
+            for (var i = 0; i < this.panels.length && !find; i++) {
+                var panel = this.panels[i];
+                if (panel.file.id === fileId) {
+                    find = true;
+                    index = i;
+                }
+            }
+            if (find == true && index > -1) {
+                var deletedPanel = this.splice('panels', index, 1)[0];
+                if (this.selectedPanel != null && this.selectedPanel.fileId == deletedPanel.file.id) {
+                    this.set('selectedPanel', null);
+                }
+                if (this.panels.length === 0) {
+                    this.set('selectedPanel', null);
+                }
+            }
+        },
+        handleArchivedPanel: function (e) {
+            e.stopPropagation();
+            var fileId = parseInt(e.currentTarget.dataset.file);
+            this.panelConfig.archivePanel(fileId);
         },
         handlePanelSelected: function (e) {
             e.stopPropagation();
+            var me = this;
             var fileId = e.currentTarget.dataset.file;
 
             var panelContent = "";
@@ -191,8 +350,18 @@
             });
             if (panelContent != "") {
                 this.selectedPanel = JSON.parse(panelContent);
-                this.$.test.innerHTML = this._prettyPrint(this.selectedPanel);
+                this.selectedPanel.fileId = fileId;
+                selectedPanel = this.selectedPanel;
             }
+            var selectedUser = this.$.userPanels.querySelector('div[selected]');
+            var selectedExample = this.$.examplePanels.querySelector('div[selected]');
+            if (selectedUser != null) {
+                selectedUser.removeAttribute("selected", "");
+            }
+            if (selectedExample != null) {
+                selectedExample.removeAttribute("selected", "");
+            }
+            e.currentTarget.setAttribute("selected", "");
 
         },
         _replacer: function (match, pIndent, pKey, pVal, pEnd) {
@@ -212,6 +381,92 @@
                     .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
                     .replace(/</g, '&lt;').replace(/>/g, '&gt;')
                     .replace(jsonLine, this._replacer);
+        },
+        handleView: function (e) {
+            this.view = e.target.dataset.value;
+        },
+        computeView: function (view, value) {
+            return view === value;
+        },
+        isArchived: function (item) {
+            console.log("ARCHIVED: " + item.archived);
+            return !(item.archived === true);
+        },
+        isNotArchived: function (item) {
+            return (item.archived === true);
+        },
+        handleSelectedPanelChanged: function (neo, old) {
+            // debugger
+        },
+
+        handleNewPanel: function (e) {
+            this.set('mode', "New");
+            this.$.newPanelPanel.hidden = false;
+            var selectedPanel = new Panel();
+            this.$.formWizard.addFromPanelManager(selectedPanel, "new");
+        },
+        handleEditPanel: function (e) {
+            e.stopPropagation();
+            this.set('mode', "Edit");
+            var me = this;
+            var fileId = e.currentTarget.dataset.file;
+            var used = e.currentTarget.dataset.used;
+
+            var panelContent = "";
+            OpencgaManager.files.content({
+                id: fileId,
+                query: {
+                    sid: Cookies('bioinfo_sid')
+                },
+                request: {
+                    async: false,
+                    success: function (response) {
+                        panelContent = response;
+                    },
+                    error: function () {
+                    }
+                }
+            });
+            if (panelContent != "") {
+                var selectedPanel = new Panel();
+                var panelAux = JSON.parse(panelContent);
+                selectedPanel.id = panelAux.id;
+                selectedPanel.name = panelAux.name;
+                selectedPanel.author = panelAux.author;
+                selectedPanel.description = panelAux.description;
+                selectedPanel.diseases = panelAux.diseases;
+                selectedPanel.genes = panelAux.genes;
+                selectedPanel.mutations = panelAux.mutations;
+                selectedPanel.date = panelAux.date;
+                selectedPanel.disease = panelAux.disease;
+                selectedPanel.version = panelAux.version;
+                selectedPanel.archived = panelAux.archived;
+                selectedPanel.used = used;
+
+
+                this.$.newPanelPanel.hidden = false;
+                this.$.formWizard.addFromPanelManager(selectedPanel, "edit");
+            }
+        },
+        computeMode: function (mode) {
+            if (mode == "Edit") {
+                return "fa fa-pencil-square-o"
+            } else if (mode == "New") {
+                return "fa fa-plus"
+            }
+        },
+        handlePanelExampleSelected: function (e) {
+            e.stopPropagation();
+            this.set('selectedPanel', e.currentTarget.dataFile);
+            var selectedUser = this.$.userPanels.querySelector('div[selected]');
+            var selectedExample = this.$.examplePanels.querySelector('div[selected]');
+            if (selectedUser != null) {
+                selectedUser.removeAttribute("selected", "");
+            }
+            if (selectedExample != null) {
+                selectedExample.removeAttribute("selected", "");
+            }
+            e.currentTarget.setAttribute("selected", "");
         }
     });
 </script>

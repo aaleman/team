@@ -1,0 +1,804 @@
+<dom-module id="team-result-form">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            width: 250px;
+        }
+
+        #filter_form {
+            overflow-y: auto;
+            height: 100%;
+            margin: 0px;
+        }
+
+        .title {
+            font-size: 22px;
+            border-bottom: thin solid #edebe3;
+            margin: 7px 5px;
+        }
+
+        #bar {
+            padding: 0 3px 5px 3px;
+        }
+
+        #bar > .jso-btn {
+            margin: 0px 2px;
+        }
+
+        .input_container {
+            margin: 0px;
+            width: 175px;
+            right: auto;
+            top: 0px;
+            left: 5px;
+            padding: 4px 6px 3px 20px;
+        }
+
+        .input_container label {
+            padding-bottom: 5px;
+            padding-left: 1px;
+        }
+
+        #headerTitle {
+            background: #e4e7e9;
+            font-size: 16px;
+            line-height: 22px;
+            margin: 10px;
+            padding: 5px;
+        }
+
+        .segregation.sampleName {
+            width: 70px;
+        }
+
+        input.segregation,
+        .segregationValue {
+            margin-left: 3px;
+        }
+
+        input#consequence_type {
+            width: 30px;
+        }
+
+        #consequenceTypes {
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        textarea {
+            resize: none;
+            width: 100%;
+        }
+
+        .maf-elem,
+        .qual-elem,
+        .pss-elem,
+        .conserv-elem {
+            margin-bottom: 3px;
+        }
+
+        .maf-elem > label,
+        .qual-elem > label,
+        .pss-elem > label,
+        .conserv-elem > label {
+            width: 60px;
+            text-align: right;
+            font-weight: bold;
+            ;
+        }
+
+        .maf-elem > .jso-select,
+        .qual-elem > .jso-select,
+        .pss-elem > .jso-select,
+        .conserv-elem > .jso-select {
+            width: 45px;
+            margin-right: 3px;
+        }
+
+        #filter-name {
+            text-overflow: ellipsis;
+            width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .tit {
+            margin-top: 10px;
+            border-bottom: 1px solid #445D76;
+            font-weight: bold;
+        }
+
+        .name {
+            width: 300px;
+        }
+
+        .num {
+            width: 100px;
+        }
+
+        .clear-but {
+            width: 100px;
+            background-color: #f0f4f4 !important;
+        }
+
+        jso-tooltip::shadow #messageInfo::shadow {
+            height: 300px;
+            width: 500px;
+            background-color: #e2e9e9;
+            border: 1px solid #e2e9e9;
+            color: black;
+            font-style: normal;
+        }
+
+        jso-tooltip::shadow .closeInfo::shadow {
+            margin-left: 490px;
+        }
+
+        #filterHistoryTable > div:hover {
+            background-color: #8ba7a7;
+            border: 1px solid #8ba7a7;
+        }
+
+        #customFiltersForm {
+            height: 700px;
+            overflow-y: auto;
+        }
+    </style>
+    <template>
+        <div id="filter_form">
+            <div id="bar" class="horizontal layout center-justified">
+                <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History" icon="filter">
+                    <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
+                        Clear
+                    </div>
+                    <div class="horizontal layout flex">
+                        <span class="tit num"> Date </span>
+                        <span class="name tit"> Name </span>
+                        <span class="tit num"> Found</span>
+                    </div>
+                    <div id="filterHistoryTable">
+                        <template is="dom-repeat" items="{{historyFilters}}">
+                            <div class="horizontal layout flex" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">
+                                <span class="num">{{item.date}} </span>
+                                <span id="filter-name" class="name">{{item.name}} </span>
+                                <span class="num">{{item.finded}}</span>
+                            </div>
+                        </template>
+                    </div>
+                </jso-tooltip>
+                <div class="jso-btn jso-btn-shdw flex" on-click="clearForm">Clear</div>
+                <div class="jso-btn jso-btn-shdw flex" on-click="submitForm">Search</div>
+            </div>
+            <div id="customFiltersForm">
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Position
+                    </div>
+                    <div class="jso-formcontent">
+                        <label class="jso">Chromosomal location:</label>
+                        <textarea class="jso" id="region" name="region" placeholder="1:1-1000000,2:1-1000000" value="{{regionValue::change}}" rows="3" required>
+                        </textarea>
+
+                        <label class="jso">Gene:</label>
+                        <textarea class="jso" id="gene" name="gene" placeholder="BRCA2,PPL" value="{{geneValue::input}}" rows="3" required>
+                        </textarea>
+
+
+                        <!-- <jso-cellbase-search-field style="margin-top:5px;" placeholder="Search gene" on-featureselected="handleFeatureSelected"></jso-cellbase-search-field> -->
+
+                    </div>
+                </div>
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Population Freqs.
+                    </div>
+                    <div class="jso-formcontent vertical layout">
+                        <div class="horizontal layout maf-elem">
+                            <label class="jso">1000G</label>
+
+                            <div class="jso-select">
+                                <select class="jso" name="maf1000g_op" id="maf1000g_op">
+                                    <option value="==">==</option>
+                                    <option value="!=">!=</option>
+                                    <option value="<" selected>
+                                        <</option>
+                                            <option value="<=">
+                                                <=</option>
+                                                    <option value=">">></option>
+                                                    <option value=">=">>=</option>
+                                </select>
+                            </div>
+                            <input class="jso flex" type="number" id="maf1000g" name="maf1000g" min="0" max="1" step="0.001" value="{{maf1000gValue::input}}" />
+                        </div>
+
+                        <div class="horizontal layout maf-elem">
+                            <label class="jso">EVS</label>
+
+                            <div class="jso-select">
+                                <select class="jso" name="mafEVS_op" id="mafEVS_op">
+                                    <option value="==">==</option>
+                                    <option value="!=">!=</option>
+                                    <option value="<" selected>
+                                        <</option>
+                                            <option value="<=">
+                                                <=</option>
+                                                    <option value=">">></option>
+                                                    <option value=">=">>=</option>
+                                </select>
+                            </div>
+                            <input class="jso flex" type="number" id="mafEVS" name="mafEVS" min="0" max="1" step="0.001" value="{{mafEVSValue::input}}" />
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Quality
+                    </div>
+                    <div class="jso-formcontent vertical layout">
+
+                        <div class="horizontal layout qual-elem">
+                            <label class="jso">QUAL</label>
+                            <div class="jso-select">
+                                <select class="jso" name="qual_op" id="qual_op">
+                                    <option value="==">==</option>
+                                    <option value="!=">!=</option>
+                                    <option value="<" selected>
+                                        <</option>
+                                            <option value="<=">
+                                                <=</option>
+                                                    <option value=">">></option>
+                                                    <option value=">=">>=</option>
+                                </select>
+                            </div>
+                            <input class="jso flex" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" />
+                        </div>
+
+                        <div class="horizontal layout qual-elem">
+                            <label class="jso">DP</label>
+                            <div class="jso-select">
+                                <select class="jso" name="dp_op" id="dp_op">
+                                    <option value="==">==</option>
+                                    <option value="!=">!=</option>
+                                    <option value="<" selected>
+                                        <</option>
+                                            <option value="<=">
+                                                <=</option>
+                                                    <option value=">">></option>
+                                                    <option value=">=">>=</option>
+                                </select>
+                            </div>
+                            <input class="jso flex" type="number" id="dp" name="dp" value="{{dpValue::input}}" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Protein Substitution Scores
+                    </div>
+                    <div class="jso-formcontent vertical layout">
+                        <div class="horizontal layout pss-elem">
+                            <label class="jso">SIFT</label>
+                            <div class="jso-select">
+                                <select name="sift_op" id="sift_op" class="jso">
+                                    <option value="==">==</option>
+                                    <option value="!=">!=</option>
+                                    <option value="<" selected>
+                                        <</option>
+                                            <option value="<=">
+                                                <=</option>
+                                                    <option value=">">></option>
+                                                    <option value=">=">>=</option>
+                                </select>
+                            </div>
+                            <input class="jso flex" type="number" id="sift" name="sift" min="0" max="1" step="0.001" value="{{siftValue::input}}" />
+                        </div>
+
+                        <div class="horizontal layout pss-elem">
+                            <label class="jso">Polyphen</label>
+                            <div class="jso-select">
+                                <select class="jso" name="polyphen_op" id="polyphen_op">
+                                    <option value="==">==</option>
+                                    <option value="!=">!=</option>
+                                    <option value="<" selected>
+                                        <</option>
+                                            <option value="<=">
+                                                <=</option>
+                                                    <option value=">">></option>
+                                                    <option value=">=">>=</option>
+                                </select>
+                            </div>
+                            <input class="jso flex" type="number" id="polyphen" name="polyphen" min="0" max="1" step="0.001" value="{{polyphenValue::input}}" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Conservation
+                    </div>
+                    <div class="jso-formcontent vertical layout">
+
+                        <div class="horizontal layout conserv-elem">
+                            <label class="jso">phyloP</label>
+                            <div class="jso-select">
+                                <select class="jso" name="phylop_op" id="phylop_op">
+                                    <option value="==">==</option>
+                                    <option value="!=">!=</option>
+                                    <option value="<" selected>
+                                        <</option>
+                                            <option value="<=">
+                                                <=</option>
+                                                    <option value=">">></option>
+                                                    <option value=">=">>=</option>
+                                </select>
+                            </div>
+                            <input class="jso flex" type="number" id="phylop" name="phylop" value="{{phylopValue::input}}" step="0.001" />
+
+                        </div>
+
+                        <div class="horizontal layout conserv-elem">
+                            <label class="jso">PhastCons</label>
+                            <div class="jso-select">
+                                <select class="jso" name="phastcons_op" id="phastcons_op">
+                                    <option value="==">==</option>
+                                    <option value="!=">!=</option>
+                                    <option value="<" selected>
+                                        <</option>
+                                            <option value="<=">
+                                                <=</option>
+                                                    <option value=">">></option>
+                                                    <option value=">=">>=</option>
+                                </select>
+                            </div>
+                            <input class="jso flex" type="number" id="phastcons" name="phastcons" value="{{phastconsValue::input}}" step="0.001" />
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="jso-formbox">
+                    <div class="jso-formtitle">
+                        Consequence Type
+                    </div>
+                    <div id="consequenceTypes" class="jso-formcontent">
+                        <template is="dom-repeat" items="{{consequenceTypes}}">
+                            <label class="jso-control">
+                                <input value="{{item.value}}" type="checkbox" name="consequence_type" data-consequence$="{{item.name}}">
+                                <span>{{item.text}}</span>
+                            </label>
+                        </template>
+                        <div class="input_container vertical layout">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: "team-result-form",
+        properties: {
+            url: {
+                type: String,
+                notify: true,
+                value: ''
+            },
+            file: {
+                type: Object,
+                observer: 'fileChanged'
+            },
+            regionValue: {
+                type: String,
+                notify: true,
+                value: ''
+            },
+            geneValue: {
+                type: String,
+                notify: true,
+                value: '',
+            },
+            fileName: {
+                type: String,
+                notify: true,
+                value: 'Choose file...'
+            },
+            consequenceTypes: {
+                type: Array,
+                value: function() {
+                    return CONSEQUENCE_TYPES;
+                }
+            },
+            query: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                notify: true,
+            },
+            dpValue: {
+                type: Number,
+            },
+            qualValue: {
+                type: Number,
+            },
+            maf1000gValue: {
+                type: Number,
+            },
+            mafEVSValue: {
+                type: Number,
+            },
+            siftValue: {
+                type: Number,
+            },
+            polyphenValue: {
+                type: Number,
+            },
+            phylopValue: {
+                type: Number,
+            },
+            phastconsValue: {
+                type: Number,
+            },
+            historyFilters: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true,
+
+            },
+            hash: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+            },
+            filterData: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                notify: true,
+                observer: "filterDataChanged"
+            },
+            job: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                observer: 'jobChanged',
+            },
+            jobId: {
+                type: Number,
+                value: 0
+
+            }
+        },
+
+        ready: function() {
+            if (localStorage.bioinfo_team_filter_history) {
+                this.hash = JSON.parse(localStorage.bioinfo_team_filter_history);
+                if (Array.isArray(this.hash)) {
+                    localStorage.bioinfo_team_filter_history = "";
+                    this.hash = {};
+                }
+            }
+        },
+
+        fileChanged: function(neo, old) {
+            if (neo) {
+                //                this.clearForm();
+                //                this.submitForm();
+            }
+        },
+        handleFeatureSelected: function(e) {
+            var item = e.detail;
+            if (item) {
+                var values = this.$.gene.value.split(',').filter(function(el) {
+                    return el.length != 0
+                });
+                values.push(item.name);
+                values = values.filter(function(item, index, inputArray) {
+                    return inputArray.indexOf(item) == index;
+                });
+                this.$.gene.value = values.join(",");
+            }
+        },
+        clearForm: function() {
+            this.regionValue = "";
+            this.geneValue = "";
+            this.dpValue = "";
+            this.$.dp_op.value = "<";
+            this.qualValue = "";
+            this.$.qual_op.value = "<";
+            this.maf1000gValue = "";
+            this.$.maf1000g_op.value = "<";
+            this.mafEVSValue = "";
+            this.$.mafEVS_op.value = "<";
+            this.siftValue = "";
+            this.$.sift_op.value = "<";
+            this.polyphenValue = "";
+            this.$.polyphen_op.value = "<";
+            this.phylopValue = "";
+            this.$.phylop_op.value = "<";
+            this.phastconsValue = "";
+            this.$.phastcons_op.value = "<";
+
+            /* Consequence Types */
+            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            for (var i = 0; i < els.length; i++) {
+                var el = els[i];
+                el.checked = false;
+            }
+            this.submitForm();
+            document.getElementById('teamResultReport').computeFilter(0, this.jobId);
+        },
+        submitForm: function() {
+            var hash = {};
+            var q = {};
+            if (this.regionValue) {
+                q["region"] = this.inputRegionChange();
+            }
+            if (this.geneValue) {
+                q["gene"] = this.inputGeneChange();
+            }
+            if (this.dpValue) {
+                q["dp"] = this.inputChange(this.dpValue);
+                q["dp_op"] = this._getOption(this.$.dp_op);
+            }
+            if (this.qualValue) {
+                q["qual"] = this.inputChange(this.qualValue);
+                q["qual_op"] = this._getOption(this.$.qual_op);
+            }
+            if (this.maf1000gValue) {
+                q["maf1000g"] = this.inputChange(this.maf1000gValue);
+                q["maf1000g_op"] = this._getOption(this.$.maf1000g_op);
+            }
+            if (this.mafEVSValue) {
+                q["mafEVS"] = this.inputChange(this.mafEVSValue);
+                q["mafEVS_op"] = this._getOption(this.$.mafEVS_op);
+            }
+            if (this.siftValue) {
+                q["sift"] = this.inputChange(this.siftValue);
+                q["sift_op"] = this._getOption(this.$.sift_op);
+            }
+            if (this.polyphenValue) {
+                q["polyphen"] = this.inputChange(this.polyphenValue);
+                q["polyphen_op"] = this._getOption(this.$.polyphen_op);
+            }
+            if (this.phylopValue) {
+                q["phylop"] = this.inputChange(this.phylopValue);
+                q["phylop_op"] = this._getOption(this.$.phylop_op);
+            }
+            if (this.phastconsValue) {
+                q["phastcons"] = this.inputChange(this.phastconsValue);
+                q["phastcons_op"] = this._getOption(this.$.phastcons_op);
+            }
+            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            if (els.length > 0) {
+
+                q["ct"] = this.inputCTChange();
+            }
+            this.set('query', q);
+
+            var filterHistory = [];
+            if (this.jobId in this.hash) {
+                filterHistory = this.hash[this.jobId];
+            }
+            this.set("historyFilters", filterHistory);
+
+            var newFilter = JSON.stringify(q);
+            var _load = -1;
+            for (var i = 0; i < this.historyFilters.length && _load == -1; i++) { // Check if the fitler has been selected from the history
+                var elem = this.historyFilters[i];
+                if (elem != null) {
+                    var oldFilter = JSON.stringify(this.historyFilters[i].filter);
+                    if (newFilter == oldFilter) {
+                        _load = i;
+                    }
+                }
+            }
+
+            if (_load == -1) { // This filter is new (has not been selected from the history)
+                if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+                    var dateAux = new Date();
+                    var minAux = dateAux.getMinutes();
+                    if (minAux < 10) {
+                        minAux = "0" + minAux;
+                    }
+                    var date = dateAux.getDate() + '/' + (dateAux.getMonth() + 1) + ' ' + dateAux.getHours() + ':' + minAux;
+                    name = this.loadForm(q);
+                    var finded = this.filterData.length;
+                    var hf = {};
+                    hf = {
+                        date: date,
+                        name: name,
+                        filter: q,
+                        finded: finded
+                    };
+
+                    var filters = new FilterHistory(5, filterHistory);
+                    filters.unshift(hf);
+                    this.set("historyFilters", filters);
+                    this.hash[this.jobId] = this.historyFilters;
+
+                    localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
+                }
+            } else { // HistoryFilter contains this filter. We need to change the date and push to top
+                var pos = _load;
+
+                var filters = new FilterHistory(5, this.historyFilters);
+                var filter = filters[pos];
+                var dateAux = new Date();
+                var minAux = dateAux.getMinutes();
+                if (minAux < 10) {
+                    minAux = "0" + minAux;
+                }
+                var date = dateAux.getDate() + '/' + (dateAux.getMonth() + 1) + ' ' + dateAux.getHours() + ':' + minAux;
+
+                filter.date = date;
+
+                var aux = filters[pos];
+                filters[pos] = filters[0];
+                filters[0] = aux;
+
+                this.set("historyFilters", filters);
+                this.hash[this.jobId] = this.historyFilters;
+
+                localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
+
+            }
+            if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+                document.getElementById('teamResultReport').computeFilter(1, this.jobId);
+            }
+        },
+        inputRegionChange: function() {
+            if (this.query) {
+                var q_aux = this.regionValue;
+                q = q_aux.split(",");
+            }
+            return q;
+        },
+
+        inputGeneChange: function() {
+            if (this.query) {
+                // var q = Utils.clone(this.query);
+                // delete q["gene"];
+                //  q["gene"] = e.toUpperCase();
+                var q_aux = this.geneValue.toUpperCase();
+                q = q_aux.split(",");
+                //  this.set('query', q);
+                return q;
+            }
+
+        },
+        inputChange: function(value) {
+            if (this.query) {
+                var q = parseFloat(value);
+            }
+            return q;
+        },
+        _getOption: function(input) {
+            var op = input.querySelectorAll("option");
+            for (i = 0; i < op.length; i++) {
+                if (op[i].selected) {
+                    var option = op[i].value;
+                    return option;
+                }
+
+            }
+        },
+        inputCTChange: function() {
+            var cons = [];
+            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            for (var i = 0; i < els.length; i++) {
+                var el = els[i].dataset.consequence;
+                cons[i] = el;
+            }
+            return cons;
+        },
+        loadForm: function(hf) {
+            var filterName = [];
+            if (hf.region != null) {
+                this.regionValue = hf.region.join(",");
+                filterName.push("Chromosomal Location: (" + hf.region.join(" or ") + ") ");
+            }
+            if (hf.gene != null) {
+                this.geneValue = hf.gene.join(",");
+                filterName.push("Genes: (" + hf.gene.join(" or ") + ") ");
+            }
+            if (hf.dp != null) {
+                this.dpValue = hf.dp;
+                this.$.dp_op.value = hf.dp_op;
+                filterName.push("DP " + hf.dp_op + " " + hf.dp + " ");
+            }
+            if (hf.qual != null) {
+                this.qualValue = hf.qual;
+                this.$.qual_op.value = hf.qual_op;
+                filterName.push("Qual " + hf.qual_op + " " + hf.qual + " ");
+            }
+            if (hf.maf1000g != null) {
+                this.maf1000gValue = hf.maf1000g;
+                this.$.maf1000g_op.value = hf.maf1000g_op;
+                filterName.push("MAF 1000G " + hf.maf1000g_op + " " + hf.maf1000g + " ");
+            }
+            if (hf.mafEVS != null) {
+                this.mafEVSValue = hf.mafEVS;
+                this.$.mafEVS_op.value = hf.mafEVS_op;
+                filterName.push("MAF EVS " + hf.mafEVS_op + " " + hf.mafEVS + " ");
+            }
+            if (hf.sift != null) {
+                this.siftValue = hf.sift;
+                this.$.sift_op.value = hf.sift_op;
+                filterName.push("Sift " + hf.sift_op + " " + hf.sift + " ");
+            }
+            if (hf.polyphen != null) {
+                this.polyphenValue = hf.polyphen;
+                this.$.polyphen_op.value = hf.polyphen_op;
+                filterName.push("Polyphen " + hf.polyphen_op + " " + hf.polyphen + " ");
+            }
+            if (hf.phylop != null) {
+                this.phylopValue = hf.phylop;
+                this.$.phylop_op.value = hf.phylop_op;
+                filterName.push("Phylop " + hf.phylop_op + " " + hf.phylop + " ");
+            }
+            if (hf.phastcons != null) {
+                this.phastconsValue = hf.phastcons;
+                this.$.phastcons_op.value = hf.phastcons_op;
+                filterName.push("Phastcons " + hf.phastcons_op + " " + hf.phastcons + " ");
+            }
+            if (hf.ct != null) {
+                var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']");
+                var ctName = "";
+                var aux = 0;
+                for (var i = 0; i < hf.ct.length; i++) {
+                    var cons = hf.ct[i];
+                    for (var j = 0; j < els.length; j++) {
+                        var el = els[j];
+                        if (cons == el.dataset.consequence) {
+                            el.checked = true;
+                            if (aux == 0) {
+                                ctName += el.dataset.consequence;
+                                aux++;
+                            } else {
+                                ctName += " or " + el.dataset.consequence;
+                                aux++;
+                            }
+                        }
+                    }
+                }
+                filterName.push("Consequence Types: (" + ctName + ")");
+            }
+            return filterName.join(" AND ");
+        },
+        filterDataChanged: function(neo, old) {},
+        loadFilter: function(e) {
+            e.stopPropagation();
+            this.clearForm();
+            this.loadForm(e.currentTarget.dataFilter);
+            this.$.filterHistoryTooltip.handleClose(e);
+            this.submitForm();
+
+        },
+        clearFiltersHistory: function(e) {
+            e.stopPropagation();
+            this.historyFilters = [];
+            delete(this.hash[this.job.id]);
+            localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
+
+        },
+        jobChanged: function(neo, old) {
+            this.set('jobId', neo.id);
+            if (this.jobId) {
+                this.clearForm();
+            }
+        }
+    });
+</script>

@@ -5,7 +5,8 @@
     <parent>
         <artifactId>team</artifactId>
         <groupId>org.babelomics.team</groupId>
-        <version>1.0.0</version>
+        <version>${team.version}</version>
+        <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -34,17 +35,23 @@
             <artifactId>opencga-storage-mongodb</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opencb.datastore</groupId>
             <artifactId>datastore-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opencb.cellbase</groupId>
-            <artifactId>cellbase-core</artifactId>
+            <groupId>org.opencb.opencga</groupId>
+            <artifactId>opencga-catalog</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opencb.opencga</groupId>
+            <artifactId>opencga-analysis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

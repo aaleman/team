@@ -11,6 +11,7 @@ function Panel(args) {
     this.disease = "";
     this.version = 1;
     this.archived = false;
+    this.used = false;
     this.polymer;
 
     _.extend(this, args);
@@ -20,29 +21,130 @@ function Panel(args) {
 Panel.prototype = {
     _incModCount: function () {
         this.modCount++;
-        //console.log("Panel changed!!");
+    },
+    addDiseases: function (diseases) {
+        var me = this;
+        var genes = [];
+
+        for (var i = 0; i < diseases.length; i++) {
+            var disease = diseases[i];
+            if (!this.containsDisease(disease)) {
+                delete disease._filtered;
+                this.polymer.push('formData.diseases', disease);
+
+                if (disease.associatedGenes && disease.associatedGenes.length > 0) {
+                    for (var j = 0; j < disease.associatedGenes.length; j++) {
+                        var assocGene = disease.associatedGenes[j];
+                        if (!this._checkGenes(assocGene, this.genes)) {
+                            genes.push(assocGene);
+                        }
+                    }
+                }
+
+                if (disease.source == "clinvar") {
+
+                    CellBaseManager.get({
+                        species: 'hsapiens',
+                        category: 'feature',
+                        subCategory: 'clinical',
+                        resource: 'all',
+                        async: false,
+                        params: {
+                            source: 'clinvar',
+                            phenotype: disease.phenotype,
+                            exclude: "annot,clinvarSet"
+                        },
+                        success: function (data) {
+                            if (data.response && data.response.length > 0) {
+                                var result = data.response[0].result;
+                                for (var i = 0; i < result.length; i++) {
+                                    var row = result[i];
+                                    var mut = {
+
+                                        chr: row.chromosome,
+                                        pos: row.start,
+                                        ref: row.reference,
+                                        alt: row.alternate,
+                                        phe: disease.phenotype,
+                                        src: disease.source
+                                    }
+                                    me.addMutation(mut);
+
+                                }
+                            }
+                        }
+                    });
+                }
+
+            }
+
+        }
+
+        Utils.applyFunctionBatch(genes, 5, function (genes) {
+            CellBaseManager.get({
+                species: 'hsapiens',
+                category: 'feature',
+                subCategory: 'gene',
+                resource: 'info',
+                async: false,
+                query: genes.join(","),
+                params: {
+                    include: "name,chromosome,start,end"
+                },
+                success: function (data) {
+
+                    if (data.response && data.response.length > 0) {
+
+                        for (var i = 0; i < data.response.length; i++) {
+                            var geneElem = data.response[i];
+
+                            if (geneElem.result.length > 0) {
+                                var row = data.response[i].result[0];
+                                var gene = {
+                                    name: geneElem.id,
+                                    chr: row.chromosome,
+                                    start: row.start,
+                                    end: row.end
+                                };
+                                me.addGene(gene);
+
+                            } else {
+                                me.addGene({
+                                    name: geneElem.id
+                                });
+                            }
+
+                        }
+                    }
+                }
+            });
+        });
+        this._incModCount();
+
     },
     addDisease: function (disease) {
         var me = this;
         if (!this.containsDisease(disease)) {
             delete disease._filtered
-            this.polymer.push('formData.diseases', disease)
+            this.polymer.push('formData.diseases', disease);
 
             if (disease.associatedGenes && disease.associatedGenes.length > 0) {
-                console.log(disease.associatedGenes);
+                var genes = [];
                 for (var j = 0; j < disease.associatedGenes.length; j++) {
-                    var elem = disease.associatedGenes[j];
-                    //if (elem.indexOf(",") >= 0) {
-                    var splits = elem.split(",");
+                    var assocGene = disease.associatedGenes[j];
+                    if (!this._checkGenes(assocGene, this.genes)) {
+                        genes.push(assocGene);
+                    }
+                }
+                if (genes.length > 0) {
 
                     CellBaseManager.get({
-                        host: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest",
                         species: 'hsapiens',
                         category: 'feature',
                         subCategory: 'gene',
                         resource: 'info',
                         async: false,
-                        query: elem,
+                        query: genes.join(","),
                         params: {
                             include: "name,chromosome,start,end"
                         },
@@ -68,23 +170,17 @@ Panel.prototype = {
                                         });
                                     }
 
-
                                 }
                             }
                         }
                     });
-                    //} else {
-                    //    this.addGene({
-                    //        name: elem
-                    //    })
-                    //}
+
                 }
             }
 
             if (disease.source == "clinvar") {
 
                 CellBaseManager.get({
-                    host: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest",
                     species: 'hsapiens',
                     category: 'feature',
                     subCategory: 'clinical',
@@ -106,7 +202,8 @@ Panel.prototype = {
                                     pos: row.start,
                                     ref: row.reference,
                                     alt: row.alternate,
-                                    phe: disease.phenotype
+                                    phe: disease.phenotype,
+                                    src: disease.source
                                 }
                                 me.addMutation(mut);
 
@@ -116,9 +213,16 @@ Panel.prototype = {
                 });
             }
 
-
             this._incModCount();
         }
+    },
+    _checkGenes: function (assocGen, genes) {
+        for (var j = 0; j < genes.length; j++) {
+            if (assocGen == genes[j].name) {
+                return true;
+            }
+        }
+        return false;
     },
     addAllDiseases: function (diseases) {
         for (var i = 0; i < diseases.length; i++) {
@@ -195,7 +299,8 @@ Panel.prototype = {
                 elem.pos == mutation.pos &&
                 elem.ref == mutation.ref &&
                 elem.alt == mutation.alt &&
-                elem.phe == mutation.phe) {
+                elem.phe == mutation.phe &&
+                elem.src == mutation.src) {
                 return true;
             }
         }
@@ -209,10 +314,14 @@ Panel.prototype = {
                     var splits = elem.split(",");
                     for (var k = 0; k < splits.length; k++) {
                         var gene = splits[k];
-                        this.removeGene({name: gene});
+                        this.removeGene({
+                            name: gene
+                        });
                     }
                 } else {
-                    this.removeGene({name: elem});
+                    this.removeGene({
+                        name: elem
+                    });
                 }
             }
         }
@@ -259,9 +368,125 @@ Panel.prototype = {
             disease: this.disease,
             version: this.version,
             archived: this.archived,
+            used: this.used,
             diseases: this.diseases,
             genes: this.genes,
             mutations: this.mutations
         }
     }
 };
+
+function PanelConfig(args) {
+    this.id = Utils.genId("Panel");
+    this.panels = [];
+    this.panelHash = {};
+    this.userInfo = args;
+    this.polymer;
+
+    var attrs = this.userInfo.attributes;
+
+    if (!("team" in attrs)) {
+        attrs.team = {};
+    }
+
+    if (!("panels" in attrs.team)) {
+        attrs.team.panels = [];
+    }
+
+    this.panels = attrs.team.panels;
+
+    for (var i = 0; i < this.panels.length; i++) {
+        var panel = this.panels[i];
+        this.panelHash[panel.fileId] = panel;
+    }
+
+    this._modCount = 0;
+};
+PanelConfig.prototype = {
+
+    addPanelConfig: function (newPanelConfig) {
+        if (newPanelConfig) {
+            //this.panels.push(newPanelConfig);
+            this.polymer.push("panelConfig.panels", newPanelConfig);
+            this.panelHash[newPanelConfig.fileId] = newPanelConfig;
+            this.savePanelConfig();
+
+        }
+    },
+    savePanelConfig: function () {
+
+        var url = OpencgaManager.users.update({
+            id: this.userInfo.id,
+            query: {
+                sid: Cookies('bioinfo_sid'),
+            },
+            request: {
+                method: "POST",
+                url: true
+            }
+        });
+
+        console.log(url);
+        var data = {
+            'attributes': {
+                "team": this.userInfo.attributes.team
+            }
+        };
+
+        //function createCORSRequest(method, url) {
+        //    var xhr = new XMLHttpRequest();
+        //    if ("withCredentials" in xhr) {
+        //        xhr.open(method, url, true);
+        //    } else if (typeof XDomainRequest != "undefined") {
+        //        xhr = new XDomainRequest();
+        //        xhr.open(method, url);
+        //    } else {
+        //        xhr = null;
+        //    }
+        //    return xhr;
+        //}
+        //
+        //var request = createCORSRequest("POST", url);
+        //if (request) {
+        //    request.setRequestHeader("Content-Type", "application/json");
+        //
+        //    request.onload = function (e) {
+        //        var response = JSON.parse(e.srcElement.response);
+        //        //do something with request.responseText
+        //    };
+        //    request.onerror = function () {
+        //        console.log("Error")
+        //        debugger
+        //    }
+        //    request.send(JSON.stringify(data));
+        //
+        //}
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        // xhr.setRequestHeader("Content-Type", "text/plain");
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = function (e) {
+            console.log(JSON.parse(e.srcElement.response));
+        };
+        xhr.send(JSON.stringify(data));
+
+    },
+    archivePanel: function (fileId) {
+        this.panelHash[fileId].archived = !this.panelHash[fileId].archived;
+        this.polymer.notifyPath('panelConfig.panels', this.panels);
+
+        this._updatePanels();
+        this.savePanelConfig();
+    },
+    _updatePanels: function () {
+        var panels = [];
+        for (var i = 0; i < this.panels.length; i++) {
+            var panel = this.panels[i];
+            panels.push(panel);
+        }
+        this.polymer.set('configPanel.panels', panels);
+
+    }
+}

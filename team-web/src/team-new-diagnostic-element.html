@@ -1,118 +1,226 @@
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-select-box.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-wizard.html">
+
 <dom-module id="team-new-diagnostic-element">
     <style>
         :host {
             display: block;
             position: relative;
             box-sizing: border-box;
-            padding: 10px 20px 20px 20px;
-            /*width: 900px;*/
-            /*height: 600px;*/
-            /*margin: 50px auto 0;*/
-            /*border: solid white 1px;*/
-            /*background-color: var(--light-primary-color);*/
-            /*padding: 30px 100px;*/
-            /*width: 80%;*/
-
-            /*max-width: 1000px;*/
+            width: 100%;
+            height: 770px;
         }
 
-        .message {
-            margin-top: 20px;
+        .file {
+            text-align: center;
+            color: #445D76;
+            margin: 5px;
+            width: 100px;
         }
 
         .selbox {
-            box-sizing: border-box;
-            /*background-color: #FFF;*/
-            height: 150px;
+            /*box-sizing: border-box;
+            border-right: 1px solid #d0d0d0;*/
+            height: 600px;
+            width: 300px;
             overflow-y: auto;
-            /*border: 1px solid #d3d3d3;*/
-        }
-
-        .panel-item {
-            padding: 2px 5px;
-        }
-
-        .panel-item {
-            color: #555;
-        }
-
-        .panel-item:hover {
-            background-color: #eee;
-        }
-
-        .panel-item[data-checked] {
-            background-color: #ddd;
         }
 
         label.jso {
             display: block;
         }
 
-        .panelform {
-            margin-bottom: 10px;
-        }
-
-        jso-opencga-browser {
+        jso-opencga-sample-browser {
             position: relative;
             width: 100%;
-            height: 300px;
+            height: 400px;
         }
 
+        .errmsg {
+            color: #8b0000;
+            font-size: 15px;
+            font-style: italic;
+        }
+
+        #panelPreview {
+            width: 70%;
+            height: 650px;
+        }
+
+        .titlePreview {
+            font-size: 15px;
+            color: #445D76;
+            margin: 5px 10px 0px 10px;
+            border-bottom: 1px solid #445D76;
+        }
+
+        .eye > i:hover {
+            color: #666;
+            cursor: pointer;
+        }
+
+        #personalData {
+            border: 1px solid #d3d3d3;
+            padding: 10px;
+            margin: 20px 250px;
+            width: 500px;
+        }
+
+        .data {
+            color: #666;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .sgenesTextArea {
+            box-sizing: border-box;
+            width: 100%;
+            resize: none;
+            height: 100px;
+            margin-top: 5px;
+        }
+
+        #newPanelPanel {
+            /*top:25px;*/
+            width: 50%;
+            min-width: 1000px;
+            margin: 0 auto;
+            box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
+        }
+
+        .newPanelButon {
+            margin: 10px;
+            padding-left: 5px;
+            border: 1px solid #d3d3d3;
+            margin-bottom: 0px;
+            line-height: 30px;
+            background-color: #E5E8EA;
+        }
+
+        #botbar {
+            text-align: center;
+            color: #445D76;
+            margin: 5px;
+            width: 100px;
+        }
+
+        jso-select-box {
+            overflow-y: auto;
+            height: 400px;
+        }
+
+        #examplePanels {
+            height: 130px;
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border: 1px solid var(--divider-color);
+            background-color: #FFF;
+            margin: 10px;
+        }
+
+        .jso-formtitle {
+            font-size: 13px;
+        }
+
+        .panel-item {
+            padding: 2px 5px;
+            cursor: pointer;
+        }
+
+        .panel-item[selected] {
+            background-color: #ddd;
+        }
+
+        .panel-item:hover {
+            background-color: var(--hover-color);
+        }
     </style>
     <template>
-        <form id="form">
-            <div class="jso-formbox">
-                <div class="jso-formtitle">
-                    Choose a File
+
+        <jso-wizard id="formWizard">
+            <div class="title">
+                <div class="stepName">Choose a Sample
+                    <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
                 </div>
-                <div class="jso-formcontent" style="padding:0">
-                    <jso-opencga-browser
-                            id="brower"
-                            projects="{{projects}}"
-                            bioformats="{{bioformats}}"
-                            on-fileselect="handleFileSelected"
-                            disable-new-project
-                            disable-new-study
-                            ></jso-opencga-browser>
+                <div class="stepName">Choose a Panel
+                    <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
                 </div>
-            </div>
-            <div class="jso-formbox">
-                <div class="jso-formtitle">Choose a Panel</div>
-                <div class="jso-formcontent selbox" id="panelSelector">
-                    <template is="dom-repeat" items="{{panels}}" filter="isPanel">
-                        <div class="panel-item" on-click="handlePanelClick" data-file$="{{item.file.id}}">
-                            <span>{{item.name}}</span></div>
-                    </template>
-                </div>
+
+                <div class="stepName">Job information</div>
             </div>
 
+            <div class="container">
+                <div class="step">
+                    <div class="jso-formcontent" style="padding:0">
+                        <!--<jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>-->
+                        <jso-opencga-sample-browser class="container" id="sampleBrowser" projects="{{projects}}" on-sampleselected="handleSampleSelected"></jso-opencga-sample-browser>
 
-            <!--             <div class="jso-formbox">
-                            <div class="jso-formtitle">Prioritization info</div>
-                            <div class="jso-formcontent">
-                                <label class="jso">Phenotype:</label>
-                                <input class="jso" type="text"/>
-
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="horizontal layout">
+                        <!-- <div class="vertical layout"> -->
+                        <div class="selbox vertical layout" id="panelSelector">
+                            <div class="horizontal layout">
+                                <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
                             </div>
-                        </div> -->
-            <div class="jso-formbox">
-                <div class="jso-formtitle">Job information</div>
-                <div class="jso-formcontent">
-                    <!--<label>Output folder</label>-->
-                    <!--<jso-project-browser-window id="outdir" studies="{{studies}}" selectedStudy="{{selectedStudy}}"-->
-                    <!--selectionMode="folder" showBrowser="false"></jso-project-browser-window>-->
-                    <!--<br>-->
-                    <label class="jso">Job name</label>
-                    <input class="jso" type="text" id="jobName" value="{{jobName}}" required>
-                    <label class="jso">Description</label>
-                    <textarea class="jso" value="{{jobDescription}}" required></textarea>
+                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{panelConfig.panels}}" data-panels="{{panelConfig.panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+
+
+                            <div class="horizontal layout">
+                                <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
+                            </div>
+                            <!-- <jso-select-box id="examplePanels" style="margin:10px" options="{{examplePanels}}" title-attribute="name" on-select="handlePanelExampleSelected"></jso-select-box> -->
+                            <div id="examplePanels">
+                                <template is="dom-repeat" items="{{examplePanels}}">
+                                    <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
+                                        <div class="flex" style="color:black;">{{item.name}}</div>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="newPanelButon horizontal layout">
+                                <div class="flex" style="font-size:13px;">Or create a New Panel &nbsp;</div>
+                                <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
+                                    <i class="fa fa-plus"></i>&nbsp; Panel
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="panelPreview">
+                            <div class="titlePreview">
+                                <i class="fa fa-eye"></i>&nbsp; Panel Preview
+                            </div>
+                            <team-panel-preview id="newDiagnosticPanelPreview" data-panel="{{selectedPanel}}" selected-panel="{{selectedPanel}}" style="width:95%;">
+                            </team-panel-preview>
+                        </div>
+                    </div>
+                    <jso-panel modal movable expandible closable id="newPanelPanel" hidden>
+                        <div class="header" style="text-align:left;font-size:15px;">
+                            <i class="fa fa-plus"></i> New Panel
+                        </div>
+                        <team-panel-form-wizard panel-config="{{panelConfig}}" id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" config-panel="{{configPanel}}"></team-panel-form-wizard>
+                    </jso-panel>
+
+                </div>
+                <div class="step">
+                    <div class="jso-formcontent vertical layout" id="personalData">
+                        <div style="color:#666;margin-top:5px;">Job name</div>
+                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
+
+                        <div class="data">Description</label>
+                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}" required></textarea>
+                        </div>
+                        <div class="horizontal layout">
+                            <div class="jso-btn jso-btn-shdw file" style="width:200px;margin: 0 auto;margin-top:10px;" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                            </div>
+                            <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="jso-btn jso-btn-shdw " style="width:200px;margin:0 auto" on-click="handleForm">Run!</div>
-
-        </form>
-
+        </jso-wizard>
 
     </template>
 </dom-module>
@@ -120,41 +228,43 @@
     Polymer({
         is: "team-new-diagnostic-element",
         properties: {
-            panels: {
-                type: Array,
-                value: function () {
-                    return [];
+            panelConfig: {
+                type: Object,
+                value: function() {
+                    return {};
                 },
-                observer: 'handlePanelsChanged'
+
             },
             projects: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
+            selectedPanelId: {
+                type: Number,
+
+                observer: 'handleSelectedPanelChanged'
+            },
             selectedPanel: {
                 type: Object,
-                value: function () {
-                    return [];
-                },
                 observer: 'handleSelectedPanelChanged'
             },
             bioformats: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 }
             },
             defaultStudy: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
             analysisFolder: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 }
             },
@@ -165,74 +275,172 @@
             jobDescription: {
                 type: String,
                 value: "New Diagnosis"
-            }
-        },
-        handlePanelsChanged: function (neo, old) {
-//            debugger
-        }
-        ,
-        isPanel: function (item) {
-            return item.file.name.indexOf("panel") == 0;
-        }
-        ,
-        handleForm: function (e) {
-            var me = this;
-            var query = {
-                sid: Cookies("bioinfo_sid"),
-                studyId: this.defaultStudy.id,
-                toolId: "team",
-//                outdir: this.$.outdir.selectedFile.id,
-//                name: "TEAM_JOB_NAME",
-                name: this.jobName,
-                description: "TEAM_DESC",
-//                description: this.description,
-                "input": this.inputSelectedFile.id,
-                "panel": this.selectedPanel,
-                output: this.analysisFolder.id
-            };
+            },
+            selectedStudy: {
+                type: Object,
+            },
+            selectedSample: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
+            },
+            examplePanels: {
+                type: Array,
+                value: function() {
+                    return EXAMPLE_PANELS;
+                }
+            },
 
-            OpencgaManager.jobs.create({
-                query: query,
-                request: {
-                    //method: 'POST',
-                    success: function (response) {
-                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
-                            var userId = response.response[0].result[0].id;
-                            me.fire('run');
-//                            me.message = userId + ' created';
-//                            me.selectedOption = "jobLaunched"
-                        } else {
-//                            me.message = response.response[0].errorMsg;
-                        }
-                    },
-                    error: function () {
-                        me.message = 'Server error, try again later.';
+        },
+        observers: [
+            "handlePanelsChanged(panels.splices)"
+        ],
+
+        ready: function() {},
+        handlePanelsChanged: function(value) {
+            var aux = 0;
+            if (this.panels == "") {
+                this.set('selectedPanel', null);
+            } else {
+                for (var i = 0; i < this.configPanel.panels.length; i++) {
+                    if (this.configPanel.panels[i].fileId == this.selectedPanelId) {
+                        aux = 1;
                     }
                 }
-            })
+                if (aux == 0) {
+                    this.set('selectedPanel', null);
+                    this.set('selectedPanelId', "");
+                }
 
+            }
 
-        }
-        ,
-        handleClose: function (e) {
+        },
+        isPanel: function(item) {
+            return item.file.name.indexOf("panel") == 0;
+        },
+        handleForm: function(e) {
+            var me = this;
+
+            if (this.selectedSample.id == null) {
+                this.errorMessageFile = "No sample selected";
+            }
+            if (this.selectedPanelId == "") {
+                this.errorMessagePanel = "No panel selected";
+            }
+
+            if (this.selectedSample.id != null && this.selectedPanelId != "") {
+                this.errorMessage = " ";
+                this.selectedPanel.used = true;
+                for (var i = 0; i < this.panelConfig.panels.length; i++) {
+                    panel = this.panelConfig.panels[i];
+                    if (panel.name == this.selectedPanel.name) {
+                        panel.used++;
+                    }
+                }
+                var studyId = this.$.sampleBrowser.selectedStudy.study.id;
+                this.selectedStudy = this.$.sampleBrowser.selectedStudy;
+
+                var query = {
+                    sid: Cookies("bioinfo_sid"),
+                    studyId: studyId,
+                    toolId: "team",
+                    name: me.jobName,
+                    description: me.jobDescription,
+
+                    sampleId: this.selectedSample.id,
+                    panel: me.selectedPanelId,
+                    output: me.analysisFolder.id,
+                    sessionId: Cookies("bioinfo_sid"),
+                };
+
+                OpencgaManager.jobs.create({
+                    query: query,
+                    request: {
+                        //method: 'POST',
+                        success: function(response) {
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                var userId = response.response[0].result[0].id;
+
+                                me.panelConfig.savePanelConfig();
+                                me.fire('run');
+                            } else {}
+                        },
+                        error: function() {
+                            me.message = 'Server error, try again later.';
+                        }
+                    }
+                });
+
+            } else {
+                this.errorMessage = "There are errors in the form. Correct them before launching work.";
+            }
+            this.set('jobName', "TEAM Diagnosis");
+            this.set('jobDescription', "New Diagnosis");
+        },
+        handleClose: function(e) {
             this.fire('close');
         },
-        handlePanelClick: function (e) {
-            var sel = this.querySelectorAll('.panel-item');
-            for (var i = 0; i < sel.length; i++) {
-                var el = sel[i];
-                el.removeAttribute('data-checked');
+        handlePanelClick: function(e) {
+            this.selectedPanelId = e.detail.fileId;
+            this.errorMessagePanel = " ";
+            if (this.selectedSample != null) {
+                this.errorMessage = "";
             }
-            this.selectedPanel = e.currentTarget.dataset.file;
-            e.currentTarget.setAttribute('data-checked', '')
+
+            var data;
+
+            OpencgaManager.files.content({
+                id: this.selectedPanelId,
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    limit: 100
+                },
+                request: {
+                    async: false,
+                    success: function(response) {
+                        data = response;
+                    },
+                    error: function() {}
+                }
+            });
+            var selectedExample = this.$.examplePanels.querySelector('div[selected]');
+            if (selectedExample != null) {
+                selectedExample.removeAttribute("selected", "");
+            }
+            if (data) {
+                this.selectedPanel = JSON.parse(data);
+            }
 
         },
-        handleSelectedPanelChanged: function (neo, old) {
+        handleSelectedPanelChanged: function(neo, old) {
+            console.log(this.selectedPanelId);
             console.log(this.selectedPanel);
         },
-        handleFileSelected: function (e) {
+        handleFileSelected: function(e) {
             this.inputSelectedFile = e.detail;
+            this.errorMessageFile = " ";
+        },
+        handleSampleSelected: function(e) {
+            this.selectedSample = e.detail;
+            this.errorMessageFile = " ";
+            if (this.selectedPanelId != "") {
+                this.errorMessage = "";
+            }
+        },
+        handleNewPanel: function(e) {
+            this.$.newPanelPanel.hidden = false;
+        },
+        handlePanelExampleSelected: function(e) {
+            this.set('selectedPanel', e.currentTarget.dataFile);
+            var selectedExample = this.$.examplePanels.querySelector('div[selected]');
+            this.$.newDiagnosticPanels.set('selected', null);
+
+            if (selectedExample != null) {
+                selectedExample.removeAttribute("selected", "");
+            }
+            e.currentTarget.setAttribute("selected", "");
         }
-    })
-    ;
+
+    });
 </script>

@@ -2,12 +2,14 @@ package org.babelomics.team.lib.io;
 
 import com.google.common.base.Joiner;
 import org.babelomics.team.lib.models.TeamVariant;
+import org.opencb.biodata.models.variant.StudyEntry;
 import org.opencb.biodata.models.variant.Variant;
-import org.opencb.biodata.models.variant.VariantSourceEntry;
-import org.opencb.biodata.models.variant.annotation.ConsequenceType;
-import org.opencb.biodata.models.variant.annotation.Score;
-import org.opencb.biodata.models.variation.PopulationFrequency;
+import org.opencb.biodata.models.variant.avro.ConsequenceType;
+import org.opencb.biodata.models.variant.avro.PopulationFrequency;
+import org.opencb.biodata.models.variant.avro.Score;
+import org.opencb.biodata.models.variant.avro.SequenceOntologyTerm;
 import org.opencb.commons.io.DataWriter;
+import org.opencb.opencga.catalog.models.Sample;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -20,18 +22,20 @@ import java.util.Set;
 /**
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
  */
-public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
+public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
 
-    private PrintWriter printer;
     private String filename;
-    private static final String SEPARATOR = "\t";
-    private DecimalFormat df;
+    protected DecimalFormat df;
+    protected PrintWriter printer;
+    protected Sample sample;
+    protected static final String SEPARATOR = "\t";
 
 
-    public TeamDiagnosticFileWriter(String filename) {
+    public TeamCSVDiagnosticFileWriter(Sample sample, String filename) {
+        this.sample = sample;
 
         this.filename = filename;
-        df = new DecimalFormat("#.###");
+        df = new DecimalFormat("#.####");
     }
 
     @Override
@@ -72,12 +76,11 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
 
         sb.append("MAF 1000G").append(SEPARATOR);
         sb.append("MAF 1000G (Allele)").append(SEPARATOR);
+        sb.append("MAF 1000G Phase 3").append(SEPARATOR);
+        sb.append("MAF 1000G Phase 3 (Allele)").append(SEPARATOR);
 
         sb.append("phenotype").append(SEPARATOR);
         sb.append("source").append(SEPARATOR);
-
-//        sb.append("MAF EVS").append(SEPARATOR);
-//        sb.append("MAF EVS (Allele)").append(SEPARATOR);
 
         printer.println(sb.toString());
 
@@ -92,30 +95,24 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
     @Override
     public boolean write(TeamVariant teamVariant) {
 
+//
+        StringBuilder sb = new StringBuilder();
+
         Variant variant = teamVariant.getVariant();
 
-        StringBuilder sb = new StringBuilder();
         sb.append(variant.getChromosome()).append(SEPARATOR);
         sb.append(variant.getStart()).append(SEPARATOR);
         sb.append(variant.getReference()).append(SEPARATOR);
         sb.append(variant.getAlternate()).append(SEPARATOR);
 
+        StudyEntry vse = variant.getStudies().get(0); // aaleman: Check this with 2 or more studies.
 
-        VariantSourceEntry vse = variant.getSourceEntries().get("file_file");
-        String qual = vse.hasAttribute("QUAL") ? vse.getAttribute("QUAL") : ".";
+        Map<String, String> attributes = vse.getSampleData(this.sample.getName());
+
+        String qual = attributes.containsKey("QUAL") ? attributes.get("QUAL") : ".";
         sb.append(qual).append(SEPARATOR);
 
-        String dp = "";
-
-
-        for (Map.Entry<String, Map<String, String>> elem : vse.getSamplesData().entrySet()) {
-
-            Map<String, String> data = elem.getValue();
-
-            dp = data.containsKey("DP") ? data.get("DP") : ".";
-            break;
-        }
-
+        String dp = attributes.containsKey("DP") ? attributes.get("DP") : ".";
         sb.append(dp).append(SEPARATOR);
 
 
@@ -131,14 +128,14 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         String cts = getConsequenceTypes(variant.getAnnotation().getConsequenceTypes());
         sb.append(cts).append(SEPARATOR);
 
-        String phylop = getConservedRegionScore(variant.getAnnotation().getConservedRegionScores(), "phylop");
-        String phastCons = getConservedRegionScore(variant.getAnnotation().getConservedRegionScores(), "phastCons");
+        String phylop = getConservedRegionScore(variant.getAnnotation().getConservation(), "phylop");
+        String phastCons = getConservedRegionScore(variant.getAnnotation().getConservation(), "phastcons");
 
         sb.append(phylop).append(SEPARATOR);
         sb.append(phastCons).append(SEPARATOR);
 
-        String sift = getProteinSubstitutionScores(variant.getAnnotation().getConsequenceTypes(), "Sift");
-        String polyphen = getProteinSubstitutionScores(variant.getAnnotation().getConsequenceTypes(), "Polyphen");
+        String sift = getProteinSubstitutionScores(variant.getAnnotation().getConsequenceTypes(), "sift");
+        String polyphen = getProteinSubstitutionScores(variant.getAnnotation().getConsequenceTypes(), "polyphen");
 
         sb.append(sift).append(SEPARATOR);
         sb.append(polyphen).append(SEPARATOR);
@@ -153,15 +150,15 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
             sb.append(".").append(SEPARATOR);
         }
 
-//        Maf mafEVS = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP_6500", "");
-//
-//        if (mafEVS != null) {
-//            sb.append(df.format(mafEVS.maf)).append(SEPARATOR);
-//            sb.append(mafEVS.allele).append(SEPARATOR);
-//        } else {
-//            sb.append(".").append(SEPARATOR);
-//            sb.append(".").append(SEPARATOR);
-//        }
+        Maf maf1000GP3 = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000G_PHASE_3", "1000G_PHASE_3_ALL");
+
+        if (maf1000GP3 != null) {
+            sb.append(df.format(maf1000GP3.maf)).append(SEPARATOR);
+            sb.append(maf1000GP3.allele).append(SEPARATOR);
+        } else {
+            sb.append(".").append(SEPARATOR);
+            sb.append(".").append(SEPARATOR);
+        }
 
         String phe = teamVariant.getPhenotype() != null ? teamVariant.getPhenotype() : ".";
         String src = teamVariant.getSource() != null ? teamVariant.getSource() : ".";
@@ -175,11 +172,11 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         return true;
     }
 
-    private Maf getMAF(List<PopulationFrequency> popFreqs, String study, String population) {
+    protected Maf getMAF(List<PopulationFrequency> popFreqs, String study, String population) {
 
         if (popFreqs != null && popFreqs.size() > 0) {
             for (PopulationFrequency pf : popFreqs) {
-                if (pf.getStudy().equals(study) && pf.getPop().equals(population)) {
+                if (pf.getStudy().equals(study) && pf.getPopulation().equalsIgnoreCase(population)) {
                     if (pf.getRefAlleleFreq() < pf.getAltAlleleFreq()) {
                         return new Maf(pf.getRefAllele(), pf.getRefAlleleFreq());
                     } else {
@@ -191,13 +188,13 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         return null;
     }
 
-    private String getProteinSubstitutionScores(List<ConsequenceType> consequenceTypes, String source) {
+    protected String getProteinSubstitutionScores(List<ConsequenceType> consequenceTypes, String source) {
 
         if (consequenceTypes != null && consequenceTypes.size() > 0) {
             for (ConsequenceType consequenceType : consequenceTypes) {
-                if (consequenceType.getProteinSubstitutionScores() != null && consequenceType.getProteinSubstitutionScores().size() > 0) {
-                    for (Score score : consequenceType.getProteinSubstitutionScores()) {
-                        if (score.getSource().equals(source)) {
+                if (consequenceType.getProteinVariantAnnotation() != null && consequenceType.getProteinVariantAnnotation().getSubstitutionScores() != null && !consequenceType.getProteinVariantAnnotation().getSubstitutionScores().isEmpty()) {
+                    for (Score score : consequenceType.getProteinVariantAnnotation().getSubstitutionScores()) {
+                        if (score.getSource().equalsIgnoreCase(source)) {
                             return String.valueOf(df.format(score.getScore()));
                         }
                     }
@@ -209,10 +206,10 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         return ".";
     }
 
-    private String getConservedRegionScore(List<Score> conservedRegionScores, String source) {
+    protected String getConservedRegionScore(List<Score> conservedRegionScores, String source) {
         if (conservedRegionScores != null && conservedRegionScores.size() > 0) {
             for (Score score : conservedRegionScores) {
-                if (score.getSource().equals(source)) {
+                if (score.getSource().equalsIgnoreCase(source)) {
                     return String.valueOf(df.format(score.getScore()));
                 }
             }
@@ -220,12 +217,12 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         return ".";
     }
 
-    private String getConsequenceTypes(List<ConsequenceType> consequenceTypes) {
+    protected String getConsequenceTypes(List<ConsequenceType> consequenceTypes) {
         if (consequenceTypes != null && consequenceTypes.size() > 0) {
             Set<String> cts = new HashSet<>();
             for (ConsequenceType ct : consequenceTypes) {
-                for (ConsequenceType.ConsequenceTypeEntry cte : ct.getSoTerms()) {
-                    cts.add(cte.getSoName());
+                for (SequenceOntologyTerm sot : ct.getSequenceOntologyTerms()) {
+                    cts.add(sot.getName());
                 }
             }
             return Joiner.on(",").join(cts);
@@ -233,7 +230,7 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
         return ".";
     }
 
-    private String getGenes(List<ConsequenceType> consequenceTypes) {
+    protected String getGenes(List<ConsequenceType> consequenceTypes) {
         if (consequenceTypes != null && consequenceTypes.size() > 0) {
             Set<String> genes = new HashSet<>();
             for (ConsequenceType ct : consequenceTypes) {
@@ -255,7 +252,7 @@ public class TeamDiagnosticFileWriter implements DataWriter<TeamVariant> {
     }
 
 
-    private class Maf {
+    protected class Maf {
         public String allele;
         public double maf;
 

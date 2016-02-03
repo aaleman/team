@@ -1,0 +1,143 @@
+<dom-module id="team-mutation-selector">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            margin: 5px;
+            width: 800px;
+            /*height: 500px;*/
+        }
+
+        .input {
+            width: 100px;
+            height: 13px;
+            margin: 5px;
+        }
+
+        .data {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .file {
+            text-align: center;
+            color: #445D76;
+            margin-top: 5px;
+            width: 100px;
+        }
+
+        .names {
+            width: 200px
+        }
+        .chr{
+            width:50px;
+        }
+
+        .pos{
+            width:75px;
+        }
+
+        .ref, .alt{
+            width:50px;
+        }
+        .dis{
+            width:200px;
+        }
+    </style>
+    <template>
+
+        <div class="vertical layout" style="border: 1px solid #d3d3d3;padding:5px;height: 20%;">
+
+            <div class="horizontal layout data">
+                <label style="font-size:12px;" for="">Chr: &nbsp;</label>
+                <input class="input chr" type="text" value="{{chr::input}}">
+                <label style="font-size:12px;" for="">Pos: &nbsp;</label>
+                <input class="input pos" type="number" step="1" min="0" value="{{pos::input}}">
+                <label style="font-size:12px;" for="">Ref: &nbsp;</label>
+                <input class="input ref" type="text" value="{{ref::input}}">
+                <label style="font-size:12px;" for="">Alt: &nbsp;</label>
+                <input class="input alt" type="text" value="{{alt::input}}">
+                <label style="font-size:12px;" for="">Disease Name: &nbsp;</label>
+                <input class="input flex" type="text" value="{{phe::input}}">
+            </div>
+            <!--<div class="horizontal layout data">-->
+                <!--<label style="font-size:12px;" for="">Gene Name: &nbsp;</label>-->
+                <!--<input class="input names" type="text">-->
+            <!--</div>-->
+
+            <div class="horizontal layout">
+                <div class="flex">
+
+                </div>
+                <div class="jso-btn jso-btn-shdw file" on-click="handleReset">Reset</div>
+                &nbsp;
+                <div class="jso-btn jso-btn-shdw file" on-click="handleCheck">Check</div>
+                &nbsp;
+                <div class="jso-btn jso-btn-shdw file" on-click="handleAddMut">Add Mutation</div>
+            </div>
+        </div>
+        <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
+    </template>
+
+    <script>
+        Polymer({
+            is: "team-mutation-selector",
+            properties: {
+                chr: {type: String, value: ""},
+                pos: {type: Number},
+                ref: {type: String, value: ""},
+                alt: {type: String, value: ""},
+                phe: {type: String, value: ""}
+
+            },
+            ready: function () {
+                var me = this;
+                this.async(function () {
+
+                    this.$.gv.createGenomeViewer();
+                    var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
+                    this.$.gv.genomeViewer.draw();
+
+                    var updateForm = function () {
+                        me.chr = seq.region.chromosome;
+                        me.pos = seq.region.center();
+                        me.ref = me.$.gv.genomeViewer.trackListPanel.getSequenceNucleotid(me.pos);
+                    };
+
+                    this.genomeViewer = this.$.gv.genomeViewer;
+                    this.genomeViewer.on("region:change", updateForm);
+                    this.genomeViewer.on("region:move", updateForm);
+                });
+
+            },
+            handleReset: function(){
+                this.chr = "";
+                this.pos = "";
+                this.ref = "";
+                this.alt = "";
+                this.phe = "";
+            },
+            handleAddMut: function(){
+
+                var mut = {
+                    chr: this.chr,
+                    pos: this.pos,
+                    ref: this.ref,
+                    alt: this.alt,
+                    phe: this.phe,
+                    src: "user-defined"
+                };
+
+                this.fire("created-mutation", mut);
+
+            },
+            handleCheck: function(){
+                  var reg = this.chr + ":" + this.pos + "-" + this.pos;
+                  var region = new Region(reg);
+
+                    this.$.gv.genomeViewer.setRegion(region);
+            }
+        })
+    </script>
+</dom-module>

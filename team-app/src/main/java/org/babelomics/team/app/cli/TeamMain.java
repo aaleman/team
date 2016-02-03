@@ -4,10 +4,12 @@ package org.babelomics.team.app.cli;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.babelomics.team.lib.TeamVariantAnnotator;
+import com.google.common.base.Joiner;
 import org.babelomics.team.lib.filters.TeamVariantGeneRegionFilter;
-import org.babelomics.team.lib.io.TeamDiagnosticFileWriter;
-import org.babelomics.team.lib.io.TeamSecondaryFindingsFileWriter;
+import org.babelomics.team.lib.filters.TeamVariantReferenceFitler;
+import org.babelomics.team.lib.io.TeamCSVDiagnosticFileWriter;
+import org.babelomics.team.lib.io.TeamCSVSSecondaryFileWriter;
+import org.babelomics.team.lib.io.TeamVariantMongoReader;
 import org.babelomics.team.lib.io.TeamVariantStdoutWriter;
 import org.babelomics.team.lib.models.Gene;
 import org.babelomics.team.lib.models.Mutation;
@@ -15,77 +17,97 @@ import org.babelomics.team.lib.models.Panel;
 import org.babelomics.team.lib.models.TeamVariant;
 import org.opencb.biodata.formats.variant.io.VariantReader;
 import org.opencb.biodata.formats.variant.io.VariantWriter;
-import org.opencb.biodata.formats.variant.vcf4.io.VariantVcfReader;
-import org.opencb.biodata.models.feature.Region;
+import org.opencb.biodata.models.core.Region;
 import org.opencb.biodata.models.variant.Variant;
-import org.opencb.biodata.models.variant.VariantSource;
+import org.opencb.biodata.models.variant.avro.ClinVar;
+import org.opencb.biodata.models.variant.avro.Cosmic;
+import org.opencb.biodata.models.variant.avro.Gwas;
+import org.opencb.biodata.models.variant.avro.VariantTraitAssociation;
 import org.opencb.biodata.tools.variant.filtering.VariantFilter;
+import org.opencb.commons.filters.FilterApplicator;
 import org.opencb.commons.io.DataWriter;
+import org.opencb.datastore.core.QueryOptions;
+import org.opencb.opencga.catalog.CatalogManager;
+import org.opencb.opencga.catalog.exceptions.CatalogException;
+import org.opencb.opencga.catalog.models.Sample;
+import org.opencb.opencga.storage.core.StorageManagerException;
+import org.opencb.opencga.storage.core.config.StorageConfiguration;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
  */
 public class TeamMain {
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException, CatalogException, IllegalAccessException, InstantiationException, ClassNotFoundException, StorageManagerException {
 
         Parameters parameters = new Parameters();
         ObjectMapper mapper = new ObjectMapper();
         JCommander jc = new JCommander(parameters);
 
-        Panel panel = null;
-        TeamVariantAnnotator annotator;
 
-        int batchSize = 1;
+        int sampleId;
+        String outputFile;
+        String panelFilename;
+        String sessionId;
+        int studyId;
+
+        try {
+            jc.parse(args);
+        } catch (ParameterException e) {
+            jc.usage();
+            System.exit(-1);
+        }
+
+
+        sampleId = parameters.getInput();
+        panelFilename = parameters.getPanel();
+        outputFile = parameters.getOutput();
+        sessionId = parameters.getSessionId();
+        studyId = parameters.getStudyId();
+
+
+        Properties catalogProp = new Properties();
+        catalogProp.load(TeamMain.class.getClassLoader().getResourceAsStream("catalog.properties"));
+        CatalogManager catalogManager = new CatalogManager(catalogProp);
+
+
+        StorageConfiguration storageConfiguration = StorageConfiguration.load(TeamMain.class.getClassLoader().getResourceAsStream("storage-configuration.yml"));
+
+        int batchSize = 1000;
 
         List<Variant> batch;
         List<VariantFilter> filters = new ArrayList<>();
         List<TeamVariant> diagnosticVariants = new ArrayList<>();
         List<TeamVariant> secondaryFindingsVariants = new ArrayList<>();
 
-        File jsonPanelFile;
-
-        String inputFile;
-        String outputFile;
-        String panelFilename;
-
-        try {
-            jc.parse(args);
-        } catch (ParameterException e) {
-            jc.usage();
-        }
+        java.io.File jsonPanelFile;
 
 
-        inputFile = parameters.getInput();
-        panelFilename = parameters.getPanel();
-        outputFile = parameters.getOutput();
-
-        jsonPanelFile = new File(panelFilename);
+        jsonPanelFile = new java.io.File(panelFilename);
 
         try {
-            panel = mapper.readValue(jsonPanelFile, Panel.class);
-
-            annotator = new TeamVariantAnnotator();
+            Panel panel = mapper.readValue(jsonPanelFile, Panel.class);
 
             List<Region> regionList = getRegionsFromPanel(panel);
 
-            VariantSource source = new VariantSource("file", "file", "file", "file");
 
-            VariantReader reader = new VariantVcfReader(source, inputFile);
+            Sample sample = catalogManager.getSample(sampleId, new QueryOptions(), sessionId).getResult().get(0);
+
+            VariantReader reader = new TeamVariantMongoReader(catalogManager, storageConfiguration, studyId, sessionId);
+
             VariantWriter writer = new TeamVariantStdoutWriter();
-            DataWriter<TeamVariant> diagnosticWriter = new TeamDiagnosticFileWriter(outputFile + "/diagnostic.csv");
-            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamSecondaryFindingsFileWriter(outputFile + "/secondary.csv");
+
+            DataWriter<TeamVariant> diagnosticWriter = new TeamCSVDiagnosticFileWriter(sample, outputFile + "/diagnostic.csv");
+            DataWriter<TeamVariant> secondaryFindingsWriter = new TeamCSVSSecondaryFileWriter(sample, outputFile + "/secondary.csv");
 
             VariantFilter regionFilter = new TeamVariantGeneRegionFilter(regionList);
+            VariantFilter referenceFilter = new TeamVariantReferenceFitler(sample);
 
             filters.add(regionFilter);
+            filters.add(referenceFilter);
 
             reader.open();
             writer.open();
@@ -97,15 +119,13 @@ public class TeamMain {
             diagnosticWriter.pre();
             secondaryFindingsWriter.pre();
 
-
             batch = reader.read(batchSize);
 
             while (batch != null && !batch.isEmpty()) {
 
-//                FilterApplicator.filter(batch, filters);
-                List<TeamVariant> teamBatch = annotator.annotate(batch);
+                FilterApplicator.filter(batch, filters);
 
-                run(teamBatch, panel, diagnosticVariants, secondaryFindingsVariants);
+                run(batch, panel, diagnosticVariants, secondaryFindingsVariants);
 
                 diagnosticWriter.write(diagnosticVariants);
                 secondaryFindingsWriter.write(secondaryFindingsVariants);
@@ -128,36 +148,120 @@ public class TeamMain {
             diagnosticWriter.close();
             secondaryFindingsWriter.close();
 
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
-    private static void run(List<TeamVariant> batch, Panel panel, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
-        for (TeamVariant variant : batch) {
-            if (isDiagnosticVariant(variant, panel)) {
-                diagnosticVariants.add(variant);
+    private static void run(List<Variant> batch, Panel panel, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
+        for (Variant variant : batch) {
+            TeamVariant teamVariant = new TeamVariant(variant);
+            if (isDiagnosticVariant(teamVariant, panel)) {
+                diagnosticVariants.add(teamVariant);
             } else {
-                secondaryFindingsVariants.add(variant);
+                VariantTraitAssociation variantTraitAssociation = variant.getAnnotation().getVariantTraitAssociation();
+                if (variantTraitAssociation == null) {
+                    continue;
+                }
+                if (variantTraitAssociation.getClinvar() != null && !variantTraitAssociation.getClinvar().isEmpty()) {
+                    Set<String> traits = new HashSet<>();
+                    for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
+                        for (String trait : clinvar.getTraits()) {
+                            // Not Specified,not specified,AllHighlyPenetrant,not provided
+                            if (!trait.equalsIgnoreCase("Not Specified") && !trait.equalsIgnoreCase("not provided") && !trait.equalsIgnoreCase("AllHighlyPenetrant")) {
+                                traits.add(trait);
+                            }
+                        }
+                    }
+                    teamVariant.setClinvar(Joiner.on(",").join(traits));
+                }
+                if (variantTraitAssociation.getCosmic() != null && !variantTraitAssociation.getCosmic().isEmpty()) {
+                    Set<String> traits = new HashSet<>();
+                    for (Cosmic cosmic : variantTraitAssociation.getCosmic()) {
+                        traits.add(cosmic.getPrimaryHistology());
+                    }
+                    teamVariant.setCosmic(Joiner.on(",").join(traits));
+                }
+
+                if (variantTraitAssociation.getGwas() != null && !variantTraitAssociation.getGwas().isEmpty()) {
+                    Set<String> traits = new HashSet<>();
+                    for (Gwas gwas : variantTraitAssociation.getGwas()) {
+                        for (String trait : gwas.getTraits()) {
+                            traits.add(trait);
+
+                        }
+                    }
+                    teamVariant.setGwas(Joiner.on(",").join(traits));
+                }
+                secondaryFindingsVariants.add(teamVariant);
             }
         }
-
     }
 
     private static boolean isDiagnosticVariant(TeamVariant teamVariant, Panel panel) {
         Variant variant = teamVariant.getVariant();
-        for (Mutation m : panel.getMutations()) {
-            if (variant.getChromosome().equals(m.getChr()) &&
-                    variant.getStart() == m.getPos() &&
-                    variant.getReference().equals(m.getRef()) &&
-                    variant.getAlternate().equals(m.getAlt())) {
-                teamVariant.setPhenotype(m.getPhe());
-                teamVariant.setSource(m.getSrc());
+
+        for (Mutation mutation : panel.getMutations()) {
+            if (mutation.getChr().equalsIgnoreCase(variant.getChromosome()) &&
+                    mutation.getPos() == variant.getStart() &&
+                    mutation.getRef().equalsIgnoreCase(variant.getReference()) &&
+                    mutation.getAlt().equalsIgnoreCase(variant.getAlternate())
+                    ) {
+                teamVariant.setPhenotype(mutation.getPhe());
+                teamVariant.setSource(mutation.getSrc());
                 return true;
             }
         }
+
+        VariantTraitAssociation variantTraitAssociation = variant.getAnnotation().getVariantTraitAssociation();
+
+//        for (Disease disease : panel.getDiseases()) {
+//
+//            // TODO aaleman: Check if the mutation is in the list of mutations (from the panel)
+//            if (variantTraitAssociation == null) {
+//                continue;
+//            }
+//            switch (disease.getSource().toLowerCase()) {
+//                case "clinvar":
+//                    if (variantTraitAssociation.getClinvar() != null && !variantTraitAssociation.getClinvar().isEmpty()) {
+//                        for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
+//                            for (String trait : clinvar.getTraits()) {
+//                                if (trait.equalsIgnoreCase(disease.getPhenotype())) {
+//                                    teamVariant.setPhenotype(disease.getPhenotype());
+//                                    teamVariant.setSource("clinvar");
+//                                    return true;
+//                                }
+//                            }
+//                        }
+//                    }
+//                    break;
+//                case "cosmic":
+//                    if (variantTraitAssociation.getCosmic() != null && !variantTraitAssociation.getCosmic().isEmpty()) {
+//                        for (Cosmic cosmic : variantTraitAssociation.getCosmic()) {
+//                            if (cosmic.getPrimaryHistology().equalsIgnoreCase(disease.getPhenotype())) {
+//                                teamVariant.setPhenotype(disease.getPhenotype());
+//                                teamVariant.setSource("cosmic");
+//                                return true;
+//                            }
+//                        }
+//                    }
+//                    break;
+//                case "gwas":
+//                    if (variantTraitAssociation.getGwas() != null && !variantTraitAssociation.getGwas().isEmpty()) {
+//                        for (Gwas gwas : variantTraitAssociation.getGwas()) {
+//                            for (String trait : gwas.getTraits()) {
+//                                if (trait.equalsIgnoreCase(disease.getPhenotype())) {
+//                                    teamVariant.setPhenotype(disease.getPhenotype());
+//                                    teamVariant.setSource("gwas");
+//                                    return true;
+//                                }
+//                            }
+//                        }
+//                    }
+//                    break;
+//            }
+//        }
+
         return false;
     }
 
