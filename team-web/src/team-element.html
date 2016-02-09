@@ -229,7 +229,7 @@
                     <i class="fa fa-folder-open-o"></i> Sample Browser
                 </div>
                 <jso-opencga-sample-browser disable-case-control class="container" id="sampleBrowser"
-                                            projects="{{projects}}"></jso-opencga-sample-browser>
+                                            projects="{{projects}}" bioformats="{{bioformats}}"></jso-opencga-sample-browser>
 
             </jso-panel>
 
@@ -355,6 +355,7 @@
             },
             bioformats: {
                 type: Array,
+                notify: true,
                 value: [{
                     text: "VCF 4.0",
                     value: "VARIANT",

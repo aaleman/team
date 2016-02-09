@@ -155,7 +155,7 @@
                 <div class="step">
                     <div class="jso-formcontent" style="padding:0">
                         <!--<jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>-->
-                        <jso-opencga-sample-browser class="container" id="sampleBrowser" projects="{{projects}}" on-sampleselected="handleSampleSelected" disable-case-control></jso-opencga-sample-browser>
+                        <jso-opencga-sample-browser class="container" id="sampleBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-sampleselected="handleSampleSelected" disable-case-control></jso-opencga-sample-browser>
 
                     </div>
                 </div>
@@ -239,7 +239,9 @@
                 type: Array,
                 value: function() {
                     return [];
-                }
+                },
+                notify: true,
+                observer: 'projectsChanged'
             },
             selectedPanelId: {
                 type: Number,
@@ -252,9 +254,12 @@
             },
             bioformats: {
                 type: Array,
-                value: function() {
-                    return [];
-                }
+                notify: true,
+                value: [{
+                  text: "VCF 4.0",
+                  value: "VARIANT",
+                  validator: VCFValidator
+                }]
             },
             defaultStudy: {
                 type: Object,
@@ -297,7 +302,9 @@
             "handlePanelsChanged(panels.splices)"
         ],
 
-        ready: function() {},
+        ready: function() {
+            this.$.sampleBrowser._parentJsoPanel = this;
+        },
         handlePanelsChanged: function(value) {
             var aux = 0;
             if (this.panels == "") {
@@ -440,7 +447,8 @@
                 selectedExample.removeAttribute("selected", "");
             }
             e.currentTarget.setAttribute("selected", "");
-        }
+        },
+        projectsChanged: function(neo, old) {}
 
     });
 </script>
