@@ -101,7 +101,7 @@ Panel.prototype = {
                             if (geneElem.result.length > 0) {
                                 var row = data.response[i].result[0];
                                 var gene = {
-                                    name: geneElem.id,
+                                    name: row.name,
                                     chr: row.chromosome,
                                     start: row.start,
                                     end: row.end
@@ -157,7 +157,7 @@ Panel.prototype = {
                                     if (geneElem.result.length > 0) {
                                         var row = data.response[i].result[0];
                                         var gene = {
-                                            name: geneElem.id,
+                                            name: row.name,
                                             chr: row.chromosome,
                                             start: row.start,
                                             end: row.end

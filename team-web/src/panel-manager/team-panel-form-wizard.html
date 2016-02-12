@@ -736,7 +736,8 @@
 
             } else {
                 $.ajax({
-                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    // url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    url: "http://bioinfoint.hpc.cam.ac.uk/cellbase/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
@@ -1009,7 +1010,7 @@
                                         for (var j = 0; j < elem.result.length; j++) {
                                             var row = data.response[i].result[j];
                                             var gene = {
-                                                name: elem.id,
+                                                name: row.name,
                                                 chr: row.chromosome,
                                                 start: row.start,
                                                 end: row.end
@@ -1504,7 +1505,7 @@
                                 if (elem.result.length > 0) {
                                     var row = data.response[i].result[0];
                                     var gene = {
-                                        name: elem.id,
+                                        name: row.name,
                                         chr: row.chromosome,
                                         start: row.start,
                                         end: row.end

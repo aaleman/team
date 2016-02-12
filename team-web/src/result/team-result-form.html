@@ -1,3 +1,4 @@
+<link rel="import" href="../../lib/jsorolla/src/lib/components/jso-form-box.html">
 <dom-module id="team-result-form">
     <style>
         :host {
@@ -145,6 +146,13 @@
             height: 700px;
             overflow-y: auto;
         }
+
+        jso-form-box {
+            width: 230px;
+        }
+        .inputValue{
+          width: 150px;
+        }
     </style>
     <template>
         <div id="filter_form">
@@ -172,11 +180,11 @@
                 <div class="jso-btn jso-btn-shdw flex" on-click="submitForm">Search</div>
             </div>
             <div id="customFiltersForm">
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
+                <jso-form-box collapsible>
+                    <div class="header">
                         Position
                     </div>
-                    <div class="jso-formcontent">
+                    <div class="container">
                         <label class="jso">Chromosomal location:</label>
                         <textarea class="jso" id="region" name="region" placeholder="1:1-1000000,2:1-1000000" value="{{regionValue::change}}" rows="3" required>
                         </textarea>
@@ -184,189 +192,181 @@
                         <label class="jso">Gene:</label>
                         <textarea class="jso" id="gene" name="gene" placeholder="BRCA2,PPL" value="{{geneValue::input}}" rows="3" required>
                         </textarea>
-
-
                         <!-- <jso-cellbase-search-field style="margin-top:5px;" placeholder="Search gene" on-featureselected="handleFeatureSelected"></jso-cellbase-search-field> -->
-
                     </div>
-                </div>
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
+                </jso-form-box>
+                <jso-form-box collapsible>
+                    <div class="header">
                         Population Freqs.
                     </div>
-                    <div class="jso-formcontent vertical layout">
+                    <div class="container vertical layout">
+                        <label class="jso">1000G</label>
                         <div class="horizontal layout maf-elem">
-                            <label class="jso">1000G</label>
-
                             <div class="jso-select">
-                                <select class="jso" name="maf1000g_op" id="maf1000g_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="maf1000g_op" id="maf1000g_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="maf1000g" name="maf1000g" min="0" max="1" step="0.001" value="{{maf1000gValue::input}}" />
+                            <input class="jso flex inputValue" type="number" id="maf1000g" name="maf1000g" min="0" max="1" step="0.001" value="{{maf1000gValue::input}}" />
                         </div>
 
+                        <label class="jso">EVS</label>
                         <div class="horizontal layout maf-elem">
-                            <label class="jso">EVS</label>
-
                             <div class="jso-select">
-                                <select class="jso" name="mafEVS_op" id="mafEVS_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="mafEVS_op" id="mafEVS_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="mafEVS" name="mafEVS" min="0" max="1" step="0.001" value="{{mafEVSValue::input}}" />
+                            <input class="jso flex inputValue" type="number" id="mafEVS" name="mafEVS" min="0" max="1" step="0.001" value="{{mafEVSValue::input}}" />
 
                         </div>
                     </div>
-                </div>
+                </jso-form-box>
 
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
+                <jso-form-box collapsible>
+                    <div class="header">
                         Quality
                     </div>
-                    <div class="jso-formcontent vertical layout">
-
+                    <div class="container vertical layout">
+                        <label class="jso">QUAL</label>
                         <div class="horizontal layout qual-elem">
-                            <label class="jso">QUAL</label>
                             <div class="jso-select">
-                                <select class="jso" name="qual_op" id="qual_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="qual_op" id="qual_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" />
+                            <input class="jso flex inputValue" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" />
                         </div>
 
+                        <label class="jso">DP</label>
                         <div class="horizontal layout qual-elem">
-                            <label class="jso">DP</label>
                             <div class="jso-select">
-                                <select class="jso" name="dp_op" id="dp_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="dp_op" id="dp_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="dp" name="dp" value="{{dpValue::input}}" />
+                            <input class="jso flex inputValue" type="number" id="dp" name="dp" value="{{dpValue::input}}" />
                         </div>
                     </div>
-                </div>
+                </jso-form-box>
 
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
+                <jso-form-box collapsible>
+                    <div class="header">
                         Protein Substitution Scores
                     </div>
-                    <div class="jso-formcontent vertical layout">
+                    <div class="container vertical layout">
+                        <label class="jso">SIFT</label>
                         <div class="horizontal layout pss-elem">
-                            <label class="jso">SIFT</label>
                             <div class="jso-select">
-                                <select name="sift_op" id="sift_op" class="jso">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select name="sift_op" id="sift_op" class="jso">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jsjso-o-option>
+                                                        <jso-option value="!=">!=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="sift" name="sift" min="0" max="1" step="0.001" value="{{siftValue::input}}" />
+                            <input class="jso flex inputValue" type="number" id="sift" name="sift" min="0" max="1" step="0.001" value="{{siftValue::input}}" />
                         </div>
 
+                        <label class="jso">Polyphen</label>
                         <div class="horizontal layout pss-elem">
-                            <label class="jso">Polyphen</label>
                             <div class="jso-select">
-                                <select class="jso" name="polyphen_op" id="polyphen_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="polyphen_op" id="polyphen_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="polyphen" name="polyphen" min="0" max="1" step="0.001" value="{{polyphenValue::input}}" />
+                            <input class="jso flex inputValue" type="number" id="polyphen" name="polyphen" min="0" max="1" step="0.001" value="{{polyphenValue::input}}" />
                         </div>
                     </div>
-                </div>
+                </jso-form-box>
 
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
+                <jso-form-box collapsible>
+                    <div class="header">
                         Conservation
                     </div>
-                    <div class="jso-formcontent vertical layout">
-
+                    <div class="container vertical layout">
+                        <label class="jso">phyloP</label>
                         <div class="horizontal layout conserv-elem">
-                            <label class="jso">phyloP</label>
                             <div class="jso-select">
-                                <select class="jso" name="phylop_op" id="phylop_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="phylop_op" id="phylop_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="phylop" name="phylop" value="{{phylopValue::input}}" step="0.001" />
+                            <input class="jso flex inputValue" type="number" id="phylop" name="phylop" value="{{phylopValue::input}}" step="0.001" />
 
                         </div>
 
+                        <label class="jso">PhastCons</label>
                         <div class="horizontal layout conserv-elem">
-                            <label class="jso">PhastCons</label>
                             <div class="jso-select">
-                                <select class="jso" name="phastcons_op" id="phastcons_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="phastcons_op" id="phastcons_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="phastcons" name="phastcons" value="{{phastconsValue::input}}" step="0.001" />
+                            <input class="jso flex inputValue" type="number" id="phastcons" name="phastcons" value="{{phastconsValue::input}}" step="0.001" />
 
                         </div>
                     </div>
-                </div>
+                </jso-form-box>
 
-
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
+                <jso-form-box collapsible>
+                    <div class="header">
                         Consequence Type
                     </div>
-                    <div id="consequenceTypes" class="jso-formcontent">
+                    <div id="consequenceTypes" class="container">
                         <template is="dom-repeat" items="{{consequenceTypes}}">
                             <label class="jso-control">
                                 <input value="{{item.value}}" type="checkbox" name="consequence_type" data-consequence$="{{item.name}}">
@@ -376,7 +376,7 @@
                         <div class="input_container vertical layout">
                         </div>
                     </div>
-                </div>
+                </jso-form-box>
             </div>
         </div>
     </template>
