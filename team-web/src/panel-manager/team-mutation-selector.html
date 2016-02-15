@@ -119,6 +119,13 @@
                 this.phe = "";
             },
             handleAddMut: function(){
+              if(this.this.chr=="" || this.pos.length==0 || this.phe==""){
+                alert("Chromosome, Position and Phenotype are mandatory");
+                return;
+              }else if(this.ref=="" && this.alt ==""){
+                alert("Reference or Alternate is mandatory");
+                return;
+              }
 
                 var mut = {
                     chr: this.chr,
@@ -133,6 +140,10 @@
 
             },
             handleCheck: function(){
+              if(this.chr=="" || this.pos.length==0){
+                alert("Chromosome and Position are mandatory");
+                return;
+              }
                   var reg = this.chr + ":" + this.pos + "-" + this.pos;
                   var region = new Region(reg);
 

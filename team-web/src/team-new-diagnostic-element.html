@@ -23,7 +23,7 @@
             border-right: 1px solid #d0d0d0;*/
             height: 600px;
             width: 300px;
-            overflow-y: auto;
+            overflow-y: hidden;
         }
 
         label.jso {
@@ -44,7 +44,7 @@
 
         #panelPreview {
             width: 70%;
-            height: 650px;
+            height: 600px;
         }
 
         .titlePreview {
@@ -52,6 +52,7 @@
             color: #445D76;
             margin: 5px 10px 0px 10px;
             border-bottom: 1px solid #445D76;
+            padding-bottom:3px;
         }
 
         .eye > i:hover {
@@ -166,7 +167,7 @@
                             <div class="horizontal layout">
                                 <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
                             </div>
-                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{panelConfig.panels}}" data-panels="{{panelConfig.panels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{jobsPanels}}" data-panels="{{jobsPanels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
 
 
                             <div class="horizontal layout">
@@ -233,6 +234,7 @@
                 value: function() {
                     return {};
                 },
+                observer: 'panelConfigChanged'
 
             },
             projects: {
@@ -256,9 +258,9 @@
                 type: Array,
                 notify: true,
                 value: [{
-                  text: "VCF 4.0",
-                  value: "VARIANT",
-                  validator: VCFValidator
+                    text: "VCF 4.0",
+                    value: "VARIANT",
+                    validator: VCFValidator
                 }]
             },
             defaultStudy: {
@@ -296,7 +298,12 @@
                     return EXAMPLE_PANELS;
                 }
             },
-
+            jobsPanels: {
+              type: Array,
+                value: function() {
+                    return [];
+                }
+            }
         },
         observers: [
             "handlePanelsChanged(panels.splices)"
@@ -332,11 +339,11 @@
             if (this.selectedSample.id == null) {
                 this.errorMessageFile = "No sample selected";
             }
-            if (this.selectedPanelId == "") {
+            if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
             }
 
-            if (this.selectedSample.id != null && this.selectedPanelId != "") {
+            if (this.selectedSample.id != null && this.selectedPanelId != null) {
                 this.errorMessage = " ";
                 this.selectedPanel.used = true;
                 for (var i = 0; i < this.panelConfig.panels.length; i++) {
@@ -380,7 +387,9 @@
                 });
 
             } else {
-                this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                // this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                alert("There are errors in the form. Correct them before launching work");
+                return;
             }
             this.set('jobName', "TEAM Diagnosis");
             this.set('jobDescription', "New Diagnosis");
@@ -448,7 +457,18 @@
             }
             e.currentTarget.setAttribute("selected", "");
         },
-        projectsChanged: function(neo, old) {}
+        projectsChanged: function(neo, old) {},
+        panelConfigChanged: function(neo, old) {
+          this.jobsPanels=[];
+            if (neo.panels) {
+              for(var i=0; i<neo.panels.length; i++){
+                if(!neo.panels[i].archived){
+                  this.push('jobsPanels',neo.panels[i]);
+                }
+              }
+
+            }
+        }
 
     });
 </script>
