@@ -150,8 +150,9 @@
         jso-form-box {
             width: 230px;
         }
-        .inputValue{
-          width: 150px;
+
+        .inputValue {
+            width: 150px;
         }
     </style>
     <template>
@@ -544,7 +545,30 @@
             var hash = {};
             var q = {};
             if (this.regionValue) {
-                q["region"] = this.inputRegionChange();
+              var regions = [];
+                var aux = this.regionValue.split(/,|\n/);
+                for (var i = 0; i < aux.length; i++) {
+                    regionName = aux[i];
+                    if (regionName != '') {
+                        var re = /(\w+):(\d+)-(\d+)/;
+                        if (re.test(regionName)) {
+                            var groups = regionName.match(re);
+                            var chr = groups[1];
+                            var start = parseInt(groups[2]);
+                            var end = parseInt(groups[3]);
+                            if (start > end) {
+                                alert("Malformed Region: " + regionName);
+                                return;
+                            } else {
+                              regions.push(regionName);
+                            }
+                        } else {
+                            alert("Malformed Region: " + regionName);
+                            return;
+                        }
+                    }
+                }
+                  q["region"]=regions;
             }
             if (this.geneValue) {
                 q["gene"] = this.inputGeneChange();
@@ -558,40 +582,40 @@
                 q["qual_op"] = this.$.qual_op.value;
             }
             if (this.maf1000gValue) {
-              if(this.$.maf1000g.checkValidity()==false){
-                alert("Value must be less than 1 or greater than 0");
-                return;
-              }else{
-                q["maf1000g"] = parseFloat(this.maf1000gValue);
-                q["maf1000g_op"] = this.$.maf1000g_op.value;
-              }
+                if (this.$.maf1000g.checkValidity() == false) {
+                    alert("MAF 1000G must be less than 1 or greater than 0");
+                    return;
+                } else {
+                    q["maf1000g"] = parseFloat(this.maf1000gValue);
+                    q["maf1000g_op"] = this.$.maf1000g_op.value;
+                }
             }
             if (this.mafEVSValue) {
-              if(this.$.mafEVS.checkValidity()==false){
-                alert("Value must be less than 1 or greater than 0");
-                return;
-              }else{
-                q["mafEVS"] = parseFloat(this.mafEVSValue);
-                q["mafEVS_op"] = this.$.mafEVS_op.value;
-              }
+                if (this.$.mafEVS.checkValidity() == false) {
+                    alert("MAF EVS must be less than 1 or greater than 0");
+                    return;
+                } else {
+                    q["mafEVS"] = parseFloat(this.mafEVSValue);
+                    q["mafEVS_op"] = this.$.mafEVS_op.value;
+                }
             }
             if (this.siftValue) {
-              if(this.$.sift.checkValidity()==false){
-                alert("Value must be less than 1 or greater than 0");
-                return;
-              }else{
-                q["sift"] = parseFloat(this.siftValue);
-                q["sift_op"] = this.$.sift_op.value;
-              }
+                if (this.$.sift.checkValidity() == false) {
+                    alert("Sift must be less than 1 or greater than 0");
+                    return;
+                } else {
+                    q["sift"] = parseFloat(this.siftValue);
+                    q["sift_op"] = this.$.sift_op.value;
+                }
             }
             if (this.polyphenValue) {
-              if(this.$.polyphen.checkValidity()==false){
-                alert("Value must be less than 1 or greater than 0");
-                return;
-              }else{
-                q["polyphen"] = parseFloat(this.polyphenValue);
-                q["polyphen_op"] = this.$.polyphen.value;
-              }
+                if (this.$.polyphen.checkValidity() == false) {
+                    alert("Polyphen must be less than 1 or greater than 0");
+                    return;
+                } else {
+                    q["polyphen"] = parseFloat(this.polyphenValue);
+                    q["polyphen_op"] = this.$.polyphen.value;
+                }
             }
             if (this.phylopValue) {
                 q["phylop"] = parseFloat(this.phylopValue);
@@ -679,13 +703,13 @@
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
-        inputRegionChange: function() {
-            if (this.query) {
-                var q_aux = this.regionValue;
-                q = q_aux.split(",");
-            }
-            return q;
-        },
+        // inputRegionChange: function() {
+        //     if (this.query) {
+        //         var q_aux = this.regionValue;
+        //         q = q_aux.split(",");
+        //     }
+        //     return q;
+        // },
 
         inputGeneChange: function() {
             if (this.query) {
