@@ -155,7 +155,7 @@
         }
     </style>
     <template>
-        <div id="filter_form">
+        <form id="filter_form">
             <div id="bar" class="horizontal layout center-justified">
                 <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History" icon="filter">
                     <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
@@ -378,7 +378,7 @@
                     </div>
                 </jso-form-box>
             </div>
-        </div>
+        </form>
     </template>
 </dom-module>
 <script>
@@ -558,20 +558,40 @@
                 q["qual_op"] = this.$.qual_op.value;
             }
             if (this.maf1000gValue) {
+              if(this.$.maf1000g.checkValidity()==false){
+                alert("Value must be less than 1 or greater than 0");
+                return;
+              }else{
                 q["maf1000g"] = parseFloat(this.maf1000gValue);
                 q["maf1000g_op"] = this.$.maf1000g_op.value;
+              }
             }
             if (this.mafEVSValue) {
+              if(this.$.mafEVS.checkValidity()==false){
+                alert("Value must be less than 1 or greater than 0");
+                return;
+              }else{
                 q["mafEVS"] = parseFloat(this.mafEVSValue);
                 q["mafEVS_op"] = this.$.mafEVS_op.value;
+              }
             }
             if (this.siftValue) {
+              if(this.$.sift.checkValidity()==false){
+                alert("Value must be less than 1 or greater than 0");
+                return;
+              }else{
                 q["sift"] = parseFloat(this.siftValue);
                 q["sift_op"] = this.$.sift_op.value;
+              }
             }
             if (this.polyphenValue) {
+              if(this.$.polyphen.checkValidity()==false){
+                alert("Value must be less than 1 or greater than 0");
+                return;
+              }else{
                 q["polyphen"] = parseFloat(this.polyphenValue);
                 q["polyphen_op"] = this.$.polyphen.value;
+              }
             }
             if (this.phylopValue) {
                 q["phylop"] = parseFloat(this.phylopValue);
