@@ -550,36 +550,36 @@
                 q["gene"] = this.inputGeneChange();
             }
             if (this.dpValue) {
-                q["dp"] = this.inputChange(this.dpValue);
-                q["dp_op"] = this._getOption(this.$.dp_op);
+                q["dp"] = parseFloat(this.dpValue);
+                q["dp_op"] = this.$.dp_op.value;
             }
             if (this.qualValue) {
-                q["qual"] = this.inputChange(this.qualValue);
-                q["qual_op"] = this._getOption(this.$.qual_op);
+                q["qual"] = parseFloat(this.qualValue);
+                q["qual_op"] = this.$.qual_op.value;
             }
             if (this.maf1000gValue) {
-                q["maf1000g"] = this.inputChange(this.maf1000gValue);
-                q["maf1000g_op"] = this._getOption(this.$.maf1000g_op);
+                q["maf1000g"] = parseFloat(this.maf1000gValue);
+                q["maf1000g_op"] = this.$.maf1000g_op.value;
             }
             if (this.mafEVSValue) {
-                q["mafEVS"] = this.inputChange(this.mafEVSValue);
-                q["mafEVS_op"] = this._getOption(this.$.mafEVS_op);
+                q["mafEVS"] = parseFloat(this.mafEVSValue);
+                q["mafEVS_op"] = this.$.mafEVS_op.value;
             }
             if (this.siftValue) {
-                q["sift"] = this.inputChange(this.siftValue);
-                q["sift_op"] = this._getOption(this.$.sift_op);
+                q["sift"] = parseFloat(this.siftValue);
+                q["sift_op"] = this.$.sift_op.value;
             }
             if (this.polyphenValue) {
-                q["polyphen"] = this.inputChange(this.polyphenValue);
-                q["polyphen_op"] = this._getOption(this.$.polyphen_op);
+                q["polyphen"] = parseFloat(this.polyphenValue);
+                q["polyphen_op"] = this.$.polyphen.value;
             }
             if (this.phylopValue) {
-                q["phylop"] = this.inputChange(this.phylopValue);
-                q["phylop_op"] = this._getOption(this.$.phylop_op);
+                q["phylop"] = parseFloat(this.phylopValue);
+                q["phylop_op"] = this.$.phylop_op.value;
             }
             if (this.phastconsValue) {
-                q["phastcons"] = this.inputChange(this.phastconsValue);
-                q["phastcons_op"] = this._getOption(this.$.phastcons_op);
+                q["phastcons"] = parseFloat(this.phastconsValue);
+                q["phastcons_op"] = this.$.phastcons_op.value;
             }
             var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
             if (els.length > 0) {
@@ -678,22 +678,6 @@
                 return q;
             }
 
-        },
-        inputChange: function(value) {
-            if (this.query) {
-                var q = parseFloat(value);
-            }
-            return q;
-        },
-        _getOption: function(input) {
-            var op = input.querySelectorAll("option");
-            for (i = 0; i < op.length; i++) {
-                if (op[i].selected) {
-                    var option = op[i].value;
-                    return option;
-                }
-
-            }
         },
         inputCTChange: function() {
             var cons = [];
