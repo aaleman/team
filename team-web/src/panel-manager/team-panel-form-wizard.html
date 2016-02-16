@@ -1609,9 +1609,12 @@
             var lowLevel = false;
             for (var i = 0; i < this.$.panelAppSelectedGenes.selected.length; i++) {
                 var elem = this.$.panelAppSelectedGenes.selected[i];
-                lowLevel |= (elem.LevelOfConfidence <= 2) ? true : false;
+                // lowLevel |= (elem.LevelOfConfidence <= 2) ? true : false;
+                if(elem.LevelOfConfidence=='LowEvidence'){
+                  lowLevel=true;
+                }
             }
-
+            
             if (lowLevel && !confirm("Your selection contains genes with low level of confidence. Do you want to continue?")) {
                 return;
             }
