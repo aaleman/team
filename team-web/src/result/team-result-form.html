@@ -196,7 +196,7 @@
                         <!-- <jso-cellbase-search-field style="margin-top:5px;" placeholder="Search gene" on-featureselected="handleFeatureSelected"></jso-cellbase-search-field> -->
                     </div>
                 </jso-form-box>
-                <jso-form-box collapsible>
+                <jso-form-box collapsible collapsed>
                     <div class="header">
                         Population Freqs.
                     </div>
@@ -238,7 +238,7 @@
                     </div>
                 </jso-form-box>
 
-                <jso-form-box collapsible>
+                <jso-form-box collapsible collapsed>
                     <div class="header">
                         Quality
                     </div>
@@ -279,7 +279,7 @@
                     </div>
                 </jso-form-box>
 
-                <jso-form-box collapsible>
+                <jso-form-box collapsible collapsed>
                     <div class="header">
                         Protein Substitution Scores
                     </div>
@@ -320,7 +320,7 @@
                     </div>
                 </jso-form-box>
 
-                <jso-form-box collapsible>
+                <jso-form-box collapsible collapsed>
                     <div class="header">
                         Conservation
                     </div>
@@ -363,7 +363,7 @@
                     </div>
                 </jso-form-box>
 
-                <jso-form-box collapsible>
+                <jso-form-box collapsible collapsed>
                     <div class="header">
                         Consequence Type
                     </div>
@@ -545,22 +545,30 @@
             var hash = {};
             var q = {};
             if (this.regionValue) {
-              var regions = [];
-                var aux = this.regionValue.split(/,|\n/);
+                var regions = [];
+                var aux = this.regionValue.split(/,|\n|\r/);
                 for (var i = 0; i < aux.length; i++) {
                     regionName = aux[i];
                     if (regionName != '') {
-                        var re = /(\w+):(\d+)-(\d+)/;
+                        var re = /^(\w+)(:(\d+)-(\d+))?$/;
                         if (re.test(regionName)) {
                             var groups = regionName.match(re);
-                            var chr = groups[1];
-                            var start = parseInt(groups[2]);
-                            var end = parseInt(groups[3]);
-                            if (start > end) {
+                            if (groups.length == 5) {
+                                var chr = groups[1];
+                                var start = parseInt(groups[3]);
+                                var end = parseInt(groups[4]);
+                                if (start > end) {
+                                    alert("Malformed Region: " + regionName + ", END must be greater than or equal to START");
+                                    return;
+                                } else {
+                                    regions.push(regionName);
+                                }
+                            } else if (groups.length == 2) {
+                                var chr = groups[1];
+                                regions.push(chr);
+                            } else {
                                 alert("Malformed Region: " + regionName);
                                 return;
-                            } else {
-                              regions.push(regionName);
                             }
                         } else {
                             alert("Malformed Region: " + regionName);
@@ -568,8 +576,9 @@
                         }
                     }
                 }
-                  q["region"]=regions;
+                q["region"] = regions;
             }
+
             if (this.geneValue) {
                 q["gene"] = this.inputGeneChange();
             }
@@ -703,25 +712,12 @@
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
-        // inputRegionChange: function() {
-        //     if (this.query) {
-        //         var q_aux = this.regionValue;
-        //         q = q_aux.split(",");
-        //     }
-        //     return q;
-        // },
-
         inputGeneChange: function() {
             if (this.query) {
-                // var q = Utils.clone(this.query);
-                // delete q["gene"];
-                //  q["gene"] = e.toUpperCase();
                 var q_aux = this.geneValue.toUpperCase();
                 q = q_aux.split(",");
-                //  this.set('query', q);
                 return q;
             }
-
         },
         inputCTChange: function() {
             var cons = [];

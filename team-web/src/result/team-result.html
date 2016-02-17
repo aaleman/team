@@ -109,7 +109,7 @@
             </div>
 
             <div hidden$="{{!computeView(view, 'report')}}" id="result">
-                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}"></team-result-report>
+                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}" panel-config="{{panelConfig}}"></team-result-report>
 
             </div>
 
@@ -142,7 +142,7 @@
                         return {};
                     },
                     observer: 'jobChanged',
-                    notify:true
+                    notify: true
                 },
                 diagData: {
                     type: Array,
@@ -180,8 +180,14 @@
                     type: Number,
                     value: 0
 
+                },
+                panelConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    notify: true
                 }
-
             },
             created: function() {},
             ready: function() {
@@ -189,8 +195,8 @@
             },
 
             jobChanged: function(neo, old) {
-              this.set('jobId', neo.id);
-              this.view='overview';
+                this.set('jobId', neo.id);
+                this.view = 'overview';
                 if (neo.output) {
 
                     var files = [];
@@ -293,9 +299,9 @@
                                     amaf1000GP3: splits[16],
                                     phenotype: splits[17],
                                     source: splits[18]
-                                    // clinvar: splits[17],
-                                    // cosmic: splits[18],
-                                    // gwas: splits[19],
+                                        // clinvar: splits[17],
+                                        // cosmic: splits[18],
+                                        // gwas: splits[19],
 
                                 };
                                 diagData.push(elem);
@@ -346,7 +352,7 @@
             handleView: function(e) {
                 this.view = e.target.dataset.value;
                 if (this.view == 'report') {
-                    this.$.teamResultReport.computeFilter(2,this.jobId);
+                    this.$.teamResultReport.computeFilter(2, this.jobId);
                     this.$.teamResultReport._getCommentsInfo();
 
                 }

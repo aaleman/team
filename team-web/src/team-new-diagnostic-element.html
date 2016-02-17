@@ -52,7 +52,7 @@
             color: #445D76;
             margin: 5px 10px 0px 10px;
             border-bottom: 1px solid #445D76;
-            padding-bottom:3px;
+            padding-bottom: 3px;
         }
 
         .eye > i:hover {
@@ -140,7 +140,7 @@
     </style>
     <template>
 
-        <jso-wizard id="formWizard">
+        <jso-wizard id="jsoFormWizard">
             <div class="title">
                 <div class="stepName">Choose a Sample
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
@@ -299,7 +299,7 @@
                 }
             },
             jobsPanels: {
-              type: Array,
+                type: Array,
                 value: function() {
                     return [];
                 }
@@ -337,7 +337,7 @@
             var me = this;
 
             if (this.selectedSample.id == null) {
-                this.errorMessageFile = "No sample selected";
+                this.errorMessageFile = "No sample selected or sample status are not READY";
             }
             if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
@@ -438,11 +438,17 @@
             this.errorMessageFile = " ";
         },
         handleSampleSelected: function(e) {
+          this.selectedSample ={};
+          if(e.detail.status != "READY"){
+            alert("Sample status must be READY");
+            return;
+          }else{
             this.selectedSample = e.detail;
             this.errorMessageFile = " ";
             if (this.selectedPanelId != "") {
-                this.errorMessage = "";
+              this.errorMessage = "";
             }
+          }
         },
         handleNewPanel: function(e) {
             this.$.newPanelPanel.hidden = false;
@@ -459,13 +465,13 @@
         },
         projectsChanged: function(neo, old) {},
         panelConfigChanged: function(neo, old) {
-          this.jobsPanels=[];
+            this.jobsPanels = [];
             if (neo.panels) {
-              for(var i=0; i<neo.panels.length; i++){
-                if(!neo.panels[i].archived){
-                  this.push('jobsPanels',neo.panels[i]);
+                for (var i = 0; i < neo.panels.length; i++) {
+                    if (!neo.panels[i].archived) {
+                        this.push('jobsPanels', neo.panels[i]);
+                    }
                 }
-              }
 
             }
         }

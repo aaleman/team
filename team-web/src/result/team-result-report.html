@@ -429,7 +429,13 @@
             mutations: {
                 type: Array,
             },
-
+            panelConfig: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                notify: true
+            },
             _columnsDiag: {
                 type: Array,
                 value: [{
@@ -788,13 +794,11 @@
             return 'top: ' + (350 - 25 * n) + 'px';
         },
         getJobPanel: function() {
-            b = document.getElementById('newDiagnosticPanels');
             var jobPanel = {};
-            var panels = b.dataPanels;
+            var panels = this.panelConfig.panels;
             for (var i = 0; i < panels.length; i++) {
                 var panel = panels[i];
-                // var name = panel.file.name;
-                // if (this.job.commandLine.search(name) >= 0) {
+
                 if (this.job.input.indexOf(panel.fileId) >= 0) {
                     var panelId = panel.fileId;
                     var data;

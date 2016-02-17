@@ -217,7 +217,7 @@
     </style>
     <template>
 
-        <jso-wizard id="formWizard">
+        <jso-wizard id="jsoFormWizard">
             <div class="title">
                 <div class="stepName">Select Diseases</div>
                 <div class="stepName">Select Genes</div>
@@ -304,7 +304,7 @@
 
                                 <jso-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
                                     <jso-option value="none"></jso-option>
-                                    <template is="dom-repeat" items="{{panelConfig.panels}}">
+                                    <template is="dom-repeat" items="{{panelsNotArchived}}">
                                         <jso-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</jso-option>
                                     </template>
                                 </jso-select>
@@ -495,7 +495,7 @@
                                     <div class="" id="mutation-tab-config-panel" style="margin:5px">
                                         <jso-select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
                                             <jso-option value="none"></jso-option>
-                                            <template is="dom-repeat" items="{{panelConfig.panels}}">
+                                            <template is="dom-repeat" items="{{panelsNotArchived}}">
                                                 <jso-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</jso-option>
                                             </template>
                                         </jso-select>
@@ -680,6 +680,13 @@
                 type: Object,
                 value: function() {
                     return {};
+                },
+                observer: 'panelsChanged'
+            },
+            panelsNotArchived: {
+                type: Array,
+                value: function() {
+                    return [];
                 }
             },
             selectedPanel: {
@@ -690,12 +697,21 @@
             },
             genes: {
                 type: Array,
+                value: function() {
+                    return [];
+                }
             },
             mutations: {
                 type: Array,
+                value: function() {
+                    return [];
+                }
             },
             panelAppDiseases: {
-                type: Array
+                type: Array,
+                value: function() {
+                    return [];
+                }
             },
             panelAppGenes: {
                 type: Array,
@@ -731,6 +747,17 @@
             "handleUpdatedSelectedDiseases(formData.diseases.splices)",
         ],
 
+        panelsChanged: function(neo, old) {
+            if (neo.panels) {
+                for (var i = 0; i < neo.panels.length; i++) {
+                    var panel = neo.panels[i];
+                    if (!panel.archived) {
+                        this.push('panelsNotArchived', panel);
+                    }
+                }
+            }
+        },
+
         handleUpdatedSelectedDiseases: function(neo, old, path) {},
         handleUpdatedGenes: function(neo, old, path) {
             if (neo) {
@@ -755,7 +782,7 @@
 
             // TEST CODE
             // this.formData.name = "test";
-            // this.$.formWizard.goToStep(4);
+            // this.$.jsoFormWizard.goToStep(4);
 
             this.$.allDiseases.setLoading(true);
 
@@ -772,7 +799,6 @@
                     success: function(response, textStatus, jqXHR) {
                         try {
                             var data = response.response;
-                            debugger
                             var clinvar = data[0].result;
                             var gwas = data[1].result;
 
@@ -992,18 +1018,15 @@
             for (var i = 0; i < splits.length; i++) {
                 geneName = splits[i];
                 if (geneName != '') {
-
-                    var re = /(\w+):(\d+)-(\d+)/;
+                    var re = /^(\w+):(\d+)-(\d+)$/;
                     if (re.test(geneName)) {
-                        //                        var groups = re.match(geneName);
                         var groups = geneName.match(re);
-
                         var chr = groups[1];
                         var start = parseInt(groups[2]);
                         var end = parseInt(groups[3]);
-
                         if (start > end) {
-                            alert("Malformed Region: " + geneName);
+                            alert("Malformed Region: " + geneName + ", END must be greater than or equal to START");
+                            return;
                         } else {
                             var gene = {
                                 name: geneName,
@@ -1050,7 +1073,7 @@
                                         // me.formData.addGene({
                                         //     name: elem.id
                                         // });
-                                        alert("Gene '" + geneName + "' not exits");
+                                        alert("Gene/Region '" + geneName + "' not exits");
                                     }
                                 }
                             }
@@ -1291,14 +1314,20 @@
 
             var chr = this.$.mutationGVChr.value;
             var pos = this.$.mutationGVPos.value;
-            var ref = this.$.mutationGVRef.value;
-            var alt = this.$.mutationGVAlt.value;
+            var ref = this.$.mutationGVRef.value.toUpperCase();
+            var alt = this.$.mutationGVAlt.value.toUpperCase();
             var phe = this.$.mutationGVPhe.value;
+
+            var re = /^[ACTG]*$/;
+
             if (chr == "" || pos.length == 0 || phe == "") {
                 alert("Chromosome, Position and Phenotype are mandatory");
                 return;
             } else if (ref == "" && alt == "") {
                 alert("Reference or Alternate is mandatory");
+                return;
+            } else if (!re.test(ref) || !re.test(alt)) {
+                alert("Reference and Alternate must contain only ACTG");
                 return;
             }
             var src = "user-defined";
@@ -1359,8 +1388,11 @@
                     });
                 }
             }
+
             this.formData = new Panel();
-            this.$.formWizard.goToStep(1);
+            this.formData.polymer = this;
+
+            this.$.jsoFormWizard.goToStep(1);
             var a = document.getElementById("manager");
             a.$.newPanelPanel.hidden = true;
 
@@ -1458,9 +1490,10 @@
         handleImportGenesPanel: function(e) {
             var me = this;
             if (this.$.importGenesFromPanel.value != "none") {
-                var fileId = parseInt(this.$.importGenesFromPanel.value);
-                for (var i = 0; i < this.panelConfig.panels.length; i++) {
-                    var panel = this.panelConfig.panels[i];
+                var fileId = parseInt(this.$.importGenesFromPanel.selectedOption.dataset.file);
+
+                for (var i = 0; i < this.panelsNotArchived.length; i++) {
+                    var panel = this.panelsNotArchived[i];
                     if (panel.fileId === fileId) {
                         var panelContent = "";
                         OpencgaManager.files.content({
@@ -1523,9 +1556,9 @@
         handleImportMutationsPanel: function(e) {
             var me = this;
             if (this.$.importMutationsFromPanel.value != "none") {
-                var fileId = parseInt(this.$.importMutationsFromPanel.value);
-                for (var i = 0; i < this.panelConfig.panels.length; i++) {
-                    var panel = this.panelConfig.panels[i];
+                var fileId = parseInt(this.$.importMutationsFromPanel.selectedOption.dataset.file);
+                for (var i = 0; i < this.panelsNotArchived.length; i++) {
+                    var panel = this.panelsNotArchived[i];
                     if (panel.fileId === fileId) {
                         var panelContent = "";
                         OpencgaManager.files.content({
@@ -1610,8 +1643,8 @@
             for (var i = 0; i < this.$.panelAppSelectedGenes.selected.length; i++) {
                 var elem = this.$.panelAppSelectedGenes.selected[i];
                 // lowLevel |= (elem.LevelOfConfidence <= 2) ? true : false;
-                if(elem.LevelOfConfidence=='LowEvidence'){
-                  lowLevel=true;
+                if (elem.LevelOfConfidence == 'LowEvidence') {
+                    lowLevel = true;
                 }
             }
 
@@ -1713,19 +1746,19 @@
             }
         },
         showImportVCFComponent: function() {
-          if(this.$.mutationGVPheVCF.value!=""){
-            this.$.importVCFComponent.hidden = false;
-          }else{
-            alert("Phenotype is mandatory");
-            return;
-          }
+            if (this.$.mutationGVPheVCF.value != "") {
+                this.$.importVCFComponent.hidden = false;
+            } else {
+                alert("Phenotype is mandatory");
+                return;
+            }
         },
         handleImportVCFFile: function() {
             var file = this.$.importVCFFile.$.fileInput.files[0];
 
             if (!(this.$.importVCFFile.$.validator.errorCount > 0)) {
                 this.handleMutationImportVCF(file);
-                this.$.mutationGVPheVCF.value="";
+                this.$.mutationGVPheVCF.value = "";
                 this.$.importVCFComponent.hidden = true;
             }
         },
