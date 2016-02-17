@@ -303,7 +303,7 @@
                                 </div>
 
                                 <jso-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
-                                    <jso-option value="none"></jso-option>
+                                    <jso-option value=" "></jso-option>
                                     <template is="dom-repeat" items="{{panelsNotArchived}}">
                                         <jso-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</jso-option>
                                     </template>
@@ -494,7 +494,7 @@
                                     <div class="jso-formtitle" style="font-size:13px">Import from other Panel &nbsp;</div>
                                     <div class="" id="mutation-tab-config-panel" style="margin:5px">
                                         <jso-select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
-                                            <jso-option value="none"></jso-option>
+                                            <jso-option value=" "></jso-option>
                                             <template is="dom-repeat" items="{{panelsNotArchived}}">
                                                 <jso-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</jso-option>
                                             </template>
@@ -1456,7 +1456,7 @@
         },
         handlePreviewFile: function(e) {
             var fileId;
-            if (this.$.importGenesFromPanel.value != "none") {
+            if (this.$.importGenesFromPanel.value != " ") {
                 var panels = this.$.importGenesFromPanel.querySelectorAll("jso-option");
                 for (var i = 0; i < panels.length; i++) {
                     if (this.$.importGenesFromPanel.value == panels[i].value) {
@@ -1484,12 +1484,12 @@
                     this.$.panelPreview.hidden = false;
                 }
             } else {
-                alert("No panel selected for preview");
+                alert("No panel selected");
             }
         },
         handleImportGenesPanel: function(e) {
             var me = this;
-            if (this.$.importGenesFromPanel.value != "none") {
+            if (this.$.importGenesFromPanel.value != " ") {
                 var fileId = parseInt(this.$.importGenesFromPanel.selectedOption.dataset.file);
 
                 for (var i = 0; i < this.panelsNotArchived.length; i++) {
@@ -1511,19 +1511,27 @@
                         });
                         if (panelContent != "") {
                             this.selectedPanel = JSON.parse(panelContent);
-                            this.genes = this.selectedPanel.genes;
+                            if(this.selectedPanel.genes!=""){
+                              this.genes = this.selectedPanel.genes;
+                            }else{
+                              alert("The selected panel hasn't got genes");
+                              return;
+                            }
                         }
                     }
                 }
                 for (var i = 0; i < this.genes.length; i++) {
                     me.formData.addGene(this.genes[i]);
                 }
+            }else{
+              alert("No panel selected");
+              return;
             }
-            // this.$.importGenesFromPanel.value = "none";
+            // this.$.importGenesFromPanel.value = " ";
         },
         handlePreviewFileMut: function(e) {
             var fileId;
-            if (this.$.importMutationsFromPanel.value != "none") {
+            if (this.$.importMutationsFromPanel.value != " ") {
                 var panels = this.$.importMutationsFromPanel.querySelectorAll("jso-option");
                 for (var i = 0; i < panels.length; i++) {
                     if (this.$.importMutationsFromPanel.value == panels[i].value) {
@@ -1550,12 +1558,12 @@
                     this.$.panelPreviewMut.hidden = false;
                 }
             } else {
-                alert("No panel selected for preview");
+                alert("No panel selected");
             }
         },
         handleImportMutationsPanel: function(e) {
             var me = this;
-            if (this.$.importMutationsFromPanel.value != "none") {
+            if (this.$.importMutationsFromPanel.value != " ") {
                 var fileId = parseInt(this.$.importMutationsFromPanel.selectedOption.dataset.file);
                 for (var i = 0; i < this.panelsNotArchived.length; i++) {
                     var panel = this.panelsNotArchived[i];
@@ -1576,7 +1584,12 @@
                         });
                         if (panelContent != "") {
                             this.selectedPanel = JSON.parse(panelContent);
-                            this.mutations = this.selectedPanel.mutations;
+                            if(this.selectedPanel.mutations!=""){
+                              this.mutations = this.selectedPanel.mutations;
+                            }else{
+                              alert("The selected panel hasn't got mutations");
+                              return;
+                            }
                         }
                     }
                 }
@@ -1597,8 +1610,11 @@
                     };
                     me.formData.addMutation(mut);
                 }
+            }else{
+              alert("No panel selected");
+              return;
             }
-            // this.$.importMutationsFromPanel.value = "none";
+            // this.$.importMutationsFromPanel.value = " ";
         },
 
         handleOpenGV: function(e) {
