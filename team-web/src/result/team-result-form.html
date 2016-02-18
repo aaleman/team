@@ -218,10 +218,10 @@
                             <input class="jso inputValue" type="number" id="maf1000g" name="maf1000g" min="0" max="1" step="0.001" value="{{maf1000gValue::input}}" />
                         </div>
 
-                        <label class="jso">EVS</label>
+                        <label class="jso">1000G Phase3</label>
                         <div class="horizontal layout maf-elem">
                             <div class="jso-select">
-                                <jso-select class="jso" name="mafEVS_op" id="mafEVS_op">
+                                <jso-select class="jso" name="maf1000GP3_op" id="maf1000GP3_op">
                                     <jso-option value="<" selected>
                                         <</jso-option>
                                             <jso-option value="<=">
@@ -232,7 +232,7 @@
                                                     <jso-option value="!=">!=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="mafEVS" name="mafEVS" min="0" max="1" step="0.001" value="{{mafEVSValue::input}}" />
+                            <input class="jso inputValue" type="number" id="maf1000GP3" name="maf1000GP3" min="0" max="1" step="0.001" value="{{maf1000GP3Value::input}}" />
 
                         </div>
                     </div>
@@ -432,7 +432,7 @@
             maf1000gValue: {
                 type: Number,
             },
-            mafEVSValue: {
+            maf1000GP3Value: {
                 type: Number,
             },
             siftValue: {
@@ -521,8 +521,8 @@
             this.$.qual_op.value = "<";
             this.maf1000gValue = "";
             this.$.maf1000g_op.value = "<";
-            this.mafEVSValue = "";
-            this.$.mafEVS_op.value = "<";
+            this.maf1000GP3Value = "";
+            this.$.maf1000GP3_op.value = "<";
             this.siftValue = "";
             this.$.sift_op.value = "<";
             this.polyphenValue = "";
@@ -599,13 +599,13 @@
                     q["maf1000g_op"] = this.$.maf1000g_op.value;
                 }
             }
-            if (this.mafEVSValue) {
-                if (this.$.mafEVS.checkValidity() == false) {
-                    alert("MAF EVS must be less than 1 or greater than 0");
+            if (this.maf1000GP3Value) {
+                if (this.$.maf1000GP3.checkValidity() == false) {
+                    alert("MAF 1000G Phase3 must be less than 1 or greater than 0");
                     return;
                 } else {
-                    q["mafEVS"] = parseFloat(this.mafEVSValue);
-                    q["mafEVS_op"] = this.$.mafEVS_op.value;
+                    q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
+                    q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
                 }
             }
             if (this.siftValue) {
@@ -660,7 +660,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+                if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -708,7 +708,7 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+            if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
@@ -753,10 +753,10 @@
                 this.$.maf1000g_op.value = hf.maf1000g_op;
                 filterName.push("MAF 1000G " + hf.maf1000g_op + " " + hf.maf1000g + " ");
             }
-            if (hf.mafEVS != null) {
-                this.mafEVSValue = hf.mafEVS;
-                this.$.mafEVS_op.value = hf.mafEVS_op;
-                filterName.push("MAF EVS " + hf.mafEVS_op + " " + hf.mafEVS + " ");
+            if (hf.maf1000GP3 != null) {
+                this.maf1000GP3Value = hf.maf1000GP3;
+                this.$.maf1000GP3_op.value = hf.maf1000GP3_op;
+                filterName.push("MAF 1000GP3 " + hf.maf1000GP3_op + " " + hf.maf1000GP3 + " ");
             }
             if (hf.sift != null) {
                 this.siftValue = hf.sift;

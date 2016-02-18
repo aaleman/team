@@ -418,10 +418,9 @@
                 } else if (key === "qual") {
                     match = this._computeInputOption(data.qual, query, filters["qual_op"]);
                 } else if (key === "maf1000g") {
-                    match = this._computeInputOption(data.maf1000g, query, filters["maf1000g_op"]);
-                } else if (key === "mafEVS") {
-                    // match = this._computeInputOption(data.mafEVS, query, filters["mafEVS_op"]);
-                    match = true;
+                    match = this._computeInputOption(data.maf1000G, query, filters["maf1000g_op"]);
+                } else if (key === "maf1000GP3") {
+                    match = this._computeInputOption(data.maf1000GP3, query, filters["maf1000GP3_op"]);
                 } else if (key === "sift") {
                     match = this._computeInputOption(data.sift, query, filters["sift_op"]);
                 } else if (key === "polyphen") {
