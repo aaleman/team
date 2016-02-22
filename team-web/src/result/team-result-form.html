@@ -194,6 +194,10 @@
                         <textarea class="jso" id="gene" name="gene" placeholder="BRCA2,PPL" value="{{geneValue::input}}" rows="3" required>
                         </textarea>
                         <!-- <jso-cellbase-search-field style="margin-top:5px;" placeholder="Search gene" on-featureselected="handleFeatureSelected"></jso-cellbase-search-field> -->
+
+                        <label class="jso">SNPId:</label>
+                        <textarea class="jso" id="snpId" name="snpId" placeholder="rs9988179,rs140361978" value="{{snpIdValue::change}}" rows="3" required>
+                        </textarea>
                     </div>
                 </jso-form-box>
                 <jso-form-box collapsible collapsed>
@@ -233,6 +237,42 @@
                                 </jso-select>
                             </div>
                             <input class="jso inputValue" type="number" id="maf1000GP3" name="maf1000GP3" min="0" max="1" step="0.001" value="{{maf1000GP3Value::input}}" />
+
+                        </div>
+
+                        <label class="jso">ESP 6500 EA</label>
+                        <div class="horizontal layout maf-elem">
+                            <div class="jso-select">
+                                <jso-select class="jso" name="esp6500EA_op" id="esp6500EA_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
+                            </div>
+                            <input class="jso inputValue" type="number" id="esp6500EA" name="esp6500EA" min="0" max="1" step="0.001" value="{{esp6500EAValue::input}}" />
+
+                        </div>
+
+                        <label class="jso">ESP 6500 AA</label>
+                        <div class="horizontal layout maf-elem">
+                            <div class="jso-select">
+                                <jso-select class="jso" name="esp6500AA_op" id="esp6500AA_op">
+                                    <jso-option value="<" selected>
+                                        <</jso-option>
+                                            <jso-option value="<=">
+                                                <=</jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
+                            </div>
+                            <input class="jso inputValue" type="number" id="esp6500AA" name="esp6500AA" min="0" max="1" step="0.001" value="{{esp6500AAValue::input}}" />
 
                         </div>
                     </div>
@@ -393,6 +433,11 @@
                 notify: true,
                 value: '',
             },
+            snpIdValue: {
+                type: String,
+                notify: true,
+                value: ''
+            },
             fileName: {
                 type: String,
                 notify: true,
@@ -421,6 +466,12 @@
                 type: Number,
             },
             maf1000GP3Value: {
+                type: Number,
+            },
+            esp6500EAValue: {
+                type: Number,
+            },
+            esp6500AAValue: {
                 type: Number,
             },
             siftValue: {
@@ -501,8 +552,12 @@
             }
         },
         clearForm: function() {
+            this.$.region.value = "";
             this.regionValue = "";
+            this.$.gene.value = "";
             this.geneValue = "";
+            this.$.snpId.value = "";
+            this.snpIdValue = "";
             this.dpValue = "";
             this.$.dp_op.value = "<";
             this.qualValue = "";
@@ -511,6 +566,10 @@
             this.$.maf1000g_op.value = "<";
             this.maf1000GP3Value = "";
             this.$.maf1000GP3_op.value = "<";
+            this.esp6500EAValue = "";
+            this.$.esp6500EA_op.value = "<";
+            this.esp6500AAValue = "";
+            this.$.esp6500AA_op.value = "<";
             this.siftValue = "";
             this.$.sift_op.value = "<";
             this.polyphenValue = "";
@@ -570,6 +629,9 @@
             if (this.geneValue) {
                 q["gene"] = this.inputGeneChange();
             }
+            if (this.snpIdValue) {
+              q["snpId"] =this.snpIdValue.toLowerCase().split(/,|\n/);
+            }
             if (this.dpValue) {
                 q["dp"] = parseFloat(this.dpValue);
                 q["dp_op"] = this.$.dp_op.value;
@@ -594,6 +656,24 @@
                 } else {
                     q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
                     q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
+                }
+            }
+            if (this.esp6500EAValue) {
+                if (this.$.esp6500EA.checkValidity() == false) {
+                    alert("ESP 6500 EA must be less than 1 or greater than 0");
+                    return;
+                } else {
+                    q["esp6500EA"] = parseFloat(this.esp6500EAValue);
+                    q["esp6500EA_op"] = this.$.esp6500EA_op.value;
+                }
+            }
+            if (this.esp6500AAValue) {
+                if (this.$.esp6500AA.checkValidity() == false) {
+                    alert("ESP 6500 AA must be less than 1 or greater than 0");
+                    return;
+                } else {
+                    q["esp6500AA"] = parseFloat(this.esp6500AAValue);
+                    q["esp6500AA_op"] = this.$.esp6500AA_op.value;
                 }
             }
             if (this.siftValue) {
@@ -648,7 +728,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+                if (q.region != null || q.gene != null || q.snpId != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500EA != null || q.esp6500AA != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -696,7 +776,7 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+            if (q.region != null || q.gene != null || q.snpId != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500EA != null || q.esp6500AA != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
@@ -723,8 +803,12 @@
                 filterName.push("Chromosomal Location: (" + hf.region.join(" or ") + ") ");
             }
             if (hf.gene != null) {
-                this.geneValue = hf.gene.join(",");
+                this.geneValue = hf.gene.toUpperCase().join(",");
                 filterName.push("Genes: (" + hf.gene.join(" or ") + ") ");
+            }
+            if (hf.snpId != null) {
+                this.snpIdValue = hf.snpId.toLowerCase().join(",");
+                filterName.push("SNPId: (" + hf.snpId.join(" or ") + ") ");
             }
             if (hf.dp != null) {
                 this.dpValue = hf.dp;
@@ -745,6 +829,16 @@
                 this.maf1000GP3Value = hf.maf1000GP3;
                 this.$.maf1000GP3_op.value = hf.maf1000GP3_op;
                 filterName.push("MAF 1000GP3 " + hf.maf1000GP3_op + " " + hf.maf1000GP3 + " ");
+            }
+            if (hf.esp6500EA != null) {
+                this.esp6500EAValue = hf.esp6500EA;
+                this.$.esp6500EA_op.value = hf.esp6500EA_op;
+                filterName.push("MAF 1000GP3 " + hf.esp6500EA_op + " " + hf.esp6500EA + " ");
+            }
+            if (hf.esp6500AA != null) {
+                this.esp6500AAValue = hf.esp6500AA;
+                this.$.esp6500AA_op.value = hf.esp6500AA_op;
+                filterName.push("MAF 1000GP3 " + hf.esp6500AA_op + " " + hf.esp6500AA + " ");
             }
             if (hf.sift != null) {
                 this.siftValue = hf.sift;

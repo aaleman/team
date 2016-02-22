@@ -218,6 +218,16 @@
             width: 100,
             defaultValue: '.'
         }, {
+            name: 'esp6500EA',
+            title: 'ESP 6500 EA',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'esp6500AA',
+            title: 'ESP 6500 AA',
+            width: 100,
+            defaultValue: '.'
+        }, {
             name: 'phenotype',
             title: 'Phenotype',
             width: 400,
@@ -305,6 +315,16 @@
         }, {
             name: 'maf1000GP3',
             title: 'MAF 1000G Phase 3',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'esp6500EA',
+            title: 'ESP 6500 EA',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'esp6500AA',
+            title: 'ESP 6500 AA',
             width: 100,
             defaultValue: '.'
         }, {
@@ -413,6 +433,9 @@
                 } else if (key === "gene") {
                     var gene_aux = data.gene.toUpperCase().split(",");
                     match = this._checkValue(gene_aux, query);
+                } else if (key === "snpId") {
+                    var snpId_aux = data.id.toLowerCase().split(",");
+                    match = this._checkValue(snpId_aux, query);
                 } else if (key === "dp") {
                     match = this._computeInputOption(data.dp, query, filters["dp_op"]);
                 } else if (key === "qual") {
@@ -421,6 +444,10 @@
                     match = this._computeInputOption(data.maf1000G, query, filters["maf1000g_op"]);
                 } else if (key === "maf1000GP3") {
                     match = this._computeInputOption(data.maf1000GP3, query, filters["maf1000GP3_op"]);
+                } else if (key === "esp6500EA") {
+                    match = this._computeInputOption(data.esp6500EA, query, filters["esp6500EA_op"]);
+                } else if (key === "esp6500AA") {
+                    match = this._computeInputOption(data.esp6500AA, query, filters["esp6500AA_op"]);
                 } else if (key === "sift") {
                     match = this._computeInputOption(data.sift, query, filters["sift_op"]);
                 } else if (key === "polyphen") {
