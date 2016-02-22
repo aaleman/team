@@ -749,6 +749,7 @@
 
         panelsChanged: function(neo, old) {
             if (neo.panels) {
+              this.panelsNotArchived=[];
                 for (var i = 0; i < neo.panels.length; i++) {
                     var panel = neo.panels[i];
                     if (!panel.archived) {

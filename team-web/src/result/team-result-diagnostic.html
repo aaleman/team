@@ -325,11 +325,11 @@
         }],
 
         ready: function() {
-                if (this.typeData == "diagnostic") {
-                    this.$.table.columns = this._columnsDiag;
-                } else if (this.typeData == "secondary") {
-                    this.$.table.columns = this._columnsSec;
-                }
+            if (this.typeData == "diagnostic") {
+                this.$.table.columns = this._columnsDiag;
+            } else if (this.typeData == "secondary") {
+                this.$.table.columns = this._columnsSec;
+            }
             var me = this;
             this.async(function() {
                 this.$.gv.createGenomeViewer();
@@ -445,15 +445,7 @@
                 aux = true;
             }
             value = parseFloat(value);
-            if (op == "==") {
-                if (value == query) {
-                    aux = true;
-                }
-            } else if (op == "!=") {
-                if (value != query) {
-                    aux = true;
-                }
-            } else if (op == "<") {
+            if (op == "<") {
                 if (value < query) {
                     aux = true;
                 }
@@ -487,11 +479,15 @@
                 var a = query[i].split(":");
                 var chr_aux = a[0];
                 if (chr == chr_aux) {
-                    var pos = a[1].split("-");
-                    var start = parseInt(pos[0]);
-                    var end = parseInt(pos[1]);
-                    if (position >= start && position <= end) {
+                    if (a.length == 1) {
                         return true;
+                    } else {
+                        var pos = a[1].split("-");
+                        var start = parseInt(pos[0]);
+                        var end = parseInt(pos[1]);
+                        if (position >= start && position <= end) {
+                            return true;
+                        }
                     }
                 }
             }

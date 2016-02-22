@@ -78,6 +78,8 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append("MAF 1000G (Allele)").append(SEPARATOR);
         sb.append("MAF 1000G Phase 3").append(SEPARATOR);
         sb.append("MAF 1000G Phase 3 (Allele)").append(SEPARATOR);
+        sb.append("MAF EVS").append(SEPARATOR);
+        sb.append("MAF EVS (Allele)").append(SEPARATOR);
 
         sb.append("phenotype").append(SEPARATOR);
         sb.append("source").append(SEPARATOR);
@@ -106,6 +108,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append(variant.getAlternate()).append(SEPARATOR);
 
         StudyEntry vse = variant.getStudies().get(0); // aaleman: Check this with 2 or more studies.
+
 
         Map<String, String> attributes = vse.getSampleData(this.sample.getName());
 
