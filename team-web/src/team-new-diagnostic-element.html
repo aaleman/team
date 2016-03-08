@@ -1,5 +1,6 @@
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-select-box.html">
 <link rel="import" href="../lib/jsorolla/src/lib/components/jso-wizard.html">
+<link rel="import" href="../lib/jsorolla/src/lib/components/jso-progress-bar.html">
 
 <dom-module id="team-new-diagnostic-element">
     <style>
@@ -156,7 +157,7 @@
                 <div class="step">
                     <div class="jso-formcontent" style="padding:0">
                         <!--<jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>-->
-                        <jso-opencga-sample-browser class="container" id="sampleBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-sampleselected="handleSampleSelected" disable-case-control></jso-opencga-sample-browser>
+                        <jso-opencga-sample-browser enable-multiselect class="container" id="sampleBrowser" projects="{{projects}}" filtered-samples="{{filteredSamples}}" bioformats="{{bioformats}}" on-sampleselected="handleSampleSelected" disable-case-control></jso-opencga-sample-browser>
 
                     </div>
                 </div>
@@ -222,7 +223,7 @@
                 </div>
             </div>
         </jso-wizard>
-
+        <jso-progress-bar id="progressBar" percent="{{percent}}" text="Launching jobs..." hidden></jso-progress-bar>
     </template>
 </dom-module>
 <script>
@@ -292,6 +293,12 @@
                     return {};
                 }
             },
+            selectedSamples: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
             examplePanels: {
                 type: Array,
                 value: function() {
@@ -303,7 +310,18 @@
                 value: function() {
                     return [];
                 }
-            }
+            },
+            filteredSamples: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                observer: "filteredSamplesChanged"
+            },
+            percent: {
+                type: Number,
+                value: 0
+            },
         },
         observers: [
             "handlePanelsChanged(panels.splices)"
@@ -335,39 +353,69 @@
         },
         handleForm: function(e) {
             var me = this;
+            // if (this.selectedSample.id == null) {
+            //     this.errorMessageFile = "No sample selected or sample status are not READY";
+            // }
+            this.selectedSamples = this._getSelectedSamples();
 
-            if (this.selectedSample.id == null) {
-                this.errorMessageFile = "No sample selected or sample status are not READY";
+            if (this.selectedSamples == null) {
+                this.errorMessageFile = "No sample/s selected or sample/s status are not READY"
             }
             if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
             }
 
-            if (this.selectedSample.id != null && this.selectedPanelId != null) {
-                this.errorMessage = " ";
-                this.selectedPanel.used = true;
-                for (var i = 0; i < this.panelConfig.panels.length; i++) {
-                    panel = this.panelConfig.panels[i];
-                    if (panel.name == this.selectedPanel.name) {
-                        panel.used++;
+            // if (this.selectedSample.id != null && this.selectedPanelId != null) {
+            if (this.selectedSamples != null && this.selectedPanelId != null) {
+                this.$.progressBar.hidden = false;
+                this.async(function() {
+                    this.errorMessage = " ";
+                    this.selectedPanel.used = true;
+                    for (var i = 0; i < this.panelConfig.panels.length; i++) {
+                        panel = this.panelConfig.panels[i];
+                        if (panel.name == this.selectedPanel.name) {
+                            panel.used++;
+                        }
                     }
-                }
-                var studyId = this.$.sampleBrowser.selectedStudy.study.id;
-                this.selectedStudy = this.$.sampleBrowser.selectedStudy;
+                    var studyId = this.$.sampleBrowser.selectedStudy.study.id;
+                    this.selectedStudy = this.$.sampleBrowser.selectedStudy;
+                    var total = this.selectedSamples.length;
+                    for (var i = 0; i < total; i++) {
+                        var sampleId = this.selectedSamples[i].id;
+                        console.log(sampleId)
 
-                var query = {
-                    sid: Cookies("bioinfo_sid"),
-                    studyId: studyId,
-                    toolId: "team",
-                    name: me.jobName,
-                    description: me.jobDescription,
+                        var name = me.jobName + sampleId;
+                        console.log(name)
+                        var query = {
+                            sid: Cookies("bioinfo_sid"),
+                            studyId: studyId,
+                            toolId: "team",
+                            name: name,
+                            description: me.jobDescription,
 
-                    sampleId: this.selectedSample.id,
-                    panel: me.selectedPanelId,
-                    output: me.analysisFolder.id,
-                    sessionId: Cookies("bioinfo_sid"),
-                };
+                            // sampleId: this.selectedSample.id,
+                            sampleId: sampleId,
+                            panel: me.selectedPanelId,
+                            output: me.analysisFolder.id,
+                            sessionId: Cookies("bioinfo_sid"),
+                        };
+                        // this.sleep(1000);
+                        this._processJob(query, i, total);
+                    }
 
+                }, 50);
+
+                // this.progress=0;
+            } else {
+                // this.errorMessage = "There are errors in the form. Correct them before launching work.";
+                alert("There are errors in the form. Correct them before launching work");
+                return;
+            }
+
+        },
+        _processJob: function(query, i, total) {
+            var me = this;
+            this.async(function() {
                 OpencgaManager.jobs.create({
                     query: query,
                     request: {
@@ -375,9 +423,15 @@
                         success: function(response) {
                             if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
                                 var userId = response.response[0].result[0].id;
-
-                                me.panelConfig.savePanelConfig();
-                                me.fire('run');
+                                me.set('percent', Math.ceil((i + 1) * (100 / total)));
+                                console.log(me.percent);
+                                me.panelConfig.savePanelConfig();                                
+                                if (i + 1 == total) {
+                                    me.set('jobName', "TEAM Diagnosis");
+                                    me.set('jobDescription', "New Diagnosis");
+                                    me.set('selectedSamples', []);
+                                    me.fire('run');
+                                }
                             } else {}
                         },
                         error: function() {
@@ -385,14 +439,7 @@
                         }
                     }
                 });
-
-            } else {
-                // this.errorMessage = "There are errors in the form. Correct them before launching work.";
-                alert("There are errors in the form. Correct them before launching work");
-                return;
-            }
-            this.set('jobName', "TEAM Diagnosis");
-            this.set('jobDescription', "New Diagnosis");
+            }, i * 1000)
         },
         handleClose: function(e) {
             this.fire('close');
@@ -400,7 +447,8 @@
         handlePanelClick: function(e) {
             this.selectedPanelId = e.detail.fileId;
             this.errorMessagePanel = " ";
-            if (this.selectedSample != null) {
+            // if (this.selectedSample != null) {
+            if (this.selectedSamples.length > 0) {
                 this.errorMessage = "";
             }
 
@@ -438,17 +486,19 @@
             this.errorMessageFile = " ";
         },
         handleSampleSelected: function(e) {
-          this.selectedSample ={};
-          if(e.detail.status != "READY"){
-            alert("Sample status must be READY");
-            return;
-          }else{
-            this.selectedSample = e.detail;
-            this.errorMessageFile = " ";
-            if (this.selectedPanelId != "") {
-              this.errorMessage = "";
+            // this.selectedSample = {};
+            if (e.detail.status != "READY") {
+                alert("Sample status must be READY");
+                return;
+            } else {
+                // this.selectedSample = e.detail;
+                this.push('selectedSamples', e.detail)
+                this.errorMessageFile = " ";
+                if (this.selectedPanelId != "") {
+                    this.errorMessage = "";
+                }
             }
-          }
+
         },
         handleNewPanel: function(e) {
             this.$.newPanelPanel.hidden = false;
@@ -474,7 +524,36 @@
                 }
 
             }
-        }
+        },
+        sleep: function(milliseconds) {
+            var start = new Date().getTime();
+            for (var i = 0; i < 1e7; i++) {
+                if ((new Date().getTime() - start) > milliseconds) {
+                    break;
+                }
+            }
+        },
+        _getSelectedSamples: function() {
+            var samplesArray = [];
+            var samples = this.$.sampleBrowser.querySelectorAll('jso-opencga-sample-list-item[selected]')
 
+            if (samples.length == 0) {
+                if (this.filteredSamples.length == 0) {
+                    alert('You must select at least one sample');
+                }
+                return null;
+            } else {
+                for (var i = 0; i < samples.length; i++) {
+                    if (samples[i].sample.status != 'READY') {
+                        alert('All selected samples must be READY');
+                        return null;
+                    } else {
+                        samplesArray.push(samples[i].sample);
+                    }
+                }
+                return samplesArray;
+            }
+        },
+        filteredSamplesChanged: function(neo, old) {}
     });
 </script>

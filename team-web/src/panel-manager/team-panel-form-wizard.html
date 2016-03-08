@@ -1395,10 +1395,11 @@
 
             this.formData = new Panel();
             this.formData.polymer = this;
-            
+
             this.$.jsoFormWizard.goToStep(1);
-            var a = document.getElementById("manager");
-            a.$.newPanelPanel.hidden = true;
+            // var a = document.getElementById("manager");
+            // a.$.newPanelPanel.hidden = true;
+            alert("The panel has been created succesfully");
 
         },
         uploadFile: function(fileContent, fileName, studyId, callback) {

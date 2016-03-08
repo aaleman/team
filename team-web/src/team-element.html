@@ -542,6 +542,7 @@
             this.$.jobBrowserPanel.hidden = false;
             this.$.content.hidden = false;
             this.$.newDiagnosticElement.$.jsoFormWizard.goToStep(1);
+            this.$.newDiagnosticElement.$.progressBar.hidden=true;
             this.$.jobBrowser.selectStudyById(this.$.newDiagnosticElement.selectedStudy.study.id);
         },
         handleUserDataChanged: function(neo, old) {
