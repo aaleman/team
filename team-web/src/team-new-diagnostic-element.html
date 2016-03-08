@@ -425,7 +425,7 @@
                                 var userId = response.response[0].result[0].id;
                                 me.set('percent', Math.ceil((i + 1) * (100 / total)));
                                 console.log(me.percent);
-                                me.panelConfig.savePanelConfig();                                
+                                me.panelConfig.savePanelConfig();
                                 if (i + 1 == total) {
                                     me.set('jobName', "TEAM Diagnosis");
                                     me.set('jobDescription', "New Diagnosis");
@@ -487,17 +487,17 @@
         },
         handleSampleSelected: function(e) {
             // this.selectedSample = {};
-            if (e.detail.status != "READY") {
-                alert("Sample status must be READY");
-                return;
-            } else {
-                // this.selectedSample = e.detail;
-                this.push('selectedSamples', e.detail)
-                this.errorMessageFile = " ";
-                if (this.selectedPanelId != "") {
-                    this.errorMessage = "";
-                }
-            }
+            // if (e.detail.status != "READY") {
+            //     alert("Sample status must be READY");
+            //     return;
+            // } else {
+            //     this.selectedSample = e.detail;
+            //     this.push('selectedSamples', e.detail)
+            //     this.errorMessageFile = " ";
+            //     if (this.selectedPanelId != "") {
+            //         this.errorMessage = "";
+            //     }
+            // }
 
         },
         handleNewPanel: function(e) {
