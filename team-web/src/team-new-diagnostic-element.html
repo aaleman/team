@@ -344,9 +344,7 @@
                     this.set('selectedPanel', null);
                     this.set('selectedPanelId', "");
                 }
-
             }
-
         },
         isPanel: function(item) {
             return item.file.name.indexOf("panel") == 0;
@@ -357,14 +355,12 @@
             //     this.errorMessageFile = "No sample selected or sample status are not READY";
             // }
             this.selectedSamples = this._getSelectedSamples();
-
             if (this.selectedSamples == null) {
                 this.errorMessageFile = "No sample/s selected or sample/s status are not READY"
             }
             if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
             }
-
             // if (this.selectedSample.id != null && this.selectedPanelId != null) {
             if (this.selectedSamples != null && this.selectedPanelId != null) {
                 this.$.progressBar.hidden = false;
@@ -402,16 +398,12 @@
                         // this.sleep(1000);
                         this._processJob(query, i, total);
                     }
-
                 }, 50);
-
-                // this.progress=0;
             } else {
                 // this.errorMessage = "There are errors in the form. Correct them before launching work.";
                 alert("There are errors in the form. Correct them before launching work");
                 return;
             }
-
         },
         _processJob: function(query, i, total) {
             var me = this;
@@ -498,7 +490,6 @@
             //         this.errorMessage = "";
             //     }
             // }
-
         },
         handleNewPanel: function(e) {
             this.$.newPanelPanel.hidden = false;
@@ -525,14 +516,14 @@
 
             }
         },
-        sleep: function(milliseconds) {
-            var start = new Date().getTime();
-            for (var i = 0; i < 1e7; i++) {
-                if ((new Date().getTime() - start) > milliseconds) {
-                    break;
-                }
-            }
-        },
+        // sleep: function(milliseconds) {
+        //     var start = new Date().getTime();
+        //     for (var i = 0; i < 1e7; i++) {
+        //         if ((new Date().getTime() - start) > milliseconds) {
+        //             break;
+        //         }
+        //     }
+        // },
         _getSelectedSamples: function() {
             var samplesArray = [];
             var samples = this.$.sampleBrowser.querySelectorAll('jso-opencga-sample-list-item[selected]')

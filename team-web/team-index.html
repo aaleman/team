@@ -161,7 +161,6 @@
             var url = "https://bioinfo.extge.co.uk/crowdsourcing/WebServices/list_panels?format=json";
             var request = new XMLHttpRequest();
             request.onload = function() {
-
                 try {
                     var json = JSON.parse(this.response);
                     localStorage.bioinfo_team_panelapp_diseases = this.response;
@@ -173,8 +172,8 @@
                         } catch (e) {
                             BIOINFO_TEAM_PANELAPP_DISEASES = [];
                         }
-                    }else{
-                      BIOINFO_TEAM_PANELAPP_DISEASES = [];
+                    } else {
+                        BIOINFO_TEAM_PANELAPP_DISEASES = [];
                     }
                 }
                 document.body.removeChild(div);
@@ -186,8 +185,26 @@
                 document.body.removeChild(div);
                 callback();
             };
+            request.onreadystatechange = function(aEvt) {
+                if (request.readyState == 4) {
+                    if (request.status != 200) {
+                        if (localStorage.bioinfo_team_panelapp_diseases) {
+                            try {
+                                BIOINFO_TEAM_PANELAPP_DISEASES = JSON.parse(localStorage.bioinfo_team_panelapp_diseases).result;
+                            } catch (e) {
+                                BIOINFO_TEAM_PANELAPP_DISEASES = [];
+                            }
+                        } else {
+                            BIOINFO_TEAM_PANELAPP_DISEASES = [];
+                        }
+                        document.body.removeChild(div);
+                        callback();
+                    }
+                }
+            };
             request.open('GET', url);
             request.send();
+
         }
     </script>
 
