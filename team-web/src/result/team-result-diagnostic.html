@@ -449,13 +449,13 @@
                 } else if (key === "esp6500AA") {
                     match = this._computeInputOption(data.esp6500AA, query, filters["esp6500AA_op"]);
                 } else if (key === "sift") {
-                    match = this._computeInputOption(data.sift, query, filters["sift_op"]);
+                    match = this._computeInputOption(data.sift, query);
                 } else if (key === "polyphen") {
-                    match = this._computeInputOption(data.polyphen, query, filters["polyphen_op"]);
+                    match = this._computeInputOption(data.polyphen, query);
                 } else if (key === "phylop") {
-                    match = this._computeInputOption(data.phylop, query, filters["phylop_op"]);
+                    match = this._computeInputOption(data.phylop, query);
                 } else if (key === "phastcons") {
-                    match = this._computeInputOption(data.phastcons, query, filters["phastcons_op"]);
+                    match = this._computeInputOption(data.phastcons, query);
                 } else if (key === "ct") {
                     ct_aux = data.ct.split(",");
                     match = this._checkValue(ct_aux, query);
@@ -467,6 +467,23 @@
             return filtered;
         },
         _computeInputOption: function(value, query, op) {
+          if(op==null){
+            var aux = query.split("");
+              var val = "";
+              var valOp = "";
+              var n = 0;
+              for (var i = 0; i < 2; i++) {
+                  if (isNaN(aux[i])) {
+                      valOp += aux[i];
+                      n++;
+                  }
+              }
+              for (var i = n; i < aux.length; i++) {
+                  val += aux[i];
+              }
+              query = parseFloat(val);
+              op = valOp;
+          }
             var aux = false;
             if (value === ".") {
                 aux = true;
@@ -492,9 +509,10 @@
             return aux;
         },
         _checkValue: function(value, query) {
-            for (var i = 0; i < query.length; i++) {
+          var q=query.split(",");
+            for (var i = 0; i < q.length; i++) {
                 for (var j = 0; j < value.length; j++) {
-                    if (value[j] == query[i]) {
+                    if (value[j] == q[i]) {
                         return true;
                     }
                 }
