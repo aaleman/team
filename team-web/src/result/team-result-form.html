@@ -397,7 +397,7 @@
                 </jso-form-box> -->
                 <jso-filter-conservation id="filterConservation" collapsible collapsed></jso-filter-conservation>
 
-                <jso-form-box collapsible collapsed>
+                <!-- <jso-form-box collapsible collapsed>
                     <div class="header">
                         Consequence Type
                     </div>
@@ -411,7 +411,9 @@
                         <div class="input_container vertical layout">
                         </div>
                     </div>
-                </jso-form-box>
+                </jso-form-box> -->
+                <jso-filter-consequencetypes id="filterCT" collapsible collapsed></jso-filter-consequencetypes>
+
             </div>
         </form>
     </template>
@@ -572,10 +574,16 @@
             // this.$.phylop_op.value = "<";
             // this.phastconsValue = "";
             // this.$.phastcons_op.value = "<";
+            // var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            // for (var i = 0; i < els.length; i++) {
+            //     var el = els[i];
+            //     el.checked = false;
+            // }
 
             this.$.filterPosition.clear();
             this.$.filterScores.clear();
             this.$.filterConservation.clear();
+            this.$.filterCT.clear();
 
             ////
             this.dpValue = "";
@@ -591,12 +599,6 @@
             this.esp6500AAValue = "";
             this.$.esp6500AA_op.value = "<";
 
-            /* Consequence Types */
-            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
-            for (var i = 0; i < els.length; i++) {
-                var el = els[i];
-                el.checked = false;
-            }
             this.submitForm();
             document.getElementById('teamResultReport').computeFilter(0, this.jobId);
         },
@@ -675,7 +677,11 @@
             //     q["phastcons"] = parseFloat(this.phastconsValue);
             //     q["phastcons_op"] = this.$.phastcons_op.value;
             // }
-
+            // var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+            // if (els.length > 0) {
+            //
+            //     q["ct"] = this.inputCTChange();
+            // }
 
             var regionQuery = this.$.filterPosition.checkRegion();
             if (regionQuery == -1) {
@@ -691,7 +697,7 @@
 
             var snpId = this.$.filterPosition.checkSNPId();
             if (snpId != null) {
-                q["snpId"] = snpId;
+                q["ids"] = snpId;
             }
 
             var sift = this.$.filterScores.checkSift();
@@ -717,6 +723,12 @@
             if (phylop != null) {
               q["phylop"] = phylop;
             }
+
+            var cts = this.$.filterCT.checkConsequenceTypes(2);
+            if (cts != null) {
+                q["annot-ct"] = cts.join(",");
+            }
+
 
             ////
             if (this.dpValue) {
@@ -764,11 +776,6 @@
                 }
             }
 
-            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
-            if (els.length > 0) {
-
-                q["ct"] = this.inputCTChange();
-            }
             this.set('query', q);
 
             var filterHistory = [];
@@ -790,7 +797,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.snpId != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500EA != null || q.esp6500AA != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500EA != null || q.esp6500AA != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -838,7 +845,7 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.snpId != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500EA != null || q.esp6500AA != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500EA != null || q.esp6500AA != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
@@ -849,15 +856,15 @@
         //         return q;
         //     }
         // },
-        inputCTChange: function() {
-            var cons = [];
-            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
-            for (var i = 0; i < els.length; i++) {
-                var el = els[i].dataset.consequence;
-                cons[i] = el;
-            }
-            return cons;
-        },
+        // inputCTChange: function() {
+        //     var cons = [];
+        //     var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
+        //     for (var i = 0; i < els.length; i++) {
+        //         var el = els[i].dataset.consequence;
+        //         cons[i] = el;
+        //     }
+        //     return cons;
+        // },
         loadForm: function(hf) {
             var filterName = [];
             // if (hf.region != null) {
@@ -892,6 +899,28 @@
             //     this.$.phastcons_op.value = hf.phastcons_op;
             //     filterName.push("Phastcons " + hf.phastcons_op + " " + hf.phastcons + " ");
             // }
+            // if (hf.ct != null) {
+            //     var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']");
+            //     var ctName = "";
+            //     var aux = 0;
+            //     for (var i = 0; i < hf.ct.length; i++) {
+            //         var cons = hf.ct[i];
+            //         for (var j = 0; j < els.length; j++) {
+            //             var el = els[j];
+            //             if (cons == el.dataset.consequence) {
+            //                 el.checked = true;
+            //                 if (aux == 0) {
+            //                     ctName += el.dataset.consequence;
+            //                     aux++;
+            //                 } else {
+            //                     ctName += " or " + el.dataset.consequence;
+            //                     aux++;
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     filterName.push("Consequence Types: (" + ctName + ")");
+            // }
 
             var fP = this.$.filterPosition.load(hf);
             if (fP.length > 0) {
@@ -913,6 +942,14 @@
                     filterName.push(fC[i]);
                 }
             }
+
+            var fCT = this.$.filterCT.load(hf,2);
+            if (fCT.length > 0) {
+                for (var i = 0; i < fCT.length; i++) {
+                    filterName.push(fCT[i]);
+                }
+            }
+
 
             ////
             if (hf.dp != null) {
@@ -946,28 +983,6 @@
                 filterName.push("MAF 1000GP3 " + hf.esp6500AA_op + " " + hf.esp6500AA + " ");
             }
 
-            if (hf.ct != null) {
-                var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']");
-                var ctName = "";
-                var aux = 0;
-                for (var i = 0; i < hf.ct.length; i++) {
-                    var cons = hf.ct[i];
-                    for (var j = 0; j < els.length; j++) {
-                        var el = els[j];
-                        if (cons == el.dataset.consequence) {
-                            el.checked = true;
-                            if (aux == 0) {
-                                ctName += el.dataset.consequence;
-                                aux++;
-                            } else {
-                                ctName += " or " + el.dataset.consequence;
-                                aux++;
-                            }
-                        }
-                    }
-                }
-                filterName.push("Consequence Types: (" + ctName + ")");
-            }
             return filterName.join(" AND ");
         },
         filterDataChanged: function(neo, old) {},

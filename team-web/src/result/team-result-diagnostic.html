@@ -433,7 +433,7 @@
                 } else if (key === "gene") {
                     var gene_aux = data.gene.toUpperCase().split(",");
                     match = this._checkValue(gene_aux, query);
-                } else if (key === "snpId") {
+                } else if (key === "ids") {
                     var snpId_aux = data.id.toLowerCase().split(",");
                     match = this._checkValue(snpId_aux, query);
                 } else if (key === "dp") {
@@ -456,7 +456,7 @@
                     match = this._computeInputOption(data.phylop, query);
                 } else if (key === "phastcons") {
                     match = this._computeInputOption(data.phastcons, query);
-                } else if (key === "ct") {
+                } else if (key === "annot-ct") {
                     ct_aux = data.ct.split(",");
                     match = this._checkValue(ct_aux, query);
                 } else if (key.endsWith("_op")) {
