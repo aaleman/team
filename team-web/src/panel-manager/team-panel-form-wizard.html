@@ -1,4 +1,5 @@
 <link rel="import" href="team-mutation-selector.html">
+<link rel="import" href="../../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-import-file.html">
 
 <dom-module id="team-panel-form-wizard">
     <style>
@@ -176,7 +177,7 @@
         .boxDiseaseSelected {
             border-right: 1px solid var(--divider-color);
             width: 200px;
-            height: 620px;
+            height: 610px;
             background-color: var(--light-secondary-color);
             margin-right: 5px;
             padding: 5px;
@@ -216,7 +217,7 @@
     </style>
     <template>
 
-        <jso-wizard id="formWizard">
+        <jso-wizard id="jsoFormWizard">
             <div class="title">
                 <div class="stepName">Select Diseases</div>
                 <div class="stepName">Select Genes</div>
@@ -283,12 +284,12 @@
                                     <!-- <jso-tooltip type="info">
                                     </jso-tooltip> -->
                                 </div>
-
-                                <input type="file" style="margin-top:5px; margin-left:5px" id="geneBedFileInput">
+                                <!-- <input type="file" style="margin-top:5px; margin-left:5px" id="geneBedFileInput"> -->
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleGenesImportBed"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    <!-- <div class="jso-btn jso-btn-shdw file" on-click="handleGenesImportBed"><i class="fa fa-plus-square-o"></i>&nbsp; Import -->
+                                    <div class="jso-btn jso-btn-shdw file" on-click="showImportBEDComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
 
@@ -302,9 +303,9 @@
                                 </div>
 
                                 <jso-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
-                                    <jso-option value="none"></jso-option>
-                                    <template is="dom-repeat" items="{{panelConfig.panels}}">
-                                        <jso-option value$="{{item.fileId}}">{{item.name}}</jso-option>
+                                    <jso-option value=" "></jso-option>
+                                    <template is="dom-repeat" items="{{panelsNotArchived}}">
+                                        <jso-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</jso-option>
                                     </template>
                                 </jso-select>
 
@@ -340,6 +341,12 @@
                         </div>
 
                     </div>
+                    <jso-panel id="importBEDComponent" modal closable hidden>
+                        <div class="header">
+                            <i class="fa fa-plus-square-o"></i> Import File
+                        </div>
+                        <jso-opencga-import-file id="importBEDFile" class="container" on-end="handleImportBEDFile" bioformat="{{bedBioformat}}"></jso-opencga-import-file>
+                    </jso-panel>
 
                     <jso-panel modal closable hidden id="panelPreview">
                         <div class="header">
@@ -446,11 +453,12 @@
                                             <!--</template>-->
                                             <!--</datalist>-->
                                         </div>
-                                        <input style="margin-top:10px" type="file" id="mutationVCFFileInput">
+                                        <!-- <input style="margin-top:10px" type="file" id="mutationVCFFileInput"> -->
 
                                         <div class="horizontal layout">
                                             <div class="flex"></div>
-                                            <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                            <!-- <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i class="fa fa-plus-square-o"></i>&nbsp; Import -->
+                                            <div class="jso-btn jso-btn-shdw file" on-click="showImportVCFComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                             </div>
                                         </div>
                                     </div>
@@ -486,9 +494,9 @@
                                     <div class="jso-formtitle" style="font-size:13px">Import from other Panel &nbsp;</div>
                                     <div class="" id="mutation-tab-config-panel" style="margin:5px">
                                         <jso-select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
-                                            <jso-option value="none"></jso-option>
-                                            <template is="dom-repeat" items="{{panelConfig.panels}}">
-                                                <jso-option value$="{{item.fileId}}">{{item.name}}</jso-option>
+                                            <jso-option value=" "></jso-option>
+                                            <template is="dom-repeat" items="{{panelsNotArchived}}">
+                                                <jso-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</jso-option>
                                             </template>
                                         </jso-select>
                                         <div class="horizontal layout">
@@ -512,6 +520,12 @@
                             </div>
 
                         </div>
+                        <jso-panel id="importVCFComponent" modal closable hidden>
+                            <div class="header">
+                                <i class="fa fa-plus-square-o"></i> Import File
+                            </div>
+                            <jso-opencga-import-file id="importVCFFile" class="container" on-end="handleImportVCFFile" bioformat="{{vcfBioformat}}"></jso-opencga-import-file>
+                        </jso-panel>
                         <jso-panel modal closable hidden id="panelPreviewMut">
                             <div class="header">
                                 <i class="fa fa-eye"></i> Panel Preview
@@ -666,6 +680,13 @@
                 type: Object,
                 value: function() {
                     return {};
+                },
+                observer: 'panelsChanged'
+            },
+            panelsNotArchived: {
+                type: Array,
+                value: function() {
+                    return [];
                 }
             },
             selectedPanel: {
@@ -676,12 +697,21 @@
             },
             genes: {
                 type: Array,
+                value: function() {
+                    return [];
+                }
             },
             mutations: {
                 type: Array,
+                value: function() {
+                    return [];
+                }
             },
             panelAppDiseases: {
-                type: Array
+                type: Array,
+                value: function() {
+                    return [];
+                }
             },
             panelAppGenes: {
                 type: Array,
@@ -694,13 +724,40 @@
                 value: function() {
                     return {};
                 }
-            }
-
+            },
+            bedBioformat: {
+                type: Object,
+                value: {
+                    text: "BED",
+                    value: "BED",
+                    validator: BEDValidator
+                }
+            },
+            vcfBioformat: {
+                type: Object,
+                value: {
+                    text: "VCF 4.0",
+                    value: "VARIANT",
+                    validator: VCFValidator
+                }
+            },
         },
         observers: [
             "handleUpdatedGenes(formData.modCount)",
             "handleUpdatedSelectedDiseases(formData.diseases.splices)",
         ],
+
+        panelsChanged: function(neo, old) {
+            if (neo.panels) {
+                this.panelsNotArchived = [];
+                for (var i = 0; i < neo.panels.length; i++) {
+                    var panel = neo.panels[i];
+                    if (!panel.archived) {
+                        this.push('panelsNotArchived', panel);
+                    }
+                }
+            }
+        },
 
         handleUpdatedSelectedDiseases: function(neo, old, path) {},
         handleUpdatedGenes: function(neo, old, path) {
@@ -726,7 +783,7 @@
 
             // TEST CODE
             // this.formData.name = "test";
-            // this.$.formWizard.goToStep(4);
+            // this.$.jsoFormWizard.goToStep(4);
 
             this.$.allDiseases.setLoading(true);
 
@@ -737,6 +794,7 @@
             } else {
                 $.ajax({
                     url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    // url: "http://bioinfoint.hpc.cam.ac.uk/cellbase/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
@@ -951,7 +1009,7 @@
             this.geneTab = 'panel';
         },
         handleClickGeneTextAreaButton: function(e) {
-
+            var geneName;
             var me = this;
             var textAreaValue = this.$.geneTextArea.value.toUpperCase();
             var splits = textAreaValue.split(/,|\n/);
@@ -959,21 +1017,17 @@
             var genesQuery = [];
 
             for (var i = 0; i < splits.length; i++) {
-                var geneName = splits[i];
-
+                geneName = splits[i];
                 if (geneName != '') {
-
-                    var re = /(\w+):(\d+)-(\d+)/;
+                    var re = /^(\w+):(\d+)-(\d+)$/;
                     if (re.test(geneName)) {
-                        //                        var groups = re.match(geneName);
                         var groups = geneName.match(re);
-
                         var chr = groups[1];
                         var start = parseInt(groups[2]);
                         var end = parseInt(groups[3]);
-
                         if (start > end) {
-                            alert("Malformed Region: " + geneName);
+                            alert("Malformed Region: " + geneName + ", END must be greater than or equal to START");
+                            return;
                         } else {
                             var gene = {
                                 name: geneName,
@@ -1009,7 +1063,7 @@
                                         for (var j = 0; j < elem.result.length; j++) {
                                             var row = data.response[i].result[j];
                                             var gene = {
-                                                name: elem.id,
+                                                name: row.name,
                                                 chr: row.chromosome,
                                                 start: row.start,
                                                 end: row.end
@@ -1017,9 +1071,10 @@
                                             me.formData.addGene(gene);
                                         }
                                     } else {
-                                        me.formData.addGene({
-                                            name: elem.id
-                                        });
+                                        // me.formData.addGene({
+                                        //     name: elem.id
+                                        // });
+                                        alert("Gene/Region '" + geneName + "' not exits");
                                     }
                                 }
                             }
@@ -1029,35 +1084,76 @@
             }
             this.$.geneTextArea.value = '';
         },
-        handleGenesImportBed: function(e) {
+        handleGenesImportBed: function(bed_file) {
+            // var me = this;
+            // var bed_file = this.$.geneBedFileInput.files[0];
+            //
+            // if (bed_file != null) {
+            //
+            //     var lr = new LineReader();
+            //     lr.on("line", function(line, next) {
+            //
+            //         if (line.indexOf("#") < 0 && line != '') {
+            //             var fields = line.split("\t");
+            //             var chr = fields[0];
+            //             var start = fields[1];
+            //             var end = fields[2];
+            //             var gene = {
+            //                 name: chr + ":" + start + "-" + end,
+            //                 chr: chr,
+            //                 start: start,
+            //                 end: end
+            //             };
+            //             me.formData.addGene(gene);
+            //         }
+            //         next();
+            //     });
+            //     lr.read(bed_file);
+            //
+            // }
+
+            // this.$.geneBedFileInput.value = "";
+
             var me = this;
-            var bed_file = this.$.geneBedFileInput.files[0];
+
+            var log = [];
+            var line = 0;
 
             if (bed_file != null) {
 
-                var lr = new LineReader();
-                lr.on("line", function(line, next) {
+                var _navigator = new FileNavigator(bed_file);
+                var indexToStartWith = 0;
 
-                    if (line.indexOf("#") < 0 && line != '') {
-                        var fields = line.split("\t");
-                        var chr = fields[0];
-                        var start = fields[1];
-                        var end = fields[2];
-                        var gene = {
-                            name: chr + ":" + start + "-" + end,
-                            chr: chr,
-                            start: start,
-                            end: end
-                        };
-                        me.formData.addGene(gene);
+                _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
+                    if (err) {
+                        return;
                     }
-                    next();
-                });
-                lr.read(bed_file);
+                    console.log(lines.length);
 
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i];
+
+                        if (line.indexOf("#") < 0 && line != '') {
+                            var fields = line.split("\t");
+                            var chr = fields[0];
+                            var start = fields[1];
+                            var end = fields[2];
+                            var gene = {
+                                name: chr + ":" + start + "-" + end,
+                                chr: chr,
+                                start: start,
+                                end: end
+                            };
+                            me.formData.addGene(gene);
+                        }
+                        line++;
+                    }
+                    if (eof) {
+                        return;
+                    }
+                    _navigator.readSomeLines(index + lines.length, linesReadHandler);
+                })
             }
-
-            this.$.geneBedFileInput.value = "";
         },
         handleImportAppPanel: function(e) {
             this.$.appPanel.hidden = false;
@@ -1089,40 +1185,86 @@
         handleHiddenMutationPanel: function(mutationTab) {
             return mutationTab != 'panel';
         },
-        handleMutationImportVCF: function(e) {
+        handleMutationImportVCF: function(vcf_file) {
             var me = this;
 
             var phe = this.$.mutationGVPheVCF.value;
+            if (phe == "") {
+                alert("Phenotype is mandatory");
+                return;
+            }
             var src = "user-defined";
-            var vcf_file = this.$.mutationVCFFileInput.files[0];
+
+            // var vcf_file = this.$.mutationVCFFileInput.files[0];
+            // if (vcf_file != null) {
+            //     var lr = new LineReader();
+            //     lr.on("line", function(line, next) {
+            //
+            //         if (line.indexOf("#") < 0 && line != '') {
+            //             var fields = line.split("\t");
+            //             var chr = fields[0];
+            //             var pos = fields[1];
+            //             var ref = fields[3];
+            //             var alt = fields[4];
+            //
+            //             var mut = {
+            //                 chr: chr,
+            //                 pos: pos,
+            //                 ref: ref,
+            //                 alt: alt,
+            //                 phe: phe,
+            //                 src: src
+            //
+            //             };
+            //             me.formData.addMutation(mut);
+            //         }
+            //         next();
+            //     });
+            //     lr.read(vcf_file);
+            // }
+            // this.$.mutationVCFFileInput.value = "";
+
+            var log = [];
+            var line = 0;
 
             if (vcf_file != null) {
-                var lr = new LineReader();
-                lr.on("line", function(line, next) {
 
-                    if (line.indexOf("#") < 0 && line != '') {
-                        var fields = line.split("\t");
-                        var chr = fields[0];
-                        var pos = fields[1];
-                        var ref = fields[3];
-                        var alt = fields[4];
+                var _navigator = new FileNavigator(vcf_file);
+                var indexToStartWith = 0;
 
-                        var mut = {
-                            chr: chr,
-                            pos: pos,
-                            ref: ref,
-                            alt: alt,
-                            phe: phe,
-                            src: src
-
-                        };
-                        me.formData.addMutation(mut);
+                _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
+                    if (err) {
+                        return;
                     }
-                    next();
-                });
-                lr.read(vcf_file);
+                    console.log(lines.length);
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i];
+                        if (line.indexOf("#") < 0 && line != '') {
+                            var fields = line.split("\t");
+                            var chr = fields[0];
+                            var pos = fields[1];
+                            var ref = fields[3];
+                            var alt = fields[4];
+
+                            var mut = {
+                                chr: chr,
+                                pos: pos,
+                                ref: ref,
+                                alt: alt,
+                                phe: phe,
+                                src: src
+                            };
+                            me.formData.addMutation(mut);
+                        }
+                        line++;
+                    }
+                    if (eof) {
+                        return;
+                    }
+                    _navigator.readSomeLines(index + lines.length, linesReadHandler);
+                })
+
             }
-            this.$.mutationVCFFileInput.value = "";
         },
         handleMutationImportCSV: function(e) {
             var me = this;
@@ -1173,9 +1315,22 @@
 
             var chr = this.$.mutationGVChr.value;
             var pos = this.$.mutationGVPos.value;
-            var ref = this.$.mutationGVRef.value;
-            var alt = this.$.mutationGVAlt.value;
+            var ref = this.$.mutationGVRef.value.toUpperCase();
+            var alt = this.$.mutationGVAlt.value.toUpperCase();
             var phe = this.$.mutationGVPhe.value;
+
+            var re = /^[ACTG]*$/;
+
+            if (chr == "" || pos.length == 0 || phe == "") {
+                alert("Chromosome, Position and Phenotype are mandatory");
+                return;
+            } else if (ref == "" && alt == "") {
+                alert("Reference or Alternate is mandatory");
+                return;
+            } else if (!re.test(ref) || !re.test(alt)) {
+                alert("Reference and Alternate must contain only ACTG");
+                return;
+            }
             var src = "user-defined";
             var mut = {
                 chr: chr,
@@ -1195,6 +1350,7 @@
         },
         handleClickSavePanel: function(e) {
             var me = this;
+            this.formData.name = this.formData.name.replace(/ /gi,'_');
             if (this.formData.name == "") {
                 alert("The Panel name is mandatory");
                 return;
@@ -1233,11 +1389,17 @@
 
                     });
                 }
+            } else {
+                return;
             }
+
             this.formData = new Panel();
-            this.$.formWizard.goToStep(1);
-            var a = document.getElementById("manager");
-            a.$.newPanelPanel.hidden = true;
+            this.formData.polymer = this;
+
+            this.$.jsoFormWizard.goToStep(1);
+            // var a = document.getElementById("manager");
+            // a.$.newPanelPanel.hidden = true;
+            alert("The panel has been created succesfully");
 
         },
         uploadFile: function(fileContent, fileName, studyId, callback) {
@@ -1253,6 +1415,7 @@
                 type: 'text/plain'
             });
             var formData = new FormData();
+
             var userId = Cookies("bioinfo_user");
             var studyId = studyId;
             var relativeFilePath = '.team_config/' + fileName;
@@ -1298,8 +1461,14 @@
             }
         },
         handlePreviewFile: function(e) {
-            if (this.$.importGenesFromPanel.value != "none") {
-                var fileId = parseInt(this.$.importGenesFromPanel.value);
+            var fileId;
+            if (this.$.importGenesFromPanel.value != " ") {
+                var panels = this.$.importGenesFromPanel.querySelectorAll("jso-option");
+                for (var i = 0; i < panels.length; i++) {
+                    if (this.$.importGenesFromPanel.value == panels[i].value) {
+                        fileId = parseInt(panels[i].dataset.file);
+                    }
+                }
                 var data;
 
                 OpencgaManager.files.content({
@@ -1320,14 +1489,17 @@
                     this.selectedPanel = JSON.parse(data);
                     this.$.panelPreview.hidden = false;
                 }
+            } else {
+                alert("No panel selected");
             }
         },
         handleImportGenesPanel: function(e) {
             var me = this;
-            if (this.$.importGenesFromPanel.value != "none") {
-                var fileId = parseInt(this.$.importGenesFromPanel.value);
-                for (var i = 0; i < this.panelConfig.panels.length; i++) {
-                    var panel = this.panelConfig.panels[i];
+            if (this.$.importGenesFromPanel.value != " ") {
+                var fileId = parseInt(this.$.importGenesFromPanel.selectedOption.dataset.file);
+
+                for (var i = 0; i < this.panelsNotArchived.length; i++) {
+                    var panel = this.panelsNotArchived[i];
                     if (panel.fileId === fileId) {
                         var panelContent = "";
                         OpencgaManager.files.content({
@@ -1345,20 +1517,33 @@
                         });
                         if (panelContent != "") {
                             this.selectedPanel = JSON.parse(panelContent);
-                            this.genes = this.selectedPanel.genes;
+                            if (this.selectedPanel.genes != "") {
+                                this.genes = this.selectedPanel.genes;
+                            } else {
+                                alert("The selected panel hasn't got genes");
+                                return;
+                            }
                         }
                     }
                 }
                 for (var i = 0; i < this.genes.length; i++) {
                     me.formData.addGene(this.genes[i]);
                 }
+            } else {
+                alert("No panel selected");
+                return;
             }
-            // this.$.importGenesFromPanel.value = "none";
+            // this.$.importGenesFromPanel.value = " ";
         },
         handlePreviewFileMut: function(e) {
-            if (this.$.importMutationsFromPanel.value != "none") {
-
-                var fileId = parseInt(this.$.importMutationsFromPanel.value);
+            var fileId;
+            if (this.$.importMutationsFromPanel.value != " ") {
+                var panels = this.$.importMutationsFromPanel.querySelectorAll("jso-option");
+                for (var i = 0; i < panels.length; i++) {
+                    if (this.$.importMutationsFromPanel.value == panels[i].value) {
+                        fileId = parseInt(panels[i].dataset.file);
+                    }
+                }
                 var data;
                 OpencgaManager.files.content({
                     id: fileId,
@@ -1378,14 +1563,16 @@
                     this.selectedPanel = JSON.parse(data);
                     this.$.panelPreviewMut.hidden = false;
                 }
+            } else {
+                alert("No panel selected");
             }
         },
         handleImportMutationsPanel: function(e) {
             var me = this;
-            if (this.$.importMutationsFromPanel.value != "none") {
-                var fileId = parseInt(this.$.importMutationsFromPanel.value);
-                for (var i = 0; i < this.panelConfig.panels.length; i++) {
-                    var panel = this.panelConfig.panels[i];
+            if (this.$.importMutationsFromPanel.value != " ") {
+                var fileId = parseInt(this.$.importMutationsFromPanel.selectedOption.dataset.file);
+                for (var i = 0; i < this.panelsNotArchived.length; i++) {
+                    var panel = this.panelsNotArchived[i];
                     if (panel.fileId === fileId) {
                         var panelContent = "";
                         OpencgaManager.files.content({
@@ -1403,7 +1590,12 @@
                         });
                         if (panelContent != "") {
                             this.selectedPanel = JSON.parse(panelContent);
-                            this.mutations = this.selectedPanel.mutations;
+                            if (this.selectedPanel.mutations != "") {
+                                this.mutations = this.selectedPanel.mutations;
+                            } else {
+                                alert("The selected panel hasn't got mutations");
+                                return;
+                            }
                         }
                     }
                 }
@@ -1424,8 +1616,11 @@
                     };
                     me.formData.addMutation(mut);
                 }
+            } else {
+                alert("No panel selected");
+                return;
             }
-            // this.$.importMutationsFromPanel.value = "none";
+            // this.$.importMutationsFromPanel.value = " ";
         },
 
         handleOpenGV: function(e) {
@@ -1469,7 +1664,10 @@
             var lowLevel = false;
             for (var i = 0; i < this.$.panelAppSelectedGenes.selected.length; i++) {
                 var elem = this.$.panelAppSelectedGenes.selected[i];
-                lowLevel |= (elem.LevelOfConfidence <= 2) ? true : false;
+                // lowLevel |= (elem.LevelOfConfidence <= 2) ? true : false;
+                if (elem.LevelOfConfidence == 'LowEvidence') {
+                    lowLevel = true;
+                }
             }
 
             if (lowLevel && !confirm("Your selection contains genes with low level of confidence. Do you want to continue?")) {
@@ -1504,7 +1702,7 @@
                                 if (elem.result.length > 0) {
                                     var row = data.response[i].result[0];
                                     var gene = {
-                                        name: elem.id,
+                                        name: row.name,
                                         chr: row.chromosome,
                                         start: row.start,
                                         end: row.end
@@ -1524,7 +1722,9 @@
                 this.$.panelAppSelectedGenes.selected = [];
                 this.$.panelAppSelectedDisease.selected = [];
             } else {
-                this.errorAddGenes = "No gen selected";
+                // this.errorAddGenes = "No gene selected";
+                alert("Any selected gene");
+                return;
             }
         },
         handlePanelAppSelectedGen: function(e) {
@@ -1555,6 +1755,34 @@
                 this.$.saveAsPanel.hidden = true;
                 this.$.savePanel.hidden = false;
             }
-        }
+        },
+        showImportBEDComponent: function() {
+            this.$.importBEDComponent.hidden = false;
+        },
+        handleImportBEDFile: function() {
+            var file = this.$.importBEDFile.$.fileInput.files[0];
+
+            if (!(this.$.importBEDFile.$.validator.errorCount > 0)) {
+                this.handleGenesImportBed(file);
+                this.$.importBEDComponent.hidden = true;
+            }
+        },
+        showImportVCFComponent: function() {
+            if (this.$.mutationGVPheVCF.value != "") {
+                this.$.importVCFComponent.hidden = false;
+            } else {
+                alert("Phenotype is mandatory");
+                return;
+            }
+        },
+        handleImportVCFFile: function() {
+            var file = this.$.importVCFFile.$.fileInput.files[0];
+
+            if (!(this.$.importVCFFile.$.validator.errorCount > 0)) {
+                this.handleMutationImportVCF(file);
+                this.$.mutationGVPheVCF.value = "";
+                this.$.importVCFComponent.hidden = true;
+            }
+        },
     });
 </script>

@@ -208,15 +208,15 @@
                     </span>
                     <table id="stadistics">
                         <tr>
-                            <td> Total Genes </td>
+                            <td> Total Variants </td>
                             <td class="numbers"> {{totalData}} </td>
                         </tr>
                         <tr>
-                            <td> Diagnostic Genes </td>
+                            <td> Diagnostic Variants </td>
                             <td class="numbers"> {{diagData.length}} </td>
                         </tr>
                         <tr>
-                            <td> Secondary Genes </td>
+                            <td> Secondary Variants </td>
                             <td class="numbers"> {{secData.length}} </td>
                         </tr>
                     </table>
@@ -226,7 +226,7 @@
                         <tr>
                             <th class="title">Static Filters
                             </th>
-                            <th class="title">Found Genes
+                            <th class="title">Found Variants
                             </th>
                         </tr>
                         <tr>
@@ -252,7 +252,7 @@
                     <table id="customFilters">
                         <tr>
                             <th class="title"> Custom Filter Used </th>
-                            <th class="title"> Found Genes </th>
+                            <th class="title"> Found Variants </th>
                         </tr>
                         <tr>
                             <td class="numbers">{{filter}}</td>
@@ -429,7 +429,13 @@
             mutations: {
                 type: Array,
             },
-
+            panelConfig: {
+                type: Object,
+                value: function() {
+                    return {};
+                },
+                notify: true
+            },
             _columnsDiag: {
                 type: Array,
                 value: [{
@@ -508,6 +514,16 @@
                 }, {
                     name: 'maf1000GP3',
                     title: 'MAF 1000G Phase 3',
+                    width: 50,
+                    defaultValue: '.'
+                }, {
+                    name: 'esp6500EA',
+                    title: 'ESP6500EA',
+                    width: 50,
+                    defaultValue: '.'
+                }, {
+                    name: 'esp6500AA',
+                    title: 'ESP6500AA',
                     width: 50,
                     defaultValue: '.'
                 }, {
@@ -601,6 +617,16 @@
                 }, {
                     name: 'maf1000GP3',
                     title: 'MAF 1000G Phase 3',
+                    width: 50,
+                    defaultValue: '.'
+                }, {
+                    name: 'esp6500EA',
+                    title: 'ESP 6500 EA',
+                    width: 50,
+                    defaultValue: '.'
+                }, {
+                    name: 'esp6500AA',
+                    title: 'ESP 6500 AA',
                     width: 50,
                     defaultValue: '.'
                 }, {
@@ -788,13 +814,11 @@
             return 'top: ' + (350 - 25 * n) + 'px';
         },
         getJobPanel: function() {
-            b = document.getElementById('newDiagnosticPanels');
             var jobPanel = {};
-            var panels = b.dataPanels;
+            var panels = this.panelConfig.panels;
             for (var i = 0; i < panels.length; i++) {
                 var panel = panels[i];
-                // var name = panel.file.name;
-                // if (this.job.commandLine.search(name) >= 0) {
+
                 if (this.job.input.indexOf(panel.fileId) >= 0) {
                     var panelId = panel.fileId;
                     var data;

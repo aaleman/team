@@ -17,6 +17,8 @@ function Panel(args) {
     _.extend(this, args);
 
     this.modCount = 0;
+
+    this.hashMutations={};
 };
 Panel.prototype = {
     _incModCount: function () {
@@ -101,7 +103,7 @@ Panel.prototype = {
                             if (geneElem.result.length > 0) {
                                 var row = data.response[i].result[0];
                                 var gene = {
-                                    name: geneElem.id,
+                                    name: row.name,
                                     chr: row.chromosome,
                                     start: row.start,
                                     end: row.end
@@ -157,7 +159,7 @@ Panel.prototype = {
                                     if (geneElem.result.length > 0) {
                                         var row = data.response[i].result[0];
                                         var gene = {
-                                            name: geneElem.id,
+                                            name: row.name,
                                             chr: row.chromosome,
                                             start: row.start,
                                             end: row.end
@@ -179,7 +181,6 @@ Panel.prototype = {
             }
 
             if (disease.source == "clinvar") {
-
                 CellBaseManager.get({
                     species: 'hsapiens',
                     category: 'feature',
@@ -293,18 +294,25 @@ Panel.prototype = {
         }
     },
     containsMutation: function (mutation) {
-        for (var i = 0; i < this.mutations.length; i++) {
-            var elem = this.mutations[i];
-            if (elem.chr == mutation.chr &&
-                elem.pos == mutation.pos &&
-                elem.ref == mutation.ref &&
-                elem.alt == mutation.alt &&
-                elem.phe == mutation.phe &&
-                elem.src == mutation.src) {
-                return true;
-            }
-        }
-        return false;
+      // var mutName = mutation.chr + "_" + mutation.pos + "_" + mutation.ref + "_" + mutation.alt + "_" + mutation.phe + "_" + mutation.src;
+      // if (this.hashMutations[mutName]) { // mutName in hashMutations
+      //     return true;
+      // } else {
+      //   this.hashMutations[mutName]=true;
+      //
+          for (var i = 0; i < this.mutations.length; i++) {
+              var elem = this.mutations[i];
+              if (elem.chr == mutation.chr &&
+                  elem.pos == mutation.pos &&
+                  elem.ref == mutation.ref &&
+                  elem.alt == mutation.alt &&
+                  elem.phe == mutation.phe &&
+                  elem.src == mutation.src) {
+                  return true;
+              }
+          }
+          return false;
+      // }
     },
     removeGenesFromDisease: function (disease) {
         if (disease.associatedGenes && disease.associatedGenes.length > 0) {

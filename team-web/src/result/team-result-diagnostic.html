@@ -218,6 +218,16 @@
             width: 100,
             defaultValue: '.'
         }, {
+            name: 'esp6500EA',
+            title: 'ESP 6500 EA',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'esp6500AA',
+            title: 'ESP 6500 AA',
+            width: 100,
+            defaultValue: '.'
+        }, {
             name: 'phenotype',
             title: 'Phenotype',
             width: 400,
@@ -308,6 +318,16 @@
             width: 100,
             defaultValue: '.'
         }, {
+            name: 'esp6500EA',
+            title: 'ESP 6500 EA',
+            width: 100,
+            defaultValue: '.'
+        }, {
+            name: 'esp6500AA',
+            title: 'ESP 6500 AA',
+            width: 100,
+            defaultValue: '.'
+        }, {
             name: 'clinvar',
             title: 'Clinvar',
             width: 100,
@@ -325,11 +345,11 @@
         }],
 
         ready: function() {
-                if (this.typeData == "diagnostic") {
-                    this.$.table.columns = this._columnsDiag;
-                } else if (this.typeData == "secondary") {
-                    this.$.table.columns = this._columnsSec;
-                }
+            if (this.typeData == "diagnostic") {
+                this.$.table.columns = this._columnsDiag;
+            } else if (this.typeData == "secondary") {
+                this.$.table.columns = this._columnsSec;
+            }
             var me = this;
             this.async(function() {
                 this.$.gv.createGenomeViewer();
@@ -413,24 +433,30 @@
                 } else if (key === "gene") {
                     var gene_aux = data.gene.toUpperCase().split(",");
                     match = this._checkValue(gene_aux, query);
+                } else if (key === "ids") {
+                    var snpId_aux = data.id.toLowerCase().split(",");
+                    match = this._checkValue(snpId_aux, query);
                 } else if (key === "dp") {
                     match = this._computeInputOption(data.dp, query, filters["dp_op"]);
                 } else if (key === "qual") {
                     match = this._computeInputOption(data.qual, query, filters["qual_op"]);
                 } else if (key === "maf1000g") {
-                    match = this._computeInputOption(data.maf1000g, query, filters["maf1000g_op"]);
-                } else if (key === "mafEVS") {
-                    // match = this._computeInputOption(data.mafEVS, query, filters["mafEVS_op"]);
-                    match = true;
+                    match = this._computeInputOption(data.maf1000G, query, filters["maf1000g_op"]);
+                } else if (key === "maf1000GP3") {
+                    match = this._computeInputOption(data.maf1000GP3, query, filters["maf1000GP3_op"]);
+                } else if (key === "esp6500EA") {
+                    match = this._computeInputOption(data.esp6500EA, query, filters["esp6500EA_op"]);
+                } else if (key === "esp6500AA") {
+                    match = this._computeInputOption(data.esp6500AA, query, filters["esp6500AA_op"]);
                 } else if (key === "sift") {
-                    match = this._computeInputOption(data.sift, query, filters["sift_op"]);
+                    match = this._computeInputOption(data.sift, query);
                 } else if (key === "polyphen") {
-                    match = this._computeInputOption(data.polyphen, query, filters["polyphen_op"]);
+                    match = this._computeInputOption(data.polyphen, query);
                 } else if (key === "phylop") {
-                    match = this._computeInputOption(data.phylop, query, filters["phylop_op"]);
+                    match = this._computeInputOption(data.phylop, query);
                 } else if (key === "phastcons") {
-                    match = this._computeInputOption(data.phastcons, query, filters["phastcons_op"]);
-                } else if (key === "ct") {
+                    match = this._computeInputOption(data.phastcons, query);
+                } else if (key === "annot-ct") {
                     ct_aux = data.ct.split(",");
                     match = this._checkValue(ct_aux, query);
                 } else if (key.endsWith("_op")) {
@@ -441,20 +467,29 @@
             return filtered;
         },
         _computeInputOption: function(value, query, op) {
+          if(op==null){
+            var aux = query.split("");
+              var val = "";
+              var valOp = "";
+              var n = 0;
+              for (var i = 0; i < 2; i++) {
+                  if (isNaN(aux[i])) {
+                      valOp += aux[i];
+                      n++;
+                  }
+              }
+              for (var i = n; i < aux.length; i++) {
+                  val += aux[i];
+              }
+              query = parseFloat(val);
+              op = valOp;
+          }
             var aux = false;
             if (value === ".") {
                 aux = true;
             }
             value = parseFloat(value);
-            if (op == "==") {
-                if (value == query) {
-                    aux = true;
-                }
-            } else if (op == "!=") {
-                if (value != query) {
-                    aux = true;
-                }
-            } else if (op == "<") {
+            if (op == "<") {
                 if (value < query) {
                     aux = true;
                 }
@@ -474,9 +509,10 @@
             return aux;
         },
         _checkValue: function(value, query) {
-            for (var i = 0; i < query.length; i++) {
+          var q=query.split(",");
+            for (var i = 0; i < q.length; i++) {
                 for (var j = 0; j < value.length; j++) {
-                    if (value[j] == query[i]) {
+                    if (value[j] == q[i]) {
                         return true;
                     }
                 }
@@ -488,11 +524,15 @@
                 var a = query[i].split(":");
                 var chr_aux = a[0];
                 if (chr == chr_aux) {
-                    var pos = a[1].split("-");
-                    var start = parseInt(pos[0]);
-                    var end = parseInt(pos[1]);
-                    if (position >= start && position <= end) {
+                    if (a.length == 1) {
                         return true;
+                    } else {
+                        var pos = a[1].split("-");
+                        var start = parseInt(pos[0]);
+                        var end = parseInt(pos[1]);
+                        if (position >= start && position <= end) {
+                            return true;
+                        }
                     }
                 }
             }

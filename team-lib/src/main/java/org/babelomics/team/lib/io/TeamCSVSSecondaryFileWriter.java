@@ -39,6 +39,11 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
         sb.append("MAF 1000G (Allele)").append(SEPARATOR);
         sb.append("MAF 1000G Phase 3").append(SEPARATOR);
         sb.append("MAF 1000G Phase 3 (Allele)").append(SEPARATOR);
+        sb.append("MAF ESP AA").append(SEPARATOR);
+        sb.append("MAF ESP AA (Allele)").append(SEPARATOR);
+
+        sb.append("MAF ESP EA").append(SEPARATOR);
+        sb.append("MAF ESP EA (Allele)").append(SEPARATOR);
 
         sb.append("Clinvar").append(SEPARATOR);
         sb.append("Cosmic").append(SEPARATOR);
@@ -74,10 +79,8 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
         sb.append(dp).append(SEPARATOR);
 
 
-        String id = variant.getAnnotation().getId();
-        if (id == null || id.isEmpty()) {
-            id = ".";
-        }
+        String id = (!variant.getIds().isEmpty()) ? variant.getIds().get(0) : ".";
+
         sb.append(id).append(SEPARATOR);
 
         String genes = getGenes(variant.getAnnotation().getConsequenceTypes());
@@ -113,6 +116,27 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
         if (maf1000GP3 != null) {
             sb.append(df.format(maf1000GP3.maf)).append(SEPARATOR);
             sb.append(maf1000GP3.allele).append(SEPARATOR);
+        } else {
+            sb.append(".").append(SEPARATOR);
+            sb.append(".").append(SEPARATOR);
+        }
+
+
+        Maf mafESPAA = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP_6500", "African_American");
+
+        if (mafESPAA != null) {
+            sb.append(df.format(mafESPAA.maf)).append(SEPARATOR);
+            sb.append(mafESPAA.allele).append(SEPARATOR);
+        } else {
+            sb.append(".").append(SEPARATOR);
+            sb.append(".").append(SEPARATOR);
+        }
+
+        Maf mafESPEA = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP_6500", "European_American");
+
+        if (mafESPEA != null) {
+            sb.append(df.format(mafESPEA.maf)).append(SEPARATOR);
+            sb.append(mafESPEA.allele).append(SEPARATOR);
         } else {
             sb.append(".").append(SEPARATOR);
             sb.append(".").append(SEPARATOR);

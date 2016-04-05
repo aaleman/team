@@ -30,19 +30,22 @@
         .names {
             width: 200px
         }
-        .chr{
-            width:50px;
+
+        .chr {
+            width: 50px;
         }
 
-        .pos{
-            width:75px;
+        .pos {
+            width: 75px;
         }
 
-        .ref, .alt{
-            width:50px;
+        .ref,
+        .alt {
+            width: 50px;
         }
-        .dis{
-            width:200px;
+
+        .dis {
+            width: 200px;
         }
     </style>
     <template>
@@ -62,8 +65,8 @@
                 <input class="input flex" type="text" value="{{phe::input}}">
             </div>
             <!--<div class="horizontal layout data">-->
-                <!--<label style="font-size:12px;" for="">Gene Name: &nbsp;</label>-->
-                <!--<input class="input names" type="text">-->
+            <!--<label style="font-size:12px;" for="">Gene Name: &nbsp;</label>-->
+            <!--<input class="input names" type="text">-->
             <!--</div>-->
 
             <div class="horizontal layout">
@@ -84,22 +87,36 @@
         Polymer({
             is: "team-mutation-selector",
             properties: {
-                chr: {type: String, value: ""},
-                pos: {type: Number},
-                ref: {type: String, value: ""},
-                alt: {type: String, value: ""},
-                phe: {type: String, value: ""}
+                chr: {
+                    type: String,
+                    value: ""
+                },
+                pos: {
+                    type: Number
+                },
+                ref: {
+                    type: String,
+                    value: ""
+                },
+                alt: {
+                    type: String,
+                    value: ""
+                },
+                phe: {
+                    type: String,
+                    value: ""
+                }
 
             },
-            ready: function () {
+            ready: function() {
                 var me = this;
-                this.async(function () {
+                this.async(function() {
 
                     this.$.gv.createGenomeViewer();
                     var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
                     this.$.gv.genomeViewer.draw();
 
-                    var updateForm = function () {
+                    var updateForm = function() {
                         me.chr = seq.region.chromosome;
                         me.pos = seq.region.center();
                         me.ref = me.$.gv.genomeViewer.trackListPanel.getSequenceNucleotid(me.pos);
@@ -111,32 +128,55 @@
                 });
 
             },
-            handleReset: function(){
+            handleReset: function() {
                 this.chr = "";
                 this.pos = "";
                 this.ref = "";
                 this.alt = "";
                 this.phe = "";
             },
-            handleAddMut: function(){
+            handleAddMut: function() {
+
+                var chr = this.chr;
+                var pos = this.pos;
+                var ref = this.ref.toUpperCase();
+                var alt = this.alt.toUpperCase();
+                var phe = this.phe;
+
+                var re = /^[ACTG]*$/;
+
+                if (chr == "" || pos.length == 0 || phe == "") {
+                    alert("Chromosome, Position and Phenotype are mandatory");
+                    return;
+                } else if (ref == "" && alt == "") {
+                    alert("Reference or Alternate is mandatory");
+                    return;
+                } else if (!re.test(ref) || !re.test(alt)) {
+                    alert("Reference and Alternate must contain only ACTG");
+                    return;
+                }
 
                 var mut = {
-                    chr: this.chr,
-                    pos: this.pos,
-                    ref: this.ref,
-                    alt: this.alt,
-                    phe: this.phe,
+                    chr: chr,
+                    pos: pos,
+                    ref: ref,
+                    alt: alt,
+                    phe: phe,
                     src: "user-defined"
                 };
 
                 this.fire("created-mutation", mut);
 
             },
-            handleCheck: function(){
-                  var reg = this.chr + ":" + this.pos + "-" + this.pos;
-                  var region = new Region(reg);
+            handleCheck: function() {
+                if (this.chr == "" || this.pos.length == 0) {
+                    alert("Chromosome and Position are mandatory");
+                    return;
+                }
+                var reg = this.chr + ":" + this.pos + "-" + this.pos;
+                var region = new Region(reg);
 
-                    this.$.gv.genomeViewer.setRegion(region);
+                this.$.gv.genomeViewer.setRegion(region);
             }
         })
     </script>
