@@ -31,8 +31,6 @@ public class TeamVariantMongoReader implements VariantReader {
     private VariantDBIterator iterator;
 
     public TeamVariantMongoReader(CatalogManager catalogManager, StorageConfiguration storageConfiguration, int studyId, String sessionId) {
-
-
         this.storageConfiguration = storageConfiguration;
         this.studyId = studyId;
         this.sessionId = sessionId;
@@ -53,6 +51,7 @@ public class TeamVariantMongoReader implements VariantReader {
     public boolean open() {
         boolean res = true;
         try {
+
             DataStore dataStore = AnalysisFileIndexer.getDataStore(catalogManager, studyId, File.Bioformat.VARIANT, sessionId);
             String storageEngine = dataStore.getStorageEngine();
             String dbName = dataStore.getDbName();
@@ -65,8 +64,10 @@ public class TeamVariantMongoReader implements VariantReader {
 
             q.append(String.valueOf(VariantDBAdaptor.VariantQueryParams.RETURNED_STUDIES), this.studyId);
 
-
+            System.out.println(dbAdaptor.getAllVariants(new QueryOptions()));
             iterator = dbAdaptor.iterator(new QueryOptions());
+
+            System.out.println("iterator = " + iterator.hasNext());
 
 //            Study study = catalogManager.getStudy(studyId, sessionId).getResult().get(0);
 
@@ -106,6 +107,7 @@ public class TeamVariantMongoReader implements VariantReader {
         List<Variant> res = new ArrayList<>();
         while (iterator.hasNext() && cont < batchSize) {
             Variant v = iterator.next();
+            System.out.println(v);
             res.add(v);
             cont++;
         }

@@ -42,6 +42,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
     @Override
     public boolean open() {
         try {
+
             printer = new PrintWriter(this.filename);
         } catch (FileNotFoundException e) {
             return false;
