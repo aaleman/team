@@ -29,6 +29,9 @@ public class Parameters {
     @Parameter(names = {"-h", "--help"}, help = true)
     private boolean help;
 
+    @Parameter(names = {"--opencga-home"}, help = true)
+    private String opencgaHome = System.getenv("OPENCGA_HOME");
+
 
     public int getInput() {
         return sampleId;
@@ -52,5 +55,9 @@ public class Parameters {
 
     public int getStudyId() {
         return studyId;
+    }
+
+    public String getOpencgaHome() {
+        return opencgaHome;
     }
 }

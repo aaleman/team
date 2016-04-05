@@ -67,7 +67,7 @@ storageEngines:
       collection.files: "files"
     database:
       hosts:
-      - "localhost:27017"
+      - "sql00:27017"
       user: "opencga_user"
       password: "opencga_Pass"
 

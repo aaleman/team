@@ -30,6 +30,7 @@ import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.catalog.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
 import org.opencb.opencga.catalog.models.Sample;
+import org.opencb.opencga.core.common.Config;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.config.StorageConfiguration;
 
@@ -52,6 +53,7 @@ public class TeamMain {
         String outputFile;
         String panelFilename;
         String sessionId;
+        String opencgaHome;
         int studyId;
 
         try {
@@ -67,7 +69,9 @@ public class TeamMain {
         outputFile = parameters.getOutput();
         sessionId = parameters.getSessionId();
         studyId = parameters.getStudyId();
+        opencgaHome = parameters.getOpencgaHome();
 
+        Config.setOpenCGAHome(opencgaHome);
 
         Properties catalogProp = new Properties();
         catalogProp.load(TeamMain.class.getClassLoader().getResourceAsStream("catalog.properties"));
