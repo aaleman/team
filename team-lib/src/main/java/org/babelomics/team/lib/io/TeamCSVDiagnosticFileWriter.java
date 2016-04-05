@@ -63,6 +63,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append("pos").append(SEPARATOR);
         sb.append("ref").append(SEPARATOR);
         sb.append("alt").append(SEPARATOR);
+        sb.append("gt").append(SEPARATOR);
 
         sb.append("qual").append(SEPARATOR);
         sb.append("DP").append(SEPARATOR);
@@ -110,6 +111,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append(variant.getStart()).append(SEPARATOR);
         sb.append(variant.getReference()).append(SEPARATOR);
         sb.append(variant.getAlternate()).append(SEPARATOR);
+        sb.append(teamVariant.getGenotype()).append(SEPARATOR);
 
         StudyEntry vse = variant.getStudies().get(0); // aaleman: Check this with 2 or more studies.
 
@@ -164,7 +166,6 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
             sb.append(".").append(SEPARATOR);
             sb.append(".").append(SEPARATOR);
         }
-
 
 
         Maf mafESPAA = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP_6500", "African_American");

@@ -125,7 +125,7 @@ public class TeamMain {
 
                 FilterApplicator.filter(batch, filters);
 
-                run(batch, panel, diagnosticVariants, secondaryFindingsVariants);
+                run(batch, panel, sample, diagnosticVariants, secondaryFindingsVariants);
 
                 diagnosticWriter.write(diagnosticVariants);
                 secondaryFindingsWriter.write(secondaryFindingsVariants);
@@ -153,9 +153,13 @@ public class TeamMain {
         }
     }
 
-    private static void run(List<Variant> batch, Panel panel, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
+    private static void run(List<Variant> batch, Panel panel, Sample sample, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
         for (Variant variant : batch) {
             TeamVariant teamVariant = new TeamVariant(variant);
+
+            String gt = variant.getStudies().get(0).getSampleData(sample.getName(), "GT");
+            teamVariant.setGenotype(gt);
+
             if (isDiagnosticVariant(teamVariant, panel)) {
                 diagnosticVariants.add(teamVariant);
             } else {
