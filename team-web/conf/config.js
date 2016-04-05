@@ -5,7 +5,6 @@ CELLBASE_VERSION = "v3";
 // CELLBASE_VERSION = "v4";
 
 OPENCGA_HOST = "http://test.babelomics.org/opencga-0.7-dev";
-// OPENCGA_HOST = "http://bioinfoint.hpc.cam.ac.uk/opencga/rest";
 
 CONSEQUENCE_TYPES = [{
     "name": "transcript_ablation",
