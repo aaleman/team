@@ -6,3 +6,14 @@ You can find TEAM documentation and tutorials at: https://github.com/babelomics/
 
 ### How to cite TEAM
 Alemán A, Garcia-Garcia F, Medina I, Dopazo J. A web tool for the design and management of panels of genes for targeted enrichment and massive sequencing for clinical applications. Nucleic Acids Res. 2014 Jul;42(Web Server issue):W83-7. doi: 10.1093/nar/gku472 [PubMed](http://www.ncbi.nlm.nih.gov/pubmed/24861626) [NAR](http://nar.oxfordjournals.org/content/42/W1/W83.long) [PMC](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4086136/)
+
+### Issue Tracking
+You can report bugs or request new features at [GitHub issue tracking](https://github.com/babelomics/team/issues).
+
+### Release Notes and Roadmap
+Releases notes are available at [GitHub releases](https://github.com/babelomics/team/releases).
+
+Roadmap is available at [GitHub milestones](https://github.com/babelomics/team/milestones). You can report bugs or request new features at [GitHub issue tracking](https://github.com/babelomics/team/issues).
+
+### Versioning
+BierApp is versioned following the rules from [Semantic versioning](http://semver.org/).
