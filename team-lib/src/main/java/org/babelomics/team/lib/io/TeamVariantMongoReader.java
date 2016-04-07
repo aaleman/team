@@ -64,12 +64,7 @@ public class TeamVariantMongoReader implements VariantReader {
 
             q.append(String.valueOf(VariantDBAdaptor.VariantQueryParams.RETURNED_STUDIES), this.studyId);
 
-            System.out.println(dbAdaptor.getAllVariants(new QueryOptions()));
             iterator = dbAdaptor.iterator(new QueryOptions());
-
-            System.out.println("iterator = " + iterator.hasNext());
-
-//            Study study = catalogManager.getStudy(studyId, sessionId).getResult().get(0);
 
         } catch (CatalogException | ClassNotFoundException | StorageManagerException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
@@ -107,7 +102,6 @@ public class TeamVariantMongoReader implements VariantReader {
         List<Variant> res = new ArrayList<>();
         while (iterator.hasNext() && cont < batchSize) {
             Variant v = iterator.next();
-            System.out.println(v);
             res.add(v);
             cont++;
         }

@@ -161,7 +161,6 @@ public class TeamMain {
 
     private static void run(List<Variant> batch, Panel panel, Sample sample, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
         for (Variant variant : batch) {
-            System.out.println(variant);
             TeamVariant teamVariant = new TeamVariant(variant);
 
             String gt = variant.getStudies().get(0).getSampleData(sample.getName(), "GT");
