@@ -176,7 +176,7 @@
                             <div class="horizontal layout flex" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">
                                 <span class="num">{{item.date}} </span>
                                 <span id="filter-name" class="name">{{item.name}} </span>
-                                <span class="num">{{item.finded}}</span>
+                                <span class="num">{{item.found}}</span>
                             </div>
                         </template>
                     </div>
@@ -805,13 +805,13 @@
                     }
                     var date = dateAux.getDate() + '/' + (dateAux.getMonth() + 1) + ' ' + dateAux.getHours() + ':' + minAux;
                     name = this.loadForm(q);
-                    var finded = this.filterData.length;
+                    var found = this.filterData.length;
                     var hf = {};
                     hf = {
                         date: date,
                         name: name,
                         filter: q,
-                        finded: finded
+                        found: found
                     };
 
                     var filters = new FilterHistory(5, filterHistory);
