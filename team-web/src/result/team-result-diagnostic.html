@@ -156,6 +156,10 @@
             title: "Alt",
             width: 100
         }, {
+            name: 'gt',
+            title: "Gt",
+            width: 100
+        }, {
             name: 'id',
             title: 'SNP Id',
             width: 100,
@@ -254,6 +258,10 @@
         }, {
             name: 'alt',
             title: "Alt",
+            width: 100
+        }, {
+            name: 'gt',
+            title: "Gt",
             width: 100
         }, {
             name: 'id',
@@ -467,23 +475,23 @@
             return filtered;
         },
         _computeInputOption: function(value, query, op) {
-          if(op==null){
-            var aux = query.split("");
-              var val = "";
-              var valOp = "";
-              var n = 0;
-              for (var i = 0; i < 2; i++) {
-                  if (isNaN(aux[i])) {
-                      valOp += aux[i];
-                      n++;
-                  }
-              }
-              for (var i = n; i < aux.length; i++) {
-                  val += aux[i];
-              }
-              query = parseFloat(val);
-              op = valOp;
-          }
+            if (op == null) {
+                var aux = query.split("");
+                var val = "";
+                var valOp = "";
+                var n = 0;
+                for (var i = 0; i < 2; i++) {
+                    if (isNaN(aux[i])) {
+                        valOp += aux[i];
+                        n++;
+                    }
+                }
+                for (var i = n; i < aux.length; i++) {
+                    val += aux[i];
+                }
+                query = parseFloat(val);
+                op = valOp;
+            }
             var aux = false;
             if (value === ".") {
                 aux = true;
@@ -509,7 +517,7 @@
             return aux;
         },
         _checkValue: function(value, query) {
-          var q=query.split(",");
+            var q = query.split(",");
             for (var i = 0; i < q.length; i++) {
                 for (var j = 0; j < value.length; j++) {
                     if (value[j] == q[i]) {
