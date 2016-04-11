@@ -70,15 +70,6 @@
             border-bottom: 2px solid var(--accent-color);
         }
 
-        /*#content {
-            background-color: inherit;
-            position: absolute;
-            top: 60px;
-            width: 100%;
-            height: calc(100% - 60px);
-            overflow-y: auto;
-        }*/
-
         .content {
             position: absolute;
             width: 100%;
@@ -185,7 +176,6 @@
             <team-home data-option="home"></team-home>
         </div>
 
-
         <jso-panel movable expandible closable id="newDiagnosisPanel" on-close="returnHome" menu-option="newdiagnostic">
             <div class="header" style="text-align:left;font-size:15px;">
                 <i class="fa fa-stethoscope"></i>
@@ -197,7 +187,6 @@
                                          on-run="handleRunJob"></team-new-diagnostic-element>
         </jso-panel>
 
-
         <jso-panel movable expandible closable id="newPanelPanel" on-close="returnHome" menu-option="newpanel">
             <div class="header" style="text-align:left;font-size:15px;">
                 <i class="fa fa-plus"></i> New Panel
@@ -206,7 +195,6 @@
                                     default-study="{{defaultStudy}}" panel-config="{{panelConfig}}"
                                     user-data="{{userData}}"></team-panel-form-wizard>
         </jso-panel>
-
 
         <jso-panel movable expandible closable id="panelManager" on-close="returnHome" menu-option="panels">
             <div class="header" style="text-align:left;font-size:15px;">
@@ -218,7 +206,6 @@
             </team-panel-manager>
         </jso-panel>
 
-
         <div id="content" class="content" menu-option="newdiagnostic,newpanel,panels,home,result">
             <jso-panel hidden collapsible closable movable id="browserPanel" on-hidden="handlePanelHidden">
                 <div class="header">
@@ -228,7 +215,6 @@
                                      bioformats="{{bioformats}}" mode="file"
                                      on-need-refresh="handleUserNeedRefresh"></jso-opencga-browser>
             </jso-panel>
-
 
             <jso-panel hidden collapsible closable movable id="sampleBrowserPanel" on-hidden="handlePanelHidden">
                 <div class="header">
@@ -251,7 +237,6 @@
         <div class="content" menu-option="result">
             <team-result id="teamResult" panel-config="{{panelConfig}}"></team-result>
         </div>
-
 
         <jso-opencga-header id="jsoHeader" selected-option="{{selectedOption}}" user-data="{{userData}}"
                             on-login="handleLogin" on-logout="handleLogout" hide-jobs hide-browse show-menu-on-login>
@@ -313,7 +298,6 @@
                 </a>
             </jso-help-menu>
         </jso-opencga-header>
-
 
         <jso-opencga-footer menu-option="home,loging,singup,profile,remember">
             TEAM: created by Computational Genomics Department
@@ -404,7 +388,6 @@
         handleLogin: function () {
             // this.selectedOption = "panels";
             // this.homeHidden = true;
-
         },
         handleLogout: function () {
             this.$.browserPanel.hide();

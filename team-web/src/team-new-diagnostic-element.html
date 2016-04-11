@@ -174,7 +174,6 @@
                             <div class="horizontal layout">
                                 <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
                             </div>
-                            <!-- <jso-select-box id="examplePanels" style="margin:10px" options="{{examplePanels}}" title-attribute="name" on-select="handlePanelExampleSelected"></jso-select-box> -->
                             <div id="examplePanels">
                                 <template is="dom-repeat" items="{{examplePanels}}">
                                     <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
@@ -351,9 +350,6 @@
         },
         handleForm: function(e) {
             var me = this;
-            // if (this.selectedSample.id == null) {
-            //     this.errorMessageFile = "No sample selected or sample status are not READY";
-            // }
             this.selectedSamples = this._getSelectedSamples();
             if (this.selectedSamples == null) {
                 this.errorMessageFile = "No sample/s selected or sample/s status are not READY"
@@ -361,7 +357,6 @@
             if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
             }
-            // if (this.selectedSample.id != null && this.selectedPanelId != null) {
             if (this.selectedSamples != null && this.selectedPanelId != null) {
                 this.$.progressBar.hidden = false;
                 this.async(function() {
@@ -389,18 +384,15 @@
                             name: name,
                             description: me.jobDescription,
 
-                            // sampleId: this.selectedSample.id,
                             sampleId: sampleId,
                             panel: me.selectedPanelId,
                             output: me.analysisFolder.id,
                             sessionId: Cookies("bioinfo_sid"),
                         };
-                        // this.sleep(1000);
                         this._processJob(query, i, total);
                     }
                 }, 50);
             } else {
-                // this.errorMessage = "There are errors in the form. Correct them before launching work.";
                 alert("There are errors in the form. Correct them before launching work");
                 return;
             }
@@ -439,7 +431,6 @@
         handlePanelClick: function(e) {
             this.selectedPanelId = e.detail.fileId;
             this.errorMessagePanel = " ";
-            // if (this.selectedSample != null) {
             if (this.selectedSamples.length > 0) {
                 this.errorMessage = "";
             }
@@ -516,14 +507,6 @@
 
             }
         },
-        // sleep: function(milliseconds) {
-        //     var start = new Date().getTime();
-        //     for (var i = 0; i < 1e7; i++) {
-        //         if ((new Date().getTime() - start) > milliseconds) {
-        //             break;
-        //         }
-        //     }
-        // },
         _getSelectedSamples: function() {
             var samplesArray = [];
             var samples = this.$.sampleBrowser.querySelectorAll('jso-opencga-sample-list-item[selected]')

@@ -83,18 +83,6 @@
             resize: none;
             border: 1px solid #d0d0d0;
         }
-        /*#diagResult,
-        .secResult {
-            transform: rotate(-90deg);
-            position: relative;
-            top: 300px;
-            width: 700px;
-            font-size: 10px;
-        }
-
-        #diagResult {
-            top: 350px;
-        }*/
 
         .colum {
             /*text-overflow: ellipsis;*/
@@ -189,7 +177,6 @@
             </div>
 
             <div id="report">
-                <!-- <report-page> -->
                 <div class="">
                     <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
                     <span class="flex jobName">{{job.name}}</span>
@@ -266,8 +253,6 @@
                         <div id="divConclusions" class="conclusions" hidden>{{divConclusions}}</div>
                     </div>
                 </div>
-                <!-- </report-page> -->
-                <!-- <report-page> -->
                 <div id="diagResult">
                     <div class="title">
                         Diagnostic Table
@@ -277,13 +262,8 @@
                             <span style: "color:gray">{{comDiag}}</span>
                         </div>
                     </ul>
-                    <!-- <div id="diagnosticResult"> -->
                     <div id="reportDiagnostic">
                     </div>
-                    <!-- </div> -->
-                    <!-- </report-page> -->
-                    <!-- <template is="dom-repeat" items="{{secDataDiv}}" as='secondarydata'> -->
-                    <!-- <report-page> -->
                 </div>
                 <div id="mostPathogenicResult" hidden>
                     <div class="title">Most Pathogenic Data Table</div>
@@ -294,7 +274,6 @@
                     <div class="title">
                         Secondary Filter Data Table
                     </div>
-                    <!-- <div class="secResult" style$="{{computeTopSize(secondarydata.length)}}"> -->
                     <ul>
                         <div class="commment">Comments: &nbsp;
                             <span style: "color:gray">{{comSec}}</span>
@@ -302,10 +281,6 @@
                     </ul>
                     <div id="reportSecondary">
                     </div>
-                    <!-- </div> -->
-                    <!-- </report-page> -->
-                    <!-- </template> -->
-                    <!-- <report-page> -->
                 </div>
                 <div id="anexI">
                     <div class="description">
@@ -324,8 +299,6 @@
                     <ul>
                         D: Likely Benign --> else
                     </ul>
-                    <!-- </report-page> -->
-                    <!-- <report-page> -->
                 </div>
                 <div id="anexII" hidden>
                     <div class="description">
@@ -336,21 +309,16 @@
                         <div id="reportDiseases">
                         </div>
                     </div>
-                    <!-- </report-page> -->
-                    <!-- <report-page> -->
                     <div id="genes" class="reportPanelInfo" hidden>
                         <div class="title">Genes</div>
                         <div id="reportGenes">
                         </div>
                     </div>
-                    <!-- </report-page> -->
-                    <!-- <report-page> -->
                     <div id="mutations" class="reportPanelInfo" hidden>
                         <div class="title">Mutations</div>
                         <div id="reportMutations">
                         </div>
                     </div>
-                    <!-- </report-page> -->
                 </div>
             </div>
 
@@ -752,35 +720,7 @@
                 //     //         })
                 //     //     })
                 //     //     // pdf.output('dataurlnewwindow');
-            });
-
-            // pdf.addHTML(me.$.export1, options, function() {
-            //     // pdf.addPage();
-            //     pdf.save('web.pdf');
-            //
-            // });
-            // console.log("hola")
-            //
-            // source = this.$.report.innerHTML;
-            //
-            // margins = {
-            //     top: 80,
-            //     bottom: 60,
-            //     left: 40,
-            //     width: 522
-            // };
-            // pdf.fromHTML(
-            //     source // HTML string or DOM elem ref.
-            //     , margins.left // x coord
-            //     , margins.top // y coord
-            //     , {
-            //         'width': margins.width
-            //     },
-            //     function(dispose) {
-            //         pdf.save('Test.pdf');
-            //     },
-            //     margins
-            // )
+            });           
 
         },
         computeFilter: function(aux, jobId) {

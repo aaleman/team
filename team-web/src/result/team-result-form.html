@@ -187,23 +187,6 @@
                 <div class="jso-btn jso-btn-shdw flex" on-click="submitForm">Search</div>
             </div>
             <div id="customFiltersForm">
-                <!-- <jso-form-box collapsible>
-                    <div class="header">
-                        Position
-                    </div>
-                    <div class="container">
-                        <label class="jso">Chromosomal location:</label>
-                        <textarea class="jso" id="region" name="region" placeholder="1:1-1000000,2:1-1000000" value="{{regionValue::change}}" rows="3" required>
-                        </textarea>
-
-                        <label class="jso">Gene:</label>
-                        <textarea class="jso" id="gene" name="gene" placeholder="BRCA2,PPL" value="{{geneValue::input}}" rows="3" required>
-                        </textarea>
-                        <label class="jso">SNPId:</label>
-                        <textarea class="jso" id="snpId" name="snpId" placeholder="rs9988179,rs140361978" value="{{snpIdValue::change}}" rows="3" required>
-                        </textarea>
-                    </div>
-                </jso-form-box> -->
                 <jso-filter-position id="filterPosition" collapsible enable-snpid></jso-filter-position>
 
                 <jso-form-box collapsible collapsed>
@@ -510,26 +493,7 @@
             }
         },
         clearForm: function () {
-            // this.$.region.value = "";
-            // this.regionValue = "";
-            // this.$.gene.value = "";
-            // this.geneValue = "";
-            // this.$.snpId.value = "";
-            // this.snpIdValue = "";
-            // this.siftValue = "";
-            // this.$.sift_op.value = "<";
-            // this.polyphenValue = "";
-            // this.$.polyphen_op.value = "<";
-            // this.phylopValue = "";
-            // this.$.phylop_op.value = "<";
-            // this.phastconsValue = "";
-            // this.$.phastcons_op.value = "<";
-            // var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
-            // for (var i = 0; i < els.length; i++) {
-            //     var el = els[i];
-            //     el.checked = false;
-            // }
-
+            
             this.$.filterPosition.clear();
             this.$.filterScores.clear();
             this.$.filterConservation.clear();
