@@ -284,11 +284,9 @@
                                     <!-- <jso-tooltip type="info">
                                     </jso-tooltip> -->
                                 </div>
-                                <!-- <input type="file" style="margin-top:5px; margin-left:5px" id="geneBedFileInput"> -->
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
-                                    <!-- <div class="jso-btn jso-btn-shdw file" on-click="handleGenesImportBed"><i class="fa fa-plus-square-o"></i>&nbsp; Import -->
                                     <div class="jso-btn jso-btn-shdw file" on-click="showImportBEDComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
@@ -453,11 +451,9 @@
                                             <!--</template>-->
                                             <!--</datalist>-->
                                         </div>
-                                        <!-- <input style="margin-top:10px" type="file" id="mutationVCFFileInput"> -->
 
                                         <div class="horizontal layout">
                                             <div class="flex"></div>
-                                            <!-- <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportVCF"><i class="fa fa-plus-square-o"></i>&nbsp; Import -->
                                             <div class="jso-btn jso-btn-shdw file" on-click="showImportVCFComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                             </div>
                                         </div>
@@ -1085,35 +1081,6 @@
             this.$.geneTextArea.value = '';
         },
         handleGenesImportBed: function(bed_file) {
-            // var me = this;
-            // var bed_file = this.$.geneBedFileInput.files[0];
-            //
-            // if (bed_file != null) {
-            //
-            //     var lr = new LineReader();
-            //     lr.on("line", function(line, next) {
-            //
-            //         if (line.indexOf("#") < 0 && line != '') {
-            //             var fields = line.split("\t");
-            //             var chr = fields[0];
-            //             var start = fields[1];
-            //             var end = fields[2];
-            //             var gene = {
-            //                 name: chr + ":" + start + "-" + end,
-            //                 chr: chr,
-            //                 start: start,
-            //                 end: end
-            //             };
-            //             me.formData.addGene(gene);
-            //         }
-            //         next();
-            //     });
-            //     lr.read(bed_file);
-            //
-            // }
-
-            // this.$.geneBedFileInput.value = "";
-
             var me = this;
 
             var log = [];
@@ -1194,35 +1161,6 @@
                 return;
             }
             var src = "user-defined";
-
-            // var vcf_file = this.$.mutationVCFFileInput.files[0];
-            // if (vcf_file != null) {
-            //     var lr = new LineReader();
-            //     lr.on("line", function(line, next) {
-            //
-            //         if (line.indexOf("#") < 0 && line != '') {
-            //             var fields = line.split("\t");
-            //             var chr = fields[0];
-            //             var pos = fields[1];
-            //             var ref = fields[3];
-            //             var alt = fields[4];
-            //
-            //             var mut = {
-            //                 chr: chr,
-            //                 pos: pos,
-            //                 ref: ref,
-            //                 alt: alt,
-            //                 phe: phe,
-            //                 src: src
-            //
-            //             };
-            //             me.formData.addMutation(mut);
-            //         }
-            //         next();
-            //     });
-            //     lr.read(vcf_file);
-            // }
-            // this.$.mutationVCFFileInput.value = "";
 
             var log = [];
             var line = 0;
@@ -1350,7 +1288,7 @@
         },
         handleClickSavePanel: function(e) {
             var me = this;
-            this.formData.name = this.formData.name.replace(/ /gi,'_');
+            this.formData.name = this.formData.name.replace(/ /gi, '_');
             if (this.formData.name == "") {
                 alert("The Panel name is mandatory");
                 return;
@@ -1569,58 +1507,62 @@
         },
         handleImportMutationsPanel: function(e) {
             var me = this;
-            if (this.$.importMutationsFromPanel.value != " ") {
-                var fileId = parseInt(this.$.importMutationsFromPanel.selectedOption.dataset.file);
-                for (var i = 0; i < this.panelsNotArchived.length; i++) {
-                    var panel = this.panelsNotArchived[i];
-                    if (panel.fileId === fileId) {
-                        var panelContent = "";
-                        OpencgaManager.files.content({
-                            id: fileId,
-                            query: {
-                                sid: Cookies('bioinfo_sid')
-                            },
-                            request: {
-                                async: false,
-                                success: function(response) {
-                                    panelContent = response;
-                                },
-                                error: function() {}
-                            }
-                        });
-                        if (panelContent != "") {
-                            this.selectedPanel = JSON.parse(panelContent);
-                            if (this.selectedPanel.mutations != "") {
-                                this.mutations = this.selectedPanel.mutations;
-                            } else {
-                                alert("The selected panel hasn't got mutations");
-                                return;
+            this.$.mutationTable.setLoading(true);
+            setTimeout(function() {
+                    if (me.$.importMutationsFromPanel.value != " ") {
+                        var fileId = parseInt(me.$.importMutationsFromPanel.selectedOption.dataset.file);
+                        for (var i = 0; i < me.panelsNotArchived.length; i++) {
+                            var panel = me.panelsNotArchived[i];
+                            if (panel.fileId === fileId) {
+                                var panelContent = "";
+                                OpencgaManager.files.content({
+                                    id: fileId,
+                                    query: {
+                                        sid: Cookies('bioinfo_sid')
+                                    },
+                                    request: {
+                                        async: false,
+                                        success: function(response) {
+                                            panelContent = response;
+                                        },
+                                        error: function() {}
+                                    }
+                                });
+                                if (panelContent != "") {
+                                    me.selectedPanel = JSON.parse(panelContent);
+                                    if (me.selectedPanel.mutations != "") {
+                                        me.mutations = me.selectedPanel.mutations;
+                                    } else {
+                                        alert("The selected panel hasn't got mutations");
+                                        return;
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-                for (var i = 0; i < this.mutations.length; i++) {
-                    var mut = this.mutations[i];
-                    if (mut["src"] == null) {
-                        var src = "user-defined";
+                        for (var i = 0; i < me.mutations.length; i++) {
+                            var mut = me.mutations[i];
+                            if (mut["src"] == null) {
+                                var src = "user-defined";
+                            } else {
+                                src = mut["src"];
+                            }
+                            mut = {
+                                chr: mut["chr"],
+                                pos: mut["pos"],
+                                ref: mut["ref"],
+                                alt: mut["alt"],
+                                phe: mut["phe"],
+                                src: src
+                            };
+                            me.formData.addMutation(mut);
+                        }
                     } else {
-                        src = mut["src"];
+                        alert("No panel selected");
+                        return;
                     }
-                    mut = {
-                        chr: mut["chr"],
-                        pos: mut["pos"],
-                        ref: mut["ref"],
-                        alt: mut["alt"],
-                        phe: mut["phe"],
-                        src: src
-                    };
-                    me.formData.addMutation(mut);
-                }
-            } else {
-                alert("No panel selected");
-                return;
-            }
-            // this.$.importMutationsFromPanel.value = " ";
+                    me.$.mutationTable.setLoading(false);
+                }, 50)
+                // this.$.importMutationsFromPanel.value = " ";
         },
 
         handleOpenGV: function(e) {

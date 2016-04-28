@@ -82,29 +82,8 @@
             <team-result-static-filters id="teamResultStaticFilters" data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
             <div id="teamResultCustomFilters" class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
-                <!-- <div class="horizontal layout filterHistory">
-                    Filters History &nbsp;
-                    <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History">
-                        <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
-                            Clear
-                        </div>
-                        <div id="filterHistoryTable" class="horizontal layout flex">
-                            <span class="title num"> Date </span>
-                            <span class="name title"> Name </span>
-                            <span class="title num"> Finded </span>
-                        </div>
-                        <template is="dom-repeat" items="{{historyFilters}}">
-                            <div class="horizontal layout flex" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">
-                                <span class="num">{{item.date}} </span>
-                                <span id="filter-name" class="name">{{item.name}} </span>
-                                <span class="num">{{item.finded}}</span>
-                            </div>
-                        </template>
-                    </jso-tooltip>
-                </div> -->
                 <team-result-form id="custom" query={{query}} filter-data="{{filterData}}" job="{{job}}"></team-result-form>
             </div>
-
             <div id="loading" hidden$="{{!loading}}">
                 <i class="fa fa-circle-o-notch fa-spin"></i> Loading...
             </div>
@@ -147,13 +126,6 @@
                     return {};
                 }
             },
-            // historyFilters: {
-            //     type: Array,
-            //     value: function() {
-            //         return [];
-            //     },
-            //     notify: true,
-            // },
             filterData: {
                 type: Array,
                 value: function() {
@@ -167,15 +139,7 @@
                 value: false
             }
         },
-        // observers: [
-        //     "filterChanged(historyFilters.splices)"
-        // ],
-
-        ready: function() {
-            // if (localStorage.bioinfo_team_filter_history) {
-            //     this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
-            // }
-        },
+        ready: function() {},
         handleView: function(e) {
             var me = this;
             this.$.teamResultStaticFilters.hidden = true;
@@ -187,7 +151,6 @@
                 me.loading = false;
                 me.view = e.target.dataset.value;
             }, 50)
-
 
         },
         _clearFilter: function() {
@@ -202,22 +165,6 @@
         },
         queryChanged: function(neo, old) {},
         valueChanged: function(neo, old) {},
-        // filterChanged: function(neo, old) {
-        //     console.log(this.historyFilters)
-        // },
-        // loadFilter: function(e) {
-        //     e.stopPropagation();
-        //     this.$.custom.clearForm();
-        //     this.$.custom.loadForm(e.currentTarget.dataFilter);
-        //     this.$.filterHistoryTooltip.handleClose(e);
-        //
-        // },
-        // clearFiltersHistory: function(e) {
-        //     e.stopPropagation();
-        //     this.historyFilters = [];
-        //     localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
-        //
-        // },
         filterDataChanged: function(neo, old) {
 
         },

@@ -140,28 +140,29 @@
                 </div>
                 <input id="searchInput" class="jso" type="text" style="width:100%;" placeholder="Search by name..." value="{{search::input}}">
                 <div class="vertical layout flex" id="userPanels">
-                    <div class="flex">
-                        <template is="dom-if" if="{{computeView(view, 'main')}}">
-                            <template is="dom-repeat" items="{{filteredPanels}}" filter="isArchived" observe="type archived">
-                                <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
-                                    <div class="name flex">{{item.name}}</div>
-                                    <!-- <div class="version" title="Version">{{item.version}}</div> -->
-                                    <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.fileId}}" data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
-                                    <i class="fa fa-inbox" title="Archive Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
-                                    <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
-                                </div>
-                            </template>
+                    <template is="dom-if" if="{{computeView(view, 'main')}}">
+                        <template is="dom-repeat" items="{{filteredPanels}}" filter="isArchived" observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
+                                <div class="name flex">{{item.name}}</div>
+                                <!-- <div class="version" title="Version">{{item.version}}</div> -->
+                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.fileId}}" data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
+                                <i class="fa fa-inbox" title="Archive Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
+                                <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
+                            </div>
                         </template>
-                        <template is="dom-if" if="{{computeView(view, 'archived')}}">
-                            <template is="dom-repeat" items="{{filteredPanels}}" filter="isNotArchived" observe="type archived">
-                                <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
-                                    <div class="name flex">{{item.name}}</div>
-                                    <!-- <div class="version" title="Version">{{item.version}}</div> -->
-                                    <i class="fa fa-laptop" title="Enable Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
-                                    <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
-                                </div>
-                            </template>
+                    </template>
+                    <template is="dom-if" if="{{computeView(view, 'archived')}}">
+                        <template is="dom-repeat" items="{{filteredPanels}}" filter="isNotArchived" observe="type archived">
+                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
+                                <div class="name flex">{{item.name}}</div>
+                                <!-- <div class="version" title="Version">{{item.version}}</div> -->
+                                <i class="fa fa-laptop" title="Enable Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
+                                <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
+                            </div>
                         </template>
+                    </template>
+                    <div id="loading" hidden$="{{!loading}}">
+                        <i class="fa fa-circle-o-notch fa-spin"></i> Loading...
                     </div>
                 </div>
                 <br>
@@ -285,6 +286,10 @@
                     return [];
                 }
             },
+            loading: {
+                type: Boolean,
+                value: false
+            }
 
         },
         ready: function() {
@@ -332,8 +337,14 @@
         },
         handleArchivedPanel: function(e) {
             e.stopPropagation();
-            var fileId = parseInt(e.currentTarget.dataset.file);
-            this.panelConfig.archivePanel(fileId);
+            this.loading = true;
+            var me = this;
+            var file = e.currentTarget.dataset.file;
+            var fileId = parseInt(file);
+            me.panelConfig.archivePanel(fileId);
+            setTimeout(function() {
+                me.loading = false;
+            }, 5000)
         },
         handlePanelSelected: function(e) {
             e.stopPropagation();
