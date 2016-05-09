@@ -98,6 +98,8 @@ public class TeamMain {
 
             List<Region> regionList = getRegionsFromPanel(panel);
 
+            System.out.println("hola");
+
 
             Sample sample = catalogManager.getSample(sampleId, new QueryOptions(), sessionId).getResult().get(0);
 
@@ -175,6 +177,7 @@ public class TeamMain {
                 }
                 if (variantTraitAssociation.getClinvar() != null && !variantTraitAssociation.getClinvar().isEmpty()) {
                     Set<String> traits = new HashSet<>();
+
                     for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
                         for (String trait : clinvar.getTraits()) {
                             // Not Specified,not specified,AllHighlyPenetrant,not provided

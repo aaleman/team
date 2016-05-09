@@ -194,7 +194,7 @@
                         Population Freqs.
                     </div>
                     <div class="container vertical layout">
-                        <label class="jso">1000G</label>
+                        <label class="jso">1000G Phase 1</label>
 
                         <div class="horizontal layout maf-elem">
                             <div class="jso-select">
@@ -215,7 +215,7 @@
                                    step="0.001" value="{{maf1000gValue::input}}"/>
                         </div>
 
-                        <label class="jso">1000G Phase3</label>
+                        <label class="jso">1000G Phase 3</label>
 
                         <div class="horizontal layout maf-elem">
                             <div class="jso-select">
@@ -237,11 +237,11 @@
 
                         </div>
 
-                        <label class="jso">ESP 6500 EA</label>
+                        <label class="jso">ESP 6500</label>
 
                         <div class="horizontal layout maf-elem">
                             <div class="jso-select">
-                                <jso-select class="jso" name="esp6500EA_op" id="esp6500EA_op">
+                                <jso-select class="jso" name="esp6500_op" id="esp6500_op">
                                     <jso-option value="<" selected>
                                         <
                                     </jso-option>
@@ -254,16 +254,16 @@
                                     <jso-option value="!=">!=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="esp6500EA" name="esp6500EA" min="0" max="1"
-                                   step="0.001" value="{{esp6500EAValue::input}}"/>
+                            <input class="jso inputValue" type="number" id="esp6500" name="esp6500" min="0" max="1"
+                                   step="0.001" value="{{esp6500Value::input}}"/>
 
                         </div>
 
-                        <label class="jso">ESP 6500 AA</label>
+                        <label class="jso">EXAC</label>
 
                         <div class="horizontal layout maf-elem">
                             <div class="jso-select">
-                                <jso-select class="jso" name="esp6500AA_op" id="esp6500AA_op">
+                                <jso-select class="jso" name="mafEXAC_op" id="mafEXAC_op">
                                     <jso-option value="<" selected>
                                         <
                                     </jso-option>
@@ -276,8 +276,8 @@
                                     <jso-option value="!=">!=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="esp6500AA" name="esp6500AA" min="0" max="1"
-                                   step="0.001" value="{{esp6500AAValue::input}}"/>
+                            <input class="jso inputValue" type="number" id="mafEXAC" name="mafEXAC" min="0" max="1"
+                                   step="0.001" value="{{mafEXACValue::input}}"/>
 
                         </div>
                     </div>
@@ -409,10 +409,10 @@
             maf1000GP3Value: {
                 type: Number,
             },
-            esp6500EAValue: {
+            esp6500Value: {
                 type: Number,
             },
-            esp6500AAValue: {
+            mafEXACValue: {
                 type: Number,
             },
             siftValue: {
@@ -493,7 +493,7 @@
             }
         },
         clearForm: function () {
-            
+
             this.$.filterPosition.clear();
             this.$.filterScores.clear();
             this.$.filterConservation.clear();
@@ -508,10 +508,10 @@
             this.$.maf1000g_op.value = "<";
             this.maf1000GP3Value = "";
             this.$.maf1000GP3_op.value = "<";
-            this.esp6500EAValue = "";
-            this.$.esp6500EA_op.value = "<";
-            this.esp6500AAValue = "";
-            this.$.esp6500AA_op.value = "<";
+            this.esp6500Value = "";
+            this.$.esp6500_op.value = "<";
+            this.mafEXACValue = "";
+            this.$.mafEXAC_op.value = "<";
 
             var gts = this.$.filter_form.querySelectorAll("input[name='gt']:checked");
             for (var i = 0; i < gts.length; i++) {
@@ -605,22 +605,22 @@
                     q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
                 }
             }
-            if (this.esp6500EAValue) {
-                if (this.$.esp6500EA.checkValidity() == false) {
-                    alert("ESP 6500 EA must be less than 1 or greater than 0");
+            if (this.esp6500Value) {
+                if (this.$.esp6500.checkValidity() == false) {
+                    alert("ESP 6500 must be less than 1 or greater than 0");
                     return;
                 } else {
-                    q["esp6500EA"] = parseFloat(this.esp6500EAValue);
-                    q["esp6500EA_op"] = this.$.esp6500EA_op.value;
+                    q["esp6500"] = parseFloat(this.esp6500Value);
+                    q["esp6500_op"] = this.$.esp6500_op.value;
                 }
             }
-            if (this.esp6500AAValue) {
-                if (this.$.esp6500AA.checkValidity() == false) {
-                    alert("ESP 6500 AA must be less than 1 or greater than 0");
+            if (this.mafEXACValue) {
+                if (this.$.mafEXAC.checkValidity() == false) {
+                    alert("MAF EXAC must be less than 1 or greater than 0");
                     return;
                 } else {
-                    q["esp6500AA"] = parseFloat(this.esp6500AAValue);
-                    q["esp6500AA_op"] = this.$.esp6500AA_op.value;
+                    q["mafEXAC"] = parseFloat(this.mafEXACValue);
+                    q["mafEXAC_op"] = this.$.mafEXAC_op.value;
                 }
             }
 
@@ -645,7 +645,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500EA != null || q.esp6500AA != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
+                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500 != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -693,7 +693,7 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500EA != null || q.esp6500AA != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
+            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500 != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
@@ -766,15 +766,15 @@
                 this.$.maf1000GP3_op.value = hf.maf1000GP3_op;
                 filterName.push("MAF 1000GP3 " + hf.maf1000GP3_op + " " + hf.maf1000GP3 + " ");
             }
-            if (hf.esp6500EA != null) {
-                this.esp6500EAValue = hf.esp6500EA;
-                this.$.esp6500EA_op.value = hf.esp6500EA_op;
-                filterName.push("MAF 1000GP3 " + hf.esp6500EA_op + " " + hf.esp6500EA + " ");
+            if (hf.esp6500 != null) {
+                this.esp6500Value = hf.esp6500;
+                this.$.esp6500_op.value = hf.esp6500_op;
+                filterName.push("ESP 6500 " + hf.esp6500_op + " " + hf.esp6500 + " ");
             }
-            if (hf.esp6500AA != null) {
-                this.esp6500AAValue = hf.esp6500AA;
-                this.$.esp6500AA_op.value = hf.esp6500AA_op;
-                filterName.push("MAF 1000GP3 " + hf.esp6500AA_op + " " + hf.esp6500AA + " ");
+            if (hf.mafEXAC != null) {
+                this.mafEXACValue = hf.mafEXAC;
+                this.$.mafEXAC_op.value = hf.mafEXAC_op;
+                filterName.push("EXAC " + hf.mafEXAC_op + " " + hf.mafEXAC + " ");
             }
 
             return filterName.join(" AND ");

@@ -223,7 +223,7 @@
             defaultValue: '.'
         }, {
             name: 'maf1000G',
-            title: 'MAF 1000G',
+            title: 'MAF 1000G Phase 1',
             width: 100,
             defaultValue: '.'
         }, {
@@ -232,13 +232,13 @@
             width: 100,
             defaultValue: '.'
         }, {
-            name: 'esp6500EA',
-            title: 'ESP 6500 EA',
+            name: 'esp6500',
+            title: 'ESP 6500',
             width: 100,
             defaultValue: '.'
         }, {
-            name: 'esp6500AA',
-            title: 'ESP 6500 AA',
+            name: 'mafEXAC',
+            title: 'EXAC',
             width: 100,
             defaultValue: '.'
         }, {
@@ -327,7 +327,7 @@
             defaultValue: '.'
         }, {
             name: 'maf1000G',
-            title: 'MAF 1000G',
+            title: 'MAF 1000G Phase 1',
             width: 100,
             defaultValue: '.'
         }, {
@@ -336,13 +336,13 @@
             width: 100,
             defaultValue: '.'
         }, {
-            name: 'esp6500EA',
-            title: 'ESP 6500 EA',
+            name: 'esp6500',
+            title: 'ESP 6500',
             width: 100,
             defaultValue: '.'
         }, {
-            name: 'esp6500AA',
-            title: 'ESP 6500 AA',
+            name: 'mafEXAC',
+            title: 'EXAC',
             width: 100,
             defaultValue: '.'
         }, {
@@ -464,10 +464,10 @@
                     match = this._computeInputOption(data.maf1000G, query, filters["maf1000g_op"]);
                 } else if (key === "maf1000GP3") {
                     match = this._computeInputOption(data.maf1000GP3, query, filters["maf1000GP3_op"]);
-                } else if (key === "esp6500EA") {
-                    match = this._computeInputOption(data.esp6500EA, query, filters["esp6500EA_op"]);
-                } else if (key === "esp6500AA") {
-                    match = this._computeInputOption(data.esp6500AA, query, filters["esp6500AA_op"]);
+                } else if (key === "esp6500") {
+                    match = this._computeInputOption(data.esp6500, query, filters["esp6500_op"]);
+                } else if (key === "mafEXAC") {
+                    match = this._computeInputOption(data.mafEXAC, query, filters["mafEXAC_op"]);
                 } else if (key === "sift") {
                     match = this._computeInputOption(data.sift, query);
                 } else if (key === "polyphen") {

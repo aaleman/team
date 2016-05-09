@@ -81,11 +81,10 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append("MAF 1000G (Allele)").append(SEPARATOR);
         sb.append("MAF 1000G Phase 3").append(SEPARATOR);
         sb.append("MAF 1000G Phase 3 (Allele)").append(SEPARATOR);
-        sb.append("MAF ESP AA").append(SEPARATOR);
-        sb.append("MAF ESP AA (Allele)").append(SEPARATOR);
-
-        sb.append("MAF ESP EA").append(SEPARATOR);
-        sb.append("MAF ESP EA (Allele)").append(SEPARATOR);
+        sb.append("MAF ESP").append(SEPARATOR);
+        sb.append("MAF ESP (Allele)").append(SEPARATOR);
+        sb.append("MAF EXAC").append(SEPARATOR);
+        sb.append("MAF EXAC (Allele)").append(SEPARATOR);
 
         sb.append("phenotype").append(SEPARATOR);
         sb.append("source").append(SEPARATOR);
@@ -148,7 +147,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append(sift).append(SEPARATOR);
         sb.append(polyphen).append(SEPARATOR);
 
-        Maf maf1000G = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000GENOMES", "phase_1_ALL");
+        Maf maf1000G = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000GENOMES_phase_1", "ALL");
 
         if (maf1000G != null) {
             sb.append(df.format(maf1000G.maf)).append(SEPARATOR);
@@ -158,7 +157,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
             sb.append(".").append(SEPARATOR);
         }
 
-        Maf maf1000GP3 = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000G_PHASE_3", "1000G_PHASE_3_ALL");
+        Maf maf1000GP3 = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000GENOMES_phase_3", "ALL");
 
         if (maf1000GP3 != null) {
             sb.append(df.format(maf1000GP3.maf)).append(SEPARATOR);
@@ -169,21 +168,21 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         }
 
 
-        Maf mafESPAA = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP_6500", "African_American");
+        Maf mafESPALL = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP_6500", "ALL");
 
-        if (mafESPAA != null) {
-            sb.append(df.format(mafESPAA.maf)).append(SEPARATOR);
-            sb.append(mafESPAA.allele).append(SEPARATOR);
+        if (mafESPALL != null) {
+            sb.append(df.format(mafESPALL.maf)).append(SEPARATOR);
+            sb.append(mafESPALL.allele).append(SEPARATOR);
         } else {
             sb.append(".").append(SEPARATOR);
             sb.append(".").append(SEPARATOR);
         }
 
-        Maf mafESPEA = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP_6500", "European_American");
+        Maf mafEXACALL = getMAF(variant.getAnnotation().getPopulationFrequencies(), "EXAC", "ALL");
 
-        if (mafESPEA != null) {
-            sb.append(df.format(mafESPEA.maf)).append(SEPARATOR);
-            sb.append(mafESPEA.allele).append(SEPARATOR);
+        if (mafEXACALL != null) {
+            sb.append(df.format(mafEXACALL.maf)).append(SEPARATOR);
+            sb.append(mafEXACALL.allele).append(SEPARATOR);
         } else {
             sb.append(".").append(SEPARATOR);
             sb.append(".").append(SEPARATOR);
