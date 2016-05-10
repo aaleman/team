@@ -98,7 +98,6 @@ public class TeamMain {
 
             List<Region> regionList = getRegionsFromPanel(panel);
 
-            System.out.println("hola");
 
 
             Sample sample = catalogManager.getSample(sampleId, new QueryOptions(), sessionId).getResult().get(0);

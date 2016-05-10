@@ -82,7 +82,6 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
         String dp = attributes.containsKey("DP") ? attributes.get("DP") : ".";
         sb.append(dp).append(SEPARATOR);
 
-
         String id = (!variant.getIds().isEmpty()) ? variant.getIds().get(0) : ".";
 
         sb.append(id).append(SEPARATOR);
