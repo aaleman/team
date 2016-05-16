@@ -22,7 +22,12 @@ public class TeamVariantReferenceFitler extends VariantFilter {
     @Override
     public boolean apply(Variant v) {
 
+//        System.out.println("this.sample = " + this.sample);
+//        System.out.println(v.getStudies().get(0).getSampleData(this.sample.getName()));
+
+
         String gt = v.getStudies().get(0).getSampleData(this.sample.getName(), "GT");
+//        System.out.println("gt = " + gt);
 
         return !(gt.equals("0/0") || gt.equals("0|0") || gt.contains("."));
 

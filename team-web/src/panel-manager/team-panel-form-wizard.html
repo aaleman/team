@@ -343,7 +343,7 @@
                         <div class="header">
                             <i class="fa fa-plus-square-o"></i> Import File
                         </div>
-                        <jso-opencga-import-file id="importBEDFile" class="container" on-end="handleImportBEDFile" bioformat="{{bedBioformat}}"></jso-opencga-import-file>
+                        <jso-opencga-import-file id="importBEDFile" class="container" on-importbed="handleImportBEDFile" bioformat="{{bedBioformat}}"></jso-opencga-import-file>
                     </jso-panel>
 
                     <jso-panel modal closable hidden id="panelPreview">
@@ -1081,46 +1081,58 @@
             this.$.geneTextArea.value = '';
         },
         handleGenesImportBed: function(bed_file) {
+            this.$.geneTable.setLoading(true);
+            // debugger
             var me = this;
+            setTimeout(function() {
+                var log = [];
+                var line = 0;
+                var genes = [];
 
-            var log = [];
-            var line = 0;
+                if (bed_file != null) {
 
-            if (bed_file != null) {
+                    var _navigator = new FileNavigator(bed_file);
+                    var indexToStartWith = 0;
 
-                var _navigator = new FileNavigator(bed_file);
-                var indexToStartWith = 0;
-
-                _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
-                    if (err) {
-                        return;
-                    }
-                    console.log(lines.length);
-
-                    for (var i = 0; i < lines.length; i++) {
-                        var line = lines[i];
-
-                        if (line.indexOf("#") < 0 && line != '') {
-                            var fields = line.split("\t");
-                            var chr = fields[0];
-                            var start = fields[1];
-                            var end = fields[2];
-                            var gene = {
-                                name: chr + ":" + start + "-" + end,
-                                chr: chr,
-                                start: start,
-                                end: end
-                            };
-                            me.formData.addGene(gene);
+                    _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
+                        if (err) {
+                            return;
                         }
-                        line++;
-                    }
-                    if (eof) {
-                        return;
-                    }
-                    _navigator.readSomeLines(index + lines.length, linesReadHandler);
-                })
-            }
+                        console.log(lines.length);
+
+                        for (var i = 0; i < lines.length; i++) {
+                            var line = lines[i];
+
+                            if (line.indexOf("#") < 0 && line != '') {
+                                var fields = line.split("\t");
+                                var chr = fields[0];
+                                var start = fields[1];
+                                var end = fields[2];
+                                var gene = {
+                                    name: chr + ":" + start + "-" + end,
+                                    chr: chr,
+                                    start: start,
+                                    end: end
+                                };
+                                genes.push(gene);
+                                // me.formData.addGene(gene);
+                            }
+                            line++;
+                        }
+
+                        // me.formData.polymr
+                        // me.formData.polymer.notifyPath('formData.genes', this.genes);
+                        if (eof) {
+                            if (genes.length > 0) {
+                                me.formData.addAllGenes(genes);
+                                me.$.geneTable.setLoading(false);
+                            }
+                            return;
+                        }
+                        _navigator.readSomeLines(index + lines.length, linesReadHandler);
+                    })
+                }
+            }, 50);
         },
         handleImportAppPanel: function(e) {
             this.$.appPanel.hidden = false;
@@ -1153,8 +1165,9 @@
             return mutationTab != 'panel';
         },
         handleMutationImportVCF: function(vcf_file) {
-            var me = this;
-
+          var me = this;
+          this.$.mutationTable.setLoading(true);
+          setTimeout(function() {
             var phe = this.$.mutationGVPheVCF.value;
             if (phe == "") {
                 alert("Phenotype is mandatory");
@@ -1197,23 +1210,26 @@
                         line++;
                     }
                     if (eof) {
+                      me.$.mutationTable.setLoading(false);
                         return;
                     }
                     _navigator.readSomeLines(index + lines.length, linesReadHandler);
                 })
-
             }
+          },50);
         },
         handleMutationImportCSV: function(e) {
             var me = this;
-            var csv_file = this.$.mutationCSVFileInput.files[0];
+            this.$.mutationTable.setLoading(true);
+            setTimeout(function() {
+            var csv_file = me.$.mutationCSVFileInput.files[0];
             var src = "user-defined";
             if (csv_file != null) {
                 var reader = new FileReader();
-                var separator = this.$.mutationCSVSeparator.selectedOption.value;
+                var separator = me.$.mutationCSVSeparator.selectedOption.value;
                 separator = (separator === "tab") ? '\t' : separator;
 
-                var ignoreHeader = this.$.mutationCSVHeader.checked;
+                var ignoreHeader = me.$.mutationCSVHeader.checked;
 
                 var lr = new LineReader();
                 lr.on("line", function(line, next) {
@@ -1242,9 +1258,11 @@
                     next();
                 });
                 lr.read(csv_file);
+                me.$.mutationTable.setLoading(false);
 
             }
-            this.$.mutationCSVFileInput.value = "";
+            me.$.mutationCSVFileInput.value = "";
+          },50);
         },
         handleClickMutationListClear: function(e) {
             this.formData.clearMutations();
@@ -1432,45 +1450,50 @@
             }
         },
         handleImportGenesPanel: function(e) {
+            this.$.geneTable.setLoading(true);
             var me = this;
-            if (this.$.importGenesFromPanel.value != " ") {
-                var fileId = parseInt(this.$.importGenesFromPanel.selectedOption.dataset.file);
+            setTimeout(function() {
+                if (me.$.importGenesFromPanel.value != " ") {
+                    var fileId = parseInt(me.$.importGenesFromPanel.selectedOption.dataset.file);
 
-                for (var i = 0; i < this.panelsNotArchived.length; i++) {
-                    var panel = this.panelsNotArchived[i];
-                    if (panel.fileId === fileId) {
-                        var panelContent = "";
-                        OpencgaManager.files.content({
-                            id: fileId,
-                            query: {
-                                sid: Cookies('bioinfo_sid')
-                            },
-                            request: {
-                                async: false,
-                                success: function(response) {
-                                    panelContent = response;
+                    for (var i = 0; i < me.panelsNotArchived.length; i++) {
+                        var panel = me.panelsNotArchived[i];
+                        if (panel.fileId === fileId) {
+                            var panelContent = "";
+                            OpencgaManager.files.content({
+                                id: fileId,
+                                query: {
+                                    sid: Cookies('bioinfo_sid')
                                 },
-                                error: function() {}
-                            }
-                        });
-                        if (panelContent != "") {
-                            this.selectedPanel = JSON.parse(panelContent);
-                            if (this.selectedPanel.genes != "") {
-                                this.genes = this.selectedPanel.genes;
-                            } else {
-                                alert("The selected panel hasn't got genes");
-                                return;
+                                request: {
+                                    async: false,
+                                    success: function(response) {
+                                        panelContent = response;
+                                    },
+                                    error: function() {}
+                                }
+                            });
+                            if (panelContent != "") {
+                                me.selectedPanel = JSON.parse(panelContent);
+                                if (me.selectedPanel.genes != "") {
+                                    me.genes = me.selectedPanel.genes;
+                                } else {
+                                    alert("The selected panel hasn't got genes");
+                                    return;
+                                }
                             }
                         }
                     }
+                    me.formData.addAllGenes(me.genes);
+                    // for (var i = 0; i < this.genes.length; i++) {
+                    //     me.formData.addGene(this.genes[i]);
+                    // }
+                    me.$.geneTable.setLoading(false);
+                } else {
+                    alert("No panel selected");
+                    return;
                 }
-                for (var i = 0; i < this.genes.length; i++) {
-                    me.formData.addGene(this.genes[i]);
-                }
-            } else {
-                alert("No panel selected");
-                return;
-            }
+            }, 50);
             // this.$.importGenesFromPanel.value = " ";
         },
         handlePreviewFileMut: function(e) {
@@ -1602,72 +1625,82 @@
             }
         },
         handlePanelAppAddGenes: function(e) {
-
-            var lowLevel = false;
-            for (var i = 0; i < this.$.panelAppSelectedGenes.selected.length; i++) {
-                var elem = this.$.panelAppSelectedGenes.selected[i];
-                // lowLevel |= (elem.LevelOfConfidence <= 2) ? true : false;
-                if (elem.LevelOfConfidence == 'LowEvidence') {
-                    lowLevel = true;
+            var me = this;
+            this.$.geneTable.setLoading(true);
+            setTimeout(function() {
+                var lowLevel = false;
+                for (var i = 0; i < me.$.panelAppSelectedGenes.selected.length; i++) {
+                    var elem = me.$.panelAppSelectedGenes.selected[i];
+                    // lowLevel |= (elem.LevelOfConfidence <= 2) ? true : false;
+                    if (elem.LevelOfConfidence == 'LowEvidence') {
+                        lowLevel = true;
+                    }
                 }
-            }
 
-            if (lowLevel && !confirm("Your selection contains genes with low level of confidence. Do you want to continue?")) {
-                return;
-            }
-
-            if (this.$.panelAppSelectedGenes.selected.length > 0) {
-                this.errorAddGenes = "";
-                var geneName = [];
-                var sgenes = this.$.panelAppSelectedGenes.selected;
-                for (var i = 0; i < sgenes.length; i++) {
-                    geneName[i] = sgenes[i].GeneSymbol;
+                if (lowLevel && !confirm("Your selection contains genes with low level of confidence. Do you want to continue?")) {
+                    return;
                 }
-                geneName = geneName.join(",");
-                var me = this;
-                CellBaseManager.get({
-                    species: 'hsapiens',
-                    category: 'feature',
-                    subCategory: 'gene',
-                    resource: 'info',
-                    async: false,
-                    query: geneName,
-                    params: {
-                        include: "name,chromosome,start,end"
-                    },
-                    success: function(data) {
 
-                        if (data.response && data.response.length > 0) {
+                if (me.$.panelAppSelectedGenes.selected.length > 0) {
+                    me.errorAddGenes = "";
+                    var geneName = [];
+                    var sgenes = me.$.panelAppSelectedGenes.selected;
+                    for (var i = 0; i < sgenes.length; i++) {
+                        geneName[i] = sgenes[i].GeneSymbol;
+                    }
+                    geneName = geneName.join(",");
+                    // var me = this;
+                    var genes = [];
+                    CellBaseManager.get({
+                        species: 'hsapiens',
+                        category: 'feature',
+                        subCategory: 'gene',
+                        resource: 'info',
+                        async: false,
+                        query: geneName,
+                        params: {
+                            include: "name,chromosome,start,end"
+                        },
+                        success: function(data) {
 
-                            for (var i = 0; i < data.response.length; i++) {
-                                var elem = data.response[i];
-                                if (elem.result.length > 0) {
-                                    var row = data.response[i].result[0];
-                                    var gene = {
-                                        name: row.name,
-                                        chr: row.chromosome,
-                                        start: row.start,
-                                        end: row.end
-                                    };
-                                    me.formData.addGene(gene);
-                                } else {
-                                    me.formData.addGene({
-                                        name: elem.id
-                                    });
+                            if (data.response && data.response.length > 0) {
+
+                                for (var i = 0; i < data.response.length; i++) {
+                                    var elem = data.response[i];
+                                    if (elem.result.length > 0) {
+                                        var row = data.response[i].result[0];
+                                        var gene = {
+                                            name: row.name,
+                                            chr: row.chromosome,
+                                            start: row.start,
+                                            end: row.end
+                                        };
+                                        // me.formData.addGene(gene);
+                                        genes.push(gene);
+                                    } else {
+                                        // me.formData.addGene({
+                                        //     name: elem.id
+                                        // });
+                                        genes.push({
+                                            name: elem.id
+                                        });
+                                    }
                                 }
                             }
                         }
-                    }
-                });
-                this.$.appPanel.hidden = true;
-                this.panelAppGenes = "";
-                this.$.panelAppSelectedGenes.selected = [];
-                this.$.panelAppSelectedDisease.selected = [];
-            } else {
-                // this.errorAddGenes = "No gene selected";
-                alert("Any selected gene");
-                return;
-            }
+                    });
+                    me.formData.addAllGenes(genes);
+                    me.$.appPanel.hidden = true;
+                    me.panelAppGenes = "";
+                    me.$.panelAppSelectedGenes.selected = [];
+                    me.$.panelAppSelectedDisease.selected = [];
+                    me.$.geneTable.setLoading(false);
+                } else {
+                    // this.errorAddGenes = "No gene selected";
+                    alert("Any selected gene");
+                    return;
+                }
+            }, 50)
         },
         handlePanelAppSelectedGen: function(e) {
             this.errorAddGenes = "";
