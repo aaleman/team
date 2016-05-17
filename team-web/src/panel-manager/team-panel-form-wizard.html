@@ -1307,6 +1307,11 @@
         handleClickSavePanel: function(e) {
             var me = this;
             this.formData.name = this.formData.name.replace(/ /gi, '_');
+            var re = /[¿\?\[\]<>\^\{\}\|#%"\\\\]/;
+            if(re.test(this.formData.name)){
+              alert("The Panel name shouldn't have these characteres '¿ ? [ ] < > ^ { } | # % \\ \" ' ");
+                return;
+            }
             if (this.formData.name == "") {
                 alert("The Panel name is mandatory");
                 return;
