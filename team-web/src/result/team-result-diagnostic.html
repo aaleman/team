@@ -64,21 +64,16 @@
     </style>
     <template>
         <div class="title">{{title}}</div>
-        <jso-table id="table" data="{{_data}}" enable-paging enable-select enable-export enable-resize
-                   on-rowclick="handleRowClick"></jso-table>
+        <jso-table id="table" data="{{_data}}" enable-paging enable-select enable-export enable-resize on-rowclick="handleRowClick"></jso-table>
 
         <div id="menu" class="horizontal layout">
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="overview"
-                 data-value="overview" data-checked$="{{computeView(view, 'overview')}}">Overview
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="overview" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">Overview
             </div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="comments"
-                 data-value="comments" data-checked$="{{computeView(view, 'comments')}}">Comments
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="comments" data-value="comments" data-checked$="{{computeView(view, 'comments')}}">Comments
             </div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="frequency"
-                 data-value="frequency" data-checked$="{{computeView(view, 'frequency')}}">Frequencies
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="frequency" data-value="frequency" data-checked$="{{computeView(view, 'frequency')}}">Frequencies
             </div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="gv" data-value="gv"
-                 data-checked$="{{computeView(view, 'gv')}}">Genome Viewer
+            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="gv" data-value="gv" data-checked$="{{computeView(view, 'gv')}}">Genome Viewer
             </div>
         </div>
 
@@ -93,8 +88,7 @@
                     <textarea id="commentsTextArea" class="jso commentsTextArea" placeholder="Comments..."></textarea>
                 </div>
             </div>
-            <jso-variant-frequencies-grid id="frequency"
-                                          hidden$="{{!computeView(view, 'frequency')}}"></jso-variant-frequencies-grid>
+            <jso-variant-frequencies-grid id="frequency" hidden$="{{!computeView(view, 'frequency')}}"></jso-variant-frequencies-grid>
             <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}"></jso-genome-viewer-element>
         </div>
     </template>
@@ -105,14 +99,14 @@
         properties: {
             data: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
                 observer: 'dataChanged'
             },
             _data: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
                 notify: true
@@ -123,7 +117,7 @@
             },
             query: {
                 type: Object,
-                value: function () {
+                value: function() {
                     return {};
                 },
                 observer: 'queryChanged'
@@ -138,7 +132,7 @@
             },
             filterData: {
                 type: Array,
-                value: function () {
+                value: function() {
                     return [];
                 },
                 notify: true,
@@ -179,7 +173,7 @@
             title: 'Qual',
             width: 100,
             defaultValue: '.',
-            formula: function (row) {
+            formula: function(row) {
                 if (isNaN(row.qual)) {
                     return ".";
                 }
@@ -283,7 +277,7 @@
             title: 'Qual',
             width: 100,
             defaultValue: '.',
-            formula: function (row) {
+            formula: function(row) {
                 if (isNaN(row.qual)) {
                     return ".";
                 }
@@ -362,14 +356,14 @@
             defaultValue: '.'
         }],
 
-        ready: function () {
+        ready: function() {
             if (this.typeData == "diagnostic") {
                 this.$.table.columns = this._columnsDiag;
             } else if (this.typeData == "secondary") {
                 this.$.table.columns = this._columnsSec;
             }
             var me = this;
-            this.async(function () {
+            this.async(function() {
                 this.$.gv.createGenomeViewer();
                 var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
                 this.$.gv.genomeViewer.draw();
@@ -377,11 +371,11 @@
                 this.genomeViewer = this.$.gv.genomeViewer;
             });
         },
-        handleRowClick: function (e) {
+        handleRowClick: function(e) {
             var row = e.detail.row;
             this._rowSelected(row);
         },
-        _rowSelected: function (row) {
+        _rowSelected: function(row) {
             var reg = row.chr + ":" + row.pos + "-" + row.pos;
             var region = new Region(reg);
 
@@ -398,13 +392,12 @@
             this.overviewComent = "Graphic weighted between zero and one"
             this._createPolarChart(row);
         },
-        dataChanged: function (neo, old) {
+        dataChanged: function(neo, old) {
             var _data = [];
             for (var i = 0; i < this.data.length; i++) {
                 var elem = this.data[i];
                 _data.push(elem);
-            }
-            ;
+            };
             this.view = 'overview';
             this._data = _data;
             if (this._data[0] != null) {
@@ -417,7 +410,7 @@
             }
 
         },
-        queryChanged: function (neo, old) {
+        queryChanged: function(neo, old) {
             if (neo) {
                 // neo => query
                 console.log(neo);
@@ -427,8 +420,7 @@
                     if (this._applyFilters(elem, neo) == 1) {
                         data.push(elem);
                     }
-                }
-                ;
+                };
                 this.set('_data', data);
                 this.$.table.set('selected', [this._data[0]]);
                 this.set('filterData', this._data);
@@ -439,7 +431,7 @@
             }
         },
 
-        _applyFilters: function (data, filters) {
+        _applyFilters: function(data, filters) {
             // data = row
             var filtered = true;
             for (var key in filters) {
@@ -481,15 +473,14 @@
                     match = this._checkValue(ct_aux, query);
                 } else if (key === "gt") {
                     match = this._checkGT(data.gt, query);
-                }
-                else if (key.endsWith("_op")) {
+                } else if (key.endsWith("_op")) {
                     continue;
                 }
                 filtered &= match;
             }
             return filtered;
         },
-        _computeInputOption: function (value, query, op) {
+        _computeInputOption: function(value, query, op) {
             if (op == null) {
                 var aux = query.split("");
                 var val = "";
@@ -531,7 +522,7 @@
             }
             return aux;
         },
-        _checkValue: function (value, query) {
+        _checkValue: function(value, query) {
             var q = query.split(",");
             for (var i = 0; i < q.length; i++) {
                 for (var j = 0; j < value.length; j++) {
@@ -542,9 +533,10 @@
             }
             return false;
         },
-        _checkPosition: function (chr, position, query) {
-            for (var i = 0; i < query.length; i++) {
-                var a = query[i].split(":");
+        _checkPosition: function(chr, position, query) {
+            var q = query.split(",");
+            for (var i = 0; i < q.length; i++) {
+                var a = q[i].split(":");
                 var chr_aux = a[0];
                 if (chr == chr_aux) {
                     if (a.length == 1) {
@@ -561,7 +553,7 @@
             }
             return false;
         },
-        _checkData: function (data, query) {
+        _checkData: function(data, query) {
             var sift = data.sift;
             var polyphen = data.polyphen;
             if (query === "none") {
@@ -588,15 +580,15 @@
             }
             return false;
         },
-        handleMenuClick: function (e) {
+        handleMenuClick: function(e) {
             if (this._data[0] != null) {
                 this.view = e.target.dataset.value;
             }
         },
-        computeView: function (view, value) {
+        computeView: function(view, value) {
             return view === value;
         },
-        selectedMenuChanged: function (neo, old) {
+        selectedMenuChanged: function(neo, old) {
             if (old) {
                 old.removeAttribute('selected');
                 this.$[old.dataset.option].setAttribute('hidden', '');
@@ -606,12 +598,12 @@
                 this.$[neo.dataset.option].removeAttribute('hidden');
             }
         },
-        _parseFloat: function (data) {
+        _parseFloat: function(data) {
             var aux = parseFloat(data);
             aux = isNaN(aux) ? null : aux;
             return aux;
         },
-        _createPolarChart: function (row) {
+        _createPolarChart: function(row) {
             var phylop = Math.abs(row.phylop);
             if (phylop > 1) {
                 phylop = 1 / phylop;
@@ -664,7 +656,7 @@
 
             });
         },
-        filterDataChanged: function (neo, old) {
+        filterDataChanged: function(neo, old) {
             this.set('filterData', neo);
             if (this.filterData[0] != null) {
                 this.$.table.set('selected', [this.filterData[0]]);
@@ -676,7 +668,7 @@
             }
         },
 
-        _checkGT: function (gt, query) {
+        _checkGT: function(gt, query) {
             var splits = gt.split(/[|\/]/);
             if (splits.length == 1) {
                 return true;
