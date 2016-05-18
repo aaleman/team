@@ -404,17 +404,9 @@
                 var defaultProject = null;
                 var defaultStudy = null;
 
-                for (var i = 0; defaultProject == null && projects && i < projects.length; i++) {
-                    var proj = projects[i];
-                    if (proj.alias === "defaultPr") {
-                        defaultProject = proj;
-                        for (var j = 0; defaultStudy == null && defaultProject.studies && j < defaultProject.studies.length; j++) {
-                            var stu = defaultProject.studies[j];
-                            if (stu.alias === "defaultSt") {
-                                defaultStudy = stu;
-                            }
-                        }
-                    }
+                defaultProject = projects[0];
+                if (defaultProject.studies.length>0) {
+                    defaultStudy = defaultProject.studies[0];
                 }
 
                 if (defaultProject != null && defaultStudy != null) {
