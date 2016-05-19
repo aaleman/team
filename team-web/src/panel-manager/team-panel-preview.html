@@ -12,7 +12,8 @@
         }
 
         jso-table {
-            height: 300px;
+            min-height: 300px;
+            height: calc(100vh - 400px);
         }
 
         .data {
@@ -131,7 +132,7 @@
                 this.mutationColumns = [{
                     name: 'chr',
                     title: 'Chr',
-                    width:70
+                    width: 70
                 }, {
                     name: 'pos',
                     title: 'Pos',
@@ -165,7 +166,6 @@
                     options: ["clinvar", "gwas"],
                     width: 240
                 }];
-
 
             },
 

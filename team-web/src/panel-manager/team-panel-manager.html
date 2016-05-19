@@ -32,6 +32,7 @@
             /*margin: 2px 0;*/
             border: 1px solid transparent;
             cursor: pointer;
+            min-height: 10px;
         }
 
         .panel-item:hover {
@@ -98,13 +99,13 @@
         }
 
         .newPanelButon {
-          margin: 10px;
-          padding-left: 5px;
-          border: 1px solid #d3d3d3;
-          margin-bottom: 0px;
-          margin-top:5px;
-          line-height: 25px;
-          background-color: #E5E8EA;
+            /*margin: 10px;*/
+            padding-left: 3px;
+            border: 1px solid #d3d3d3;
+            margin-bottom: 0px;
+            margin-top: 5px;
+            line-height: 32px;
+            background-color: #E5E8EA;
         }
 
         #botbar {
@@ -112,6 +113,7 @@
             color: #445D76;
             margin: 5px;
             width: 80px;
+            margin-bottom: 15px;
         }
 
         #userPanels {
@@ -129,6 +131,12 @@
         .jso-formtitle {
             font-size: 13px;
         }
+
+        #searchInput {
+            width: 100%;
+            margin-top: 6px;
+            font-size: 12px;
+        }
     </style>
     <template>
         <div id="main" class="horizontal layout flex">
@@ -136,13 +144,13 @@
                 <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
                 <div class="horizontal layout" style="margin-bottom:5px;">
                     <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
-                        <i class="fa fa-laptop"></i>&nbsp; Main Panels
+                        <i class="fa fa-laptop"></i>&nbsp; Main
                     </div>
                     <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="archived" data-checked$="{{computeView(view, 'archived')}}">
-                        <i class="fa fa-inbox"></i>&nbsp; Archived Panels
+                        <i class="fa fa-inbox"></i>&nbsp; Archived
                     </div>
                 </div>
-                <input id="searchInput" class="jso" type="text" style="width:100%;" placeholder="Search by name..." value="{{search::input}}">
+                <input id="searchInput" class="jso" type="text" placeholder="Search by name..." value="{{search::input}}">
                 <div class="vertical layout flex" id="userPanels">
                     <template is="dom-if" if="{{computeView(view, 'main')}}">
                         <template is="dom-repeat" items="{{filteredPanels}}" filter="isArchived" observe="type archived">
