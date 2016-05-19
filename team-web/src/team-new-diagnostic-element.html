@@ -9,7 +9,8 @@
             position: relative;
             box-sizing: border-box;
             width: 100%;
-            height: 770px;
+            height: 100%;
+            /*font-size: 12px;*/
         }
 
         .file {
@@ -20,11 +21,10 @@
         }
 
         .selbox {
-            /*box-sizing: border-box;
-            border-right: 1px solid #d0d0d0;*/
-            height: 600px;
             width: 300px;
-            overflow-y: hidden;
+            min-height: 390px;
+            overflow-y: auto;
+            height: calc(100vh - 310px);
         }
 
         label.jso {
@@ -39,21 +39,21 @@
 
         .errmsg {
             color: #8b0000;
-            font-size: 15px;
+            font-size: 11px;
             font-style: italic;
         }
 
         #panelPreview {
             width: 70%;
-            height: 600px;
+            height: 60%;
         }
 
         .titlePreview {
-            font-size: 15px;
+            font-size: 12px;
             color: #445D76;
-            margin: 5px 10px 0px 10px;
+            margin: 2px 10px 0px 10px;
             border-bottom: 1px solid #445D76;
-            padding-bottom: 3px;
+            /*padding-bottom: 3px;*/
         }
 
         .eye > i:hover {
@@ -63,9 +63,11 @@
 
         #personalData {
             border: 1px solid #d3d3d3;
-            padding: 10px;
-            margin: 20px 250px;
+            padding: 5px;
+            margin: 0 auto;
             width: 500px;
+            margin-top: 10px;
+            height: 80%;
         }
 
         .data {
@@ -85,7 +87,7 @@
         #newPanelPanel {
             /*top:25px;*/
             width: 50%;
-            min-width: 1000px;
+            min-width: 800px;
             margin: 0 auto;
             box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
         }
@@ -95,6 +97,7 @@
             padding-left: 5px;
             border: 1px solid #d3d3d3;
             margin-bottom: 0px;
+            margin-top: 5px;
             line-height: 30px;
             background-color: #E5E8EA;
         }
@@ -103,16 +106,16 @@
             text-align: center;
             color: #445D76;
             margin: 5px;
-            width: 100px;
+            width: 80px;
         }
 
         jso-select-box {
             overflow-y: auto;
-            height: 400px;
+            /*min-height: 250px;*/
         }
 
         #examplePanels {
-            height: 130px;
+            height: 100px;
             display: block;
             position: relative;
             box-sizing: border-box;
@@ -123,7 +126,7 @@
         }
 
         .jso-formtitle {
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .panel-item {
@@ -165,15 +168,10 @@
                     <div class="horizontal layout">
                         <!-- <div class="vertical layout"> -->
                         <div class="selbox vertical layout" id="panelSelector">
-                            <div class="horizontal layout">
-                                <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
-                            </div>
-                            <jso-select-box id="newDiagnosticPanels" style="margin:10px" options="{{jobsPanels}}" data-panels="{{jobsPanels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+                            <div class="titlePreview flex" style="margin-right=0px !important;padding-bottom:5px"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
+                            <jso-select-box id="newDiagnosticPanels" style="margin:5px" options="{{jobsPanels}}" data-panels="{{jobsPanels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
 
-
-                            <div class="horizontal layout">
-                                <div class="titlePreview flex" style="margin-right=0px !important;"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
-                            </div>
+                            <div class="titlePreview flex" style=""><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
                             <div id="examplePanels">
                                 <template is="dom-repeat" items="{{examplePanels}}">
                                     <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
@@ -182,7 +180,7 @@
                                 </template>
                             </div>
                             <div class="newPanelButon horizontal layout">
-                                <div class="flex" style="font-size:13px;">Or create a New Panel &nbsp;</div>
+                                <div class="flex" style="font-size:11px;">Or create a New Panel &nbsp;</div>
                                 <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
                                     <i class="fa fa-plus"></i>&nbsp; Panel
                                 </div>
@@ -193,12 +191,12 @@
                             <div class="titlePreview">
                                 <i class="fa fa-eye"></i>&nbsp; Panel Preview
                             </div>
-                            <team-panel-preview id="newDiagnosticPanelPreview" data-panel="{{selectedPanel}}" selected-panel="{{selectedPanel}}" style="width:95%;">
+                            <team-panel-preview id="newDiagnosticPanelPreview" data-panel="{{selectedPanel}}" selected-panel="{{selectedPanel}}" style="width:85%;">
                             </team-panel-preview>
                         </div>
                     </div>
                     <jso-panel modal movable expandible closable id="newPanelPanel" hidden>
-                        <div class="header" style="text-align:left;font-size:15px;">
+                        <div class="header" style="text-align:left;font-size:14px;">
                             <i class="fa fa-plus"></i> New Panel
                         </div>
                         <team-panel-form-wizard panel-config="{{panelConfig}}" id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" config-panel="{{configPanel}}"></team-panel-form-wizard>

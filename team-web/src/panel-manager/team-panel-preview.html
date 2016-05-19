@@ -6,12 +6,14 @@
             box-sizing: border-box;
             margin: 5px;
             width: 600px;
-            padding: 10px;
+            /*padding: 10px;*/
             /*height: 500px;*/
+            font-size: 12px;
         }
 
         jso-table {
-            height: 480px;
+            min-height: 300px;
+            height: calc(100vh - 400px);
         }
 
         .data {
@@ -24,7 +26,7 @@
         }
 
         jso-table::shadow .table-row {
-            height: 25px;
+            height: 15px;
         }
 
         jso-table::shadow {
@@ -36,8 +38,8 @@
         }
     </style>
     <template>
-        <div style="margin:5px">
-            <div class="horizontal layout" style="line-height: 25px;">
+        <div style="font-size:12px">
+            <div class="horizontal layout" style="line-height: 17px;">
                 <div class="data">Name: &nbsp;</div>
                 <div class="flex">{{namePanel}}</div>
 
@@ -48,13 +50,13 @@
                 <div class="data">Version: &nbsp;</div>
                 <div>{{vers}}</div>
             </div>
-            <div class="horizontal layout" style="line-height: 25px;">
+            <div class="horizontal layout" style="line-height: 17px;">
                 <div class="data">Description: &nbsp;</div>
                 <div>{{desc}}</div>
             </div>
         </div>
 
-        <div class="horizontal layout" style="margin-top:10px">
+        <div class="horizontal layout" style="margin-top:5px">
             <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
                 Diseases
             </div>
@@ -130,7 +132,7 @@
                 this.mutationColumns = [{
                     name: 'chr',
                     title: 'Chr',
-                    width:70
+                    width: 70
                 }, {
                     name: 'pos',
                     title: 'Pos',
@@ -164,7 +166,6 @@
                     options: ["clinvar", "gwas"],
                     width: 240
                 }];
-
 
             },
 
