@@ -7,7 +7,7 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-            height: 500px;
+            min-height: 500px;
             width: 100%;
         }
 
@@ -16,8 +16,8 @@
         }
 
         #genes-tab {
-            height: 100%;
-            max-height: 450px;
+            height: calc(100vh - 300px);
+            min-height: 450px;
             width: 35%;
             margin-top: 5px;
             padding-top: 10px;
@@ -25,7 +25,8 @@
         }
 
         #genes-list {
-            height: 100%;
+            height: calc(100vh - 350px);
+            min-height: 400px;
             width: 50%;
             margin: 15px 10px;
             border: 1px solid #d3d3d3;
@@ -36,9 +37,10 @@
         }
 
         #mutations-tab {
-            height: 100%;
-            max-height: 450px;
-            width: 45%;
+            height: calc(100vh - 300px);
+            min-height: 450px;
+            width: 35%;
+            min-width: 280px;
             margin-top: 5px;
             padding-top: 10px;
             overflow-y: auto;
@@ -47,7 +49,8 @@
         }
 
         #mutations-list {
-            height: 100%;
+            min-height: 400px;
+            height: calc(100vh - 350px);
             width: 46%;
             margin: 10px 5px;
             border: 1px solid #d3d3d3;
@@ -59,39 +62,46 @@
             border: 1px solid #d3d3d3;
             padding: 10px;
             margin: 0 auto;
-            width: 500px;
+            min- width: 500px;
+            width: 60%;
         }
 
         .disease {
-            width: 380px;
-            height: 400px;
+            min-width: 380px;
+            min-height: 400px;
+            height: calc(100vh - 350px);
+            width: 45%;
             margin: 0 auto;
             border: 1px solid #d3d3d3;
         }
 
-        jso-table {
-            height: 500px;
-        }
-
         #panelPreview .container {
-            width: 700px;
-            height: 500px;
+            min-width: 700px;
+            width: 100%;
+            min-height: 500px;
+            height: 80%;
             overflow-y: auto;
             overflow-x: auto;
+            padding: 10px;
         }
 
         #appPanel .container {
-            width: 700px;
-            height: 500px;
+            min-width: 700px;
+            width: 100%;
+            min-height: 500px;
+            height: 80%;
             overflow-y: auto;
             overflow-x: auto;
         }
 
         #panelPreviewMut .container {
-            width: 700px;
-            height: 500px;
+            min-width: 700px;
+            width: 100%;
+            min-height: 500px;
+            height: 80%;
             overflow-y: auto;
             overflow-x: auto;
+            padding: 10px;
         }
 
         .file {
@@ -137,13 +147,15 @@
         #selectedDiseases,
         #geneTable,
         #mutationTable {
-            height: 400px;
+            min-height: 400px;
+            height: 90%;
             width: 100%;
         }
 
         #panelAppDiseases {
             margin: 5px;
-            height: 400px;
+            min-height: 400px;
+            height: 90%;
             width: 55%;
             border: 1px solid #d3d3d3;
             box-sizing: border-box;
@@ -151,7 +163,8 @@
 
         #panelAppGenes {
             margin: 5px;
-            height: 400px;
+            min-height: 400px;
+            height: 90%;
             width: 40%;
             border: 1px solid #d3d3d3;
             box-sizing: border-box;
@@ -184,7 +197,9 @@
         .boxDiseaseSelected {
             border-right: 1px solid var(--divider-color);
             min-width: 115px;
-            height: 455px;
+            min-height: 455px;
+            height: calc(100vh - 300px);
+            width: 25%;
             background-color: var(--light-secondary-color);
             margin-right: 5px;
             padding: 5px;
@@ -223,7 +238,9 @@
         }
 
         .step {
-            height: 460px;
+            /*height: 460px;*/
+            min-height: 460px;
+            height: calc(100vh - 300px);
         }
 
         .stepName {
@@ -260,8 +277,8 @@
                 <div class="step">
                     <div class="jso-formcontent horizontal layout" style="border-top:0px;">
                         <div class="disease vertical layout">
-                            <jso-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter enable-paging hide-column-selector page-size="15"></jso-table>
-                            <div class="horizontal layout">
+                            <jso-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter enable-paging hide-column-selector page-size="12"></jso-table>
+                            <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
                                 </div>
@@ -269,9 +286,8 @@
                         </div>
                         <div class="disease vertical layout">
                             <jso-table id="selectedDiseases" class="flex" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" data="{{formData.diseases}}" hide-column-selector>
-
                             </jso-table>
-                            <div class="horizontal layout">
+                            <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClearSelectedDiseases">
                                     Clear
@@ -362,7 +378,7 @@
 
                         <div id="genes-list">
                             <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}" enable-edit hide-column-selector></jso-table>
-                            <div class="horizontal layout">
+                            <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
                             </div>
@@ -391,7 +407,7 @@
                         <div class="jso-formcontent horizontal layout container">
 
                             <div id="panelAppDiseases" class="vertical layout">
-                                <jso-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:430px" page-size="18"></jso-table>
+                                <jso-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:430px" page-size="12"></jso-table>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
@@ -541,7 +557,7 @@
                             </div>
                             <div id="mutations-list" flex>
                                 <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}" enable-edit hide-column-selector></jso-table>
-                                <div class="horizontal layout">
+                                <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                     <div class="flex"></div>
                                     <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear
                                     </div>
@@ -1164,8 +1180,8 @@
                         }
                         _navigator.readSomeLines(index + lines.length, linesReadHandler);
                     })
-                }else{
-                  me.$.geneTable.setLoading(false);
+                } else {
+                    me.$.geneTable.setLoading(false);
                 }
             }, 50);
         },
@@ -1249,8 +1265,8 @@
                         }
                         _navigator.readSomeLines(index + lines.length, linesReadHandler);
                     })
-                }else{
-                  me.$.mutationTable.setLoading(false);
+                } else {
+                    me.$.mutationTable.setLoading(false);
                 }
             }, 50);
         },
@@ -1295,8 +1311,8 @@
                     });
                     lr.read(csv_file);
                     me.$.mutationTable.setLoading(false);
-                }else{
-                  me.$.mutationTable.setLoading(false);
+                } else {
+                    me.$.mutationTable.setLoading(false);
                 }
                 me.$.mutationCSVFileInput.value = "";
             }, 50);
@@ -1534,6 +1550,7 @@
                     me.$.geneTable.setLoading(false);
                 } else {
                     alert("No panel selected");
+                    me.$.geneTable.setLoading(false);
                     return;
                 }
             }, 50);
@@ -1625,9 +1642,9 @@
                         }
                     } else {
                         alert("No panel selected");
+                        me.$.mutationTable.setLoading(false);
                         return;
                     }
-                    me.$.mutationTable.setLoading(false);
                 }, 50)
                 // this.$.importMutationsFromPanel.value = " ";
         },
