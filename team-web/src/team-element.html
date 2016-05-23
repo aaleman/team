@@ -76,18 +76,20 @@
             top: 60px;
             height: calc(100vh - 160px);
             /*background-color: transparent;*/
-            bottom:100px;
+            bottom: 100px;
         }
-        .content{
-          position: absolute;
+
+        .content {
+            position: absolute;
             width: 100%;
             top: 60px;
             /*height: calc(100vh - 60px);*/
             /*background-color: transparent;*/
         }
-        team-home{
-          height: calc(100vh - 160px);
-          overflow-y: auto;
+
+        team-home {
+            height: calc(100vh - 160px);
+            overflow-y: auto;
         }
 
         jso-opencga-header {
@@ -245,7 +247,7 @@
             </jso-panel>
         </div>
 
-        <div class="content" menu-option="result">
+        <div class="content" menu-option="result" style="height:100%">
             <team-result id="teamResult" panel-config="{{panelConfig}}"></team-result>
         </div>
 
