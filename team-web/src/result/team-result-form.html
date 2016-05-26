@@ -194,7 +194,7 @@
                         Population Freqs.
                     </div>
                     <div class="container vertical layout">
-                        <label class="jso">1000G Phase 1</label>
+                        <!-- <label class="jso">1000G Phase 1</label>
 
                         <div class="horizontal layout maf-elem">
                             <div class="jso-select">
@@ -213,7 +213,7 @@
                             </div>
                             <input class="jso inputValue" type="number" id="maf1000g" name="maf1000g" min="0" max="1"
                                    step="0.0000001" value="{{maf1000gValue::input}}"/>
-                        </div>
+                        </div> -->
 
                         <label class="jso">1000G Phase 3</label>
 
@@ -343,7 +343,7 @@
                         </div>
                     </div>
                 </jso-form-box>
-                <jso-filter-scores id="filterScores" collapsible collapsed></jso-filter-scores>
+                <jso-filter-scores id="filterScores" collapsible collapsed enable-cadd></jso-filter-scores>
                 <jso-filter-conservation id="filterConservation" collapsible collapsed></jso-filter-conservation>
                 <jso-filter-consequencetypes id="filterCT" collapsible collapsed></jso-filter-consequencetypes>
 
@@ -504,8 +504,8 @@
             this.$.dp_op.value = "<";
             this.qualValue = "";
             this.$.qual_op.value = "<";
-            this.maf1000gValue = "";
-            this.$.maf1000g_op.value = "<";
+            // this.maf1000gValue = "";
+            // this.$.maf1000g_op.value = "<";
             this.maf1000GP3Value = "";
             this.$.maf1000GP3_op.value = "<";
             this.esp6500Value = "";
@@ -557,6 +557,13 @@
                 q["polyphen"] = polyphen;
             }
 
+            var cadd = this.$.filterScores.checkCADD();
+            if (cadd == -1) {
+                return;
+            } else if (cadd != null) {
+                q["cadd"] = cadd;
+            }
+
             var phastcons = this.$.filterConservation.checkPhastcons(2);
             if (phastcons != null) {
                 q["phastcons"] = phastcons;
@@ -587,15 +594,15 @@
                 q["qual"] = parseFloat(this.qualValue);
                 q["qual_op"] = this.$.qual_op.value;
             }
-            if (this.maf1000gValue) {
-                if (this.$.maf1000g.checkValidity() == false) {
-                    alert("MAF 1000G must be less than 1 or greater than 0");
-                    return;
-                } else {
-                    q["maf1000g"] = parseFloat(this.maf1000gValue);
-                    q["maf1000g_op"] = this.$.maf1000g_op.value;
-                }
-            }
+            // if (this.maf1000gValue) {
+            //     if (this.$.maf1000g.checkValidity() == false) {
+            //         alert("MAF 1000G must be less than 1 or greater than 0");
+            //         return;
+            //     } else {
+            //         q["maf1000g"] = parseFloat(this.maf1000gValue);
+            //         q["maf1000g_op"] = this.$.maf1000g_op.value;
+            //     }
+            // }
             if (this.maf1000GP3Value) {
                 if (this.$.maf1000GP3.checkValidity() == false) {
                     alert("MAF 1000G Phase3 must be less than 1 or greater than 0");
@@ -645,7 +652,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500 != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
+                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -693,7 +700,7 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000g != null || q.maf1000GP3 != null || q.esp6500 != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
+            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
@@ -756,11 +763,11 @@
                 this.$.qual_op.value = hf.qual_op;
                 filterName.push("Qual " + hf.qual_op + " " + hf.qual + " ");
             }
-            if (hf.maf1000g != null) {
-                this.maf1000gValue = hf.maf1000g;
-                this.$.maf1000g_op.value = hf.maf1000g_op;
-                filterName.push("MAF 1000G " + hf.maf1000g_op + " " + hf.maf1000g + " ");
-            }
+            // if (hf.maf1000g != null) {
+            //     this.maf1000gValue = hf.maf1000g;
+            //     this.$.maf1000g_op.value = hf.maf1000g_op;
+            //     filterName.push("MAF 1000G " + hf.maf1000g_op + " " + hf.maf1000g + " ");
+            // }
             if (hf.maf1000GP3 != null) {
                 this.maf1000GP3Value = hf.maf1000GP3;
                 this.$.maf1000GP3_op.value = hf.maf1000GP3_op;

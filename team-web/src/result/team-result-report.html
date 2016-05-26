@@ -213,7 +213,7 @@
                         <tr>
                             <th class="title">Static Filters
                             </th>
-                            <th class="title">Found Variants
+                            <th class="title">Variants Found
                             </th>
                         </tr>
                         <tr>
@@ -239,7 +239,7 @@
                     <table id="customFilters">
                         <tr>
                             <th class="title"> Custom Filter Used </th>
-                            <th class="title"> Found Variants </th>
+                            <th class="title"> Variants Found</th>
                         </tr>
                         <tr>
                             <td class="numbers">{{filter}}</td>
@@ -291,13 +291,13 @@
                         <=0 .05 AND Polyphen>= 0.95
                     </ul>
                     <ul>
-                        B: Potentially Pathogenic -->
+                        B: Potentially Pathogenic --> At least one condition is met
                     </ul>
                     <ul>
-                        C: Unkown Significance -->
+                        C: Unkown Significance --> Missing Values
                     </ul>
                     <ul>
-                        D: Likely Benign --> else
+                        D: Likely Benign --> Else
                     </ul>
                 </div>
                 <div id="anexII" hidden>
@@ -720,7 +720,7 @@
                 //     //         })
                 //     //     })
                 //     //     // pdf.output('dataurlnewwindow');
-            });           
+            });
 
         },
         computeFilter: function(aux, jobId) {

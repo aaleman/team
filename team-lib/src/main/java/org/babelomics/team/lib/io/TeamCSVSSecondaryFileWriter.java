@@ -36,7 +36,7 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
         sb.append("phastcons").append(SEPARATOR);
         sb.append("sift").append(SEPARATOR);
         sb.append("polyphen").append(SEPARATOR);
-//        sb.append("CADD").append(SEPARATOR);
+        sb.append("CADD").append(SEPARATOR);
 
 
         sb.append("MAF 1000G").append(SEPARATOR);
@@ -104,10 +104,10 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
         sb.append(sift).append(SEPARATOR);
         sb.append(polyphen).append(SEPARATOR);
 
-//        System.out.println(variant.getAnnotation().getFunctionalScore());
-//        String cadd = getConservedRegionScore(variant.getAnnotation().getFunctionalScore(), "cadd_raw");
-//
-//        sb.append(cadd).append(SEPARATOR);
+
+        String cadd = getConservedRegionScore(variant.getAnnotation().getFunctionalScore(), "cadd_raw");
+        System.out.println(cadd);
+        sb.append(cadd).append(SEPARATOR);
 
         Maf maf1000G = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000GENOMES_phase_1", "ALL");
 

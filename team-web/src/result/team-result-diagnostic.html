@@ -146,32 +146,32 @@
         _columnsDiag: [{
             name: 'chr',
             title: "Chr",
-            width: 100
+            width: 30
         }, {
             name: 'pos',
             title: "Pos",
-            width: 100
+            width: 80
         }, {
             name: 'ref',
             title: "Ref",
-            width: 100
+            width: 30
         }, {
             name: 'alt',
             title: "Alt",
-            width: 100
+            width: 30
         }, {
             name: 'gt',
             title: "Gt",
-            width: 100
+            width: 30
         }, {
             name: 'id',
             title: 'SNP Id',
-            width: 100,
+            width: 80,
             defaultValue: '.'
         }, {
             name: 'qual',
             title: 'Qual',
-            width: 100,
+            width: 50,
             defaultValue: '.',
             formula: function(row) {
                 if (isNaN(row.qual)) {
@@ -183,12 +183,12 @@
         }, {
             name: 'dp',
             title: 'DP',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'gene',
             title: 'Gene',
-            width: 200,
+            width: 160,
             defaultValue: '.'
         }, {
             name: 'ct',
@@ -198,42 +198,77 @@
         }, {
             name: 'phylop',
             title: 'phyloP',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'phastcons',
             title: 'Phastcons',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'sift',
             title: 'SIFT',
-            width: 100,
-            defaultValue: '.'
+            width: 50,
+            defaultValue: '.',
+            styleFormula: function(row) {
+                if (row.sift == '.') {
+                    return {
+                        color: '#005b99'
+                    }
+                } else if (row.sift <= 0.05) {
+                    return {
+                        color: '#b30000'
+                    }
+                } else {
+                    return {
+                        color: '#008000'
+                    }
+                }
+            },
         }, {
             name: 'polyphen',
             title: 'Polyphen',
-            width: 100,
-            defaultValue: '.'
+            width: 50,
+            defaultValue: '.',
+            styleFormula: function(row) {
+                    if (row.polyphen == '.') {
+                        return {
+                            color: '#005b99'
+                        }
+                    } else if (row.polyphen >= 0.95) {
+                        return {
+                            color: '#b30000'
+                        }
+                    } else {
+                        return {
+                            color: '#008000'
+                        }
+                    }
+                }
+                // }, {
+                //     name: 'maf1000G',
+                //     title: 'MAF 1000G Phase 1',
+                //     width: 50,
+                //     defaultValue: '.'
         }, {
-            name: 'maf1000G',
-            title: 'MAF 1000G Phase 1',
-            width: 100,
+            name: 'cadd',
+            title: 'CADD',
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'maf1000GP3',
             title: 'MAF 1000G Phase 3',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'esp6500',
             title: 'ESP 6500',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'mafEXAC',
             title: 'EXAC',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'phenotype',
@@ -250,32 +285,32 @@
         _columnsSec: [{
             name: 'chr',
             title: "Chr",
-            width: 100
+            width: 30
         }, {
             name: 'pos',
             title: "Pos",
-            width: 100
+            width: 80
         }, {
             name: 'ref',
             title: "Ref",
-            width: 100
+            width: 30
         }, {
             name: 'alt',
             title: "Alt",
-            width: 100
+            width: 30
         }, {
             name: 'gt',
             title: "Gt",
-            width: 100
+            width: 30
         }, {
             name: 'id',
             title: 'SNP Id',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'qual',
             title: 'Qual',
-            width: 100,
+            width: 50,
             defaultValue: '.',
             formula: function(row) {
                 if (isNaN(row.qual)) {
@@ -287,12 +322,12 @@
         }, {
             name: 'dp',
             title: 'DP',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'gene',
             title: 'Gene',
-            width: 200,
+            width: 160,
             defaultValue: '.'
         }, {
             name: 'ct',
@@ -302,42 +337,82 @@
         }, {
             name: 'phylop',
             title: 'phyloP',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'phastcons',
             title: 'Phastcons',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'sift',
             title: 'SIFT',
-            width: 100,
-            defaultValue: '.'
+            width: 50,
+            defaultValue: '.',
+            styleFormula: function(row) {
+                if (row.sift == '.') {
+                    return {
+                        color: '#005b99'
+                    }
+                } else if (row.sift <= 0.05) {
+                    return {
+                        color: '#b30000'
+                    }
+                } else {
+                    return {
+                        color: '#008000'
+                    }
+                }
+            },
+            // classFormula: function(row){
+            //   if(row.ref == "C"){
+            //     return "mi_clase";
+            //   }
+            // }
         }, {
             name: 'polyphen',
             title: 'Polyphen',
-            width: 100,
-            defaultValue: '.'
+            width: 50,
+            defaultValue: '.',
+            styleFormula: function(row) {
+                if (row.polyphen == '.') {
+                    return {
+                        color: '#005b99'
+                    }
+                } else if (row.polyphen >= 0.95) {
+                    return {
+                        color: '#b30000'
+                    }
+                } else {
+                    return {
+                        color: '#008000'
+                    }
+                }
+            },
+            // }, {
+            //     name: 'maf1000G',
+            //     title: 'MAF 1000G Phase 1',
+            //     width: 50,
+            //     defaultValue: '.'
         }, {
-            name: 'maf1000G',
-            title: 'MAF 1000G Phase 1',
-            width: 100,
+            name: 'cadd',
+            title: 'CADD',
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'maf1000GP3',
             title: 'MAF 1000G Phase 3',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'esp6500',
             title: 'ESP 6500',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'mafEXAC',
             title: 'EXAC',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'clinvar',
@@ -464,6 +539,8 @@
                     match = this._computeInputOption(data.sift, query);
                 } else if (key === "polyphen") {
                     match = this._computeInputOption(data.polyphen, query);
+                } else if (key === "cadd") {
+                    match = this._computeInputOption(data.cadd, query);
                 } else if (key === "phylop") {
                     match = this._computeInputOption(data.phylop, query);
                 } else if (key === "phastcons") {
@@ -559,19 +636,19 @@
             if (query === "none") {
                 return true;
             } else if (query === "filterA") {
-                if (sift <= "0.05" && polyphen >= "0.95") {
+                if (sift <= 0.05 && polyphen >= 0.95) {
                     return true;
                 }
-                //}else if (query === "filterB") {
-                //     if ((sift <= "0.25" && sift > "0.05") && (polyphen < "0.95" && polyphen >= "0.75")) {
-                //         return true;
-                //     }
-                // } else if (query === "filterC") {
-                //     if (((sift <= "0.50" && sift > "0.25") && (polyphen < "0.75" && polyphen >= "0.50")) || sift=='.' || polyphen=='.') {
-                //         return true;
-                //     }
+            } else if (query === "filterB") {
+                if (sift <= 0.05 || polyphen >= 0.95 && (sift != '.' || polyphen != '.')) {
+                    return true;
+                }
+            } else if (query === "filterC") {
+                if (sift == '.' && polyphen == '.') {
+                    return true;
+                }
             } else if (query === "filterD") {
-                if (sift <= "0.05" && polyphen >= "0.95") {
+                if (sift <= 0.05 || polyphen >= 0.95 || sift == '.' || polyphen == '.') {
                     return false;
                 } else {
                     return true;

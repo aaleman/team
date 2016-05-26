@@ -133,12 +133,12 @@
             var els = this.$.filters.querySelectorAll(".filterBut");
             for (var i = 0; i < els.length; i++) {
                 var el = els[i];
-                if(el.dataset.value=="none"){
-                  el.classList.add("but");
-                  el.classList.remove("jso-btn", "jso-btn-shdw");
-                }else{
-                  el.classList.remove("but");
-                  el.classList.add("jso-btn", "jso-btn-shdw");
+                if (el.dataset.value == "none") {
+                    el.classList.add("but");
+                    el.classList.remove("jso-btn", "jso-btn-shdw");
+                } else {
+                    el.classList.remove("but");
+                    el.classList.add("jso-btn", "jso-btn-shdw");
                 }
             }
         },
@@ -166,16 +166,14 @@
             for (var i = 0; i < this.data.length; i++) {
                 var sift = this.data[i].sift;
                 var polyphen = this.data[i].polyphen;
-                if (sift <= "0.05" && polyphen >= "0.95") {
+                if (sift <= 0.05 && polyphen >= 0.95) {
                     mlp += 1;
-                // }else if ((sift <= "0.25" && sift > "0.05") && (polyphen < "0.95" && polyphen >= "0.75")) {
-                //     pp += 1;
-                // } else if (((sift <= "0.50" && sift > "0.25") && (polyphen < "0.75" && polyphen >= "0.50")) || sift=='.' || polyphen=='.') {
-                //     us += 1;
-                // } else if (sift > "0.50" && polyphen < "0.50") {
-                //     lb += 1;
-                } else{
-                  lb +=1;
+                } else if (sift <= 0.05 || polyphen >= 0.95 && (sift != '.' || polyphen != '.')) {
+                    pp += 1;
+                } else if (sift == '.' && polyphen == '.') {
+                    us += 1;
+                } else {
+                    lb += 1;
                 }
                 v["mlp"] = mlp;
                 v["pp"] = pp;
