@@ -177,8 +177,9 @@
                 if (isNaN(row.qual)) {
                     return ".";
                 }
-                return parseFloat(row.qual, 3);
-
+                // return parseFloat(row.qual, 3);
+                aux=parseFloat(row.qual);
+                return aux.toFixed(3);
             }
         }, {
             name: 'dp',
@@ -316,8 +317,9 @@
                 if (isNaN(row.qual)) {
                     return ".";
                 }
-                return parseFloat(row.qual, 3);
-
+                // return parseFloat(row.qual, 3);
+                aux=parseFloat(row.qual);
+                return aux.toFixed(3);
             }
         }, {
             name: 'dp',

@@ -180,7 +180,7 @@ public class TeamMain {
                     for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
                         for (String trait : clinvar.getTraits()) {
                             // Not Specified,not specified,AllHighlyPenetrant,not provided
-                            if (!trait.equalsIgnoreCase("Not Specified") && !trait.equalsIgnoreCase("not provided") && !trait.equalsIgnoreCase("AllHighlyPenetrant")) {
+                            if (!trait.equalsIgnoreCase("Not Specified") && !trait.equalsIgnoreCase("not provided") && !trait.equalsIgnoreCase("AllHighlyPenetrant") && !trait.contains("http")) {
                                 traits.add(trait);
                             }
                         }

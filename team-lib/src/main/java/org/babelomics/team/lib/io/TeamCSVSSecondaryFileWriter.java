@@ -74,12 +74,24 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
 
         StudyEntry vse = variant.getStudies().get(0); // aaleman: Check this with 2 or more studies.
 
-        Map<String, String> attributes = vse.getSampleData(this.sample.getName());
+        String fileId = vse.getFiles().get(0).getFileId();
 
-        String qual = attributes.containsKey("QUAL") ? attributes.get("QUAL") : ".";
+
+        String qualKey = fileId + "_QUAL";
+        String dpKey = fileId + "_DP";
+
+        String qual = vse.getAllAttributes().containsKey(qualKey) ? vse.getAllAttributes().get(qualKey) : ".";
+
         sb.append(qual).append(SEPARATOR);
 
-        String dp = attributes.containsKey("DP") ? attributes.get("DP") : ".";
+        String dp = ".";
+
+        if (vse.getSampleData(this.sample.getName()).containsKey("DP")) {
+            dp = vse.getSampleData(this.sample.getName()).get("DP");
+        } else if (vse.getAllAttributes().containsKey(dpKey)) {
+            dp = vse.getAllAttributes().get(dpKey);
+        }
+
         sb.append(dp).append(SEPARATOR);
 
         String id = (!variant.getIds().isEmpty()) ? variant.getIds().get(0) : ".";
@@ -106,7 +118,6 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
 
 
         String cadd = getConservedRegionScore(variant.getAnnotation().getFunctionalScore(), "cadd_raw");
-        System.out.println(cadd);
         sb.append(cadd).append(SEPARATOR);
 
         Maf maf1000G = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000GENOMES_phase_1", "ALL");
