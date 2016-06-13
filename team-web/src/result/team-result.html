@@ -4,7 +4,7 @@
 <link rel="import" href="team-result-report.html">
 <dom-module id="team-result">
     <style>
-    :host {
+        :host {
             display: block;
             position: relative;
             box-sizing: border-box;
@@ -64,33 +64,65 @@
         }
 
         .tabs {
-            height: 30px;
-            line-height: 30px;
+            height: 20px;
+            line-height: 20px;
             font-size: 14px;
             width: 150px;
+            padding: 5px 10px;
+            color: #666;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
         }
-    }
-    .value {
-        border: 1px solid #d0d0d0;
-        box-sizing: border-box;
-        height: 20px;
-        font-size: 13px;
-    }
+
+        .tabs[data-checked] {
+            background-color: #fff;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+            color: #222;
+            border: 1px solid #ddd;
+            border-bottom: 1px solid transparent;
+            box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs:hover {
+            /*background-color: #eee;*/
+            /*border-radius: 7px;*/
+            color: #8ba7a7;
+            font-weight: bold;
+        }
+
+        .value {
+            border: 1px solid #d0d0d0;
+            box-sizing: border-box;
+            height: 20px;
+            font-size: 13px;
+        }
+
+        #submenu {
+            padding-top: 10px;
+            background-color: #e2e9e9;
+            padding-left: 10px;
+        }
     </style>
     <template>
         <div class="vertical layout flex">
-            <div class="horizontal layout">
-                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
+            <div id="submenu" class="horizontal layout">
+
+                <div class="tabs" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
                     Overview
                 </div>
-                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
+                <div class="tabs" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
                     Diagnostic
                 </div>
-                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
+                <div class="tabs" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
                     Secondary Findings
                 </div>
-                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
+                <div class="tabs" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
                     Report
+                </div>
+                <div class="tabs flex" style="cursor:default">
+
                 </div>
             </div>
             <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
