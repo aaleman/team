@@ -132,9 +132,7 @@ public class TeamMain {
 
                 diagnosticWriter.write(diagnosticVariants);
 
-                System.out.println(diagnosticVariants);
                 secondaryFindingsWriter.write(secondaryFindingsVariants);
-                System.out.println(secondaryFindingsVariants);
 
                 batch.clear();
                 diagnosticVariants.clear();
