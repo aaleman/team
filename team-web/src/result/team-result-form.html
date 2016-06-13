@@ -25,7 +25,7 @@
         }
 
         #bar {
-            padding: 0 3px 5px 3px;
+            padding: 0 3px 5px 0;
         }
 
         #bar > .jso-btn {
@@ -151,10 +151,6 @@
             overflow-y: auto;
         }
 
-        jso-form-box {
-            width: 250px;
-        }
-
         .inputValue {
             width: 150px;
         }
@@ -165,7 +161,7 @@
     </style>
     <template>
         <form id="filter_form">
-            <div id="bar" class="horizontal layout center-justified">
+            <div id="bar" class="horizontal layout">
                 <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw butstyle" title="Filters History" icon="filter">
                     <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
                         Clear
@@ -185,8 +181,8 @@
                         </template>
                     </div>
                 </jso-tooltip>
-                <div class="jso-btn jso-btn-shdw butstyle" style="width:100px" on-click="clearForm">Clear</div>
-                <div class="jso-btn jso-btn-shdw butstyle" style="width:100px" on-click="submitForm">Search</div>
+                <div class="jso-btn jso-btn-shdw flex butstyle" on-click="clearForm">Clear</div>
+                <div class="jso-btn jso-btn-shdw flex butstyle" on-click="submitForm">Search</div>
             </div>
             <div id="customFiltersForm">
                 <jso-filter-position id="filterPosition" collapsible enable-snpid></jso-filter-position>
