@@ -65,6 +65,7 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
         StringBuilder sb = new StringBuilder();
 
         Variant variant = teamVariant.getVariant();
+//        System.out.println(variant);
 
         sb.append(variant.getChromosome()).append(SEPARATOR);
         sb.append(variant.getStart()).append(SEPARATOR);

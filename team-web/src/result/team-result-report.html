@@ -93,7 +93,6 @@
             max-height: 50px!important;
         }
 
-
         .reportPanelInfo {
             margin: 5px;
             width: 90%;
@@ -118,7 +117,7 @@
         }
 
         #aditional {
-            margin-left: 20px;
+            /*margin-left: 20px;*/
         }
 
         #aditional input {
@@ -137,7 +136,6 @@
             font-style: italic;
             margin: 5px;
         }
-
     </style>
     <template>
         <div class="horizontal layout">
@@ -184,13 +182,12 @@
                 <div class="description">{{job.description}}</div>
                 <div class="">
                     <span id="aditional">
-                        <span>Patient Name:
+                        <!-- <span>Patient Suspicious Diagnostic: </span>
+                        <span id="suspDiag" >{{suspDiag}}</span> -->
+                        <span>Patient Diagnostic:
                             <input type="text">
-                            <span id="div0Aditional" class="infoPatient" hidden>{{div0Aditional}}</span>
-                        </span>
-                        <span style="margin-left:10px">Patient Diagnostic:
-                            <input type="text">
-                            <span id="div1Aditional" class="infoPatient" hidden>{{div1Aditional}}</span>
+                            <!-- <jso-tooltip icon="arrow-circle-down"></jso-tooltip> -->
+                            <span id="confDiag" class="infoPatient" hidden>{{confDiag}}</span>
                         </span>
                     </span>
                     <table id="stadistics">
@@ -403,6 +400,10 @@
                     return {};
                 },
                 notify: true
+            },
+            suspDiag: {
+                type: String,
+                value: ""
             },
             _columnsDiag: {
                 type: Array,
@@ -691,10 +692,7 @@
             this.$.divConclusions.hidden = true;
             elem = this.$.aditional.querySelectorAll('input');
             elem[0].hidden = false;
-            this.$.div0Aditional.hidden = true;
-            elem[1].hidden = false;
-            this.$.div1Aditional.hidden = true;
-
+            this.$.confDiag.hidden = true;
             return true;
         },
 
@@ -799,6 +797,7 @@
             Polymer.dom(ref).appendChild(jsoTable.exportToTable());
         },
         jobChanged: function(neo, old) {
+            var me = this;
             if (neo.id) {
                 this.getJobPanel();
                 var inputValues = this.$.reportOptions.querySelectorAll('input');
@@ -828,9 +827,7 @@
                 this.divConclusions = "";
                 elem = this.$.aditional.querySelectorAll('input');
                 elem[0].value = "";
-                elem[1].value = "";
-                this.div0Aditional = "";
-                this.div1Aditional = "";
+                this.confDiag = "";
                 this.mostPathogenicData = "";
 
                 var tableSec = this.$.reportSecondary.querySelector('table');
@@ -841,6 +838,22 @@
                 if (tableMost != null) {
                     this.$.reportMostPathogenic.removeChild(tableMost);
                 }
+
+                // var sampleId = neo.params.sampleId;
+                // OpencgaManager.samples.info({
+                //     id: sampleId,
+                //     query: {
+                //         sid: Cookies('bioinfo_sid'),
+                //     },
+                //     request: {
+                //         async: false,
+                //         success: function(response) {
+                //             me.suspDiag = response.response[0].result[0].description;
+                //         },
+                //         error: function() {}
+                //     }
+                // });
+
             }
         },
         showInReport: function(e) {
@@ -876,12 +889,9 @@
             this.$.divConclusions.hidden = false;
 
             elem = this.$.aditional.querySelectorAll('input');
-            this.div0Aditional = elem[0].value;
+            this.confDiag = elem[0].value;
             elem[0].hidden = true;
-            this.$.div0Aditional.hidden = false;
-            this.div1Aditional = elem[1].value;
-            elem[1].hidden = true;
-            this.$.div1Aditional.hidden = false;
+            this.$.confDiag.hidden = false;
 
             return;
 

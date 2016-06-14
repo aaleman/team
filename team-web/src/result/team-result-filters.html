@@ -68,14 +68,44 @@
             left: 180px;
             top: 35px;
         }*/
+
+        .titleVar {
+            font-size: 18px;
+            border-bottom: thin solid #edebe3;
+            color: #204854;
+            padding-bottom: 13px;
+        }
+
+        .tabs {
+            margin: 5px 15px 0 0;
+            padding: 0 2px;
+            border-bottom: 1px solid transparent;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .tabs:hover {
+            border-bottom: 1px solid #8ba7a7;
+            color: #8ba7a7;
+            font-weight: bold;
+        }
+
+        .tabs[data-checked] {
+            border-bottom: 2px solid #225e71;
+            color: #222;
+            font-size: 13px;
+        }
     </style>
     <template>
         <div id="filters">
+            <div class="titleVar">
+                Variant Filters
+            </div>
             <div class="horizontal layout" style="margin-bottom: 10px;">
-                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="static" data-checked$="{{computeView(view, 'static')}}">
+                <div class="tabs" on-click="handleView" data-value="static" data-checked$="{{computeView(view, 'static')}}">
                     Static Filters
                 </div>
-                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="custom" data-checked$="{{computeView(view, 'custom')}}">
+                <div class="tabs" on-click="handleView" data-value="custom" data-checked$="{{computeView(view, 'custom')}}">
                     Custom Filters &nbsp;
                 </div>
             </div>
