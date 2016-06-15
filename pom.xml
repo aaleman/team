@@ -16,12 +16,12 @@
 
     <properties>
         <compileSource>1.7</compileSource>
-        <biodata.version>0.6.0</biodata.version>
-        <jcl.version>3.1.0</jcl.version>
-        <opencga.version>0.7-dev</opencga.version>
+        <biodata.version>0.8.0-SNAPSHOT</biodata.version>
+        <jcl.version>3.3.0-SNAPSHOT</jcl.version>
+        <opencga.version>0.8-dev</opencga.version>
         <datastore.version>0.5.0</datastore.version>
-        <cellbase.version>4.0.0-rc</cellbase.version>
-        <team.version>1.1.1</team.version>
+        <cellbase.version>4.1.0-beta</cellbase.version>
+        <team.version>1.2.0</team.version>
     </properties>
 
     <dependencyManagement>

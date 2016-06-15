@@ -66,9 +66,11 @@ public class TeamVariantMongoReader implements VariantReader {
 
             iterator = dbAdaptor.iterator(new QueryOptions());
 
-        } catch (CatalogException | ClassNotFoundException | StorageManagerException | IllegalAccessException | InstantiationException e) {
+        } catch (CatalogException | ClassNotFoundException  | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
             res = false;
+        } catch (StorageManagerException e) {
+            e.printStackTrace();
         }
 
         return res;
