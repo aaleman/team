@@ -45,6 +45,8 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
         sb.append("MAF 1000G Phase 3 (Allele)").append(SEPARATOR);
         sb.append("MAF ESP").append(SEPARATOR);
         sb.append("MAF ESP (Allele)").append(SEPARATOR);
+        sb.append("MAF SPANISH").append(SEPARATOR);
+        sb.append("MAF SPANISH (Allele)").append(SEPARATOR);
         sb.append("MAF EXAC").append(SEPARATOR);
         sb.append("MAF EXAC (Allele)").append(SEPARATOR);
 
@@ -151,8 +153,16 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
             sb.append(".").append(SEPARATOR);
         }
 
-        Maf mafEXACALL = getMAF(variant.getAnnotation().getPopulationFrequencies(), "EXAC", "ALL");
+        Maf spanishMaf = getSpanishMAF(variant.getChromosome(), variant.getStart(), variant.getReference(), variant.getAlternate());
+        if (spanishMaf != null) {
+            sb.append(df.format(spanishMaf.maf)).append(SEPARATOR);
+            sb.append(spanishMaf.allele).append(SEPARATOR);
+        } else {
+            sb.append(".").append(SEPARATOR);
+            sb.append(".").append(SEPARATOR);
+        }
 
+        Maf mafEXACALL = getMAF(variant.getAnnotation().getPopulationFrequencies(), "EXAC", "ALL");
         if (mafEXACALL != null) {
             sb.append(df.format(mafEXACALL.maf)).append(SEPARATOR);
             sb.append(mafEXACALL.allele).append(SEPARATOR);
