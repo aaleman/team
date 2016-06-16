@@ -310,7 +310,6 @@
                             if (diagRaw[i] != "") {
 
                                 var splits = diagRaw[i].split("\t");
-
                                 var elem = {
                                     chr: splits[0],
                                     pos: splits[1],
@@ -333,10 +332,12 @@
                                     amaf1000GP3: splits[18],
                                     esp6500: splits[19],
                                     aesp6500: splits[20],
-                                    mafEXAC: splits[21],
-                                    amafEXAC: splits[22],
-                                    phenotype: splits[23],
-                                    source: splits[24]
+                                    spanishmaf: splits[21],
+                                    aspanishmaf: splits[22],
+                                    mafEXAC: splits[23],
+                                    amafEXAC: splits[24],
+                                    phenotype: splits[25],
+                                    source: splits[26]
 
                                 };
                                 diagData.push(elem);
@@ -369,11 +370,13 @@
                                     amaf1000GP3: splits[18],
                                     esp6500: splits[19],
                                     aesp6500: splits[20],
-                                    mafEXAC: splits[21],
-                                    amafEXAC: splits[22],
-                                    clinvar: splits[23],
-                                    cosmic: splits[24],
-                                    gwas: splits[25]
+                                    spanishmaf: splits[21],
+                                    aspanishmaf: splits[22],
+                                    mafEXAC: splits[23],
+                                    amafEXAC: splits[24],
+                                    clinvar: splits[25],
+                                    cosmic: splits[26],
+                                    gwas: splits[27]
 
                                 };
                                 secData.push(elem);

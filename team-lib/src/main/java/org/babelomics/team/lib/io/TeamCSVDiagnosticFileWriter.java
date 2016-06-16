@@ -1,5 +1,7 @@
 package org.babelomics.team.lib.io;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import org.babelomics.team.lib.models.TeamVariant;
 import org.opencb.biodata.models.variant.StudyEntry;
@@ -11,13 +13,16 @@ import org.opencb.biodata.models.variant.avro.SequenceOntologyTerm;
 import org.opencb.commons.io.DataWriter;
 import org.opencb.opencga.catalog.models.Sample;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
@@ -76,6 +81,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append("phastcons").append(SEPARATOR);
         sb.append("sift").append(SEPARATOR);
         sb.append("polyphen").append(SEPARATOR);
+        sb.append("CADD").append(SEPARATOR);
 
         sb.append("MAF 1000G").append(SEPARATOR);
         sb.append("MAF 1000G (Allele)").append(SEPARATOR);
@@ -83,6 +89,8 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append("MAF 1000G Phase 3 (Allele)").append(SEPARATOR);
         sb.append("MAF ESP").append(SEPARATOR);
         sb.append("MAF ESP (Allele)").append(SEPARATOR);
+        sb.append("MAF SPANISH").append(SEPARATOR);
+        sb.append("MAF SPANISH (Allele)").append(SEPARATOR);
         sb.append("MAF EXAC").append(SEPARATOR);
         sb.append("MAF EXAC (Allele)").append(SEPARATOR);
 
@@ -147,6 +155,10 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append(sift).append(SEPARATOR);
         sb.append(polyphen).append(SEPARATOR);
 
+        String cadd = getConservedRegionScore(variant.getAnnotation().getFunctionalScore(), "cadd_raw");
+        sb.append(cadd).append(SEPARATOR);
+
+
         Maf maf1000G = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000GENOMES_phase_1", "ALL");
 
         if (maf1000G != null) {
@@ -178,6 +190,15 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
             sb.append(".").append(SEPARATOR);
         }
 
+        Maf spanishMaf = getSpanishMAF(variant.getChromosome(), variant.getStart(), variant.getReference(), variant.getAlternate());
+        if (spanishMaf != null) {
+            sb.append(df.format(spanishMaf.maf)).append(SEPARATOR);
+            sb.append(spanishMaf.allele).append(SEPARATOR);
+        } else {
+            sb.append(".").append(SEPARATOR);
+            sb.append(".").append(SEPARATOR);
+        }
+
         Maf mafEXACALL = getMAF(variant.getAnnotation().getPopulationFrequencies(), "EXAC", "ALL");
 
         if (mafEXACALL != null) {
@@ -187,7 +208,6 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
             sb.append(".").append(SEPARATOR);
             sb.append(".").append(SEPARATOR);
         }
-
 
         String phe = teamVariant.getPhenotype() != null ? teamVariant.getPhenotype() : ".";
         String src = teamVariant.getSource() != null ? teamVariant.getSource() : ".";
@@ -278,6 +298,43 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
             this.write(record);
         }
         return true;
+    }
+
+    protected Maf getSpanishMAF(String chromosome, Integer start, String reference, String alternate) {
+
+        // http://ws1.babelomics.org/csvs/rest/variants/16:4933301:A:T/get?diseases=19,20
+        Client clientNew = ClientBuilder.newClient();
+        WebTarget webTarget = clientNew.target("http://ws1.babelomics.org/csvs/rest/variants");
+
+        Response newResponse;
+
+        String variant = chromosome + ":" + start + ":" + reference + ":" + alternate;
+
+        newResponse = webTarget.path(variant).path("get").queryParam("diseases", "19,20").request(MediaType.APPLICATION_JSON_TYPE).get();
+
+        ObjectMapper mapperNew = new ObjectMapper();
+        JsonNode actualObj;
+
+        String resp = null;
+
+        resp = newResponse.readEntity(String.class);
+        try {
+            actualObj = mapperNew.readTree(resp);
+
+            Iterator<JsonNode> it = actualObj.get("result").iterator();
+
+            if (it.hasNext()) {
+                JsonNode resultElem = it.next();
+                if (resultElem != null && resultElem.get("stats") != null && resultElem.get("stats").get("maf") != null) {
+                    return new Maf(String.valueOf(resultElem.get("reference")),resultElem.get("stats").get("maf").asDouble());
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 
