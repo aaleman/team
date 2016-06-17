@@ -26,12 +26,14 @@ import org.opencb.biodata.models.variant.avro.VariantTraitAssociation;
 import org.opencb.biodata.tools.variant.filtering.VariantFilter;
 import org.opencb.commons.filters.FilterApplicator;
 import org.opencb.commons.io.DataWriter;
-import org.opencb.datastore.core.QueryOptions;
+// import org.opencb.datastore.core.QueryOptions;
+import org.opencb.commons.datastore.core.QueryOptions;
 import org.opencb.opencga.catalog.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
 import org.opencb.opencga.catalog.models.Sample;
 import org.opencb.opencga.core.common.Config;
-import org.opencb.opencga.storage.core.StorageManagerException;
+// import org.opencb.opencga.storage.core.StorageManagerException;
+import org.opencb.opencga.storage.core.exceptions.StorageManagerException;
 import org.opencb.opencga.storage.core.config.StorageConfiguration;
 
 import java.io.IOException;

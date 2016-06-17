@@ -2,14 +2,17 @@ package org.babelomics.team.lib.io;
 
 import org.opencb.biodata.formats.variant.io.VariantReader;
 import org.opencb.biodata.models.variant.Variant;
-import org.opencb.datastore.core.Query;
-import org.opencb.datastore.core.QueryOptions;
+// import org.opencb.datastore.core.Query;
+// import org.opencb.datastore.core.QueryOptions;
+import org.opencb.commons.datastore.core.Query;
+import org.opencb.commons.datastore.core.QueryOptions;
 import org.opencb.opencga.analysis.storage.AnalysisFileIndexer;
 import org.opencb.opencga.catalog.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
 import org.opencb.opencga.catalog.models.DataStore;
 import org.opencb.opencga.catalog.models.File;
-import org.opencb.opencga.storage.core.StorageManagerException;
+// import org.opencb.opencga.storage.core.StorageManagerException;
+import org.opencb.opencga.storage.core.exceptions.StorageManagerException;
 import org.opencb.opencga.storage.core.StorageManagerFactory;
 import org.opencb.opencga.storage.core.config.StorageConfiguration;
 import org.opencb.opencga.storage.core.variant.VariantStorageManager;
@@ -64,7 +67,8 @@ public class TeamVariantMongoReader implements VariantReader {
 
             q.append(String.valueOf(VariantDBAdaptor.VariantQueryParams.RETURNED_STUDIES), this.studyId);
 
-            iterator = dbAdaptor.iterator(new QueryOptions());
+            // iterator = dbAdaptor.iterator(new QueryOptions());
+            iterator = dbAdaptor.iterator(q, new QueryOptions());
 
         } catch (CatalogException | ClassNotFoundException  | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
