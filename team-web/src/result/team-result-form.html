@@ -4,7 +4,7 @@
 <link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-conservation.html">
 <link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-consequencetypes.html">
 <dom-module id="team-result-form">
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
             display: block;
             position: relative;
@@ -250,6 +250,25 @@
 
                         </div>
 
+                        <label class="jso">Spanish MAF</label>
+
+                        <div class="horizontal layout maf-elem">
+                            <div class="jso-select">
+                                <jso-select class="jso" name="spanishmaf_op" id="spanishmaf_op">
+                                    <jso-option value="<" selected>
+                                        < </jso-option>
+                                            <jso-option value="<=">
+                                                <=< /jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                                    <jso-option value="==">==</jso-option>
+                                                    <jso-option value="!=">!=</jso-option>
+                                </jso-select>
+                            </div>
+                            <input class="jso inputValue" type="number" id="spanishmaf" name="spanishmaf" min="0" max="1" step="0.0000001" value="{{spanishmafValue::input}}" />
+
+                        </div>
+
                         <label class="jso">EXAC</label>
 
                         <div class="horizontal layout maf-elem">
@@ -395,6 +414,9 @@
             esp6500Value: {
                 type: Number,
             },
+            spanishmafValue: {
+                type: Number,
+            },
             mafEXACValue: {
                 type: Number,
             },
@@ -493,6 +515,8 @@
             this.$.maf1000GP3_op.value = "<";
             this.esp6500Value = "";
             this.$.esp6500_op.value = "<";
+            this.spanishmafValue = "";
+            this.$.spanishmaf_op.value = "<";
             this.mafEXACValue = "";
             this.$.mafEXAC_op.value = "<";
 
@@ -604,6 +628,15 @@
                     q["esp6500_op"] = this.$.esp6500_op.value;
                 }
             }
+            if (this.spanishmafValue) {
+                if (this.$.spanishmaf.checkValidity() == false) {
+                    alert("Spanish MAF must be less than 1 or greater than 0");
+                    return;
+                } else {
+                    q["spanishmaf"] = parseFloat(this.spanishmafValue);
+                    q["spanishmaf_op"] = this.$.spanishmaf_op.value;
+                }
+            }
             if (this.mafEXACValue) {
                 if (this.$.mafEXAC.checkValidity() == false) {
                     alert("MAF EXAC must be less than 1 or greater than 0");
@@ -635,7 +668,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
+                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -683,7 +716,7 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
+            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
@@ -760,6 +793,11 @@
                 this.esp6500Value = hf.esp6500;
                 this.$.esp6500_op.value = hf.esp6500_op;
                 filterName.push("ESP 6500 " + hf.esp6500_op + " " + hf.esp6500 + " ");
+            }
+            if (hf.spanishmaf != null) {
+                this.spanishmafValue = hf.spanishmaf;
+                this.$.spanishmaf_op.value = hf.spanishmaf_op;
+                filterName.push("Spanish MAF " + hf.spanishmaf_op + " " + hf.spanishmaf + " ");
             }
             if (hf.mafEXAC != null) {
                 this.mafEXACValue = hf.mafEXAC;

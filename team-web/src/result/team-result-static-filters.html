@@ -1,5 +1,5 @@
 <dom-module id="team-result-static-filters">
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
             display: block;
             position: relative;
@@ -20,9 +20,10 @@
             height: 20px;
             font-size: 13px;
         }
-        .title:hover{
-          font-weight: bold;
-          color:#8ba7a7;
+
+        .title:hover {
+            font-weight: bold;
+            color: #8ba7a7;
         }
 
         .but {
@@ -56,7 +57,7 @@
             border: none;
             /*font-weight: bold;*/
             position: relative;
-            color:#222;
+            color: #222;
             font-size: 14px;
         }
 
@@ -66,37 +67,33 @@
     </style>
     <template>
         <div id="filters">
+            <div class="but flex filterBut" on-click="handleView" data-value="none">
 
-            <div class="vertical layout">
-                <div class="but flex filterBut" on-click="handleView" data-value="none">
+                <div class="title">Without Filters</div>
+                <i class="fa fa-filter"></i>
+                <span class="findedGenes">{{data.length}}</span>
 
-                    <div class="title">Without Filters</div>
-                    <i class="fa fa-filter"></i>
-                    <span class="findedGenes">{{data.length}}</span>
-
-                </div>
-                <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterA">
-                    <div class="title">A: Most Likely Pathogenic &nbsp;</div>
-                    <i class="fa fa-filter" style="color:#b30000"></i>
-                    <span class="findedGenes">{{value.mlp}}</span>
-                </div>
-                <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterB">
-                    <div class="title">B: Potentially Pathogenic &nbsp;</div>
-                    <i class="fa fa-filter" style="color:#ff751a"></i>
-                    <span class="findedGenes">{{value.pp}}</span>
-                </div>
-                <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterC">
-                    <div class="title">C: Unkown Significance &nbsp;</div>
-                    <i class="fa fa-filter" style="color:#005b99"></i>
-                    <span class="findedGenes">{{value.us}}</span>
-                </div>
-                <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterD">
-                    <div class="title">D: Likely Benign &nbsp;</div>
-                    <i class="fa fa-filter" style="color:#008000"></i>
-                    <span class="findedGenes">{{value.lb}}</span>
-                </div>
             </div>
-
+            <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterA">
+                <div class="title">A: Most Likely Pathogenic &nbsp;</div>
+                <i class="fa fa-filter" style="color:#b30000"></i>
+                <span class="findedGenes">{{value.mlp}}</span>
+            </div>
+            <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterB">
+                <div class="title">B: Potentially Pathogenic &nbsp;</div>
+                <i class="fa fa-filter" style="color:#ff751a"></i>
+                <span class="findedGenes">{{value.pp}}</span>
+            </div>
+            <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterC">
+                <div class="title">C: Unkown Significance &nbsp;</div>
+                <i class="fa fa-filter" style="color:#005b99"></i>
+                <span class="findedGenes">{{value.us}}</span>
+            </div>
+            <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterD">
+                <div class="title">D: Likely Benign &nbsp;</div>
+                <i class="fa fa-filter" style="color:#008000"></i>
+                <span class="findedGenes">{{value.lb}}</span>
+            </div>
         </div>
     </template>
 </dom-module>
