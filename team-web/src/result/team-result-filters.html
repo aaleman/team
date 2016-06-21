@@ -112,7 +112,7 @@
             <team-result-static-filters id="teamResultStaticFilters" data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
             <div id="teamResultCustomFilters" class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
-                <team-result-form id="custom" query={{query}} filter-data="{{filterData}}" job="{{job}}"></team-result-form>
+                <team-result-form id="custom" query={{query}} filter-data="{{filterData}}" data="{{data}}" job="{{job}}"></team-result-form>
             </div>
             <div id="loading" hidden$="{{!loading}}">
                 <i class="fa fa-circle-o-notch fa-spin"></i> Loading...
