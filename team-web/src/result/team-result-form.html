@@ -552,8 +552,10 @@
 
             ////
             this.dpValue = "";
+            this.$.dp.value = 0;
             this.$.dp_op.value = "<";
             this.qualValue = "";
+            this.$.qual.value = 0;
             this.$.qual_op.value = "<";
             // this.maf1000gValue = "";
             // this.$.maf1000g_op.value = "<";
@@ -814,11 +816,13 @@
 
             if (hf.dp != null) {
                 this.dpValue = hf.dp;
+                this.$.dp.value = hf.dp;
                 this.$.dp_op.value = hf.dp_op;
                 filterName.push("DP " + hf.dp_op + " " + hf.dp + " ");
             }
             if (hf.qual != null) {
                 this.qualValue = hf.qual;
+                this.$.qual.value = hf.qual;
                 this.$.qual_op.value = hf.qual_op;
                 filterName.push("Qual " + hf.qual_op + " " + hf.qual + " ");
             }
