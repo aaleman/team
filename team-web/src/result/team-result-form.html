@@ -96,18 +96,14 @@
             width: 60px;
             text-align: right;
             font-weight: bold;
-            ;
         }
 
         .maf-elem > .jso-select,
         .pss-elem > .jso-select,
-        .conserv-elem > .jso-select {
-            width: 45px;
-            margin-right: 3px;
-        }
-
+        .conserv-elem > .jso-select,
         .qual-elem > .jso-select {
             width: 45px;
+            margin-right: 3px;
             align-self: center;
         }
 
@@ -188,16 +184,13 @@
             --paper-slider-knob-color: #445D76;
             --paper-slider-active-color: #445D76;
             --paper-slider-pin-color: #445D76;
+            --paper-input-container-focus-color:#445D76;
             width: 125%;
         }
 
         paper-slider::shadow #input {
-            width: 155px;
+            width: calc(20vh - 40px);
             font-size: 13px;
-        }
-
-        paper-slider::shadow #input::shadow .focused-line {
-            background: #445D76;
         }
     </style>
     <template>
@@ -264,7 +257,8 @@
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="maf1000GP3" name="maf1000GP3" min="0" max="1" step="0.0000001" value="{{maf1000GP3Value::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="maf1000GP3" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="maf1000GP3" name="maf1000GP3" min="0" max="1" step="0.0000001" value="{{maf1000GP3Value::input}}" /> -->
 
                         </div>
 
@@ -281,7 +275,8 @@
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="esp6500" name="esp6500" min="0" max="1" step="0.0000001" value="{{esp6500Value::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="esp6500" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="esp6500" name="esp6500" min="0" max="1" step="0.0000001" value="{{esp6500Value::input}}" /> -->
 
                         </div>
 
@@ -298,7 +293,8 @@
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="spanishmaf" name="spanishmaf" min="0" max="1" step="0.0000001" value="{{spanishmafValue::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="spanishmaf" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="spanishmaf" name="spanishmaf" min="0" max="1" step="0.0000001" value="{{spanishmafValue::input}}" /> -->
 
                         </div>
 
@@ -315,7 +311,8 @@
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="mafEXAC" name="mafEXAC" min="0" max="1" step="0.0000001" value="{{mafEXACValue::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="mafEXAC" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="mafEXAC" name="mafEXAC" min="0" max="1" step="0.0000001" value="{{mafEXACValue::input}}" /> -->
 
                         </div>
                     </div>
@@ -345,10 +342,10 @@
                         Quality
                     </div>
                     <div class="container vertical layout">
-                        <div class="horizontal layout" style="line-height: 20px;">
-                            <label class="jso">QUAL: </label>
+                        <!-- <div class="horizontal layout" style="line-height: 20px;"> -->
+                            <label class="jso">QUAL </label>
                             <!-- <div style="width:60px">{{qualValue}}</div> -->
-                        </div>
+                        <!-- </div> -->
                         <div class="horizontal layout qual-elem">
                             <div class="jso-select">
                                 <jso-select class="jso" name="qual_op" id="qual_op">
@@ -360,12 +357,12 @@
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
-                            <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderQualChange" value="100000" class="sliderBar" id="qual" editable></paper-slider>
+                            <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="qual" editable></paper-slider>
                             <!-- <input class="jso inputValue" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" /> -->
                         </div>
 
                         <div class="horizontal layout" style="line-height: 20px;">
-                            <label class="jso">DP: </label>
+                            <label class="jso">DP </label>
                             <!-- <div style="width:60px">{{dpValue}}</div> -->
                         </div>
                         <div class="horizontal layout qual-elem">
@@ -379,7 +376,7 @@
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
-                            <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderDPChange" value="100000" class="sliderBar" id="dp" editable></paper-slider>
+                            <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="dp" editable></paper-slider>
                             <!-- <input class="jso inputValue" type="number" id="dp" name="dp" value="{{dpValue::input}}" /> -->
                         </div>
                     </div>
@@ -551,20 +548,24 @@
             this.$.filterCT.clear();
 
             ////
-            this.dpValue = "";
             this.$.dp.value = 0;
+            this.dpValue = "";
             this.$.dp_op.value = "<";
-            this.qualValue = "";
             this.$.qual.value = 0;
+            this.qualValue = "";
             this.$.qual_op.value = "<";
             // this.maf1000gValue = "";
             // this.$.maf1000g_op.value = "<";
+            this.$.maf1000GP3.value = 0;
             this.maf1000GP3Value = "";
             this.$.maf1000GP3_op.value = "<";
+            this.$.esp6500.value = 0;
             this.esp6500Value = "";
             this.$.esp6500_op.value = "<";
+            this.$.spanishmaf.value = 0;
             this.spanishmafValue = "";
             this.$.spanishmaf_op.value = "<";
+            this.$.mafEXAC.value = 0;
             this.mafEXACValue = "";
             this.$.mafEXAC_op.value = "<";
 
@@ -658,13 +659,13 @@
             //     }
             // }
             if (this.maf1000GP3Value) {
-                if (this.$.maf1000GP3.checkValidity() == false) {
-                    alert("MAF 1000G Phase3 must be less than 1 or greater than 0");
-                    return;
-                } else {
+                // if (this.$.maf1000GP3.checkValidity() == false) {
+                //     alert("MAF 1000G Phase3 must be less than 1 or greater than 0");
+                //     return;
+                // } else {
                     q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
                     q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
-                }
+                // }
             }
             if (this.esp6500Value) {
                 if (this.$.esp6500.checkValidity() == false) {
@@ -833,21 +834,25 @@
             // }
             if (hf.maf1000GP3 != null) {
                 this.maf1000GP3Value = hf.maf1000GP3;
+                this.$.maf1000GP3.value = hf.maf1000GP3;
                 this.$.maf1000GP3_op.value = hf.maf1000GP3_op;
                 filterName.push("MAF 1000GP3 " + hf.maf1000GP3_op + " " + hf.maf1000GP3 + " ");
             }
             if (hf.esp6500 != null) {
                 this.esp6500Value = hf.esp6500;
+                this.$.esp6500.value = hf.esp6500;
                 this.$.esp6500_op.value = hf.esp6500_op;
                 filterName.push("ESP 6500 " + hf.esp6500_op + " " + hf.esp6500 + " ");
             }
             if (hf.spanishmaf != null) {
                 this.spanishmafValue = hf.spanishmaf;
+                this.$.spanishmaf.value = hf.spanishmaf;
                 this.$.spanishmaf_op.value = hf.spanishmaf_op;
                 filterName.push("Spanish MAF " + hf.spanishmaf_op + " " + hf.spanishmaf + " ");
             }
             if (hf.mafEXAC != null) {
                 this.mafEXACValue = hf.mafEXAC;
+                this.$.mafEXAC.value = hf.mafEXAC;
                 this.$.mafEXAC_op.value = hf.mafEXAC_op;
                 filterName.push("EXAC " + hf.mafEXAC_op + " " + hf.mafEXAC + " ");
             }
@@ -892,11 +897,9 @@
                 this.numHomozygous = hom;
             }
         },
-        sliderQualChange: function(e) {
-            this.set("qualValue", e.currentTarget.value);
-        },
-        sliderDPChange: function(e) {
-            this.set("dpValue", e.currentTarget.value);
+        sliderChange: function(e){
+          var id=e.currentTarget.id +"Value";
+          this.set(id, e.currentTarget.value);
         },
     });
 </script>
