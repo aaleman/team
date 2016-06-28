@@ -3,6 +3,7 @@
 <link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-scores.html">
 <link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-conservation.html">
 <link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-consequencetypes.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 <dom-module id="team-result-form">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
@@ -84,6 +85,10 @@
             margin-bottom: 3px;
         }
 
+        /*.qual-elem {
+            width: 95%;
+        }*/
+
         .maf-elem > label,
         .qual-elem > label,
         .pss-elem > label,
@@ -91,15 +96,15 @@
             width: 60px;
             text-align: right;
             font-weight: bold;
-            ;
         }
 
         .maf-elem > .jso-select,
-        .qual-elem > .jso-select,
         .pss-elem > .jso-select,
-        .conserv-elem > .jso-select {
+        .conserv-elem > .jso-select,
+        .qual-elem > .jso-select {
             width: 45px;
             margin-right: 3px;
+            align-self: center;
         }
 
         #filter-name {
@@ -158,6 +163,35 @@
         .butstyle {
             border-radius: 4px;
         }
+
+        .numFilter {
+            /*padding: 1px 7px;*/
+            background-color: #445D76;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 10px;
+            margin-top: 2px;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            text-align: center;
+        }
+
+        paper-slider.sliderBar {
+            color: #a0a0a0;
+            --paper-slider-knob-color: #445D76;
+            --paper-slider-active-color: #445D76;
+            --paper-slider-pin-color: #445D76;
+            --paper-input-container-focus-color:#445D76;
+            width: 125%;
+        }
+
+        paper-slider::shadow #input {
+            width: calc(20vh - 40px);
+            font-size: 13px;
+        }
     </style>
     <template>
         <form id="filter_form">
@@ -204,8 +238,6 @@
                                     </jso-option>
                                     <jso-option value=">">></jso-option>
                                     <jso-option value=">=">>=</jso-option>
-                                    <jso-option value="==">==</jso-option>
-                                    <jso-option value="!=">!=</jso-option>
                                 </jso-select>
                             </div>
                             <input class="jso inputValue" type="number" id="maf1000g" name="maf1000g" min="0" max="1"
@@ -220,14 +252,13 @@
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <=< /jso-option>
+                                                <= </jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
-                                                    <jso-option value="==">==</jso-option>
-                                                    <jso-option value="!=">!=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="maf1000GP3" name="maf1000GP3" min="0" max="1" step="0.0000001" value="{{maf1000GP3Value::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="maf1000GP3" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="maf1000GP3" name="maf1000GP3" min="0" max="1" step="0.0000001" value="{{maf1000GP3Value::input}}" /> -->
 
                         </div>
 
@@ -239,14 +270,13 @@
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <=< /jso-option>
+                                                <= </jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
-                                                    <jso-option value="==">==</jso-option>
-                                                    <jso-option value="!=">!=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="esp6500" name="esp6500" min="0" max="1" step="0.0000001" value="{{esp6500Value::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="esp6500" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="esp6500" name="esp6500" min="0" max="1" step="0.0000001" value="{{esp6500Value::input}}" /> -->
 
                         </div>
 
@@ -258,14 +288,13 @@
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <=< /jso-option>
+                                                <= </jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
-                                                    <jso-option value="==">==</jso-option>
-                                                    <jso-option value="!=">!=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="spanishmaf" name="spanishmaf" min="0" max="1" step="0.0000001" value="{{spanishmafValue::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="spanishmaf" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="spanishmaf" name="spanishmaf" min="0" max="1" step="0.0000001" value="{{spanishmafValue::input}}" /> -->
 
                         </div>
 
@@ -277,14 +306,13 @@
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <=< /jso-option>
+                                                <= </jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
-                                                    <jso-option value="==">==</jso-option>
-                                                    <jso-option value="!=">!=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="mafEXAC" name="mafEXAC" min="0" max="1" step="0.0000001" value="{{mafEXACValue::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="mafEXAC" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="mafEXAC" name="mafEXAC" min="0" max="1" step="0.0000001" value="{{mafEXACValue::input}}" /> -->
 
                         </div>
                     </div>
@@ -295,13 +323,15 @@
                         Genotype
                     </div>
                     <div class="container vertical layout">
-                        <label class="jso-control">
+                        <label class="jso-control horizontal layout" style="margin-bottom:2px;">
                             <input value="het" type="checkbox" name="gt">
-                            <span>Heterozygous</span>
+                            <span class="flex">Heterozygous</span>
+                            <span class="numFilter">{{numHeterozygous}}</span>
                         </label>
-                        <label class="jso-control">
+                        <label class="jso-control horizontal layout" style="margin-top:2px;">
                             <input value="hom" type="checkbox" name="gt">
-                            <span>Homozygous</span>
+                            <span class="flex">Homozygous</span>
+                            <span class="numFilter">{{numHomozygous}}</span>
                         </label>
                     </div>
                 </jso-form-box>
@@ -312,36 +342,42 @@
                         Quality
                     </div>
                     <div class="container vertical layout">
-                        <label class="jso">QUAL</label>
-
+                        <!-- <div class="horizontal layout" style="line-height: 20px;"> -->
+                            <label class="jso">QUAL </label>
+                            <!-- <div style="width:60px">{{qualValue}}</div> -->
+                        <!-- </div> -->
                         <div class="horizontal layout qual-elem">
                             <div class="jso-select">
                                 <jso-select class="jso" name="qual_op" id="qual_op">
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <=< /jso-option>
+                                                <= </jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" />
+                            <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="qual" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" /> -->
                         </div>
 
-                        <label class="jso">DP</label>
-
+                        <div class="horizontal layout" style="line-height: 20px;">
+                            <label class="jso">DP </label>
+                            <!-- <div style="width:60px">{{dpValue}}</div> -->
+                        </div>
                         <div class="horizontal layout qual-elem">
                             <div class="jso-select">
                                 <jso-select class="jso" name="dp_op" id="dp_op">
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <=< /jso-option>
+                                                <= </jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
-                            <input class="jso inputValue" type="number" id="dp" name="dp" value="{{dpValue::input}}" />
+                            <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="dp" editable></paper-slider>
+                            <!-- <input class="jso inputValue" type="number" id="dp" name="dp" value="{{dpValue::input}}" /> -->
                         </div>
                     </div>
                 </jso-form-box>
@@ -454,6 +490,13 @@
                 notify: true,
                 observer: "filterDataChanged"
             },
+            data: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                observer: "dataChanged"
+            },
             job: {
                 type: Object,
                 value: function() {
@@ -505,18 +548,24 @@
             this.$.filterCT.clear();
 
             ////
+            this.$.dp.value = 0;
             this.dpValue = "";
             this.$.dp_op.value = "<";
+            this.$.qual.value = 0;
             this.qualValue = "";
             this.$.qual_op.value = "<";
             // this.maf1000gValue = "";
             // this.$.maf1000g_op.value = "<";
+            this.$.maf1000GP3.value = 0;
             this.maf1000GP3Value = "";
             this.$.maf1000GP3_op.value = "<";
+            this.$.esp6500.value = 0;
             this.esp6500Value = "";
             this.$.esp6500_op.value = "<";
+            this.$.spanishmaf.value = 0;
             this.spanishmafValue = "";
             this.$.spanishmaf_op.value = "<";
+            this.$.mafEXAC.value = 0;
             this.mafEXACValue = "";
             this.$.mafEXAC_op.value = "<";
 
@@ -592,7 +641,6 @@
                 q["gt"] = gt.value;
             }
 
-            ////
             if (this.dpValue) {
                 q["dp"] = parseFloat(this.dpValue);
                 q["dp_op"] = this.$.dp_op.value;
@@ -611,13 +659,13 @@
             //     }
             // }
             if (this.maf1000GP3Value) {
-                if (this.$.maf1000GP3.checkValidity() == false) {
-                    alert("MAF 1000G Phase3 must be less than 1 or greater than 0");
-                    return;
-                } else {
+                // if (this.$.maf1000GP3.checkValidity() == false) {
+                //     alert("MAF 1000G Phase3 must be less than 1 or greater than 0");
+                //     return;
+                // } else {
                     q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
                     q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
-                }
+                // }
             }
             if (this.esp6500Value) {
                 if (this.$.esp6500.checkValidity() == false) {
@@ -767,15 +815,15 @@
                 filterName.push("GT=" + hf.gt + " ");
             }
 
-            ////
-
             if (hf.dp != null) {
                 this.dpValue = hf.dp;
+                this.$.dp.value = hf.dp;
                 this.$.dp_op.value = hf.dp_op;
                 filterName.push("DP " + hf.dp_op + " " + hf.dp + " ");
             }
             if (hf.qual != null) {
                 this.qualValue = hf.qual;
+                this.$.qual.value = hf.qual;
                 this.$.qual_op.value = hf.qual_op;
                 filterName.push("Qual " + hf.qual_op + " " + hf.qual + " ");
             }
@@ -786,21 +834,25 @@
             // }
             if (hf.maf1000GP3 != null) {
                 this.maf1000GP3Value = hf.maf1000GP3;
+                this.$.maf1000GP3.value = hf.maf1000GP3;
                 this.$.maf1000GP3_op.value = hf.maf1000GP3_op;
                 filterName.push("MAF 1000GP3 " + hf.maf1000GP3_op + " " + hf.maf1000GP3 + " ");
             }
             if (hf.esp6500 != null) {
                 this.esp6500Value = hf.esp6500;
+                this.$.esp6500.value = hf.esp6500;
                 this.$.esp6500_op.value = hf.esp6500_op;
                 filterName.push("ESP 6500 " + hf.esp6500_op + " " + hf.esp6500 + " ");
             }
             if (hf.spanishmaf != null) {
                 this.spanishmafValue = hf.spanishmaf;
+                this.$.spanishmaf.value = hf.spanishmaf;
                 this.$.spanishmaf_op.value = hf.spanishmaf_op;
                 filterName.push("Spanish MAF " + hf.spanishmaf_op + " " + hf.spanishmaf + " ");
             }
             if (hf.mafEXAC != null) {
                 this.mafEXACValue = hf.mafEXAC;
+                this.$.mafEXAC.value = hf.mafEXAC;
                 this.$.mafEXAC_op.value = hf.mafEXAC_op;
                 filterName.push("EXAC " + hf.mafEXAC_op + " " + hf.mafEXAC + " ");
             }
@@ -828,6 +880,26 @@
             if (this.jobId) {
                 this.clearForm();
             }
-        }
+        },
+        dataChanged: function(neo, old) {
+            if (neo.length > 0) {
+                var het = 0;
+                var hom = 0;
+                for (var i = 0; i < neo.length; i++) {
+                    var splits = neo[i].gt.split(/[|\/]/);
+                    if (splits[0] == splits[1]) {
+                        hom++;
+                    } else {
+                        het++;
+                    }
+                }
+                this.numHeterozygous = het;
+                this.numHomozygous = hom;
+            }
+        },
+        sliderChange: function(e){
+          var id=e.currentTarget.id +"Value";
+          this.set(id, e.currentTarget.value);
+        },
     });
 </script>
