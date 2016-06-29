@@ -162,14 +162,14 @@
                         <input on-click="showInReport" type="checkbox" value="anexI" checked> Annex I: Static Filters (decision umbrals)</div>
                     <div class="">
                         <input id="panelsInfoAnexII" on-click="showInReport" type="checkbox" value="anexII"> Annex II: Panels</div>
-                    <ul id="panelsInfo">
+                    <!-- <ul id="panelsInfo">
                         <div class="">
                             <input on-click="showInReport" type="checkbox" value="diseases"> Diseases</div>
                         <div class="">
                             <input on-click="showInReport" type="checkbox" value="genes"> Genes</div>
                         <div class="">
                             <input on-click="showInReport" type="checkbox" value="mutations"> Mutations</div>
-                    </ul>
+                    </ul> -->
                 </ul>
                 <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export to PDF/Print</div>
             </div>
@@ -301,6 +301,9 @@
                     <div class="description">
                         ANNEX II: Panel Used
                     </div>
+                    <ul>
+                      {{panelName}}
+                    </yl>
                     <div id="diseases" class="reportPanelInfo" hidden>
                         <div class="title">Diseases</div>
                         <div id="reportDiseases">
@@ -782,9 +785,11 @@
                 }
             }
             console.log(jobPanel)
-            this._getTable(this.diseaseColumns, jobPanel.diseases, this.$.reportDiseases);
-            this._getTable(this.geneColumns, jobPanel.genes, this.$.reportGenes);
-            this._getTable(this.mutationColumns, jobPanel.mutations, this.$.reportMutations);
+            debugger
+            this.panelName=jobPanel.name;
+            // this._getTable(this.diseaseColumns, jobPanel.diseases, this.$.reportDiseases);
+            // this._getTable(this.geneColumns, jobPanel.genes, this.$.reportGenes);
+            // this._getTable(this.mutationColumns, jobPanel.mutations, this.$.reportMutations);
         },
         _getTable: function(columns, data, ref) {
             var table = ref.querySelector('table');
@@ -859,29 +864,29 @@
         showInReport: function(e) {
             var divId = e.currentTarget.value;
             this.$[divId].hidden = !this.$[divId].hidden;
-            if (divId === "anexII") {
-                if (this.$.anexII.hidden == true) {
-                    this.$.diseases.hidden = true;
-                    this.$.genes.hidden = true;
-                    this.$.mutations.hidden = true;
-                    var aux = this.$.panelsInfo.querySelectorAll('input');
-                    for (i = 0; i < aux.length; i++) {
-                        aux[i].checked = false;
-                    }
-                } else {
-                    this.$.diseases.hidden = false;
-                    this.$.genes.hidden = false;
-                    this.$.mutations.hidden = false;
-                    var aux = this.$.panelsInfo.querySelectorAll('input');
-                    for (i = 0; i < aux.length; i++) {
-                        aux[i].checked = true;
-                    }
-                }
-            }
-            if (divId === "diseases" || divId === "genes" || divId === "mutations") {
-                this.$.panelsInfoAnexII.checked = true;
-                this.$.anexII.hidden = false;
-            }
+            // if (divId === "anexII") {
+            //     if (this.$.anexII.hidden == true) {
+            //         this.$.diseases.hidden = true;
+            //         this.$.genes.hidden = true;
+            //         this.$.mutations.hidden = true;
+            //         var aux = this.$.panelsInfo.querySelectorAll('input');
+            //         for (i = 0; i < aux.length; i++) {
+            //             aux[i].checked = false;
+            //         }
+            //     } else {
+            //         this.$.diseases.hidden = false;
+            //         this.$.genes.hidden = false;
+            //         this.$.mutations.hidden = false;
+            //         var aux = this.$.panelsInfo.querySelectorAll('input');
+            //         for (i = 0; i < aux.length; i++) {
+            //             aux[i].checked = true;
+            //         }
+            //     }
+            // }
+            // if (divId === "diseases" || divId === "genes" || divId === "mutations") {
+            //     this.$.panelsInfoAnexII.checked = true;
+            //     this.$.anexII.hidden = false;
+            // }
         },
         _getTextInfo: function() {
             this.divConclusions = this.$.reportConclusions.querySelector('textarea').value;

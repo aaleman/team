@@ -33,6 +33,7 @@ Panel.prototype = {
             if (!this.containsDisease(disease)) {
                 delete disease._filtered;
                 this.polymer.push('formData.diseases', disease);
+                // this._emit("add-disease", disease);
 
                 if (disease.associatedGenes && disease.associatedGenes.length > 0) {
                     for (var j = 0; j < disease.associatedGenes.length; j++) {
@@ -294,7 +295,8 @@ Panel.prototype = {
             }
             this._incModCount();
         }
-        this.polymer.set('formData.genes', panelGenes);
+        return panelGenes;
+        // this.polymer.set('formData.genes', panelGenes);
     },
     containsGene: function (gene) {
         for (var i = 0; i < this.genes.length; i++) {
@@ -308,6 +310,7 @@ Panel.prototype = {
     addMutation: function (mutation) {
         if (!this.containsMutation(mutation)) {
             this.polymer.push('formData.mutations', mutation);
+            // this._emit("new-mutation", mutation);
             this._incModCount();
         }
     },
@@ -363,6 +366,7 @@ Panel.prototype = {
             }
         }
         this.polymer.set('formData.mutations', mutations);
+
     },
     removeGene: function (gene) {
         var index = -1;
