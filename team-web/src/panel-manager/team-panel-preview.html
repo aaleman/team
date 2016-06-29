@@ -69,15 +69,15 @@
         </div>
 
         <div id="table">
-            <template is="dom-if" if="{{computeOptions(option, 'diseases')}}">
-                <jso-table columns="{{diseaseColumns}}" data="{{diseases}}" hide-column-selector></jso-table>
-            </template>
-            <template is="dom-if" if="{{computeOptions(option, 'genes')}}">
-                <jso-table columns="{{geneColumns}}" data="{{genes}}" hide-column-selector> </jso-table>
-            </template>
-            <template is="dom-if" if="{{computeOptions(option, 'mutations')}}">
-                <jso-table columns="{{mutationColumns}}" data="{{mutations}}" hide-column-selector></jso-table>
-            </template>
+            <div hidden$="{{!computeOptions(option, 'diseases')}}" id="diseases">
+                <jso-table id="diseaseTable" columns="{{diseaseColumns}}" enable-paging hide-column-selector></jso-table>
+            </div>
+            <div hidden$="{{!computeOptions(option, 'genes')}}" id="genes">
+                <jso-table id="geneTable" columns="{{geneColumns}}" enable-paging hide-column-selector> </jso-table>
+            </div>
+            <div hidden$="{{!computeOptions(option, 'mutations')}}" id="mutations">
+                <jso-table id="mutationTable" columns="{{mutationColumns}}" enable-paging hide-column-selector></jso-table>
+            </div>
         </div>
 
     </template>
@@ -179,7 +179,7 @@
                 return option === value;
             },
             selectedPanelChanged: function(neo, old) {
-                if (neo) {
+                if (Object.keys(neo).length > 0) {
                     this.namePanel = this.selectedPanel.name;
                     this.vers = this.selectedPanel.version;
                     this.author = this.selectedPanel.author;
@@ -187,6 +187,7 @@
                     this.diseases = neo.diseases;
                     this.genes = neo.genes;
                     this.mutations = neo.mutations;
+                    this.refreshTables();
                 } else {
                     this.namePanel = "";
                     this.vers = "";
@@ -197,6 +198,11 @@
                     this.mutations = "";
                 }
             },
+            refreshTables: function() {
+                this.$.diseaseTable.set("data", this.diseases);
+                this.$.geneTable.set("data", this.genes);
+                this.$.mutationTable.set("data", this.mutations);
+            }
         })
     </script>
 </dom-module>

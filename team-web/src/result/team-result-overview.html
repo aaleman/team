@@ -345,10 +345,12 @@
             if (op === "qual") {
                 var renderTo = this.$.qualChart;
                 var title = "Qual/Variants";
+                var axisName= "Qual";
                 this.$.qualChart.hidden = false;
             } else if (op === "dp") {
                 var renderTo = this.$.depthChart;
                 var title = "Depth/Variants";
+                var axisName= "Depth";
                 this.$.depthChart.hidden = false;
             }
 
@@ -379,7 +381,7 @@
                         }
                     },
                     title: {
-                        text: "Qual"
+                        text: axisName,
                     }
                 },
 
