@@ -1,5 +1,5 @@
 <link rel="import" href="team-mutation-selector.html">
-<link rel="import" href="../../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-import-file.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/opencga/files/jso-opencga-import-file.html">
 
 <dom-module id="team-panel-form-wizard">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
@@ -285,7 +285,7 @@
                             </div>
                         </div>
                         <div class="disease vertical layout">
-                            <jso-table id="selectedDiseases" class="flex" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" data="{{formData.diseases}}" hide-column-selector>
+                            <jso-table id="selectedDiseases" class="flex" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" enable-paging page-size="13" hide-column-selector>
                             </jso-table>
                             <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
@@ -377,7 +377,7 @@
                         </div>
 
                         <div id="genes-list">
-                            <jso-table id="geneTable" columns="{{geneColumns}}" data="{{formData.genes}}" enable-edit hide-column-selector></jso-table>
+                            <jso-table id="geneTable" columns="{{geneColumns}}" enable-edit hide-column-selector enable-paging page-size="13"></jso-table>
                             <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
@@ -556,7 +556,7 @@
                                 </jso-form-box>
                             </div>
                             <div id="mutations-list" flex>
-                                <jso-table id="mutationTable" columns="{{mutationColumns}}" data="{{formData.mutations}}" enable-edit hide-column-selector></jso-table>
+                                <jso-table id="mutationTable" columns="{{mutationColumns}}" enable-paging page-size="13" enable-edit hide-column-selector></jso-table>
                                 <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                     <div class="flex"></div>
                                     <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear
@@ -789,7 +789,8 @@
         },
         observers: [
             "handleUpdatedGenes(formData.modCount)",
-            "handleUpdatedSelectedDiseases(formData.diseases.splices)",
+            "handleUpdatedMutations(formData.mutations.splices)",
+            "handleUpdatedSelectedDiseases(formData.diseases.splices)"
         ],
 
         panelsChanged: function(neo, old) {
@@ -803,8 +804,16 @@
                 }
             }
         },
-
-        handleUpdatedSelectedDiseases: function(neo, old, path) {},
+        handleUpdatedSelectedDiseases: function(neo, old, path) {
+          if (neo) {
+              this.$.selectedDiseases.refresh();
+          }
+        },
+        handleUpdatedMutations: function(neo, old, path) {
+            if (neo) {
+                this.$.mutationTable.refresh();
+            }
+        },
         handleUpdatedGenes: function(neo, old, path) {
             if (neo) {
                 this.$.geneTable.refresh();
@@ -825,6 +834,7 @@
 
             this.formData = new Panel();
             this.formData.polymer = this;
+            this.formData.genes = [];
 
             // TEST CODE
             // this.formData.name = "test";
@@ -1024,6 +1034,9 @@
 
             setTimeout(function() {
                 me.formData.addDiseases(me.currentSelectedDiseasesData);
+                me.$.selectedDiseases.set("data", me.formData.diseases);
+                me.$.geneTable.set("data", me.formData.genes);
+                me.$.mutationTable.set("data", me.formData.mutations);
                 //
                 // for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
                 //     var row = me.currentSelectedDiseasesData[i];
@@ -1034,6 +1047,7 @@
         },
         handleClearSelectedDiseases: function() {
             this.formData.clearDiseases();
+            this.$.selectedDiseases.set("data", this.formData.diseases);
         },
         handleHiddenGeneText: function(geneTab) {
             return geneTab != 'text';
@@ -1127,6 +1141,7 @@
                     });
                 });
             }
+            me.$.geneTable.set("data", me.formData.genes);
             this.$.geneTextArea.value = '';
         },
         handleGenesImportBed: function(bed_file) {
@@ -1168,12 +1183,11 @@
                             }
                             line++;
                         }
-
-                        // me.formData.polymr
-                        // me.formData.polymer.notifyPath('formData.genes', this.genes);
                         if (eof) {
                             if (genes.length > 0) {
-                                me.formData.addAllGenes(genes);
+                                var panelGenes = me.formData.addAllGenes(genes);
+                                me.set('formData.genes', panelGenes);
+                                me.$.geneTable.set("data", me.formData.genes);
                                 me.$.geneTable.setLoading(false);
                             }
                             return;
@@ -1190,6 +1204,7 @@
         },
         handleClickGeneListClear: function(e) {
             this.formData.clearGenes();
+            this.$.geneTable.set("data", this.formData.genes);
         },
         handleClickMutationGV: function(e) {
             this.mutationTab = 'gv';
@@ -1260,6 +1275,7 @@
                             line++;
                         }
                         if (eof) {
+                            me.$.mutationTable.set("data", me.formData.mutations);
                             me.$.mutationTable.setLoading(false);
                             return;
                         }
@@ -1310,6 +1326,7 @@
                         next();
                     });
                     lr.read(csv_file);
+                    me.$.mutationTable.set("data", me.formData.mutations);
                     me.$.mutationTable.setLoading(false);
                 } else {
                     me.$.mutationTable.setLoading(false);
@@ -1319,6 +1336,7 @@
         },
         handleClickMutationListClear: function(e) {
             this.formData.clearMutations();
+            this.$.mutationTable.set("data", this.formData.mutations);
         },
         handleMutationAdd: function(e) {
 
@@ -1351,6 +1369,7 @@
             };
 
             this.formData.addMutation(mut);
+            this.$.mutationTable.set("data", this.formData.mutations);
             this.$.mutationGVChr.value = "";
             this.$.mutationGVPos.value = "";
             this.$.mutationGVRef.value = "";
@@ -1543,10 +1562,9 @@
                             }
                         }
                     }
-                    me.formData.addAllGenes(me.genes);
-                    // for (var i = 0; i < this.genes.length; i++) {
-                    //     me.formData.addGene(this.genes[i]);
-                    // }
+                    var panelGenes = me.formData.addAllGenes(me.genes);
+                    me.set('formData.genes', panelGenes);
+                    me.$.geneTable.set("data", me.formData.genes);
                     me.$.geneTable.setLoading(false);
                 } else {
                     alert("No panel selected");
@@ -1640,6 +1658,8 @@
                             };
                             me.formData.addMutation(mut);
                         }
+                        me.$.mutationTable.set("data", me.formData.mutations);
+                        me.$.mutationTable.setLoading(false);
                     } else {
                         alert("No panel selected");
                         me.$.mutationTable.setLoading(false);
@@ -1665,6 +1685,7 @@
                 src: src
             };
             this.formData.addMutation(mut);
+            this.$.mutationTable.set("data", this.formData.mutations);
         },
         handlePanelAppSelected: function(e) {
             var me = this;
@@ -1750,7 +1771,9 @@
                             }
                         }
                     });
-                    me.formData.addAllGenes(genes);
+                    var panelGenes = me.formData.addAllGenes(genes);
+                    me.set('formData.genes', panelGenes);
+                    me.$.geneTable.set("data", me.formData.genes);
                     me.$.appPanel.hidden = true;
                     me.panelAppGenes = "";
                     me.$.panelAppSelectedGenes.selected = [];

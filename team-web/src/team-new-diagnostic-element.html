@@ -1,6 +1,6 @@
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-select-box.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-wizard.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-progress-bar.html">
+<link rel="import" href="../bower_components/jsorolla/src/lib/components/jso-select-box.html">
+<link rel="import" href="../bower_components/jsorolla/src/lib/components/jso-wizard.html">
+<link rel="import" href="../bower_components/jsorolla/src/lib/components/jso-progress-bar.html">
 
 <dom-module id="team-new-diagnostic-element">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
@@ -376,9 +376,9 @@
                     var total = this.selectedSamples.length;
                     for (var i = 0; i < total; i++) {
                         var sampleId = this.selectedSamples[i].id;
-                        console.log(sampleId)
+                        var sampleName = this.selectedSamples[i].name;
 
-                        var name = me.jobName + sampleId;
+                        var name = me.jobName + "_" + sampleName + "_"+ this.selectedPanel.name;
                         console.log(name)
                         var query = {
                             sid: Cookies("bioinfo_sid"),
