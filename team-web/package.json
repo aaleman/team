@@ -1,12 +1,12 @@
 {
-  "name": "Team",
-  "version": "1.1.1",
-  "scripts": {
-    "build": "./build.sh"
-  },
-  "devDependencies": {
-    "crisper": "^1.0.3",
-    "uglify-js": "^2.4.23",
-    "vulcanize": "1.8.1"
-  }
+    "name": "Team",
+    "version": "1.1.1",
+    "scripts": {
+        "build": "node ./build.js"
+    },
+    "devDependencies": {
+        "async": "^2.0.0-rc.6",
+        "shelljs": "^0.7.0",
+        "vulcanize": "^1.14.8"
+    }
 }
