@@ -45,6 +45,8 @@ async.waterfall([
     function (cb) {
         shell.cp('-r', indexHTML, buildIndexHTML);
         shell.cp('-r', path.join(__dirname, 'conf/'), bp);
+        shell.cp('-r', path.join(__dirname, 'images/'), bp);
+        shell.cp('-r', path.join(__dirname, 'fonts/'), bp);
         // shell.cp('-r', path.join(__dirname, 'bower_components', 'stevia-elements', 'fonts'), bp);
         // shell.cp('-r', path.join(__dirname, 'bower_components', 'stevia-elements', 'css'), bp);
         shell.cp('-r', path.join(__dirname, 'bower_components', 'fontawesome', 'css'), path.join(bp, "fontawesome/"));
@@ -60,12 +62,18 @@ async.waterfall([
         shell.cp('-r', path.join(__dirname, 'bower_components', 'cookies-js'), bp);
         shell.cp('-r', path.join(__dirname, 'bower_components', 'crypto-js-evanvosberg'), bp);
         shell.cp('-r', path.join(__dirname, 'bower_components', 'pako'), bp);
-        // shell.mkdir('-p', path.join(bp, "bower_components","jsorolla"));
-        // shell.cp('-r', path.join(__dirname, 'bower_components', 'jsorolla','styles'), path.join(bp, "bower_components","jsorolla"));
+        shell.cp('-r', path.join(__dirname, 'bower_components', 'pdfmake'), bp);
+
+        shell.mkdir('-p', path.join(bp, "bower_components","jsorolla"));
+        shell.cp('-r', path.join(__dirname, 'bower_components', 'jsorolla','styles'), path.join(bp, "bower_components","jsorolla"));
+        shell.cp('-r', path.join(__dirname, 'bower_components', 'jsorolla','src','lib','components','jso-global.css'), bp);
+        shell.cp('-r', path.join(__dirname, 'bower_components', 'jsorolla','src','lib','components','jso-dropdown.css'), bp);
+        shell.cp('-r', path.join(__dirname, 'bower_components', 'jsorolla','src','lib','components','jso-form.css'), bp);
 
         // fix index.html paths
         shell.sed('-i', 'bower_components/stevia-elements/', '', buildIndexHTML);
         shell.sed('-i', 'bower_components/', '', buildIndexHTML);
+        shell.sed('-i', 'jsorolla/src/lib/components/', '', buildIndexHTML);
 
         cb(null);
     }
