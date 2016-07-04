@@ -302,8 +302,13 @@
                         ANNEX II: Panel Used
                     </div>
                     <ul>
-                      {{panelName}}
-                    </yl>
+                        <div class="title">Panel Name: &nbsp;
+                            <span style: "color:gray">{{panelName}}</span>
+                        </div>
+                        <div class="title">Genes in Panel:</div>
+                        <div id="reportGeneList">
+                        </div>
+                    </ul>
                     <div id="diseases" class="reportPanelInfo" hidden>
                         <div class="title">Diseases</div>
                         <div id="reportDiseases">
@@ -407,6 +412,13 @@
             suspDiag: {
                 type: String,
                 value: ""
+            },
+            geneMap: {
+                type: Object,
+                observer: "geneMapChange"
+            },
+            geneNames: {
+                type: Array,
             },
             _columnsDiag: {
                 type: Array,
@@ -785,11 +797,33 @@
                 }
             }
             console.log(jobPanel)
-            this.panelName=jobPanel.name;
+            this.panelName = jobPanel.name;
             // this._getTable(this.diseaseColumns, jobPanel.diseases, this.$.reportDiseases);
             // this._getTable(this.geneColumns, jobPanel.genes, this.$.reportGenes);
             // this._getTable(this.mutationColumns, jobPanel.mutations, this.$.reportMutations);
         },
+        geneMapChange: function(neo, old) {
+            if (this.geneNames != null && this.geneNames.length > 0 && neo != null) {
+                var dataList = [];
+                for (var i = 0; i < this.geneNames.length; i++) {
+                    var key = this.geneNames[i];
+                    dataList[i] = {
+                        gene: key,
+                        value: neo[key]
+                    }
+                }
+                var genListColumns = [{
+                    name: 'gene',
+                    title: 'Gene',
+                }, {
+                    name: 'value',
+                    title: 'Variants Found',
+                }];
+
+                this._getTable(genListColumns, dataList, this.$.reportGeneList);
+            }
+        },
+
         _getTable: function(columns, data, ref) {
             var table = ref.querySelector('table');
             if (table != null) {

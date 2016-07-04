@@ -1475,8 +1475,8 @@
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, false);
 
-            xhr.onloadend = function(e) {
-                var response = JSON.parse(e.srcElement.response);
+            xhr.onload = function(e) {
+                var response = JSON.parse(this.response);
                 try {
                     var id = response.response[0].result[0].id;
                     callback(id);

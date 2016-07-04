@@ -125,7 +125,7 @@
 
                 </div>
             </div>
-            <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
+            <team-result-overview id="ower" job="{{job}}" gene-map="{{geneMap}}" gene-names="{{geneNames}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'diagnostic')}}">
                 <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic" type-data="diagnostic"></team-result-diagnostic>
@@ -141,7 +141,7 @@
             </div>
 
             <div hidden$="{{!computeView(view, 'report')}}" id="result">
-                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}" panel-config="{{panelConfig}}"></team-result-report>
+                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}" panel-config="{{panelConfig}}" gene-map="{{geneMap}}" gene-names="{{geneNames}}"></team-result-report>
 
             </div>
 
@@ -219,13 +219,22 @@
                         return {};
                     },
                     notify: true
+                },
+                geneMap:{
+                  type: Object,
+                  observer:"geneMapChange"
+                },
+                geneNames:{
+                  type: Array,
+                    observer:"geneNamesChange"
                 }
             },
             created: function() {},
             ready: function() {
 
             },
-
+            geneMapChange:function(neo,old){},
+            geneNamesChange:function(neo,old){},
             jobChanged: function(neo, old) {
                 this.set('jobId', neo.id);
                 this.view = 'overview';
