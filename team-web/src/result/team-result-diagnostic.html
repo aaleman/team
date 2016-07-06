@@ -105,7 +105,7 @@
                 </div>
             </div>
             <jso-variant-frequencies-grid id="frequency" hidden$="{{!computeView(view, 'frequency')}}"></jso-variant-frequencies-grid>
-            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}"></jso-genome-viewer-element>
+            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}" on-hidden="handleGenomeViewerHidden"></jso-genome-viewer-element>
         </div>
     </template>
 </dom-module>
@@ -157,6 +157,9 @@
             typeData: {
                 type: String,
                 value: ""
+            },
+            _lastSelectedRow: {
+                type: Object
             }
         },
         _columnsDiag: [{
@@ -443,18 +446,18 @@
             width: 50,
             defaultValue: '.'
         }, {
-          name: 'beacon',
-          title: 'Beacon',
-          width: 50,
-          formula: function(row) {
-            var url="https://beacon-network.org/#/search?allele=G&chrom="+row.chr+"&pos="+row.pos+"&ref="+row.ref+"&rs=GRCh37";
-            return '<a href="'+url+'" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
-            // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
-          },
-          classFormula: function(row){
-            return 'beaconlink';
-          }
-        },{
+            name: 'beacon',
+            title: 'Beacon',
+            width: 50,
+            formula: function(row) {
+                var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
+                    // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            },
+            classFormula: function(row) {
+                return 'beaconlink';
+            }
+        }, {
             name: 'clinvar',
             title: 'Clinvar',
             width: 100,
@@ -472,29 +475,40 @@
         }],
 
         ready: function() {
+            var me = this;
             if (this.typeData == "diagnostic") {
                 this.$.table.columns = this._columnsDiag;
             } else if (this.typeData == "secondary") {
                 this.$.table.columns = this._columnsSec;
             }
-            var me = this;
-            this.async(function() {
-                this.$.gv.createGenomeViewer();
-                var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
-                this.$.gv.genomeViewer.draw();
 
-                this.genomeViewer = this.$.gv.genomeViewer;
-            });
+        },
+        handleGenomeViewerHidden: function() {
+            if (this.$.gv.hidden == false && this.$.gv.genomeViewer == null) {
+                this.async(function() {
+                    var region;
+                    if (this._lastSelectedRow != null) {
+                        var row = this._lastSelectedRow;
+                        var reg = row.chr + ":" + row.pos + "-" + row.pos;
+                        region = new Region(reg);
+                    }
+                    this.$.gv.createGenomeViewer(null, region);
+                    this.$.gv.genomeViewer.draw();
+                    this.genomeViewer = this.$.gv.genomeViewer;
+                }, 10);
+            } else {
+                if (this.$.gv.genomeViewer != null) {
+                    this.$.gv.genomeViewer.destroy();
+                    this.$.gv.genomeViewer = null;
+                }
+            }
         },
         handleRowClick: function(e) {
             var row = e.detail.row;
             this._rowSelected(row);
         },
         _rowSelected: function(row) {
-            var reg = row.chr + ":" + row.pos + "-" + row.pos;
-            var region = new Region(reg);
-
-            this.$.gv.genomeViewer.setRegion(region);
+            this.set('_lastSelectedRow', row);
 
             var rowFreq = {
                 chromosome: row.chr,

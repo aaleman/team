@@ -4,15 +4,14 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-            margin: 5px;
             width: 800px;
-            /*height: 500px;*/
+            border: 1px solid #d3d3d3;
+            padding: 5px;
         }
 
         .input {
             width: 100px;
-            height: 13px;
-            margin: 5px;
+            margin-right: 10px;
         }
 
         .data {
@@ -50,37 +49,33 @@
     </style>
     <template>
 
-        <div class="vertical layout" style="border: 1px solid #d3d3d3;padding:5px;height: 20%;">
 
-            <div class="horizontal layout data">
-                <label style="font-size:12px;" for="">Chr: &nbsp;</label>
-                <input class="input chr" type="text" value="{{chr::input}}">
-                <label style="font-size:12px;" for="">Pos: &nbsp;</label>
-                <input class="input pos" type="number" step="1" min="0" value="{{pos::input}}">
-                <label style="font-size:12px;" for="">Ref: &nbsp;</label>
-                <input class="input ref" type="text" value="{{ref::input}}">
-                <label style="font-size:12px;" for="">Alt: &nbsp;</label>
-                <input class="input alt" type="text" value="{{alt::input}}">
-                <label style="font-size:12px;" for="">Disease Name: &nbsp;</label>
-                <input class="input flex" type="text" value="{{phe::input}}">
-            </div>
-            <!--<div class="horizontal layout data">-->
-            <!--<label style="font-size:12px;" for="">Gene Name: &nbsp;</label>-->
-            <!--<input class="input names" type="text">-->
-            <!--</div>-->
-
-            <div class="horizontal layout">
-                <div class="flex">
-
-                </div>
-                <div class="jso-btn jso-btn-shdw file" on-click="handleReset">Reset</div>
-                &nbsp;
-                <div class="jso-btn jso-btn-shdw file" on-click="handleCheck">Check</div>
-                &nbsp;
-                <div class="jso-btn jso-btn-shdw file" on-click="handleAddMut">Add Mutation</div>
-            </div>
+        <div class="horizontal layout data">
+            <label class="jso">Chr: &nbsp;</label>
+            <input class="input chr jso" type="text" value="{{chr::input}}">
+            <label class="jso">Pos: &nbsp;</label>
+            <input class="input pos jso" type="number" step="1" min="0" value="{{pos::input}}">
+            <label class="jso">Ref: &nbsp;</label>
+            <input class="input ref jso" type="text" value="{{ref::input}}">
+            <label class="jso">Alt: &nbsp;</label>
+            <input class="input alt jso" type="text" value="{{alt::input}}">
+            <label class="jso">Disease Name: &nbsp;</label>
+            <input class="input flex jso" type="text" value="{{phe::input}}">
         </div>
-        <jso-genome-viewer-element id="gv"></jso-genome-viewer-element>
+        <!--<div class="horizontal layout data">-->
+        <!--<label style="font-size:12px;" for="">Gene Name: &nbsp;</label>-->
+        <!--<input class="input names" type="text">-->
+        <!--</div>-->
+
+        <div class="horizontal layout" style="margin: 5px 10px 10px 0;">
+            <div class="flex"> </div>
+            <div class="jso-btn jso-btn-shdw file" on-click="handleReset">Reset</div>
+            &nbsp;
+            <div class="jso-btn jso-btn-shdw file" on-click="handleCheck">Check</div>
+            &nbsp;
+            <div class="jso-btn jso-btn-shdw file" on-click="handleAddMut">Add Mutation</div>
+        </div>
+        <jso-genome-viewer-element id="gv" hidden on-hidden="handleGenomeViewerHidden"></jso-genome-viewer-element>
     </template>
 
     <script>
@@ -110,23 +105,42 @@
             },
             ready: function() {
                 var me = this;
-                this.async(function() {
 
-                    this.$.gv.createGenomeViewer();
-                    var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
-                    this.$.gv.genomeViewer.draw();
+                if (this._parentJsoPanel != null) {
+                    this._parentJsoPanel.addEventListener('hidden', function() {
+                        me.$.gv.set('hidden', me._parentJsoPanel.hidden);
+                    });
+                }
+            },
+            handleGenomeViewerHidden: function() {
+                var me = this;
+                if (this.$.gv.hidden == false && this.$.gv.genomeViewer == null) {
+                    this.async(function() {
+                        this.$.gv.createGenomeViewer();
+                        var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
+                        this.$.gv.genomeViewer.draw();
 
-                    var updateForm = function() {
-                        me.chr = seq.region.chromosome;
-                        me.pos = seq.region.center();
-                        me.ref = me.$.gv.genomeViewer.trackListPanel.getSequenceNucleotid(me.pos);
-                    };
+                        var updateForm = function() {
+                            me.chr = seq.region.chromosome;
+                            me.pos = seq.region.center();
+                            me.ref = me.$.gv.genomeViewer.trackListPanel.getSequenceNucleotid(me.pos);
+                        };
 
-                    this.genomeViewer = this.$.gv.genomeViewer;
-                    this.genomeViewer.on("region:change", updateForm);
-                    this.genomeViewer.on("region:move", updateForm);
-                });
+                        this.genomeViewer = this.$.gv.genomeViewer;
+                        this.genomeViewer.on("region:change", updateForm);
+                        this.genomeViewer.on("region:move", updateForm);
 
+                        if (this._parentJsoPanel != null) {
+                            this._parentJsoPanel._center();
+                        }
+
+                    }, 10);
+                } else {
+                    if (this.$.gv.genomeViewer != null) {
+                        this.$.gv.genomeViewer.destroy();
+                        this.$.gv.genomeViewer = null;
+                    }
+                }
             },
             handleReset: function() {
                 this.chr = "";

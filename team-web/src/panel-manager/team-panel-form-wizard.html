@@ -579,7 +579,7 @@
                             </team-panel-preview>
                         </jso-panel>
 
-                        <jso-panel movable fixed closable hidden id="panelGV">
+                        <jso-panel fixed movable closable hidden id="panelGV">
                             <div class="header">
                                 <i class="fa fa-eye"></i> View Mutation
                             </div>
@@ -805,9 +805,9 @@
             }
         },
         handleUpdatedSelectedDiseases: function(neo, old, path) {
-          if (neo) {
-              this.$.selectedDiseases.refresh();
-          }
+            if (neo) {
+                this.$.selectedDiseases.refresh();
+            }
         },
         handleUpdatedMutations: function(neo, old, path) {
             if (neo) {
