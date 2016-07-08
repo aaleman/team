@@ -76,15 +76,6 @@
             border-bottom: 2px solid var(--accent-color);
         }
 
-        .contentHome {
-            position: relative;
-            width: 100%;
-            top: 60px;
-            height: calc(100vh - 160px);
-            /*background-color: transparent;*/
-            bottom: 100px;
-        }
-
         .content {
             position: absolute;
             width: 100%;
@@ -94,8 +85,10 @@
         }
 
         team-home {
-            height: calc(100vh - 160px);
+            height: calc(100vh - 120px);
             overflow-y: auto;
+            /*background-color: white;*/
+            color: var(--text-primary-color)
         }
 
         jso-opencga-header {
@@ -106,11 +99,16 @@
         jso-opencga-footer {
             position: absolute;
             bottom: 0;
+            height: 60px;
         }
 
         jso-variant-browser {
             height: calc(100vh - 60px);
             overflow-y: scroll;
+        }
+
+        #newDiagnosticElement {
+            height: calc(100vh - 60px);
         }
 
         #jobBrowserPanel {
@@ -173,7 +171,7 @@
         }
 
         team-result {
-            height: 100%;
+            height: calc(100vh - 60px);
             /*z-index: 1;*/
         }
         /*#newDiagnosticElement {
@@ -205,17 +203,19 @@
     </style>
     <template>
 
-        <div class="contentHome" menu-option="home">
+        <div class="content" menu-option="home">
             <team-home data-option="home"></team-home>
         </div>
 
-        <jso-panel movable expandible closable id="newDiagnosisPanel" on-close="returnHome" menu-option="newdiagnostic">
+        <!-- <jso-panel movable expandible closable id="newDiagnosisPanel" on-close="returnHome" menu-option="newdiagnostic">
             <div class="header" style="text-align:left;font-size:15px;">
                 <i class="fa fa-stethoscope"></i>
                 <span class="option-text">Run Diagnosis</span>
-            </div>
+            </div> -->
+        <div id="content" class="content" menu-option="newdiagnostic">
             <team-new-diagnostic-element id="newDiagnosticElement" class="container" panel-config="{{panelConfig}}" projects="{{projects}}" bioformats="{{bioformats}}" default-study="{{defaultStudy}}" analysis-folder="{{analysisFolder}}" on-run="handleRunJob"></team-new-diagnostic-element>
-        </jso-panel>
+        </div>
+        <!-- </jso-panel> -->
 
         <jso-panel movable expandible closable id="newPanelPanel" on-close="returnHome" menu-option="newpanel">
             <div class="header" style="text-align:left;font-size:15px;">
@@ -318,9 +318,8 @@
         </jso-opencga-header>
 
         <jso-opencga-footer menu-option="home,loging,singup,profile,remember">
-            TEAM: created by Computational Genomics Department
-            <br> Centro de Investigación Principe Felipe
-            <br> 2016
+            TEAM 2016
+            <br> Created by <b>Computational Genomics Department</b> at <b>Centro de Investigación Principe Felipe</b>
         </jso-opencga-footer>
 
     </template>

@@ -10,7 +10,20 @@
             box-sizing: border-box;
             width: 100%;
             height: 100%;
-            /*font-size: 12px;*/
+            background-color: #fafafa;
+        }
+
+        .errmsg {
+            color: #8b0000;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        jso-opencga-sample-browser {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: #FFFFFF;
         }
 
         .file {
@@ -20,61 +33,37 @@
             width: 100px;
         }
 
-        .selbox {
-            width: 300px;
-            min-height: 390px;
+        .t1 {
+            color: var(--dark-primary-color);
+            margin: 2px 0 2px 0;
+            font-size: 15px;
+            /*border-bottom: 1px solid var(--dark-primary-color);*/
+        }
+
+        #newDiagnosticPanels {
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
             overflow-y: auto;
-            height: calc(100vh - 310px);
+            height: calc(50% - 50px);
+            min-height: 180px;
         }
 
-        label.jso {
+        #examplePanels {
+            height: calc(50% - 50px);
             display: block;
-        }
-
-        jso-opencga-sample-browser {
             position: relative;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border: 1px solid var(--divider-color);
+            background-color: #FFF;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+        }
+
+        #newDiagnosticPanelPreview {
+            height: calc(100% - 28px);
+            margin: 0;
             width: 100%;
-            height: 400px;
         }
 
-        .errmsg {
-            color: #8b0000;
-            font-size: 11px;
-            font-style: italic;
-        }
-
-        #panelPreview {
-            width: 70%;
-            height: 60%;
-        }
-
-        .titlePreview {
-            font-size: 14px;
-            color: #445D76;
-            margin: 2px 10px 0px 10px;
-            border-bottom: 1px solid #445D76;
-            /*padding-bottom: 3px;*/
-        }
-
-        .eye > i:hover {
-            color: #666;
-            cursor: pointer;
-        }
-
-        #personalData {
-            border: 1px solid #d3d3d3;
-            padding: 5px;
-            margin: 0 auto;
-            width: 500px;
-            margin-top: 10px;
-            height: 80%;
-        }
-
-        .data {
-            color: #666;
-            margin-top: 10px;
-            margin-bottom: 5px;
-        }
 
         .sgenesTextArea {
             box-sizing: border-box;
@@ -92,41 +81,14 @@
             box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
         }
 
-        .newPanelButon {
-            margin: 10px;
-            padding-left: 5px;
-            border: 1px solid #d3d3d3;
-            margin-bottom: 0px;
-            margin-top: 5px;
-            line-height: 30px;
-            background-color: #E5E8EA;
+        .colorButton {
+            color: var(--text-primary-color);
+            margin-top: 15px;
+            background-color: var(--dark-button-color);
         }
 
-        #botbar {
-            text-align: center;
-            color: #445D76;
-            margin: 5px;
-            width: 80px;
-        }
-
-        jso-select-box {
-            overflow-y: auto;
-            /*min-height: 250px;*/
-        }
-
-        #examplePanels {
-            height: 100px;
-            display: block;
-            position: relative;
-            box-sizing: border-box;
-            overflow-y: auto;
-            border: 1px solid var(--divider-color);
-            background-color: #FFF;
-            margin: 10px;
-        }
-
-        .jso-formtitle {
-            font-size: 13px;
+        .colorButton:hover {
+            background-color: var(--light-button-color);
         }
 
         .panel-item {
@@ -141,42 +103,28 @@
         .panel-item:hover {
             background-color: var(--hover-color);
         }
-
-        #newDiagnosticPanels {
-            height: calc(100vh - 550px);
-            min-height: 180px;
-        }
     </style>
     <template>
 
         <jso-wizard id="jsoFormWizard">
             <div class="title">
-                <div class="stepName">Choose a Sample
-                    <span class="errmsg" style="margin-right: 50px;">{{errorMessageFile}}</span>
-                </div>
-                <div class="stepName">Choose a Panel
-                    <span class="errmsg" style="margin-right: 50px;">{{errorMessagePanel}}</span>
-                </div>
-
-                <div class="stepName">Job information</div>
+                <span class="stepName"><span>Choose a Sample</span><span class="errmsg" style="padding-right:50px;">{{errorMessageFile}}</span></span>
+                <span class="stepName"><span>Choose a Panel</span><span class="errmsg" style="padding-right:50px;">{{errorMessagePanel}}</span></span>
+                <span class="stepName">Job information</span>
             </div>
 
-            <div class="container">
-                <div class="step">
-                    <div class="jso-formcontent" style="padding:0">
-                        <!--<jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>-->
-                        <jso-opencga-sample-browser enable-multiselect enable-auto-index class="container" id="sampleBrowser" projects="{{projects}}" filtered-samples="{{filteredSamples}}" bioformats="{{bioformats}}" on-sampleselected="handleSampleSelected" disable-case-control></jso-opencga-sample-browser>
-
-                    </div>
+            <div class="container" style="height:100%;">
+                <div class="step" style="height:100%;">
+                    <!--<jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>-->
+                    <jso-opencga-sample-browser style="height:100%;" enable-multiselect enable-auto-index class="container" id="sampleBrowser" projects="{{projects}}" filtered-samples="{{filteredSamples}}" bioformats="{{bioformats}}" on-sampleselected="handleSampleSelected" disable-case-control></jso-opencga-sample-browser>
                 </div>
-                <div class="step" style="padding: 10px;">
-                    <div class="horizontal layout">
-                        <!-- <div class="vertical layout"> -->
-                        <div class="selbox" id="panelSelector">
-                            <div class="titlePreview flex" style="margin-right=0px !important;padding-bottom:5px"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
-                            <jso-select-box id="newDiagnosticPanels" style="margin:5px" options="{{jobsPanels}}" data-panels="{{jobsPanels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+                <div class="step" style="height:100%;">
+                    <div class="horizontal layout" style="height:100%;padding:20px;box-sizing:border-box;">
+                        <div id="panelSelector" style="width:300px;box-sizing:border-box;padding-right:15px;">
+                            <div class="t1"><i class="fa fa-list"></i> &nbsp; User Panel List</div>
+                            <jso-select-box id="newDiagnosticPanels" options="{{jobsPanels}}" data-panels="{{jobsPanels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
 
-                            <div class="titlePreview flex" style=""><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
+                            <div class="t1" style="margin-top:20px;"><i class="fa fa-list"></i> &nbsp; Example Panel List</div>
                             <div id="examplePanels">
                                 <template is="dom-repeat" items="{{examplePanels}}">
                                     <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
@@ -184,19 +132,15 @@
                                     </div>
                                 </template>
                             </div>
-                            <div class="newPanelButon horizontal layout">
-                                <div class="flex" style="font-size:11px;">Or create a New Panel &nbsp;</div>
-                                <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
-                                    <i class="fa fa-plus"></i>&nbsp; Panel
-                                </div>
+
+                            <div class="colorButton jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
+                                <i class="fa fa-plus"></i>&nbsp; New Panel
                             </div>
                         </div>
 
-                        <div id="panelPreview">
-                            <div class="titlePreview">
-                                <i class="fa fa-eye"></i>&nbsp; Panel Preview
-                            </div>
-                            <team-panel-preview id="newDiagnosticPanelPreview" data-panel="{{selectedPanel}}" selected-panel="{{selectedPanel}}" style="width:85%;">
+                        <div id="panelPreview" style="width:calc(100% - 300px);">
+                            <div class="t1"><i class="fa fa-eye"></i> &nbsp; Panel Preview</div>
+                            <team-panel-preview id="newDiagnosticPanelPreview" data-panel="{{selectedPanel}}" selected-panel="{{selectedPanel}}">
                             </team-panel-preview>
                         </div>
                     </div>
@@ -208,20 +152,16 @@
                     </jso-panel>
 
                 </div>
-                <div class="step">
-                    <div class="jso-formcontent vertical layout" id="personalData">
-                        <div style="color:#666;margin-top:5px;">Job name</div>
-                        <input style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
-
-                        <div class="data">Description</label>
-                            <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}" required></textarea>
-                        </div>
-                        <div class="horizontal layout">
-                            <div class="jso-btn jso-btn-shdw file" style="width:200px;margin: 0 auto;margin-top:10px;" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
-                            </div>
-                            <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
-                        </div>
+                <div class="step" style="width:400px;margin: 20px auto">
+                    <div style="color:#666;margin-top:5px;">Job name</div>
+                    <input class="jso" style="margin-top: 5px;border-color:#d3d3d3;" type="text" id="jobName" value="{{jobName::change}}" required>
+                    <br>
+                    <div class="data">Description</label>
+                        <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}" required></textarea>
                     </div>
+                    <div class="colorButton jso-btn jso-btn-shdw file" style="width:200px;margin: 0 auto;margin-top:10px;" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                    </div>
+                    <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
                 </div>
             </div>
         </jso-wizard>
@@ -378,7 +318,7 @@
                         var sampleId = this.selectedSamples[i].id;
                         var sampleName = this.selectedSamples[i].name;
 
-                        var name = me.jobName + "_" + sampleName + "_"+ this.selectedPanel.name;
+                        var name = me.jobName + "_" + sampleName + "_" + this.selectedPanel.name;
                         console.log(name)
                         var query = {
                             sid: Cookies("bioinfo_sid"),
