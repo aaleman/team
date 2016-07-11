@@ -934,15 +934,23 @@
                 });
 
                 var desc = this.sample.description;
+
+                this.suspDiag = "";
+                this.$.reportConclusions.querySelector('textarea').value = "";
+
+                elem = this.$.aditional.querySelectorAll('input');
+                for (var i = 0; i < elem.length; i++) {
+                    elem[i].value = "";
+                }
+                
                 if (desc != "") {
                     var information = JSON.parse(desc);
-                    if (information.supDiag != null) {
-                        this.suspDiag = information.supDiag;
+                    if (information.suspDiag != null) {
+                        this.suspDiag = information.suspDiag;
                     }
                     if (information.conclusions != null) {
                         this.$.reportConclusions.querySelector('textarea').value = information.conlusions;
                     }
-                    elem = this.$.aditional.querySelectorAll('input');
                     for (var i = 0; i < elem.length; i++) {
                         var el = elem[i];
                         var name = el.dataset.name;

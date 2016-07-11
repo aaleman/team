@@ -64,7 +64,6 @@
             width: 100%;
         }
 
-
         .sgenesTextArea {
             box-sizing: border-box;
             width: 100%;
@@ -116,7 +115,7 @@
             <div class="container" style="height:100%;">
                 <div class="step" style="height:100%;">
                     <!--<jso-opencga-browser id="fileBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-fileselect="handleFileSelected" mode="file"></jso-opencga-browser>-->
-                    <jso-opencga-sample-browser style="height:100%;" enable-multiselect enable-auto-index class="container" id="sampleBrowser" projects="{{projects}}" filtered-samples="{{filteredSamples}}" bioformats="{{bioformats}}" on-sampleselected="handleSampleSelected" disable-case-control></jso-opencga-sample-browser>
+                    <jso-opencga-sample-browser style="height:100%;" enable-multiselect enable-auto-index class="container" id="sampleBrowser" projects="{{projects}}" filtered-samples="{{filteredSamples}}" bioformats="{{bioformats}}" on-sampleselected="handleSampleSelected" disable-case-control enable-diagnostic></jso-opencga-sample-browser>
                 </div>
                 <div class="step" style="height:100%;">
                     <div class="horizontal layout" style="height:100%;padding:20px;box-sizing:border-box;">
@@ -295,7 +294,7 @@
             var me = this;
             this.selectedSamples = this._getSelectedSamples();
             if (this.selectedSamples == null) {
-                this.errorMessageFile = "No sample/s selected or sample/s status are not READY"
+                this.errorMessageFile = "No sample/s selected or sample/s status are not READY or sample/s suspicious diagnostic is not defined."
             }
             if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
@@ -463,6 +462,9 @@
                 for (var i = 0; i < samples.length; i++) {
                     if (samples[i].sample.status != 'READY') {
                         alert('All selected samples must be READY');
+                        return null;
+                    } else if (samples[i].sample.description == "") {
+                        alert('All selected samples must have suspicious diagnostic');
                         return null;
                     } else {
                         samplesArray.push(samples[i].sample);
