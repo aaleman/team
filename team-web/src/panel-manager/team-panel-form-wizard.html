@@ -74,12 +74,14 @@
             margin: 0 auto;
             border: 1px solid #d3d3d3;
         }
+
         #panelPreview,
-        #panelPreviewMut{
-          height: 60%;
+        #panelPreviewMut {
+            height: 60%;
         }
+
         #panelPreview .container,
-        #panelPreviewMut .container{
+        #panelPreviewMut .container {
             min-width: 700px;
             width: 100%;
             overflow-y: auto;
@@ -96,6 +98,7 @@
             overflow-y: auto;
             overflow-x: auto;
         }
+
         .file {
             text-align: center;
             color: #445D76;
@@ -840,8 +843,8 @@
 
             } else {
                 $.ajax({
-                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
-                    // url: "http://bioinfoint.hpc.cam.ac.uk/cellbase/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    //  url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
