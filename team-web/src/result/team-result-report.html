@@ -1020,16 +1020,19 @@
         },
         handleSaveReport: function() {
             var me = this;
-            var information = {};
+            var infor = {};
+            if (this.sample.description != "") {
+                infor = JSON.parse(this.sample.description);
+            }
             this.divConclusions = this.$.reportConclusions.querySelector('textarea').value;
-            information['conclusions'] = this.divConclusions;
+            infor['conclusions'] = this.divConclusions;
             elem = this.$.aditional.querySelectorAll('input');
             for (var i = 0; i < elem.length; i++) {
                 var el = elem[i];
                 var name = el.dataset.name;
-                information[name] = el.value;
+                infor[name] = el.value;
             }
-            var description = JSON.stringify(information);
+            var description = JSON.stringify(infor);
             OpencgaManager.samples.update({
                 id: me.sample.id,
                 query: {
@@ -1041,7 +1044,9 @@
                 },
                 request: {
                     async: false,
-                    success: function(response) {},
+                    success: function(response) {
+                        alert("The sample aditional information has been saved succesfully.")
+                    },
                     error: function() {
 
                     }
