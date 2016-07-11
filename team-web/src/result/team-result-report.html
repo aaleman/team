@@ -65,7 +65,7 @@
 
         .title {
             font-size: 13px;
-            font-weight: bolder;
+            /*font-weight: bolder;*/
         }
 
         .exportBut {
@@ -121,15 +121,18 @@
         }
 
         #aditional input {
-            width: 200px;
+            width: 80%;
+            border: 1px solid #ccc;
+            padding-left: 5px;
         }
 
         .infoPatient {
             display: inline-block;
-            width: 200px;
+            /*width: 200px;*/
             height: 15px;
-            border: 1px solid #dadada;
+            /*border: 1px solid #dadada;*/
             padding: 1px 0 1px 0;
+            color: #777;
         }
 
         .commment {
@@ -172,24 +175,49 @@
                     </ul> -->
                 </ul>
                 <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export to PDF/Print</div>
+                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleSaveReport" title="Save report for this Job"><i class="fa fa-floppy-o"></i>&nbsp; Save report</div>
             </div>
 
             <div id="report">
                 <div class="">
-                    <img style="margin:3px;height:35px;" src="../../images/bier-text.svg" />
-                    <span class="flex jobName">{{job.name}}</span>
+                    <div class="horizontal layout">
+                        <img style="margin:3px;height:35px;" src="../../images/bier-text.svg" />
+                        <div class="flex jobName">{{job.name}}</div>
+                        <div style="end-justify; font-style:italic; color:#888; margin-right:15px;">Cellbase&nbsp;
+                            <span>{{cellbaseVersion}}</span>
+                        </div>
+                        <div style="end-justify">&nbsp;
+                            <span>{{requestDate}}</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="description">{{job.description}}</div>
-                <div class="">
-                    <span id="aditional">
-                        <!-- <span>Patient Suspicious Diagnostic: </span>
-                        <span id="suspDiag" >{{suspDiag}}</span> -->
-                        <span>Patient Diagnostic:
-                            <input type="text">
-                            <!-- <jso-tooltip icon="arrow-circle-down"></jso-tooltip> -->
-                            <span id="confDiag" class="infoPatient" hidden>{{confDiag}}</span>
-                        </span>
-                    </span>
+                <div class="" id="aditional">
+                    <div class="horizontal layout">
+                        <label>Patient ID:&nbsp;</label>
+                        <input style="end-justify" type="text" data-name="patientID">
+                        <span id="patientID" class="infoPatient" hidden>{{patientID}}</span>
+                    </div>
+                    <div>Instrument:&nbsp;
+                        <input type="text" data-name="instrument">
+                        <span id="instrument" class="infoPatient" hidden>{{instrument}}</span>
+                    </div>
+                    <div>Analyzed by:&nbsp;
+                        <input type="text" data-name="analyzedBy">
+                        <span id="analyzedBy" class="infoPatient" hidden>{{analyzedBy}}</span>
+                    </div>
+                    <div>Sample Origin:&nbsp;
+                        <input type="text" data-name="sampleOrigin">
+                        <span id="sampleOrigin" class="infoPatient" hidden>{{sampleOrigin}}</span>
+                    </div>
+                    <div>Patient Suspicious Diagnostic:&nbsp;
+                        <span id="suspDiag" class="infoPatient">{{suspDiag}}</span>
+                    </div>
+                    <div>Patient Diagnostic:&nbsp;
+                        <input type="text" data-name="confDiag">
+                        <jso-tooltip icon="arrow-circle-down"></jso-tooltip>
+                        <span id="confDiag" class="infoPatient" hidden>{{confDiag}}</span>
+                    </div>
                     <table id="stadistics">
                         <tr>
                             <td> Total Variants </td>
@@ -256,7 +284,7 @@
                     </div>
                     <ul>
                         <div class="commment">Comments: &nbsp;
-                            <span style: "color:gray">{{comDiag}}</span>
+                            <span class: "infoPatient">{{comDiag}}</span>
                         </div>
                     </ul>
                     <div id="reportDiagnostic">
@@ -273,7 +301,7 @@
                     </div>
                     <ul>
                         <div class="commment">Comments: &nbsp;
-                            <span style: "color:gray">{{comSec}}</span>
+                            <span class: "infoPatient">{{comSec}}</span>
                         </div>
                     </ul>
                     <div id="reportSecondary">
@@ -303,7 +331,7 @@
                     </div>
                     <ul>
                         <div class="title">Panel Name: &nbsp;
-                            <span style: "color:gray">{{panelName}}</span>
+                            <span class="infoPatient">{{panelName}}</span>
                         </div>
                         <div class="title">Genes in Panel:</div>
                         <div id="reportGeneList">
@@ -341,6 +369,12 @@
                     return {};
                 },
                 observer: 'jobChanged',
+            },
+            sample: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
             },
             diagData: {
                 type: Array,
@@ -633,6 +667,9 @@
 
         },
         ready: function() {
+            this.cellbaseVersion = CELLBASE_VERSION;
+            var date = new Date();
+            this.requestDate = date.toLocaleString();
             this.geneColumns = [{
                 name: 'name',
                 title: 'Name',
@@ -706,8 +743,13 @@
             this.$.reportConclusions.querySelector('textarea').hidden = false;
             this.$.divConclusions.hidden = true;
             elem = this.$.aditional.querySelectorAll('input');
-            elem[0].hidden = false;
-            this.$.confDiag.hidden = true;
+            for (var i = 0; i < elem.length; i++) {
+                var el = elem[i];
+                var name = el.dataset.name;
+                el.hidden = false;
+                this.$[name].hidden = true;
+
+            }
             return true;
         },
 
@@ -861,11 +903,6 @@
                 comments[1].value = "";
                 this.comDiag = "";
                 this.comSec = "";
-                this.$.reportConclusions.querySelector('textarea').value = "";
-                this.divConclusions = "";
-                elem = this.$.aditional.querySelectorAll('input');
-                elem[0].value = "";
-                this.confDiag = "";
                 this.mostPathogenicData = "";
 
                 var tableSec = this.$.reportSecondary.querySelector('table');
@@ -877,21 +914,39 @@
                     this.$.reportMostPathogenic.removeChild(tableMost);
                 }
 
-                // var sampleId = neo.params.sampleId;
-                // OpencgaManager.samples.info({
-                //     id: sampleId,
-                //     query: {
-                //         sid: Cookies('bioinfo_sid'),
-                //     },
-                //     request: {
-                //         async: false,
-                //         success: function(response) {
-                //             me.suspDiag = response.response[0].result[0].description;
-                //         },
-                //         error: function() {}
-                //     }
-                // });
+                var sampleId = neo.params.sampleId;
+                OpencgaManager.samples.info({
+                    id: sampleId,
+                    query: {
+                        sid: Cookies('bioinfo_sid'),
+                    },
+                    request: {
+                        async: false,
+                        success: function(response) {
+                            me.sample = response.response[0].result[0];
+                        },
+                        error: function() {}
+                    }
+                });
 
+                var desc = this.sample.description;
+                if (desc != "") {
+                    var information = JSON.parse(desc);
+                    if (information.supDiag != null) {
+                        this.suspDiag = information.supDiag;
+                    }
+                    if (information.conclusions != null) {
+                        this.$.reportConclusions.querySelector('textarea').value = information.conlusions;
+                    }
+                    elem = this.$.aditional.querySelectorAll('input');
+                    for (var i = 0; i < elem.length; i++) {
+                        var el = elem[i];
+                        var name = el.dataset.name;
+                        if (information[name] != null) {
+                            el.value = information[name];
+                        }
+                    }
+                }
             }
         },
         showInReport: function(e) {
@@ -927,10 +982,14 @@
             this.$.divConclusions.hidden = false;
 
             elem = this.$.aditional.querySelectorAll('input');
-            this.confDiag = elem[0].value;
-            elem[0].hidden = true;
-            this.$.confDiag.hidden = false;
+            for (var i = 0; i < elem.length; i++) {
+                var el = elem[i];
+                var name = el.dataset.name;
+                this[name] = el.value;
+                el.hidden = true;
+                this.$[name].hidden = false;
 
+            }
             return;
 
         },
@@ -954,6 +1013,36 @@
                     this.$.reportDiagnostic.removeChild(table);
                 }
             }
+        },
+        handleSaveReport: function() {
+            var me = this;
+            var information = {};
+            this.divConclusions = this.$.reportConclusions.querySelector('textarea').value;
+            information['conclusions'] = this.divConclusions;
+            elem = this.$.aditional.querySelectorAll('input');
+            for (var i = 0; i < elem.length; i++) {
+                var el = elem[i];
+                var name = el.dataset.name;
+                information[name] = el.value;
+            }
+            var description = JSON.stringify(information);
+            OpencgaManager.samples.update({
+                id: me.sample.id,
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    // name:newName,
+                    description: description,
+                    source: me.sample.source,
+                    individualId: me.sample.individualId
+                },
+                request: {
+                    async: false,
+                    success: function(response) {},
+                    error: function() {
+
+                    }
+                }
+            });
         }
     });
 </script>
