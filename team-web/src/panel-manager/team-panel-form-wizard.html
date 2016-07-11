@@ -74,15 +74,18 @@
             margin: 0 auto;
             border: 1px solid #d3d3d3;
         }
-
-        #panelPreview .container {
+        #panelPreview,
+        #panelPreviewMut{
+          height: 60%;
+        }
+        #panelPreview .container,
+        #panelPreviewMut .container{
             min-width: 700px;
             width: 100%;
-            min-height: 500px;
-            height: 80%;
             overflow-y: auto;
             overflow-x: auto;
             padding: 10px;
+            box-sizing: border-box;
         }
 
         #appPanel .container {
@@ -93,17 +96,6 @@
             overflow-y: auto;
             overflow-x: auto;
         }
-
-        #panelPreviewMut .container {
-            min-width: 700px;
-            width: 100%;
-            min-height: 500px;
-            height: 80%;
-            overflow-y: auto;
-            overflow-x: auto;
-            padding: 10px;
-        }
-
         .file {
             text-align: center;
             color: #445D76;
