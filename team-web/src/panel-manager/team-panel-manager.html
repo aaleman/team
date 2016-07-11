@@ -6,22 +6,33 @@
             display: block;
             position: relative;
             box-sizing: border-box;
-            height: 100%;
             transition: all 0.2s;
             background-color: inherit;
-            width: 600px;
-            height: 400px;
-        }
-
-        #main {
+            padding: 20px;
+            box-sizing: border-box;
             height: 100%;
-            width: 100%;
+            @apply(--layout-horizontal);
         }
 
-        #maincontent {
-            margin: 8px;
-            height: 80%;
-            width: 70%;
+        #left {
+            position: relative;
+            width: 300px;
+            box-sizing: border-box;
+            padding-right: 15px;
+        }
+
+        #right {
+            position: relative;
+            box-sizing: border-box;
+            width: calc(100% - 300px);
+            heigth: 100%;
+            margin: 0;
+        }
+
+        team-panel-preview {
+            height: calc(100% - 28px);
+            margin: 0;
+            width: 100%;
         }
 
         .panel-item {
@@ -53,33 +64,6 @@
             cursor: pointer;
         }
 
-        pre {
-            margin: 20px;
-        }
-        /* NEW */
-
-        #left {
-            padding: 10px;
-            width: 280px;
-            border-right: 1px solid #d3d3d3;
-            box-sizing: border-box;
-        }
-
-        #table {
-            width: 100%;
-            height: 500px;
-            font-size: 12px;
-            margin-top: 10px;
-            border: 1px solid #d3d3d3;
-        }
-
-        .file {
-            text-align: center;
-            color: #445D76;
-            width: 100px;
-            margin-top: 5px;
-        }
-
         #newPanelPanel {
             width: 60%;
             min-width: 800px;
@@ -90,46 +74,39 @@
         }
 
         .titlePreview {
+            color: var(--dark-primary-color);
+            margin: 2px 0 2px 0;
             font-size: 15px;
-            color: #445D76;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            border-bottom: 1px solid #445D76;
-            padding: 2px;
+            border-bottom: 1px solid var(--dark-primary-color);
         }
 
-        .newPanelButon {
-            /*margin: 10px;*/
-            padding-left: 3px;
-            border: 1px solid #d3d3d3;
-            margin-bottom: 0px;
-            margin-top: 5px;
-            line-height: 32px;
-            background-color: #E5E8EA;
+        .colorButton {
+            color: var(--text-primary-color);
+            margin-top: 15px;
+            background-color: var(--dark-button-color);
         }
 
-        #botbar {
-            text-align: center;
-            color: #445D76;
-            margin: 5px;
-            width: 80px;
-            margin-bottom: 15px;
+        .colorButton:hover {
+            background-color: var(--light-button-color);
         }
 
         #userPanels {
             overflow-y: auto;
             height: 300px;
-            border: 1px solid #d3d3d3;
+            border: 1px solid var(--divider-color);
             border-top: 0;
+            background-color: #FFF;
+            /*box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);*/
         }
 
         #examplePanels {
+            position: relative;
+            box-sizing: border-box;
             height: 130px;
             overflow-y: auto;
-        }
-
-        .jso-formtitle {
-            font-size: 13px;
+            border: 1px solid var(--divider-color);
+            background-color: #FFF;
+            /*box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);*/
         }
 
         #searchInput {
@@ -139,74 +116,70 @@
         }
     </style>
     <template>
-        <div id="main" class="horizontal layout flex">
-            <div id="left" class="vertical layout">
-                <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
-                <div class="horizontal layout" style="margin-bottom:5px;">
-                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
-                        <i class="fa fa-laptop"></i>&nbsp; Main
-                    </div>
-                    <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="archived" data-checked$="{{computeView(view, 'archived')}}">
-                        <i class="fa fa-inbox"></i>&nbsp; Archived
-                    </div>
+        <div id="left" class="vertical layout">
+            <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
+            <div class="horizontal layout" style="margin-bottom:5px;">
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
+                    <i class="fa fa-laptop"></i>&nbsp; Main
                 </div>
-                <input id="searchInput" class="jso" type="text" placeholder="Search by name..." value="{{search::input}}">
-                <div class="vertical layout flex" id="userPanels">
-                    <template is="dom-if" if="{{computeView(view, 'main')}}">
-                        <template is="dom-repeat" items="{{filteredPanels}}" filter="isArchived" observe="type archived">
-                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
-                                <div class="name flex">{{item.name}}</div>
-                                <!-- <div class="version" title="Version">{{item.version}}</div> -->
-                                <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.fileId}}" data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
-                                <i class="fa fa-inbox" title="Archive Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
-                                <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
-                            </div>
-                        </template>
-                    </template>
-                    <template is="dom-if" if="{{computeView(view, 'archived')}}">
-                        <template is="dom-repeat" items="{{filteredPanels}}" filter="isNotArchived" observe="type archived">
-                            <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
-                                <div class="name flex">{{item.name}}</div>
-                                <!-- <div class="version" title="Version">{{item.version}}</div> -->
-                                <i class="fa fa-laptop" title="Enable Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
-                                <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
-                            </div>
-                        </template>
-                    </template>
-                    <div id="loading" hidden$="{{!loading}}">
-                        <i class="fa fa-circle-o-notch fa-spin"></i> Loading...
-                    </div>
+                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="archived" data-checked$="{{computeView(view, 'archived')}}">
+                    <i class="fa fa-inbox"></i>&nbsp; Archived
                 </div>
-                <br>
-
-                <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
-                <div id="examplePanels">
-                    <template is="dom-repeat" items="{{examplePanels}}">
-                        <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
+            </div>
+            <input id="searchInput" class="jso" type="text" placeholder="Search by name..." value="{{search::input}}">
+            <div class="vertical layout flex" id="userPanels">
+                <template is="dom-if" if="{{computeView(view, 'main')}}">
+                    <template is="dom-repeat" items="{{filteredPanels}}" filter="isArchived" observe="type archived">
+                        <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
                             <div class="name flex">{{item.name}}</div>
+                            <!-- <div class="version" title="Version">{{item.version}}</div> -->
+                            <i class="fa fa-pencil-square-o" title="Edit Panel" data-file$="{{item.fileId}}" data-used$="{{item.used}}" on-click="handleEditPanel">&nbsp;</i>
+                            <i class="fa fa-inbox" title="Archive Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
+                            <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
                         </div>
                     </template>
+                </template>
+                <template is="dom-if" if="{{computeView(view, 'archived')}}">
+                    <template is="dom-repeat" items="{{filteredPanels}}" filter="isNotArchived" observe="type archived">
+                        <div class="panel-item horizontal layout center" data-file$="{{item.fileId}}" on-click="handlePanelSelected">
+                            <div class="name flex">{{item.name}}</div>
+                            <!-- <div class="version" title="Version">{{item.version}}</div> -->
+                            <i class="fa fa-laptop" title="Enable Panel" data-file$="{{item.fileId}}" on-click="handleArchivedPanel">&nbsp;</i>
+                            <!-- <i class="fa fa-trash-o" title="Delete Panel" data-file$="{{item.file.id}}" on-click="handleDeletePanel"></i> -->
+                        </div>
+                    </template>
+                </template>
+                <div id="loading" hidden$="{{!loading}}">
+                    <i class="fa fa-circle-o-notch fa-spin"></i> Loading...
                 </div>
-                <div class="newPanelButon horizontal layout">
-                    <div class="flex" style="font-size:11px;">Or create a New Panel &nbsp;</div>
-                    <div id="botbar" class="jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
-                        <i class="fa fa-plus"></i>&nbsp; Panel
+            </div>
+            <br>
+
+            <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; Example Panel List</div>
+            <div id="examplePanels">
+                <template is="dom-repeat" items="{{examplePanels}}">
+                    <div class="panel-item horizontal layout center" data-file="{{item}}" on-click="handlePanelExampleSelected">
+                        <div class="name flex">{{item.name}}</div>
                     </div>
-                </div>
+                </template>
             </div>
 
-            <div id="maincontent" class="vertical layout">
-                <div class="titlePreview">
-                    <i class="fa fa-eye"></i>&nbsp; Panel Preview
-                </div>
-                <team-panel-preview selected-panel="{{selectedPanel}}" style="width:95%;">
-                </team-panel-preview>
-
+            <div class="colorButton jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
+                <i class="fa fa-plus"></i>&nbsp; New Panel
             </div>
+        </div>
 
+        <div id="right">
+            <div class="titlePreview">
+                <i class="fa fa-eye"></i>&nbsp; Panel Preview
+            </div>
+            <team-panel-preview selected-panel="{{selectedPanel}}">
+            </team-panel-preview>
 
         </div>
-        <jso-panel modal movable expandible closable id="newPanelPanel" hidden>
+
+
+        <jso-panel fixed modal closable id="newPanelPanel" hidden>
             <div class="header" style="text-align:left;font-size:15px;">
                 <i class$="{{computeMode(mode)}}"></i>&nbsp;
                 <span>{{mode}}</span>&nbsp;

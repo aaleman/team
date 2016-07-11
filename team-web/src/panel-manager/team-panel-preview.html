@@ -29,7 +29,6 @@
             position: relative;
             height: 100%;
         }
-
         /*jso-table::shadow .table-row {
             height: 15px;
         }*/
@@ -52,6 +51,7 @@
         }
 
         .tabwrap {
+            box-sizing: border-box;
             position: relative;
             border: 1px solid var(--divider-color);
             box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
@@ -104,7 +104,7 @@
             <span class="data">Description:</span> &nbsp; {{desc}}
         </div>
 
-        <div class="tabwrap" style="margin-top:5px">
+        <div class="tabwrap">
             <div id="submenu" class="horizontal layout">
                 <div class="tab" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
                     Diseases
