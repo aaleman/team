@@ -333,6 +333,9 @@
                         <div class="title">Panel Name: &nbsp;
                             <span class="infoPatient">{{panelName}}</span>
                         </div>
+                        <div class="title">Panel Version: &nbsp;
+                            <span class="infoPatient">{{panelVersion}}</span>
+                        </div>
                         <div class="title">Genes in Panel:</div>
                         <div id="reportGeneList">
                         </div>
@@ -840,6 +843,7 @@
             }
             console.log(jobPanel)
             this.panelName = jobPanel.name;
+            this.panelVersion = jobPanel.version;
             // this._getTable(this.diseaseColumns, jobPanel.diseases, this.$.reportDiseases);
             // this._getTable(this.geneColumns, jobPanel.genes, this.$.reportGenes);
             // this._getTable(this.mutationColumns, jobPanel.mutations, this.$.reportMutations);
