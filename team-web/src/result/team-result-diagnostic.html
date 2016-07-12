@@ -71,9 +71,6 @@
             color: #222;
             font-size: 13px;
         }
-        /*jso-table::shadow .beaconlink a:link, jso-table::shadow .beaconlink a:visited{
-          color:#225e71;
-        }*/
     </style>
     <template>
         <div class="title">{{title}}</div>
@@ -187,7 +184,11 @@
             name: 'id',
             title: 'SNP Id',
             width: 80,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
+                return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
+            },
         }, {
             name: 'qual',
             title: 'Qual',
@@ -210,7 +211,11 @@
             name: 'gene',
             title: 'Gene',
             width: 160,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + row.gene + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                return '<a href="' + url + '" target="_blank">' + row.gene + '</a>'
+            }
         }, {
             name: 'ct',
             title: 'Conseq. Type',
@@ -234,15 +239,18 @@
             styleFormula: function(row) {
                 if (row.sift == '.') {
                     return {
-                        color: '#005b99'
+                        backgroundColor: '#005b99',
+                        color: '#fff'
                     }
                 } else if (row.sift <= 0.05) {
                     return {
-                        color: '#b30000'
+                        backgroundColor: '#b30000',
+                        color: '#fff'
                     }
                 } else {
                     return {
-                        color: '#008000'
+                        backgroundColor: '#008000',
+                        color: '#fff'
                     }
                 }
             },
@@ -252,25 +260,23 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
-                    if (row.polyphen == '.') {
-                        return {
-                            color: '#005b99'
-                        }
-                    } else if (row.polyphen >= 0.95) {
-                        return {
-                            color: '#b30000'
-                        }
-                    } else {
-                        return {
-                            color: '#008000'
-                        }
+                if (row.polyphen == '.') {
+                    return {
+                        backgroundColor: '#005b99',
+                        color: '#fff'
+                    }
+                } else if (row.polyphen >= 0.95) {
+                    return {
+                        backgroundColor: '#b30000',
+                        color: '#fff'
+                    }
+                } else {
+                    return {
+                        backgroundColor: '#008000',
+                        color: '#fff'
                     }
                 }
-                // }, {
-                //     name: 'maf1000G',
-                //     title: 'MAF 1000G Phase 1',
-                //     width: 50,
-                //     defaultValue: '.'
+            }
         }, {
             name: 'cadd',
             title: 'CADD',
@@ -296,6 +302,15 @@
             title: 'EXAC',
             width: 50,
             defaultValue: '.'
+        }, {
+            name: 'beacon',
+            title: 'Beacon',
+            width: 50,
+            formula: function(row) {
+                var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
+                    // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            }
         }, {
             name: 'phenotype',
             title: 'Phenotype',
@@ -332,7 +347,11 @@
             name: 'id',
             title: 'SNP Id',
             width: 50,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
+                return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
+            },
         }, {
             name: 'qual',
             title: 'Qual',
@@ -355,7 +374,11 @@
             name: 'gene',
             title: 'Gene',
             width: 160,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + row.gene + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                return '<a href="' + url + '" target="_blank">' + row.gene + '</a>'
+            }
         }, {
             name: 'ct',
             title: 'Conseq. Type',
@@ -379,23 +402,21 @@
             styleFormula: function(row) {
                 if (row.sift == '.') {
                     return {
-                        color: '#005b99'
+                        backgroundColor: '#005b99',
+                        color: '#fff'
                     }
                 } else if (row.sift <= 0.05) {
                     return {
-                        color: '#b30000'
+                        backgroundColor: '#b30000',
+                        color: '#fff'
                     }
                 } else {
                     return {
-                        color: '#008000'
+                        backgroundColor: '#008000',
+                        color: '#fff'
                     }
                 }
             },
-            // classFormula: function(row){
-            //   if(row.ref == "C"){
-            //     return "mi_clase";
-            //   }
-            // }
         }, {
             name: 'polyphen',
             title: 'Polyphen',
@@ -404,23 +425,21 @@
             styleFormula: function(row) {
                 if (row.polyphen == '.') {
                     return {
-                        color: '#005b99'
+                        backgroundColor: '#005b99',
+                        color: '#fff'
                     }
                 } else if (row.polyphen >= 0.95) {
                     return {
-                        color: '#b30000'
+                        backgroundColor: '#b30000',
+                        color: '#fff'
                     }
                 } else {
                     return {
-                        color: '#008000'
+                        backgroundColor: '#008000',
+                        color: '#fff'
                     }
                 }
             },
-            // }, {
-            //     name: 'maf1000G',
-            //     title: 'MAF 1000G Phase 1',
-            //     width: 50,
-            //     defaultValue: '.'
         }, {
             name: 'cadd',
             title: 'CADD',
@@ -454,9 +473,6 @@
                 var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
                 return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
                     // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
-            },
-            classFormula: function(row) {
-                return 'beaconlink';
             }
         }, {
             name: 'clinvar',
