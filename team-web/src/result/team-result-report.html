@@ -210,10 +210,10 @@
                         <input type="text" data-name="sampleOrigin">
                         <span id="sampleOrigin" class="infoPatient" hidden>{{sampleOrigin}}</span>
                     </div>
-                    <div>Patient Suspicious Diagnostic:&nbsp;
+                    <div>Patient Suspected Diagnosis:&nbsp;
                         <span id="suspDiag" class="infoPatient">{{suspDiag}}</span>
                     </div>
-                    <div>Patient Diagnostic:&nbsp;
+                    <div>Patient Diagnosis:&nbsp;
                         <input type="text" data-name="confDiag">
                         <jso-tooltip icon="arrow-circle-down"></jso-tooltip>
                         <span id="confDiag" class="infoPatient" hidden>{{confDiag}}</span>
@@ -942,7 +942,7 @@
                 for (var i = 0; i < elem.length; i++) {
                     elem[i].value = "";
                 }
-                
+
                 if (desc != "") {
                     var information = JSON.parse(desc);
                     if (information.suspDiag != null) {

@@ -262,19 +262,26 @@ Panel.prototype = {
         this._incModCount();
     },
     addGene: function (gene) {
+
+        var panelGenes = [];
+
+        for (var i = 0; i < this.genes.length; i++) {
+            panelGenes.push(this.genes[i]);
+        }
+        var auxGene = this.containsGene(gene);
+
         // console.log("add gene:" + JSON.stringify(gene));
-        console.log("gene");
-        // var auxGene = this.containsGene(gene);
-        var auxGene = null;
 
         if (auxGene) {
             auxGene.count++;
-            this.polymer.notifyPath('formData.genes', this.genes);
         } else {
             gene.count = 1;
-            this.polymer.push('formData.genes', gene);
+            panelGenes.push(gene);
         }
         this._incModCount();
+        this.polymer.set('formData.genes', panelGenes);
+        this.polymer.$.geneTable.set("data", this.polymer.formData.genes);
+
     },
     addAllGenes: function (genes) {
         var panelGenes = [];
@@ -296,7 +303,6 @@ Panel.prototype = {
             this._incModCount();
         }
         return panelGenes;
-        // this.polymer.set('formData.genes', panelGenes);
     },
     containsGene: function (gene) {
         for (var i = 0; i < this.genes.length; i++) {
@@ -308,11 +314,22 @@ Panel.prototype = {
         return null;
     },
     addMutation: function (mutation) {
-        if (!this.containsMutation(mutation)) {
-            this.polymer.push('formData.mutations', mutation);
-            // this._emit("new-mutation", mutation);
-            this._incModCount();
-        }
+      var panelMutations = [];
+
+      for (var i = 0; i < this.mutations.length; i++) {
+          panelMutations.push(this.mutations[i]);
+      }
+      var auxMutation = this.containsMutation(mutation);
+
+      if (auxMutation) {
+          auxMutation.count++;
+      } else {
+          mutation.count = 1;
+          panelMutations.push(mutation);
+      }
+      this._incModCount();
+      this.polymer.push('formData.mutations', mutation);
+      this.polymer.$.mutationTable.set("data", this.polymer.formData.mutations);
     },
     containsMutation: function (mutation) {
         // var mutName = mutation.chr + "_" + mutation.pos + "_" + mutation.ref + "_" + mutation.alt + "_" + mutation.phe + "_" + mutation.src;
