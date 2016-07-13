@@ -213,8 +213,14 @@
             width: 160,
             defaultValue: '.',
             formula: function(row) {
-                var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + row.gene + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
-                return '<a href="' + url + '" target="_blank">' + row.gene + '</a>'
+                var genes=row.gene.split(",");
+                var links=[];
+                for (var i = 0; i < genes.length; i++) {
+                  var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                  links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                }
+
+                return links.join(",");
             }
         }, {
             name: 'ct',
@@ -376,8 +382,14 @@
             width: 160,
             defaultValue: '.',
             formula: function(row) {
-                var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + row.gene + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
-                return '<a href="' + url + '" target="_blank">' + row.gene + '</a>'
+              var genes=row.gene.split(",");
+              var links=[];
+              for (var i = 0; i < genes.length; i++) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+              }
+
+              return links.join(",");
             }
         }, {
             name: 'ct',

@@ -463,14 +463,36 @@
                     if (samples[i].sample.status != 'READY') {
                         alert('All selected samples must be READY');
                         return null;
-                    } else if (samples[i].sample.description == "") {
-                        alert('All selected samples must have suspicious diagnostic');
-                        return null;
-                    } else {
-                        samplesArray.push(samples[i].sample);
                     }
+                    OpencgaManager.samples.info({
+                        id: samples[i].sample.id,
+                        query: {
+                            sid: Cookies('bioinfo_sid'),
+                        },
+                        request: {
+                            async: false,
+                            success: function(response) {
+                                if (response.response[0].result[0] != null) {
+                                    var sample = response.response[0].result[0];
+                                    if (sample.description == "") {
+                                        alert('All selected samples must have suspicious diagnostic');
+                                    } else {
+                                        samplesArray.push(sample);
+                                    }
+                                }
+                            },
+                            error: function() {
+
+                            }
+                        }
+                    });
+
                 }
-                return samplesArray;
+                if (samplesArray.length != 0){
+                  return samplesArray;
+                }else{
+                  return null;
+                }
             }
         },
         filteredSamplesChanged: function(neo, old) {}
