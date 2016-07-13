@@ -75,14 +75,19 @@
             border: 1px solid #d3d3d3;
         }
 
-        #panelPreview .container {
+        #panelPreview,
+        #panelPreviewMut {
+            height: 60%;
+        }
+
+        #panelPreview .container,
+        #panelPreviewMut .container {
             min-width: 700px;
             width: 100%;
-            min-height: 500px;
-            height: 80%;
             overflow-y: auto;
             overflow-x: auto;
             padding: 10px;
+            box-sizing: border-box;
         }
 
         #appPanel .container {
@@ -92,16 +97,6 @@
             height: 80%;
             overflow-y: auto;
             overflow-x: auto;
-        }
-
-        #panelPreviewMut .container {
-            min-width: 700px;
-            width: 100%;
-            min-height: 500px;
-            height: 80%;
-            overflow-y: auto;
-            overflow-x: auto;
-            padding: 10px;
         }
 
         .file {
@@ -579,7 +574,7 @@
                             </team-panel-preview>
                         </jso-panel>
 
-                        <jso-panel movable fixed closable hidden id="panelGV">
+                        <jso-panel fixed movable closable hidden id="panelGV">
                             <div class="header">
                                 <i class="fa fa-eye"></i> View Mutation
                             </div>
@@ -805,9 +800,9 @@
             }
         },
         handleUpdatedSelectedDiseases: function(neo, old, path) {
-          if (neo) {
-              this.$.selectedDiseases.refresh();
-          }
+            if (neo) {
+                this.$.selectedDiseases.refresh();
+            }
         },
         handleUpdatedMutations: function(neo, old, path) {
             if (neo) {
@@ -848,8 +843,8 @@
 
             } else {
                 $.ajax({
-                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
-                    // url: "http://bioinfoint.hpc.cam.ac.uk/cellbase/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    //  url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
@@ -1475,8 +1470,8 @@
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, false);
 
-            xhr.onloadend = function(e) {
-                var response = JSON.parse(e.srcElement.response);
+            xhr.onload = function(e) {
+                var response = JSON.parse(this.response);
                 try {
                     var id = response.response[0].result[0].id;
                     callback(id);
