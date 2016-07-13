@@ -1,43 +1,48 @@
-<script src="../bower_components/file-saver.js/FileSaver.js"></script>
-<script src="../lib/jsorolla/bower_components/LineReader/LineReader.js"></script>
+<script src="bower_components/jsorolla/src/lib/utils.js"></script>
+<script src="bower_components/jsorolla/src/lib/opencga-manager.js"></script>
+<script src="bower_components/jsorolla/src/lib/cellbase-manager.js"></script>
 
-<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-application-behavior.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-manager-behavior.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-panel.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-wizard.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-tooltip.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-input-text.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-select.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-help-menu.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/jso-genome-viewer-element.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/variant/jso-variant-frequencies-grid.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/table/jso-table.html">
-<link rel="import" href="../lib/jsorolla/src/lib/validator/jso-validator.html">
-<script src="../lib/jsorolla/src/lib/validator/bed-validator.js"></script>
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/samples/jso-opencga-sample-browser.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-upload-file.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-create-study.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-create-project.html">
-<link rel="import" href="../lib/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+<script src="bower_components/file-saver.js/FileSaver.js"></script>
 
-<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-application-behavior.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/jso-opencga-manager-behavior.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-panel.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-wizard.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-tooltip.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-opencga-input-text.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-select.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-opencga-button-tooltip.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-help-menu.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-genome-viewer-element.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/variant/jso-variant-frequencies-grid.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/table/jso-table.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/validator/jso-validator.html">
+<script src="bower_components/jsorolla/src/lib/validator/bed-validator.js"></script>
+
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/jso-opencga-header.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/jso-opencga-footer.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/files/jso-opencga-job-browser.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/samples/jso-opencga-sample-browser.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/files/jso-opencga-upload-file.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/files/jso-opencga-create-study.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/files/jso-opencga-create-project.html">
+<link rel="import" href="bower_components/jsorolla/src/lib/components/opencga/files/jso-opencga-browser.html">
+
+<link rel="import" href="bower_components/iron-list/iron-list.html">
 
 
-<script src="panel.js"></script>
-<script src="example-panels.js"></script>
-<script src="FilterHistory.js"></script>
+<script src="src/panel.js"></script>
+<script src="src/example-panels.js"></script>
+<script src="src/FilterHistory.js"></script>
 
-<link rel="import" href="team-home.html">
-<link rel="import" href="panel-manager/team-panel-manager.html">
-<link rel="import" href="panel-manager/team-panel-form-wizard.html">
-<link rel="import" href="team-new-diagnostic-element.html">
-<link rel="import" href="result/team-result.html">
+<link rel="import" href="src/team-home.html">
+<link rel="import" href="src/panel-manager/team-panel-manager.html">
+<link rel="import" href="src/panel-manager/team-panel-form-wizard.html">
+<link rel="import" href="src/team-new-diagnostic-element.html">
+<link rel="import" href="src/result/team-result.html">
 
 <dom-module id="team-element">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
@@ -71,15 +76,6 @@
             border-bottom: 2px solid var(--accent-color);
         }
 
-        .contentHome {
-            position: relative;
-            width: 100%;
-            top: 60px;
-            height: calc(100vh - 160px);
-            /*background-color: transparent;*/
-            bottom: 100px;
-        }
-
         .content {
             position: absolute;
             width: 100%;
@@ -89,8 +85,10 @@
         }
 
         team-home {
-            height: calc(100vh - 160px);
+            height: calc(100vh - 120px);
             overflow-y: auto;
+            /*background-color: white;*/
+            color: var(--text-primary-color)
         }
 
         jso-opencga-header {
@@ -101,11 +99,22 @@
         jso-opencga-footer {
             position: absolute;
             bottom: 0;
+            height: 60px;
         }
 
         jso-variant-browser {
             height: calc(100vh - 60px);
             overflow-y: scroll;
+        }
+
+        #newDiagnosticElement {
+            height: calc(100vh - 60px);
+        }
+
+        #manager {
+            width: 100%;
+            height: calc(100vh - 60px);
+            background-color: var(--light-primary-color);
         }
 
         #jobBrowserPanel {
@@ -126,7 +135,7 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 600px;
+            width: 750px;
         }
 
         #jobBrowser {
@@ -144,8 +153,7 @@
             box-shadow: 0px 0px 12px 6px rgba(0, 0, 0, 0.30);
         }
 
-        #newDiagnosisPanel,
-        #panelManager {
+        #newDiagnosisPanel {
             top: 60px;
             width: 60%;
             min-width: 800px;
@@ -161,14 +169,8 @@
             min-height: 500px;
         }
 
-        #manager {
-            width: 100%;
-            border-top: 1px solid var(--divider-color);
-            height: 100%;
-        }
-
         team-result {
-            height: 100%;
+            height: calc(100vh - 60px);
             /*z-index: 1;*/
         }
         /*#newDiagnosticElement {
@@ -200,17 +202,19 @@
     </style>
     <template>
 
-        <div class="contentHome" menu-option="home">
+        <div class="content" menu-option="home">
             <team-home data-option="home"></team-home>
         </div>
 
-        <jso-panel movable expandible closable id="newDiagnosisPanel" on-close="returnHome" menu-option="newdiagnostic">
+        <!-- <jso-panel movable expandible closable id="newDiagnosisPanel" on-close="returnHome" menu-option="newdiagnostic">
             <div class="header" style="text-align:left;font-size:15px;">
                 <i class="fa fa-stethoscope"></i>
                 <span class="option-text">Run Diagnosis</span>
-            </div>
+            </div> -->
+        <div id="content" class="content" menu-option="newdiagnostic" hidden>
             <team-new-diagnostic-element id="newDiagnosticElement" class="container" panel-config="{{panelConfig}}" projects="{{projects}}" bioformats="{{bioformats}}" default-study="{{defaultStudy}}" analysis-folder="{{analysisFolder}}" on-run="handleRunJob"></team-new-diagnostic-element>
-        </jso-panel>
+        </div>
+        <!-- </jso-panel> -->
 
         <jso-panel movable expandible closable id="newPanelPanel" on-close="returnHome" menu-option="newpanel">
             <div class="header" style="text-align:left;font-size:15px;">
@@ -219,14 +223,11 @@
             <team-panel-form-wizard id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panel-config="{{panelConfig}}" user-data="{{userData}}"></team-panel-form-wizard>
         </jso-panel>
 
-        <jso-panel movable expandible closable id="panelManager" on-close="returnHome" menu-option="panels">
-            <div class="header" style="text-align:left;font-size:15px;">
-                <i class="fa fa-list-alt"></i>
-                <span class="option-text">Panels</span>
-            </div>
-            <team-panel-manager class="container" id="manager" projects="{{projects}}" panel-config="{{panelConfig}}" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}">
+
+        <div id="content" class="content" menu-option="panels" hidden>
+            <team-panel-manager id="manager" projects="{{projects}}" panel-config="{{panelConfig}}" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}">
             </team-panel-manager>
-        </jso-panel>
+        </div>
 
         <div id="content" class="content" menu-option="newdiagnostic,newpanel,panels,home,result">
             <jso-panel hidden collapsible closable movable id="browserPanel" on-hidden="handlePanelHidden">
@@ -240,7 +241,7 @@
                 <div class="header">
                     <i class="fa fa-folder-open-o"></i> Samples
                 </div>
-                <jso-opencga-sample-browser enable-auto-index disable-case-control class="container" id="sampleBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-sample-browser>
+                <jso-opencga-sample-browser enable-auto-index disable-case-control enable-diagnostic class="container" id="sampleBrowser" projects="{{projects}}" bioformats="{{bioformats}}" on-need-refresh="handleUserNeedRefresh"></jso-opencga-sample-browser>
 
             </jso-panel>
 
@@ -313,9 +314,8 @@
         </jso-opencga-header>
 
         <jso-opencga-footer menu-option="home,loging,singup,profile,remember">
-            TEAM: created by Computational Genomics Department
-            <br> Centro de Investigación Principe Felipe
-            <br> 2016
+            TEAM 2016
+            <br> Created by <b>Computational Genomics Department</b> at <b>Centro de Investigación Principe Felipe</b>
         </jso-opencga-footer>
 
     </template>

@@ -142,6 +142,14 @@
                 type: Object,
                 observer: 'valueChange'
             },
+            geneMap:{
+              type: Object,
+              notify:true
+            },
+            geneNames:{
+              type: Array,
+              notify:true
+            }
         },
         ready: function() {
 
@@ -311,6 +319,10 @@
 
                     }
                 }
+            }
+            if (option=="gene") {
+              this.set("geneNames",valueNames.sort());
+              this.set("geneMap", map);
             }
             if (map[value] != null) {
                 this._createGenesChart(map, valueNames.sort(), option);
