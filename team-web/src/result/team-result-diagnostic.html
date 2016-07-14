@@ -213,11 +213,11 @@
             width: 160,
             defaultValue: '.',
             formula: function(row) {
-                var genes=row.gene.split(",");
-                var links=[];
+                var genes = row.gene.split(",");
+                var links = [];
                 for (var i = 0; i < genes.length; i++) {
-                  var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
-                  links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                    var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                    links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
                 }
 
                 return links.join(",");
@@ -317,15 +317,14 @@
                 return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
                     // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
             }
-        // }, {
-        //     name: 'omim',
-        //     title: 'OMIM',
-        //     width: 50,
-        //     formula: function(row) {
-        //         var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
-        //         return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
-        //             // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
-        //     }
+        }, {
+            name: 'omim',
+            title: 'OMIM',
+            width: 50,
+            formula: function(row) {
+                var url = "http://www.omim.org/search/?index=geneMap&start=1&search=" + row.gene + "&limit=10";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/omim-logo.png"/></a>'
+            }
         }, {
             name: 'phenotype',
             title: 'Phenotype',
@@ -391,14 +390,14 @@
             width: 160,
             defaultValue: '.',
             formula: function(row) {
-              var genes=row.gene.split(",");
-              var links=[];
-              for (var i = 0; i < genes.length; i++) {
-                var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
-                links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
-              }
+                var genes = row.gene.split(",");
+                var links = [];
+                for (var i = 0; i < genes.length; i++) {
+                    var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                    links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                }
 
-              return links.join(",");
+                return links.join(",");
             }
         }, {
             name: 'ct',
@@ -494,6 +493,14 @@
                 var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
                 return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
                     // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            }
+        }, {
+            name: 'omim',
+            title: 'OMIM',
+            width: 50,
+            formula: function(row) {
+                var url = "http://www.omim.org/search/?index=geneMap&start=1&search=" + row.gene + "&limit=10";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/omim-logo.png"/></a>'
             }
         }, {
             name: 'clinvar',
