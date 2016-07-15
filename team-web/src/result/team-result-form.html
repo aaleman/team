@@ -84,7 +84,6 @@
         .conserv-elem {
             margin-bottom: 3px;
         }
-
         /*.qual-elem {
             width: 95%;
         }*/
@@ -184,7 +183,7 @@
             --paper-slider-knob-color: #445D76;
             --paper-slider-active-color: #445D76;
             --paper-slider-pin-color: #445D76;
-            --paper-input-container-focus-color:#445D76;
+            --paper-input-container-focus-color: #445D76;
             width: 125%;
         }
 
@@ -320,7 +319,7 @@
                         Quality
                     </div>
                     <div class="container vertical layout">
-                            <label class="jso">QUAL </label>
+                        <label class="jso">QUAL </label>
                         <div class="horizontal layout qual-elem">
                             <div class="jso-select">
                                 <jso-select class="jso" name="qual_op" id="qual_op">
@@ -355,7 +354,7 @@
                 </jso-form-box>
                 <jso-filter-scores id="filterScores" collapsible collapsed enable-cadd></jso-filter-scores>
                 <jso-filter-conservation id="filterConservation" collapsible collapsed></jso-filter-conservation>
-                <jso-filter-consequencetypes id="filterCT" collapsible collapsed></jso-filter-consequencetypes>
+                <jso-filter-consequencetypes id="filterCT" collapsible collapsed data="{{data}}"></jso-filter-consequencetypes>
 
             </div>
         </form>
@@ -620,20 +619,20 @@
                 q["qual_op"] = this.$.qual_op.value;
             }
             if (this.maf1000GP3Value) {
-                    q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
-                    q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
+                q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
+                q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
             }
             if (this.esp6500Value) {
-                    q["esp6500"] = parseFloat(this.esp6500Value);
-                    q["esp6500_op"] = this.$.esp6500_op.value;
+                q["esp6500"] = parseFloat(this.esp6500Value);
+                q["esp6500_op"] = this.$.esp6500_op.value;
             }
             if (this.spanishmafValue) {
-                    q["spanishmaf"] = parseFloat(this.spanishmafValue);
-                    q["spanishmaf_op"] = this.$.spanishmaf_op.value;
+                q["spanishmaf"] = parseFloat(this.spanishmafValue);
+                q["spanishmaf_op"] = this.$.spanishmaf_op.value;
             }
             if (this.mafEXACValue) {
-                    q["mafEXAC"] = parseFloat(this.mafEXACValue);
-                    q["mafEXAC_op"] = this.$.mafEXAC_op.value;
+                q["mafEXAC"] = parseFloat(this.mafEXACValue);
+                q["mafEXAC_op"] = this.$.mafEXAC_op.value;
             }
 
             this.set('query', q);
@@ -828,14 +827,29 @@
                     } else {
                         het++;
                     }
+
+                    // for (var j = 0; j < neo[i].ct.length; j++) {
+                    //     var ct = neo[i].ct[j].split(",");
+                    //     for (var k = 0; k < this.consequenceTypes.length; k++) {
+                    //         if (this.consequenceTypes[k].name == ct[j]) {
+                    //             if (this.consequenceTypes[k].num == null) {
+                    //                 this.consequenceTypes[k].num = 1;
+                    //             } else {
+                    //                 this.consequenceTypes[k].num++;
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
+                // this.set('consequenceTypes',this.consequenceTypes);
+
                 this.numHeterozygous = het;
                 this.numHomozygous = hom;
             }
         },
-        sliderChange: function(e){
-          var id=e.currentTarget.id +"Value";
-          this.set(id, e.currentTarget.value);
+        sliderChange: function(e) {
+            var id = e.currentTarget.id + "Value";
+            this.set(id, e.currentTarget.value);
         },
     });
 </script>

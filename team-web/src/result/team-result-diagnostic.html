@@ -71,6 +71,21 @@
             color: #222;
             font-size: 13px;
         }
+
+        .numFilter {
+            /*padding: 1px 7px;*/
+            background-color: #445D76;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 10px;
+            margin-top: 2px;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            text-align: center;
+        }
     </style>
     <template>
         <div class="title">{{title}}</div>
@@ -213,11 +228,11 @@
             width: 160,
             defaultValue: '.',
             formula: function(row) {
-                var genes=row.gene.split(",");
-                var links=[];
+                var genes = row.gene.split(",");
+                var links = [];
                 for (var i = 0; i < genes.length; i++) {
-                  var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
-                  links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                    var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                    links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
                 }
 
                 return links.join(",");
@@ -243,22 +258,16 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.sift == '.') {
-                    return {
-                        backgroundColor: '#005b99',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.sift <= 0.05) {
-                    return {
-                        backgroundColor: '#b30000',
-                        color: '#fff'
-                    }
-                } else {
-                    return {
-                        backgroundColor: '#008000',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
+                return style;
             },
         }, {
             name: 'polyphen',
@@ -266,22 +275,17 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.polyphen == '.') {
-                    return {
-                        backgroundColor: '#005b99',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.polyphen >= 0.95) {
-                    return {
-                        backgroundColor: '#b30000',
-                        color: '#fff'
-                    }
-                } else {
-                    return {
-                        backgroundColor: '#008000',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
+                return style;
             }
         }, {
             name: 'cadd',
@@ -307,7 +311,11 @@
             name: 'mafEXAC',
             title: 'EXAC',
             width: 50,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+            }
         }, {
             name: 'beacon',
             title: 'Beacon',
@@ -316,6 +324,14 @@
                 var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
                 return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
                     // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            }
+        }, {
+            name: 'omim',
+            title: 'OMIM',
+            width: 50,
+            formula: function(row) {
+                var url = "http://www.omim.org/search/?index=geneMap&start=1&search=" + row.gene + "&limit=10";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/omim-logo.png"/></a>'
             }
         }, {
             name: 'phenotype',
@@ -382,14 +398,14 @@
             width: 160,
             defaultValue: '.',
             formula: function(row) {
-              var genes=row.gene.split(",");
-              var links=[];
-              for (var i = 0; i < genes.length; i++) {
-                var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
-                links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
-              }
+                var genes = row.gene.split(",");
+                var links = [];
+                for (var i = 0; i < genes.length; i++) {
+                    var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                    links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                }
 
-              return links.join(",");
+                return links.join(",");
             }
         }, {
             name: 'ct',
@@ -412,22 +428,16 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.sift == '.') {
-                    return {
-                        backgroundColor: '#005b99',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.sift <= 0.05) {
-                    return {
-                        backgroundColor: '#b30000',
-                        color: '#fff'
-                    }
-                } else {
-                    return {
-                        backgroundColor: '#008000',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
+                return style;
             },
         }, {
             name: 'polyphen',
@@ -435,23 +445,18 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.polyphen == '.') {
-                    return {
-                        backgroundColor: '#005b99',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.polyphen >= 0.95) {
-                    return {
-                        backgroundColor: '#b30000',
-                        color: '#fff'
-                    }
-                } else {
-                    return {
-                        backgroundColor: '#008000',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
-            },
+                return style;
+            }
         }, {
             name: 'cadd',
             title: 'CADD',
@@ -476,7 +481,11 @@
             name: 'mafEXAC',
             title: 'EXAC',
             width: 50,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+            }
         }, {
             name: 'beacon',
             title: 'Beacon',
@@ -485,6 +494,14 @@
                 var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
                 return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
                     // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            }
+        }, {
+            name: 'omim',
+            title: 'OMIM',
+            width: 50,
+            formula: function(row) {
+                var url = "http://www.omim.org/search/?index=geneMap&start=1&search=" + row.gene + "&limit=10";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/omim-logo.png"/></a>'
             }
         }, {
             name: 'clinvar',
