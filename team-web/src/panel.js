@@ -512,7 +512,7 @@ PanelConfig.prototype = {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', url, true);
         // xhr.setRequestHeader("Content-Type", "text/plain");
-        // xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.onload = function (e) {
             console.log(JSON.parse(this.response));
