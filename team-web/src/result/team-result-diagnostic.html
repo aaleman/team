@@ -71,6 +71,21 @@
             color: #222;
             font-size: 13px;
         }
+
+        .numFilter {
+            /*padding: 1px 7px;*/
+            background-color: #445D76;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 10px;
+            margin-top: 2px;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            text-align: center;
+        }
     </style>
     <template>
         <div class="title">{{title}}</div>
@@ -243,22 +258,16 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.sift == '.') {
-                    return {
-                        backgroundColor: '#005b99',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.sift <= 0.05) {
-                    return {
-                        backgroundColor: '#b30000',
-                        color: '#fff'
-                    }
-                } else {
-                    return {
-                        backgroundColor: '#008000',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
+                return style;
             },
         }, {
             name: 'polyphen',
@@ -266,22 +275,17 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.polyphen == '.') {
-                    return {
-                        backgroundColor: '#005b99',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.polyphen >= 0.95) {
-                    return {
-                        backgroundColor: '#b30000',
-                        color: '#fff'
-                    }
-                } else {
-                    return {
-                        backgroundColor: '#008000',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
+                return style;
             }
         }, {
             name: 'cadd',
@@ -307,7 +311,11 @@
             name: 'mafEXAC',
             title: 'EXAC',
             width: 50,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+            }
         }, {
             name: 'beacon',
             title: 'Beacon',
@@ -420,22 +428,16 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.sift == '.') {
-                    return {
-                        backgroundColor: '#005b99',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.sift <= 0.05) {
-                    return {
-                        backgroundColor: '#b30000',
-                        color: '#fff'
-                    }
-                } else {
-                    return {
-                        backgroundColor: '#008000',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
+                return style;
             },
         }, {
             name: 'polyphen',
@@ -443,23 +445,18 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.polyphen == '.') {
-                    return {
-                        backgroundColor: '#005b99',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.polyphen >= 0.95) {
-                    return {
-                        backgroundColor: '#b30000',
-                        color: '#fff'
-                    }
-                } else {
-                    return {
-                        backgroundColor: '#008000',
-                        color: '#fff'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
-            },
+                return style;
+            }
         }, {
             name: 'cadd',
             title: 'CADD',
@@ -484,7 +481,11 @@
             name: 'mafEXAC',
             title: 'EXAC',
             width: 50,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+            }
         }, {
             name: 'beacon',
             title: 'Beacon',
