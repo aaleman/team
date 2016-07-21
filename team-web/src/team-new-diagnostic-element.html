@@ -294,7 +294,7 @@
             var me = this;
             this.selectedSamples = this._getSelectedSamples();
             if (this.selectedSamples == null) {
-                this.errorMessageFile = "No sample/s selected or sample/s status are not READY or sample/s suspicious diagnostic is not defined."
+                this.errorMessageFile = "No sample/s selected or sample/s status are not READY or sample/s suspected diagnosis is not defined."
             }
             if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
@@ -475,7 +475,7 @@
                                 if (response.response[0].result[0] != null) {
                                     var sample = response.response[0].result[0];
                                     if (sample.description == "") {
-                                        alert('All selected samples must have suspicious diagnostic');
+                                        alert('All selected samples must have suspected diagnosis');
                                     } else {
                                         samplesArray.push(sample);
                                     }
