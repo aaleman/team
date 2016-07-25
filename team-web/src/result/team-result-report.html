@@ -273,7 +273,7 @@
                         Conclusions
                     </div>
                     <ul>
-                    <textarea class="conclusions"></textarea>
+                        <textarea class="conclusions"></textarea>
                         <div id="divConclusions" hidden><i>{{divConclusions}}</i></div>
                     </ul>
                 </div>
@@ -325,13 +325,13 @@
                         <br>
                         <div><b>Variants found for each gene in panel used:</b></div>
                         <ul>
-                          <div>
-                            <template is="dom-repeat" items="{{geneList}}">
-                                <span>{{item.gene}}
+                            <div>
+                                <template is="dom-repeat" items="{{geneList}}">
+                                    <span>{{item.gene}}
                                     <span>:&nbsp;<b>{{item.value}}</b></span>
-                                </span>
-                            </template>
-                          </div>
+                                    </span>
+                                </template>
+                            </div>
                         </ul>
                     </ul>
                 </div>
@@ -695,8 +695,51 @@
                 type: 'select',
                 options: ["clinvar", "gwas"],
             }];
+            if (localStorage.bioinfo_team_diseases != null) {
+                this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
+            }else{
+              $.ajax({
+                  url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                  dataType: 'json',
+                  async: false,
+                  success: function(response, textStatus, jqXHR) {
+                      try {
+                          var data = response.response;
+                          var clinvar = data[0].result;
+                          var gwas = data[1].result;
 
-            this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
+                          var diseases = [];
+
+                          //                            for (var i = 0; i < 100; i++) {
+                          for (var i = 0; i < clinvar.length; i++) {
+                              var dis = clinvar[i];
+                              dis.source = "clinvar";
+                              diseases.push(dis);
+                          }
+                          //                            for (var i = 0; i < 100; i++) {
+                          for (var i = 0; i < gwas.length; i++) {
+                              var dis = gwas[i];
+                              dis.source = "gwas";
+                              diseases.push(dis);
+                          }
+
+                          diseases.sort(function(a, b) {
+                              return a.phenotype.localeCompare(b.phenotype);
+                          });
+
+                          if (diseases.length > 0) {
+                              me.allDiseasesData = diseases;
+                              localStorage.bioinfo_team_diseases = JSON.stringify(diseases);
+                          }
+
+                      } catch (e) {
+
+                      }
+
+                  }
+              });
+
+            }
 
         },
 
