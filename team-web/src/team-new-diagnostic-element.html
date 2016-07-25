@@ -119,7 +119,7 @@
                 </div>
                 <div class="step" style="height:100%;">
                     <div class="horizontal layout" style="height:100%;padding:20px;box-sizing:border-box;">
-                        <div id="panelSelector" style="width:300px;box-sizing:border-box;padding-right:15px;">
+                        <div id="panelSelector" style="width:300px;height:100%;box-sizing:border-box;padding-right:15px;">
                             <div class="t1"><i class="fa fa-list"></i> &nbsp; User Panel List</div>
                             <jso-select-box id="newDiagnosticPanels" options="{{jobsPanels}}" data-panels="{{jobsPanels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
 
@@ -137,7 +137,7 @@
                             </div>
                         </div>
 
-                        <div id="panelPreview" style="width:calc(100% - 300px);">
+                        <div id="panelPreview" style="width:calc(100% - 300px);height:100%">
                             <div class="t1"><i class="fa fa-eye"></i> &nbsp; Panel Preview</div>
                             <team-panel-preview id="newDiagnosticPanelPreview" data-panel="{{selectedPanel}}" selected-panel="{{selectedPanel}}">
                             </team-panel-preview>

@@ -106,7 +106,7 @@
         </div>
 
         <div id="tools">
-            <jso-variant-overview id="overview"></jso-variant-overview>
+            <jso-variant-overview id="overview" hidden$="{{!computeView(view, 'overview')}}"></jso-variant-overview>
             <div id="comments" hidden$="{{!computeView(view, 'comments')}}">
                 <div style="margin-top: 10px">
                     <textarea id="commentsTextArea" class="jso commentsTextArea" placeholder="Comments..."></textarea>
