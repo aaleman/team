@@ -71,9 +71,21 @@
             color: #222;
             font-size: 13px;
         }
-        /*jso-table::shadow .beaconlink a:link, jso-table::shadow .beaconlink a:visited{
-          color:#225e71;
-        }*/
+
+        .numFilter {
+            /*padding: 1px 7px;*/
+            background-color: #445D76;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 10px;
+            margin-top: 2px;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            text-align: center;
+        }
     </style>
     <template>
         <div class="title">{{title}}</div>
@@ -94,18 +106,15 @@
         </div>
 
         <div id="tools">
-            <div hidden$="{{!computeView(view, 'overview')}}">
-                <div id="overview">
-                </div>
-                <div style="font-style:italic">{{overviewComent}}</div>
-            </div>
+            <jso-variant-overview id="overview" hidden$="{{!computeView(view, 'overview')}}"></jso-variant-overview>
             <div id="comments" hidden$="{{!computeView(view, 'comments')}}">
                 <div style="margin-top: 10px">
                     <textarea id="commentsTextArea" class="jso commentsTextArea" placeholder="Comments..."></textarea>
                 </div>
             </div>
             <jso-variant-frequencies-grid id="frequency" hidden$="{{!computeView(view, 'frequency')}}"></jso-variant-frequencies-grid>
-            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}"></jso-genome-viewer-element>
+            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}" on-hidden="handleGenomeViewerHidden"></jso-genome-viewer-element>
+            <br>
         </div>
     </template>
 </dom-module>
@@ -157,6 +166,9 @@
             typeData: {
                 type: String,
                 value: ""
+            },
+            _lastSelectedRow: {
+                type: Object
             }
         },
         _columnsDiag: [{
@@ -183,7 +195,11 @@
             name: 'id',
             title: 'SNP Id',
             width: 80,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
+                return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
+            },
         }, {
             name: 'qual',
             title: 'Qual',
@@ -206,7 +222,17 @@
             name: 'gene',
             title: 'Gene',
             width: 160,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var genes = row.gene.split(",");
+                var links = [];
+                for (var i = 0; i < genes.length; i++) {
+                    var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                    links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                }
+
+                return links.join(",");
+            }
         }, {
             name: 'ct',
             title: 'Conseq. Type',
@@ -228,19 +254,16 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.sift == '.') {
-                    return {
-                        color: '#005b99'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.sift <= 0.05) {
-                    return {
-                        color: '#b30000'
-                    }
-                } else {
-                    return {
-                        color: '#008000'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
+                return style;
             },
         }, {
             name: 'polyphen',
@@ -248,25 +271,18 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
-                    if (row.polyphen == '.') {
-                        return {
-                            color: '#005b99'
-                        }
-                    } else if (row.polyphen >= 0.95) {
-                        return {
-                            color: '#b30000'
-                        }
-                    } else {
-                        return {
-                            color: '#008000'
-                        }
-                    }
+
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
+                if (row.polyphen == '.') {
+                    style.backgroundColor = '#76afd5';
+                } else if (row.polyphen >= 0.95) {
+                    style.backgroundColor = '#f47070';
                 }
-                // }, {
-                //     name: 'maf1000G',
-                //     title: 'MAF 1000G Phase 1',
-                //     width: 50,
-                //     defaultValue: '.'
+                return style;
+            }
         }, {
             name: 'cadd',
             title: 'CADD',
@@ -291,7 +307,28 @@
             name: 'mafEXAC',
             title: 'EXAC',
             width: 50,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+            }
+        }, {
+            name: 'beacon',
+            title: 'Beacon',
+            width: 50,
+            formula: function(row) {
+                var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
+                    // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            }
+        }, {
+            name: 'omim',
+            title: 'OMIM',
+            width: 50,
+            formula: function(row) {
+                var url = "http://www.omim.org/search/?index=geneMap&start=1&search=" + row.gene + "&limit=10";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/omim-logo.png"/></a>'
+            }
         }, {
             name: 'phenotype',
             title: 'Phenotype',
@@ -328,7 +365,11 @@
             name: 'id',
             title: 'SNP Id',
             width: 50,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
+                return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
+            },
         }, {
             name: 'qual',
             title: 'Qual',
@@ -351,7 +392,17 @@
             name: 'gene',
             title: 'Gene',
             width: 160,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var genes = row.gene.split(",");
+                var links = [];
+                for (var i = 0; i < genes.length; i++) {
+                    var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                    links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                }
+
+                return links.join(",");
+            }
         }, {
             name: 'ct',
             title: 'Conseq. Type',
@@ -373,50 +424,35 @@
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.sift == '.') {
-                    return {
-                        color: '#005b99'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.sift <= 0.05) {
-                    return {
-                        color: '#b30000'
-                    }
-                } else {
-                    return {
-                        color: '#008000'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
+                return style;
             },
-            // classFormula: function(row){
-            //   if(row.ref == "C"){
-            //     return "mi_clase";
-            //   }
-            // }
         }, {
             name: 'polyphen',
             title: 'Polyphen',
             width: 50,
             defaultValue: '.',
             styleFormula: function(row) {
+
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
                 if (row.polyphen == '.') {
-                    return {
-                        color: '#005b99'
-                    }
+                    style.backgroundColor = '#76afd5';
                 } else if (row.polyphen >= 0.95) {
-                    return {
-                        color: '#b30000'
-                    }
-                } else {
-                    return {
-                        color: '#008000'
-                    }
+                    style.backgroundColor = '#f47070';
                 }
-            },
-            // }, {
-            //     name: 'maf1000G',
-            //     title: 'MAF 1000G Phase 1',
-            //     width: 50,
-            //     defaultValue: '.'
+                return style;
+            }
         }, {
             name: 'cadd',
             title: 'CADD',
@@ -441,20 +477,29 @@
             name: 'mafEXAC',
             title: 'EXAC',
             width: 50,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+            }
         }, {
-          name: 'beacon',
-          title: 'Beacon',
-          width: 50,
-          formula: function(row) {
-            var url="https://beacon-network.org/#/search?allele=G&chrom="+row.chr+"&pos="+row.pos+"&ref="+row.ref+"&rs=GRCh37";
-            return '<a href="'+url+'" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
-            // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
-          },
-          classFormula: function(row){
-            return 'beaconlink';
-          }
-        },{
+            name: 'beacon',
+            title: 'Beacon',
+            width: 50,
+            formula: function(row) {
+                var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
+                    // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            }
+        }, {
+            name: 'omim',
+            title: 'OMIM',
+            width: 50,
+            formula: function(row) {
+                var url = "http://www.omim.org/search/?index=geneMap&start=1&search=" + row.gene + "&limit=10";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/omim-logo.png"/></a>'
+            }
+        }, {
             name: 'clinvar',
             title: 'Clinvar',
             width: 100,
@@ -472,29 +517,40 @@
         }],
 
         ready: function() {
+            var me = this;
             if (this.typeData == "diagnostic") {
                 this.$.table.columns = this._columnsDiag;
             } else if (this.typeData == "secondary") {
                 this.$.table.columns = this._columnsSec;
             }
-            var me = this;
-            this.async(function() {
-                this.$.gv.createGenomeViewer();
-                var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
-                this.$.gv.genomeViewer.draw();
 
-                this.genomeViewer = this.$.gv.genomeViewer;
-            });
+        },
+        handleGenomeViewerHidden: function() {
+            if (this.$.gv.hidden == false && this.$.gv.genomeViewer == null) {
+                this.async(function() {
+                    var region;
+                    if (this._lastSelectedRow != null) {
+                        var row = this._lastSelectedRow;
+                        var reg = row.chr + ":" + row.pos + "-" + row.pos;
+                        region = new Region(reg);
+                    }
+                    this.$.gv.createGenomeViewer(null, region);
+                    this.$.gv.genomeViewer.draw();
+                    this.genomeViewer = this.$.gv.genomeViewer;
+                }, 10);
+            } else {
+                if (this.$.gv.genomeViewer != null) {
+                    this.$.gv.genomeViewer.destroy();
+                    this.$.gv.genomeViewer = null;
+                }
+            }
         },
         handleRowClick: function(e) {
             var row = e.detail.row;
             this._rowSelected(row);
         },
         _rowSelected: function(row) {
-            var reg = row.chr + ":" + row.pos + "-" + row.pos;
-            var region = new Region(reg);
-
-            this.$.gv.genomeViewer.setRegion(region);
+            this.set('_lastSelectedRow', row);
 
             var rowFreq = {
                 chromosome: row.chr,
@@ -503,9 +559,7 @@
                 alternate: row.alt
             };
             this.$.frequency.row = rowFreq;
-            this.view = 'overview';
-            this.overviewComent = "Graphic weighted between zero and one"
-            this._createPolarChart(row);
+            this.$.overview.row = rowFreq;
         },
         dataChanged: function(neo, old) {
             var _data = [];
@@ -521,7 +575,6 @@
                 this._rowSelected(this._data[0]);
             } else {
                 this.$.overview.hidden = true;
-                this.overviewComent = "No data found";
             }
 
         },
@@ -716,68 +769,6 @@
                 neo.setAttribute('selected', '');
                 this.$[neo.dataset.option].removeAttribute('hidden');
             }
-        },
-        _parseFloat: function(data) {
-            var aux = parseFloat(data);
-            aux = isNaN(aux) ? null : aux;
-            return aux;
-        },
-        _createPolarChart: function(row) {
-            var phylop = Math.abs(row.phylop);
-            if (phylop > 1) {
-                phylop = 1 / phylop;
-            }
-            var phastcons = Math.abs(row.phastcons);
-            if (phastcons > 1) {
-                phastcons = 1 / phastcons;
-            }
-            var cadd = Math.abs(row.cadd);
-            if (cadd > 1) {
-                cadd = 1 / cadd;
-            }
-
-            var chart = new Highcharts.Chart({
-                chart: {
-                    polar: true,
-                    type: 'line',
-                    renderTo: this.$.overview,
-                    width: 510,
-                    height: 300
-
-                },
-                credits: {
-                    enabled: false
-                },
-                legend: {
-                    enabled: false
-                },
-                title: {
-                    text: row.gene,
-                    x: -80
-                },
-                xAxis: {
-                    categories: ['Sift', 'Polyphen', 'Phylop', 'Phastcons', 'CADD'],
-                    tickmarkPlacement: 'on',
-                    lineWidth: 1
-                },
-
-                yAxis: {
-                    gridLineInterpolation: 'polygon',
-                    lineWidth: 0,
-                    min: 0,
-                    max: 1
-                },
-
-                series: [{
-                    type: 'area',
-                    name: row.gene,
-                    data: [this._parseFloat(row.sift), 1 - this._parseFloat(row.polyphen), this._parseFloat(phylop),
-                        this._parseFloat(phastcons), this._parseFloat(cadd)
-                    ],
-                    pointPlacement: 'on'
-                }]
-
-            });
         },
         filterDataChanged: function(neo, old) {
             this.set('filterData', neo);

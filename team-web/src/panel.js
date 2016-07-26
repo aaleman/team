@@ -33,6 +33,7 @@ Panel.prototype = {
             if (!this.containsDisease(disease)) {
                 delete disease._filtered;
                 this.polymer.push('formData.diseases', disease);
+                // this._emit("add-disease", disease);
 
                 if (disease.associatedGenes && disease.associatedGenes.length > 0) {
                     for (var j = 0; j < disease.associatedGenes.length; j++) {
@@ -49,7 +50,7 @@ Panel.prototype = {
                         species: 'hsapiens',
                         category: 'feature',
                         subCategory: 'clinical',
-                        resource: 'all',
+                        resource: 'search',
                         async: false,
                         params: {
                             source: 'clinvar',
@@ -185,7 +186,7 @@ Panel.prototype = {
                     species: 'hsapiens',
                     category: 'feature',
                     subCategory: 'clinical',
-                    resource: 'all',
+                    resource: 'search',
                     async: false,
                     params: {
                         source: 'clinvar',
@@ -261,19 +262,26 @@ Panel.prototype = {
         this._incModCount();
     },
     addGene: function (gene) {
+
+        var panelGenes = [];
+
+        for (var i = 0; i < this.genes.length; i++) {
+            panelGenes.push(this.genes[i]);
+        }
+        var auxGene = this.containsGene(gene);
+
         // console.log("add gene:" + JSON.stringify(gene));
-        console.log("gene");
-        // var auxGene = this.containsGene(gene);
-        var auxGene = null;
 
         if (auxGene) {
             auxGene.count++;
-            this.polymer.notifyPath('formData.genes', this.genes);
         } else {
             gene.count = 1;
-            this.polymer.push('formData.genes', gene);
+            panelGenes.push(gene);
         }
         this._incModCount();
+        this.polymer.set('formData.genes', panelGenes);
+        this.polymer.$.geneTable.set("data", this.polymer.formData.genes);
+
     },
     addAllGenes: function (genes) {
         var panelGenes = [];
@@ -294,7 +302,7 @@ Panel.prototype = {
             }
             this._incModCount();
         }
-        this.polymer.set('formData.genes', panelGenes);
+        return panelGenes;
     },
     containsGene: function (gene) {
         for (var i = 0; i < this.genes.length; i++) {
@@ -306,10 +314,22 @@ Panel.prototype = {
         return null;
     },
     addMutation: function (mutation) {
-        if (!this.containsMutation(mutation)) {
-            this.polymer.push('formData.mutations', mutation);
-            this._incModCount();
-        }
+      var panelMutations = [];
+
+      for (var i = 0; i < this.mutations.length; i++) {
+          panelMutations.push(this.mutations[i]);
+      }
+      var auxMutation = this.containsMutation(mutation);
+
+      if (auxMutation) {
+          auxMutation.count++;
+      } else {
+          mutation.count = 1;
+          panelMutations.push(mutation);
+      }
+      this._incModCount();
+      this.polymer.push('formData.mutations', mutation);
+      this.polymer.$.mutationTable.set("data", this.polymer.formData.mutations);
     },
     containsMutation: function (mutation) {
         // var mutName = mutation.chr + "_" + mutation.pos + "_" + mutation.ref + "_" + mutation.alt + "_" + mutation.phe + "_" + mutation.src;
@@ -363,6 +383,7 @@ Panel.prototype = {
             }
         }
         this.polymer.set('formData.mutations', mutations);
+
     },
     removeGene: function (gene) {
         var index = -1;
@@ -494,7 +515,7 @@ PanelConfig.prototype = {
         xhr.setRequestHeader("Content-Type", "application/json");
 
         xhr.onload = function (e) {
-            console.log(JSON.parse(e.srcElement.response));
+            console.log(JSON.parse(this.response));
         };
         xhr.send(JSON.stringify(data));
 

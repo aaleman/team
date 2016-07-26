@@ -29,27 +29,6 @@
             margin: 5px;
             width: 270px;
         }
-        /*
-        #menu {
-            margin-top: 15px;
-        }
-
-        #menu > div {
-            font-size: 17px;
-            padding: 5px 5px;
-            margin: 0 20px;
-            border-bottom: 2px solid transparent;
-            transition: all 0.1s;
-            cursor: pointer;
-        }
-
-        #menu > div:hover {
-            border-bottom-color: rgba(125, 125, 125, 0.4);
-        }
-
-        #menu > div[selected] {
-            border-bottom-color: rgba(125, 125, 125, 0.7);
-        }*/
 
         team-result-diagnostic {
             height: 400px;
@@ -63,7 +42,7 @@
             margin: 10px;
         }
 
-        .tabs {
+        .tab {
             height: 20px;
             line-height: 20px;
             font-size: 14px;
@@ -75,7 +54,7 @@
             cursor: pointer;
         }
 
-        .tabs[data-checked] {
+        .tab[data-checked] {
             background-color: #fff;
             border-top-left-radius: 7px;
             border-top-right-radius: 7px;
@@ -85,7 +64,7 @@
             box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.1);
         }
 
-        .tabs:hover {
+        .tab:hover {
             /*background-color: #eee;*/
             /*border-radius: 7px;*/
             color: #8ba7a7;
@@ -109,23 +88,23 @@
         <div class="vertical layout flex">
             <div id="submenu" class="horizontal layout">
 
-                <div class="tabs" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
+                <div class="tab" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
                     Overview
                 </div>
-                <div class="tabs" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
+                <div class="tab" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
                     Diagnostic
                 </div>
-                <div class="tabs" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
+                <div class="tab" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
                     Secondary Findings
                 </div>
-                <div class="tabs" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
+                <div class="tab" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
                     Report
                 </div>
-                <div class="tabs flex" style="cursor:default">
+                <div class="tab flex" style="cursor:default">
 
                 </div>
             </div>
-            <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
+            <team-result-overview id="ower" job="{{job}}" gene-map="{{geneMap}}" gene-names="{{geneNames}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'diagnostic')}}">
                 <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic" type-data="diagnostic"></team-result-diagnostic>
@@ -141,7 +120,7 @@
             </div>
 
             <div hidden$="{{!computeView(view, 'report')}}" id="result">
-                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}" panel-config="{{panelConfig}}"></team-result-report>
+                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}" panel-config="{{panelConfig}}" gene-map="{{geneMap}}" gene-names="{{geneNames}}"></team-result-report>
 
             </div>
 
@@ -219,13 +198,22 @@
                         return {};
                     },
                     notify: true
+                },
+                geneMap:{
+                  type: Object,
+                  observer:"geneMapChange"
+                },
+                geneNames:{
+                  type: Array,
+                    observer:"geneNamesChange"
                 }
             },
             created: function() {},
             ready: function() {
 
             },
-
+            geneMapChange:function(neo,old){},
+            geneNamesChange:function(neo,old){},
             jobChanged: function(neo, old) {
                 this.set('jobId', neo.id);
                 this.view = 'overview';

@@ -28,17 +28,6 @@
             font-weight: bold;
         }
 
-        .description {
-            font-size: 18px;
-            color: #445D76;
-            margin-left: 20px;
-        }
-
-        #stadistics {
-            font-size: 14px;
-            color: #737373;
-        }
-
         .numbers {
             color: black;
             text-align: right;
@@ -63,14 +52,8 @@
             background-color: #F1F3F5;
         }
 
-        .title {
-            font-size: 13px;
-            font-weight: bolder;
-        }
-
         .exportBut {
             width: 200px;
-            /*margin: 0 auto;*/
             margin-top: 10px;
             color: #445D76;
             font-weight: bold;
@@ -85,17 +68,9 @@
         }
 
         .colum {
-            /*text-overflow: ellipsis;*/
-            /*white-space: nowrap;*/
-            /*overflow: hidden;*/
             word-wrap: break-word;
             max-width: 170px;
             max-height: 50px!important;
-        }
-
-        .reportPanelInfo {
-            margin: 5px;
-            width: 90%;
         }
 
         div {
@@ -108,7 +83,7 @@
         }
 
         .titlePreview {
-            font-size: 20px;
+            font-size: 18px;
             color: #445D76;
             margin-top: 5px;
             margin-bottom: 5px;
@@ -116,25 +91,19 @@
             padding: 2px;
         }
 
-        #aditional {
-            /*margin-left: 20px;*/
-        }
-
         #aditional input {
-            width: 200px;
+            width: 80%;
+            border: 1px solid #ccc;
+            padding-left: 5px;
         }
 
-        .infoPatient {
-            display: inline-block;
-            width: 200px;
-            height: 15px;
-            border: 1px solid #dadada;
-            padding: 1px 0 1px 0;
-        }
-
-        .commment {
-            font-style: italic;
-            margin: 5px;
+        @media print {
+            @page {
+                margin-top: 20px;
+            }
+            body {
+                margin: 1.6cm;
+            }
         }
     </style>
     <template>
@@ -143,179 +112,227 @@
                 <div class="titlePreview">Select to Show</div>
                 <ul>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="stadistics" checked> Generic Data</div>
+                        <input on-click="showInReport" type="checkbox" value="aditional" checked> Patient data</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="values" checked> Static Filter Resume Table</div>
+                        <input on-click="showInReport" type="checkbox" value="stadistics" checked> Generic data</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="customFilters" checked> Custom Filter Resume Table</div>
+                        <input on-click="showInReport" type="checkbox" value="values" checked> Static filter resume</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="aditional" checked> Aditional Patient Data</div>
+                        <input on-click="showInReport" type="checkbox" value="customFilters" checked> Custom filter resume</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="reportConclusions"> Editable Conslusions</div>
+                        <input on-click="showInReport" type="checkbox" value="reportConclusions"> Editable conslusions</div>
                     <div class="">
-                        <input id="diagCheck" on-click="showInReport" type="checkbox" value="diagResult" checked> Diagnostic Table</div>
+                        <input id="diagCheck" on-click="showInReport" type="checkbox" value="diagResult" checked> Diagnostic table</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="mostPathogenicResult"> Most Pathogenic Table</div>
+                        <input on-click="showInReport" type="checkbox" value="mostPathogenicResult"> Most pathogenic table</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="secResult"> Secondary Findinds (with last custom filter used)</div>
+                        <input on-click="showInReport" type="checkbox" value="secResult"> Secondary findinds (with last custom filter used)</div>
                     <div class="">
-                        <input on-click="showInReport" type="checkbox" value="anexI" checked> Annex I: Static Filters (decision umbrals)</div>
-                    <div class="">
-                        <input id="panelsInfoAnexII" on-click="showInReport" type="checkbox" value="anexII"> Annex II: Panels</div>
-                    <ul id="panelsInfo">
-                        <div class="">
-                            <input on-click="showInReport" type="checkbox" value="diseases"> Diseases</div>
-                        <div class="">
-                            <input on-click="showInReport" type="checkbox" value="genes"> Genes</div>
-                        <div class="">
-                            <input on-click="showInReport" type="checkbox" value="mutations"> Mutations</div>
-                    </ul>
+                        <input id="panelsInfoAnexII" on-click="showInReport" type="checkbox" value="anexII" checked> Panel used</div>
                 </ul>
                 <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export to PDF/Print</div>
+                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleSaveReport" title="Save report for this Job"><i class="fa fa-floppy-o"></i>&nbsp; Save report</div>
             </div>
 
             <div id="report">
                 <div class="">
-                    <img style="margin:3px;height:35px;" src="../images/bier-text.svg" />
-                    <span class="flex jobName">{{job.name}}</span>
-                </div>
-                <div class="description">{{job.description}}</div>
-                <div class="">
-                    <span id="aditional">
-                        <!-- <span>Patient Suspicious Diagnostic: </span>
-                        <span id="suspDiag" >{{suspDiag}}</span> -->
-                        <span>Patient Diagnostic:
-                            <input type="text">
-                            <!-- <jso-tooltip icon="arrow-circle-down"></jso-tooltip> -->
-                            <span id="confDiag" class="infoPatient" hidden>{{confDiag}}</span>
-                        </span>
-                    </span>
-                    <table id="stadistics">
-                        <tr>
-                            <td> Total Variants </td>
-                            <td class="numbers"> {{totalData}} </td>
-                        </tr>
-                        <tr>
-                            <td> Diagnostic Variants </td>
-                            <td class="numbers"> {{diagData.length}} </td>
-                        </tr>
-                        <tr>
-                            <td> Secondary Variants </td>
-                            <td class="numbers"> {{secData.length}} </td>
-                        </tr>
-                    </table>
-                </div>
-                <div>
-                    <table id="values">
-                        <tr>
-                            <th class="title">Static Filters
-                            </th>
-                            <th class="title">Variants Found
-                            </th>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-filter" style="color:#b30000"></i> A: Most Likely Pathogenic </td>
-                            <td class="numbers">{{value.mlp}}</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-filter" style="color:#ff751a"></i> B: Potentially Pathogenic </td>
-                            <td class="numbers">{{value.pp}}</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-filter" style="color:#005b99"></i> C: Unkown Significance </td>
-                            <td class="numbers">{{value.us}}</td>
-                        </tr>
-                        <tr>
-
-                            <td><i class="fa fa-filter" style="color:#008000"></i> D: Likely Benign </td>
-                            <td class="numbers">{{value.lb}}</td>
-                        </tr>
-                    </table>
-                </div>
-                <div>
-                    <table id="customFilters">
-                        <tr>
-                            <th class="title"> Custom Filter Used </th>
-                            <th class="title"> Variants Found</th>
-                        </tr>
-                        <tr>
-                            <td class="numbers">{{filter}}</td>
-                            <td class="numbers">{{filterData.length}}</td>
-                        </tr>
-                    </table>
-                </div>
-                <div id="reportConclusions" style="margin-top: 10px" hidden>
-                    <div>Conclusions:
-                        <textarea class="conclusions"></textarea>
-                        <div id="divConclusions" class="conclusions" hidden>{{divConclusions}}</div>
+                    <div class="horizontal layout">
+                        <img style="margin:3px;height:35px;" src="../../images/bier-text.svg" />
+                        <div class="flex jobName">Team report</div>
+                        <div style="end-justify;color:#888; margin-right:15px;"><i>Cellbase&nbsp;
+                            <span>{{cellbaseVersion}}</span></i>
+                        </div>
+                        <div style="end-justify">&nbsp;
+                            <span>{{requestDate}}</span>
+                        </div>
                     </div>
                 </div>
+                <br>
+                <div>Job name: &nbsp;
+                    <span><b>{{job.name}}</b></span></div>
+                <div>Job description: &nbsp;
+                    <span><i>{{job.description}}</i></span></div>
+                <br>
+                <div class="" id="aditional">
+                    <div class="titlePreview">
+                        Patient data
+                    </div>
+                    <ul>
+                        <div>
+                            Patient ID:&nbsp;
+                            <b><input type="text" data-name="patientID">
+                            <span id="patientID" hidden>{{patientID}}</span></b>
+                        </div>
+                        <div>
+                            Instrument:&nbsp;
+                            <b><input type="text" data-name="instrument">
+                            <span id="instrument" hidden>{{instrument}}</span></b>
+                        </div>
+                        <div>
+                            Analyzed by:&nbsp;
+                            <b><input type="text" data-name="analyzedBy">
+                            <span id="analyzedBy" hidden>{{analyzedBy}}</span></b>
+                        </div>
+                        <div>
+                            Sample Origin:&nbsp;
+                            <b><input type="text" data-name="sampleOrigin">
+                            <span id="sampleOrigin" hidden>{{sampleOrigin}}</span></b>
+                        </div>
+                        <div>
+                            Patient Suspected Diagnosis:&nbsp;
+                            <b><span id="suspDiag">{{suspDiag}}</span></b>
+                        </div>
+                        <div>
+                            Patient Diagnosis:&nbsp;
+                            <!-- <input type="text" data-name="confDiag"> -->
+                            <b><input list="dataListPheVCF" data-name="confDiag">
+                            <datalist id="dataListPheVCF">
+                                <template is="dom-repeat" items="{{allDiseasesData}}">
+                                    <option value="{{item.phenotype}}">{{item.phenotype}}</option>
+                                </template>
+                            </datalist>
+                            <!-- <jso-tooltip icon="arrow-circle-down"></jso-tooltip> -->
+                            <span id="confDiag" hidden>{{confDiag}}</span></b>
+                        </div>
+                    </ul>
+                </div>
+                <br>
+                <div id="stadistics">
+                    <div class="titlePreview">
+                        Generic data
+                    </div>
+                    <ul>
+                        <div>Total Variants: &nbsp;
+                            <span><b>{{totalData}}</b></span></div>
+                        <div>Diagnostic Variants: &nbsp;
+                            <span><b>{{diagData.length}}</b></span></div>
+                        <div>Secondary Variants: &nbsp;
+                            <span><b>{{secData.length}}</b></span></div>
+                    </ul>
+                </div>
+                <br>
+                <div id="values">
+                    <div class="titlePreview">
+                        Static filter resume
+                    </div>
+                    <ul>
+                        <b>
+                            Variants found with static filters:
+                        </b>
+                        <ul>
+                            <div>A: Most Likely Pathogenic: &nbsp;
+                                <span><b>{{value.mlp}}</b></span>
+                            </div>
+                            <div>B: Potentially Pathogenic: &nbsp;
+                                <span><b>{{value.pp}}</b></span>
+                            </div>
+                            <div>C: Unkown Significance: &nbsp;
+                                <span><b>{{value.us}}</b></span>
+                            </div>
+                            <div>D: Likely Benign: &nbsp;
+                                <span><b>{{value.lb}}</b></span>
+                            </div>
+                        </ul>
+                        <br>
+                        <b>
+                            Static filters description:
+                        </b>
+                        <ul>
+                            <div>A: Most Likely Pathogenic: &nbsp;
+                                <span><i>Sift least than <b>0.05</b> and Polyphen bigger than <b>0.95</b></i></span>
+                            </div>
+                            <div>B: Potentially Pathogenic: &nbsp;
+                                <span><i>At least one condition is met</i></span>
+                            </div>
+                            <div>C: Unkown Significance: &nbsp;
+                                <span><i>Missing Values</i></span>
+                            </div>
+                            <div>D: Likely Benign: &nbsp;
+                                <span><i>Else</i></span>
+                            </div>
+                        </ul>
+                    </ul>
+                </div>
+                <br>
+                <div id="customFilters">
+                    <div class="titlePreview">
+                        Custom filter resume
+                    </div>
+                    <ul>
+                        <div>Variants Found: &nbsp;
+                            <span><b>{{filterData.length}}</b></span>
+                        </div>
+                        <div>Custom Filter Used: &nbsp;
+                            <span><i>{{filter}}</i></span>
+                        </div>
+                    </ul>
+                </div>
+                <br>
+                <div id="reportConclusions" style="margin-top: 10px" hidden>
+                    <div class="titlePreview">
+                        Conclusions
+                    </div>
+                    <ul>
+                        <textarea class="conclusions"></textarea>
+                        <div id="divConclusions" hidden><i>{{divConclusions}}</i></div>
+                    </ul>
+                </div>
+                <br>
                 <div id="diagResult">
-                    <div class="title">
+                    <div class="titlePreview">
                         Diagnostic Table
                     </div>
                     <ul>
-                        <div class="commment">Comments: &nbsp;
-                            <span style: "color:gray">{{comDiag}}</span>
+                        <div><i>Comments: &nbsp;</i>
+                            <span>{{comDiag}}</span>
+                        </div>
+                        <div id="reportDiagnostic">
                         </div>
                     </ul>
-                    <div id="reportDiagnostic">
-                    </div>
                 </div>
+                <br>
                 <div id="mostPathogenicResult" hidden>
-                    <div class="title">Most Pathogenic Data Table</div>
-                    <div id="reportMostPathogenic">
-                    </div>
+                    <div class="titlePreview">Most Pathogenic Data Table</div>
+                    <ul>
+                        <div id="reportMostPathogenic">
+                        </div>
+                    </ul>
                 </div>
                 <div id="secResult" style="width: 500px; page-break-inside: avoid;" hidden>
-                    <div class="title">
+                    <div class="titlePreview">
                         Secondary Filter Data Table
                     </div>
                     <ul>
-                        <div class="commment">Comments: &nbsp;
-                            <span style: "color:gray">{{comSec}}</span>
+                        <div><i>Comments: &nbsp;</i>
+                            <span>{{comSec}}</span>
                         </div>
-                    </ul>
-                    <div id="reportSecondary">
-                    </div>
-                </div>
-                <div id="anexI">
-                    <div class="description">
-                        ANNEX I: Static Filters
-                    </div>
-                    <ul>
-                        A: Most Likely Pathogenic --> Sift
-                        <=0 .05 AND Polyphen>= 0.95
-                    </ul>
-                    <ul>
-                        B: Potentially Pathogenic --> At least one condition is met
-                    </ul>
-                    <ul>
-                        C: Unkown Significance --> Missing Values
-                    </ul>
-                    <ul>
-                        D: Likely Benign --> Else
+                        <div id="reportSecondary">
+                        </div>
                     </ul>
                 </div>
-                <div id="anexII" hidden>
-                    <div class="description">
-                        ANNEX II: Panel Used
+                <br>
+                <div id="anexII">
+                    <div class="titlePreview">
+                        Panel Used
                     </div>
-                    <div id="diseases" class="reportPanelInfo" hidden>
-                        <div class="title">Diseases</div>
-                        <div id="reportDiseases">
+                    <ul>
+                        <div>Panel Name: &nbsp;
+                            <span><b>{{panelName}}</b></span>
                         </div>
-                    </div>
-                    <div id="genes" class="reportPanelInfo" hidden>
-                        <div class="title">Genes</div>
-                        <div id="reportGenes">
+                        <div>Panel Version: &nbsp;
+                            <span><b>{{panelVersion}}</b></span>
                         </div>
-                    </div>
-                    <div id="mutations" class="reportPanelInfo" hidden>
-                        <div class="title">Mutations</div>
-                        <div id="reportMutations">
-                        </div>
-                    </div>
+                        <br>
+                        <div><b>Variants found for each gene in panel used:</b></div>
+                        <ul>
+                            <div>
+                                <template is="dom-repeat" items="{{geneList}}">
+                                    <span style="margin-right:50px;">{{item.gene}}
+                                    <span>:&nbsp;<b>{{item.value}}</b></span></span>
+                                </template>
+                            </div>
+                        </ul>
+                    </ul>
                 </div>
             </div>
 
@@ -333,6 +350,12 @@
                     return {};
                 },
                 observer: 'jobChanged',
+            },
+            sample: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
             },
             diagData: {
                 type: Array,
@@ -385,15 +408,6 @@
             value: {
                 type: Object,
             },
-            diseases: {
-                type: Array,
-            },
-            genes: {
-                type: Array,
-            },
-            mutations: {
-                type: Array,
-            },
             panelConfig: {
                 type: Object,
                 value: function() {
@@ -404,6 +418,19 @@
             suspDiag: {
                 type: String,
                 value: ""
+            },
+            geneMap: {
+                type: Object,
+                observer: "geneMapChange"
+            },
+            geneNames: {
+                type: Array,
+            },
+            geneList: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
             },
             _columnsDiag: {
                 type: Array,
@@ -618,6 +645,9 @@
 
         },
         ready: function() {
+            this.cellbaseVersion = CELLBASE_VERSION;
+            var date = new Date();
+            this.requestDate = date.toLocaleString();
             this.geneColumns = [{
                 name: 'name',
                 title: 'Name',
@@ -664,22 +694,67 @@
                 type: 'select',
                 options: ["clinvar", "gwas"],
             }];
+            if (localStorage.bioinfo_team_diseases != null) {
+                this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
+            } else {
+                $.ajax({
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    // url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    dataType: 'json',
+                    async: false,
+                    success: function(response, textStatus, jqXHR) {
+                        try {
+                            var data = response.response;
+                            var clinvar = data[0].result;
+                            var gwas = data[1].result;
+
+                            var diseases = [];
+
+                            //                            for (var i = 0; i < 100; i++) {
+                            for (var i = 0; i < clinvar.length; i++) {
+                                var dis = clinvar[i];
+                                dis.source = "clinvar";
+                                diseases.push(dis);
+                            }
+                            //                            for (var i = 0; i < 100; i++) {
+                            for (var i = 0; i < gwas.length; i++) {
+                                var dis = gwas[i];
+                                dis.source = "gwas";
+                                diseases.push(dis);
+                            }
+
+                            diseases.sort(function(a, b) {
+                                return a.phenotype.localeCompare(b.phenotype);
+                            });
+
+                            if (diseases.length > 0) {
+                                me.allDiseasesData = diseases;
+                                localStorage.bioinfo_team_diseases = JSON.stringify(diseases);
+                            }
+
+                        } catch (e) {
+
+                        }
+
+                    }
+                });
+
+            }
 
         },
 
         print: function(data) {
             var mywindow = window.open('', '', 'height=1000,width=1000');
-            mywindow.document.write('<html><head><title>Report</title>');
+            mywindow.document.write('<html><head>');
             var styles = document.getElementsByTagName('style');
 
             mywindow.document.write('<style>');
-            // debugger
             for (var i = 0; i < styles.length; i++) {
                 mywindow.document.write(styles[i].innerHTML);
             }
             mywindow.document.write('</style>');
 
-            mywindow.document.write('</head><body >');
+            mywindow.document.write('</head><body>');
             mywindow.document.write(data);
             mywindow.document.write('</body></html>');
 
@@ -691,8 +766,13 @@
             this.$.reportConclusions.querySelector('textarea').hidden = false;
             this.$.divConclusions.hidden = true;
             elem = this.$.aditional.querySelectorAll('input');
-            elem[0].hidden = false;
-            this.$.confDiag.hidden = true;
+            for (var i = 0; i < elem.length; i++) {
+                var el = elem[i];
+                var name = el.dataset.name;
+                el.hidden = false;
+                this.$[name].hidden = true;
+
+            }
             return true;
         },
 
@@ -701,24 +781,24 @@
             var me = this;
             this.print(this.$.report.innerHTML);
             return;
-
-            var pdf = new jsPDF('p', 'px', 'a4');
-            var options = {
-                // background: '#fff',
-                pagesplit: true,
-            };
-            pdf.addHTML(me.$.report, options, function() {
-                // pdf.addPage();
-                // pdf.save('web.pdf');
-                var string = pdf.output('datauristring');
-                pdf.output('save', 'sample-file.pdf');
-                //     // pdf.addHTML(me.$.export2, options, function() {
-                //     //         pdf.addPage();
-                //     //         pdf.addHTML(me.$.export3, options, function() {
-                //     //         })
-                //     //     })
-                //     //     // pdf.output('dataurlnewwindow');
-            });
+            //
+            // var pdf = new jsPDF('p', 'px', 'a4');
+            // var options = {
+            //     // background: '#fff',
+            //     pagesplit: true,
+            // };
+            // pdf.addHTML(me.$.report, options, function() {
+            //     // pdf.addPage();
+            //     // pdf.save('web.pdf');
+            //     var string = pdf.output('datauristring');
+            //     pdf.output('save', 'sample-file.pdf');
+            //     //     // pdf.addHTML(me.$.export2, options, function() {
+            //     //     //         pdf.addPage();
+            //     //     //         pdf.addHTML(me.$.export3, options, function() {
+            //     //     //         })
+            //     //     //     })
+            //     //     //     // pdf.output('dataurlnewwindow');
+            // });
 
         },
         computeFilter: function(aux, jobId) {
@@ -782,10 +862,38 @@
                 }
             }
             console.log(jobPanel)
-            this._getTable(this.diseaseColumns, jobPanel.diseases, this.$.reportDiseases);
-            this._getTable(this.geneColumns, jobPanel.genes, this.$.reportGenes);
-            this._getTable(this.mutationColumns, jobPanel.mutations, this.$.reportMutations);
+            this.panelName = jobPanel.name;
+            this.panelVersion = jobPanel.version;
+
         },
+        geneMapChange: function(neo, old) {
+            if (this.geneNames != null && this.geneNames.length > 0 && neo != null) {
+                var list = [];
+                for (var i = 0; i < this.geneNames.length; i++) {
+                    var key = this.geneNames[i];
+                    this.push('geneList', {
+                        gene: key,
+                        value: neo[key]
+                    });
+                    // list[i] = {
+                    //     gene: key,
+                    //     value: neo[key]
+                    // }
+                }
+                // this.set('geneList',list)
+
+                // var genListColumns = [{
+                //     name: 'gene',
+                //     title: 'Gene',
+                // }, {
+                //     name: 'value',
+                //     title: 'Variants Found',
+                // }];
+
+                // this._getTable(genListColumns, dataList, this.$.reportGeneList);
+            }
+        },
+
         _getTable: function(columns, data, ref) {
             var table = ref.querySelector('table');
             if (table != null) {
@@ -814,20 +922,12 @@
                 this.$.reportConclusions.hidden = true;
                 this.$.mostPathogenicResult.hidden = true;
                 this.$.secResult.hidden = true;
-                this.$.anexII.hidden = true;
-                this.$.diseases.hidden = true;
-                this.$.genes.hidden = true;
-                this.$.mutations.hidden = true;
+
                 var comments = document.getElementsByClassName('commentsTextArea');
                 comments[0].value = "";
                 comments[1].value = "";
                 this.comDiag = "";
                 this.comSec = "";
-                this.$.reportConclusions.querySelector('textarea').value = "";
-                this.divConclusions = "";
-                elem = this.$.aditional.querySelectorAll('input');
-                elem[0].value = "";
-                this.confDiag = "";
                 this.mostPathogenicData = "";
 
                 var tableSec = this.$.reportSecondary.querySelector('table');
@@ -839,49 +939,52 @@
                     this.$.reportMostPathogenic.removeChild(tableMost);
                 }
 
-                // var sampleId = neo.params.sampleId;
-                // OpencgaManager.samples.info({
-                //     id: sampleId,
-                //     query: {
-                //         sid: Cookies('bioinfo_sid'),
-                //     },
-                //     request: {
-                //         async: false,
-                //         success: function(response) {
-                //             me.suspDiag = response.response[0].result[0].description;
-                //         },
-                //         error: function() {}
-                //     }
-                // });
+                var sampleId = neo.params.sampleId;
+                OpencgaManager.samples.info({
+                    id: sampleId,
+                    query: {
+                        sid: Cookies('bioinfo_sid'),
+                    },
+                    request: {
+                        async: false,
+                        success: function(response) {
+                            me.sample = response.response[0].result[0];
+                        },
+                        error: function() {}
+                    }
+                });
 
+                var desc = this.sample.description;
+
+                this.suspDiag = "";
+                this.$.reportConclusions.querySelector('textarea').value = "";
+
+                elem = this.$.aditional.querySelectorAll('input');
+                for (var i = 0; i < elem.length; i++) {
+                    elem[i].value = "";
+                }
+
+                if (desc != "") {
+                    var information = JSON.parse(desc);
+                    if (information.suspDiag != null) {
+                        this.suspDiag = information.suspDiag;
+                    }
+                    if (information.conclusions != null) {
+                        this.$.reportConclusions.querySelector('textarea').value = information.conclusions;
+                    }
+                    for (var i = 0; i < elem.length; i++) {
+                        var el = elem[i];
+                        var name = el.dataset.name;
+                        if (information[name] != null) {
+                            el.value = information[name];
+                        }
+                    }
+                }
             }
         },
         showInReport: function(e) {
             var divId = e.currentTarget.value;
             this.$[divId].hidden = !this.$[divId].hidden;
-            if (divId === "anexII") {
-                if (this.$.anexII.hidden == true) {
-                    this.$.diseases.hidden = true;
-                    this.$.genes.hidden = true;
-                    this.$.mutations.hidden = true;
-                    var aux = this.$.panelsInfo.querySelectorAll('input');
-                    for (i = 0; i < aux.length; i++) {
-                        aux[i].checked = false;
-                    }
-                } else {
-                    this.$.diseases.hidden = false;
-                    this.$.genes.hidden = false;
-                    this.$.mutations.hidden = false;
-                    var aux = this.$.panelsInfo.querySelectorAll('input');
-                    for (i = 0; i < aux.length; i++) {
-                        aux[i].checked = true;
-                    }
-                }
-            }
-            if (divId === "diseases" || divId === "genes" || divId === "mutations") {
-                this.$.panelsInfoAnexII.checked = true;
-                this.$.anexII.hidden = false;
-            }
         },
         _getTextInfo: function() {
             this.divConclusions = this.$.reportConclusions.querySelector('textarea').value;
@@ -889,10 +992,14 @@
             this.$.divConclusions.hidden = false;
 
             elem = this.$.aditional.querySelectorAll('input');
-            this.confDiag = elem[0].value;
-            elem[0].hidden = true;
-            this.$.confDiag.hidden = false;
+            for (var i = 0; i < elem.length; i++) {
+                var el = elem[i];
+                var name = el.dataset.name;
+                this[name] = el.value;
+                el.hidden = true;
+                this.$[name].hidden = false;
 
+            }
             return;
 
         },
@@ -916,6 +1023,40 @@
                     this.$.reportDiagnostic.removeChild(table);
                 }
             }
+        },
+        handleSaveReport: function() {
+            var me = this;
+            var infor = {};
+            if (this.sample.description != "") {
+                infor = JSON.parse(this.sample.description);
+            }
+            this.divConclusions = this.$.reportConclusions.querySelector('textarea').value;
+            infor['conclusions'] = this.divConclusions;
+            elem = this.$.aditional.querySelectorAll('input');
+            for (var i = 0; i < elem.length; i++) {
+                var el = elem[i];
+                var name = el.dataset.name;
+                infor[name] = el.value;
+            }
+            var description = JSON.stringify(infor);
+            OpencgaManager.samples.update({
+                id: me.sample.id,
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    description: description,
+                    source: me.sample.source,
+                    individualId: me.sample.individualId
+                },
+                request: {
+                    async: false,
+                    success: function(response) {
+                        alert("The sample aditional information has been saved succesfully.")
+                    },
+                    error: function() {
+
+                    }
+                }
+            });
         }
     });
 </script>

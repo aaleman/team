@@ -1,8 +1,8 @@
-<link rel="import" href="../../lib/jsorolla/src/lib/components/jso-form-box.html">
-<link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-position.html">
-<link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-scores.html">
-<link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-conservation.html">
-<link rel="import" href="../../lib/jsorolla/src/lib/components/filters/jso-filter-consequencetypes.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/jso-form-box.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-position.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-scores.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-conservation.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-consequencetypes.html">
 <link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 <dom-module id="team-result-form">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
@@ -84,7 +84,6 @@
         .conserv-elem {
             margin-bottom: 3px;
         }
-
         /*.qual-elem {
             width: 95%;
         }*/
@@ -184,7 +183,7 @@
             --paper-slider-knob-color: #445D76;
             --paper-slider-active-color: #445D76;
             --paper-slider-pin-color: #445D76;
-            --paper-input-container-focus-color:#445D76;
+            --paper-input-container-focus-color: #445D76;
             width: 125%;
         }
 
@@ -225,24 +224,6 @@
                         Population Freqs.
                     </div>
                     <div class="container vertical layout">
-                        <!-- <label class="jso">1000G Phase 1</label>
-
-                        <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="maf1000g_op" id="maf1000g_op">
-                                    <jso-option value="<" selected>
-                                        <
-                                    </jso-option>
-                                    <jso-option value="<=">
-                                        <=
-                                    </jso-option>
-                                    <jso-option value=">">></jso-option>
-                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
-                            </div>
-                            <input class="jso inputValue" type="number" id="maf1000g" name="maf1000g" min="0" max="1"
-                                   step="0.0000001" value="{{maf1000gValue::input}}"/>
-                        </div> -->
 
                         <label class="jso">1000G Phase 3</label>
 
@@ -258,7 +239,6 @@
                                 </jso-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="maf1000GP3" editable></paper-slider>
-                            <!-- <input class="jso inputValue" type="number" id="maf1000GP3" name="maf1000GP3" min="0" max="1" step="0.0000001" value="{{maf1000GP3Value::input}}" /> -->
 
                         </div>
 
@@ -276,7 +256,6 @@
                                 </jso-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="esp6500" editable></paper-slider>
-                            <!-- <input class="jso inputValue" type="number" id="esp6500" name="esp6500" min="0" max="1" step="0.0000001" value="{{esp6500Value::input}}" /> -->
 
                         </div>
 
@@ -294,7 +273,6 @@
                                 </jso-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="spanishmaf" editable></paper-slider>
-                            <!-- <input class="jso inputValue" type="number" id="spanishmaf" name="spanishmaf" min="0" max="1" step="0.0000001" value="{{spanishmafValue::input}}" /> -->
 
                         </div>
 
@@ -312,7 +290,6 @@
                                 </jso-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="mafEXAC" editable></paper-slider>
-                            <!-- <input class="jso inputValue" type="number" id="mafEXAC" name="mafEXAC" min="0" max="1" step="0.0000001" value="{{mafEXACValue::input}}" /> -->
 
                         </div>
                     </div>
@@ -342,48 +319,42 @@
                         Quality
                     </div>
                     <div class="container vertical layout">
-                        <!-- <div class="horizontal layout" style="line-height: 20px;"> -->
-                            <label class="jso">QUAL </label>
-                            <!-- <div style="width:60px">{{qualValue}}</div> -->
-                        <!-- </div> -->
+                        <label class="jso">QUAL </label>
                         <div class="horizontal layout qual-elem">
                             <div class="jso-select">
                                 <jso-select class="jso" name="qual_op" id="qual_op">
-                                    <jso-option value="<" selected>
+                                    <jso-option value="<">
                                         < </jso-option>
                                             <jso-option value="<=">
                                                 <= </jso-option>
-                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">" selected>></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
                             <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="qual" editable></paper-slider>
-                            <!-- <input class="jso inputValue" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" /> -->
                         </div>
 
                         <div class="horizontal layout" style="line-height: 20px;">
                             <label class="jso">DP </label>
-                            <!-- <div style="width:60px">{{dpValue}}</div> -->
                         </div>
                         <div class="horizontal layout qual-elem">
                             <div class="jso-select">
                                 <jso-select class="jso" name="dp_op" id="dp_op">
-                                    <jso-option value="<" selected>
+                                    <jso-option value="<">
                                         < </jso-option>
                                             <jso-option value="<=">
                                                 <= </jso-option>
-                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">" selected>></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
                             </div>
                             <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="dp" editable></paper-slider>
-                            <!-- <input class="jso inputValue" type="number" id="dp" name="dp" value="{{dpValue::input}}" /> -->
                         </div>
                     </div>
                 </jso-form-box>
                 <jso-filter-scores id="filterScores" collapsible collapsed enable-cadd></jso-filter-scores>
                 <jso-filter-conservation id="filterConservation" collapsible collapsed></jso-filter-conservation>
-                <jso-filter-consequencetypes id="filterCT" collapsible collapsed></jso-filter-consequencetypes>
+                <jso-filter-consequencetypes id="filterCT" collapsible collapsed data="{{data}}" enable-result></jso-filter-consequencetypes>
 
             </div>
         </form>
@@ -554,8 +525,6 @@
             this.$.qual.value = 0;
             this.qualValue = "";
             this.$.qual_op.value = "<";
-            // this.maf1000gValue = "";
-            // this.$.maf1000g_op.value = "<";
             this.$.maf1000GP3.value = 0;
             this.maf1000GP3Value = "";
             this.$.maf1000GP3_op.value = "<";
@@ -649,50 +618,21 @@
                 q["qual"] = parseFloat(this.qualValue);
                 q["qual_op"] = this.$.qual_op.value;
             }
-            // if (this.maf1000gValue) {
-            //     if (this.$.maf1000g.checkValidity() == false) {
-            //         alert("MAF 1000G must be less than 1 or greater than 0");
-            //         return;
-            //     } else {
-            //         q["maf1000g"] = parseFloat(this.maf1000gValue);
-            //         q["maf1000g_op"] = this.$.maf1000g_op.value;
-            //     }
-            // }
             if (this.maf1000GP3Value) {
-                // if (this.$.maf1000GP3.checkValidity() == false) {
-                //     alert("MAF 1000G Phase3 must be less than 1 or greater than 0");
-                //     return;
-                // } else {
-                    q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
-                    q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
-                // }
+                q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
+                q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
             }
             if (this.esp6500Value) {
-                if (this.$.esp6500.checkValidity() == false) {
-                    alert("ESP 6500 must be less than 1 or greater than 0");
-                    return;
-                } else {
-                    q["esp6500"] = parseFloat(this.esp6500Value);
-                    q["esp6500_op"] = this.$.esp6500_op.value;
-                }
+                q["esp6500"] = parseFloat(this.esp6500Value);
+                q["esp6500_op"] = this.$.esp6500_op.value;
             }
             if (this.spanishmafValue) {
-                if (this.$.spanishmaf.checkValidity() == false) {
-                    alert("Spanish MAF must be less than 1 or greater than 0");
-                    return;
-                } else {
-                    q["spanishmaf"] = parseFloat(this.spanishmafValue);
-                    q["spanishmaf_op"] = this.$.spanishmaf_op.value;
-                }
+                q["spanishmaf"] = parseFloat(this.spanishmafValue);
+                q["spanishmaf_op"] = this.$.spanishmaf_op.value;
             }
             if (this.mafEXACValue) {
-                if (this.$.mafEXAC.checkValidity() == false) {
-                    alert("MAF EXAC must be less than 1 or greater than 0");
-                    return;
-                } else {
-                    q["mafEXAC"] = parseFloat(this.mafEXACValue);
-                    q["mafEXAC_op"] = this.$.mafEXAC_op.value;
-                }
+                q["mafEXAC"] = parseFloat(this.mafEXACValue);
+                q["mafEXAC_op"] = this.$.mafEXAC_op.value;
             }
 
             this.set('query', q);
@@ -827,11 +767,6 @@
                 this.$.qual_op.value = hf.qual_op;
                 filterName.push("Qual " + hf.qual_op + " " + hf.qual + " ");
             }
-            // if (hf.maf1000g != null) {
-            //     this.maf1000gValue = hf.maf1000g;
-            //     this.$.maf1000g_op.value = hf.maf1000g_op;
-            //     filterName.push("MAF 1000G " + hf.maf1000g_op + " " + hf.maf1000g + " ");
-            // }
             if (hf.maf1000GP3 != null) {
                 this.maf1000GP3Value = hf.maf1000GP3;
                 this.$.maf1000GP3.value = hf.maf1000GP3;
@@ -892,14 +827,29 @@
                     } else {
                         het++;
                     }
+
+                    // for (var j = 0; j < neo[i].ct.length; j++) {
+                    //     var ct = neo[i].ct[j].split(",");
+                    //     for (var k = 0; k < this.consequenceTypes.length; k++) {
+                    //         if (this.consequenceTypes[k].name == ct[j]) {
+                    //             if (this.consequenceTypes[k].num == null) {
+                    //                 this.consequenceTypes[k].num = 1;
+                    //             } else {
+                    //                 this.consequenceTypes[k].num++;
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
+                // this.set('consequenceTypes',this.consequenceTypes);
+
                 this.numHeterozygous = het;
                 this.numHomozygous = hom;
             }
         },
-        sliderChange: function(e){
-          var id=e.currentTarget.id +"Value";
-          this.set(id, e.currentTarget.value);
+        sliderChange: function(e) {
+            var id = e.currentTarget.id + "Value";
+            this.set(id, e.currentTarget.value);
         },
     });
 </script>
