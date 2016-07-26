@@ -697,47 +697,48 @@
             }];
             if (localStorage.bioinfo_team_diseases != null) {
                 this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
-            }else{
-              $.ajax({
-                  url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
-                  dataType: 'json',
-                  async: false,
-                  success: function(response, textStatus, jqXHR) {
-                      try {
-                          var data = response.response;
-                          var clinvar = data[0].result;
-                          var gwas = data[1].result;
+            } else {
+                $.ajax({
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    // url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    dataType: 'json',
+                    async: false,
+                    success: function(response, textStatus, jqXHR) {
+                        try {
+                            var data = response.response;
+                            var clinvar = data[0].result;
+                            var gwas = data[1].result;
 
-                          var diseases = [];
+                            var diseases = [];
 
-                          //                            for (var i = 0; i < 100; i++) {
-                          for (var i = 0; i < clinvar.length; i++) {
-                              var dis = clinvar[i];
-                              dis.source = "clinvar";
-                              diseases.push(dis);
-                          }
-                          //                            for (var i = 0; i < 100; i++) {
-                          for (var i = 0; i < gwas.length; i++) {
-                              var dis = gwas[i];
-                              dis.source = "gwas";
-                              diseases.push(dis);
-                          }
+                            //                            for (var i = 0; i < 100; i++) {
+                            for (var i = 0; i < clinvar.length; i++) {
+                                var dis = clinvar[i];
+                                dis.source = "clinvar";
+                                diseases.push(dis);
+                            }
+                            //                            for (var i = 0; i < 100; i++) {
+                            for (var i = 0; i < gwas.length; i++) {
+                                var dis = gwas[i];
+                                dis.source = "gwas";
+                                diseases.push(dis);
+                            }
 
-                          diseases.sort(function(a, b) {
-                              return a.phenotype.localeCompare(b.phenotype);
-                          });
+                            diseases.sort(function(a, b) {
+                                return a.phenotype.localeCompare(b.phenotype);
+                            });
 
-                          if (diseases.length > 0) {
-                              me.allDiseasesData = diseases;
-                              localStorage.bioinfo_team_diseases = JSON.stringify(diseases);
-                          }
+                            if (diseases.length > 0) {
+                                me.allDiseasesData = diseases;
+                                localStorage.bioinfo_team_diseases = JSON.stringify(diseases);
+                            }
 
-                      } catch (e) {
+                        } catch (e) {
 
-                      }
+                        }
 
-                  }
-              });
+                    }
+                });
 
             }
 
