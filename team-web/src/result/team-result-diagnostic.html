@@ -364,7 +364,7 @@
         }, {
             name: 'id',
             title: 'SNP Id',
-            width: 50,
+            width: 80,
             defaultValue: '.',
             formula: function(row) {
                 var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
@@ -373,7 +373,7 @@
         }, {
             name: 'qual',
             title: 'Qual',
-            width: 50,
+            width: 80,
             defaultValue: '.',
             formula: function(row) {
                 if (isNaN(row.qual)) {
@@ -461,27 +461,131 @@
         }, {
             name: 'maf1000GP3',
             title: 'MAF 1000G Phase 3',
-            width: 50,
-            defaultValue: '.'
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+              if(row.maf1000GP3 == "."){
+                return '.';
+              }
+                var d=document.createElement("div");
+                var dt=document.createElement("div");
+                var db=document.createElement("div");
+                var dbp=document.createElement("div");
+                dt.style.display="inline-block";
+                dt.style.width="45px";
+                dt.style.marginRight="3px";
+                db.style.display="inline-block";
+                dt.innerHTML=row.maf1000GP3;
+                db.style.width="40px";
+                db.style.height="10px";
+                db.style.position="relative";
+                db.style.border="1px solid steelblue";
+                dbp.style.height="100%";
+                dbp.style.width=row.maf1000GP3*100/0.5 + "%";
+                dbp.style.backgroundColor="steelblue";
+                db.appendChild(dbp);
+                d.appendChild(dt);
+                d.appendChild(db);
+
+                return d.outerHTML;
+            }
         }, {
             name: 'esp6500',
             title: 'ESP 6500',
-            width: 50,
-            defaultValue: '.'
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+              if(row.esp6500 == "."){
+                return '.';
+              }
+                var d=document.createElement("div");
+                var dt=document.createElement("div");
+                var db=document.createElement("div");
+                var dbp=document.createElement("div");
+                dt.style.display="inline-block";
+                dt.style.width="45px";
+                dt.style.marginRight="3px";
+                db.style.display="inline-block";
+                dt.innerHTML=row.esp6500;
+                db.style.width="40px";
+                db.style.height="10px";
+                db.style.position="relative";
+                db.style.border="1px solid steelblue";
+                dbp.style.height="100%";
+                dbp.style.width=row.esp6500*100/0.5 + "%";
+                dbp.style.backgroundColor="steelblue";
+                db.appendChild(dbp);
+                d.appendChild(dt);
+                d.appendChild(db);
+
+                return d.outerHTML;
+            }
         }, {
             name: 'spanishmaf',
             title: 'Spanish MAF',
-            width: 50,
-            defaultValue: '.'
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+              if(row.spanishmaf == "."){
+                return '.';
+              }
+                var d=document.createElement("div");
+                var dt=document.createElement("div");
+                var db=document.createElement("div");
+                var dbp=document.createElement("div");
+                dt.style.display="inline-block";
+                dt.style.width="45px";
+                dt.style.marginRight="3px";
+                db.style.display="inline-block";
+                dt.innerHTML=row.spanishmaf;
+                db.style.width="40px";
+                db.style.height="10px";
+                db.style.position="relative";
+                db.style.border="1px solid steelblue";
+                dbp.style.height="100%";
+                dbp.style.width=row.spanishmaf*100/0.5 + "%";
+                dbp.style.backgroundColor="steelblue";
+                db.appendChild(dbp);
+                d.appendChild(dt);
+                d.appendChild(db);
+
+                return d.outerHTML;
+            }
         }, {
             name: 'mafEXAC',
             title: 'EXAC',
-            width: 50,
+            width: 100,
             defaultValue: '.',
             formula: function(row) {
-                var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
-                return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+              if(row.mafEXAC == "."){
+                return '.';
+              }
+                var d=document.createElement("div");
+                var dt=document.createElement("div");
+                var db=document.createElement("div");
+                var dbp=document.createElement("div");
+                dt.style.display="inline-block";
+                dt.style.width="45px";
+                dt.style.marginRight="3px";
+                db.style.display="inline-block";
+                dt.innerHTML=row.mafEXAC;
+                db.style.width="40px";
+                db.style.height="10px";
+                db.style.position="relative";
+                db.style.border="1px solid steelblue";
+                dbp.style.height="100%";
+                dbp.style.width=row.mafEXAC*100/0.5 + "%";
+                dbp.style.backgroundColor="steelblue";
+                db.appendChild(dbp);
+                d.appendChild(dt);
+                d.appendChild(db);
+
+                return d.outerHTML;
             }
+            // formula: function(row) {
+            //     var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+            //     return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+            // }
         }, {
             name: 'beacon',
             title: 'Beacon',
