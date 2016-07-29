@@ -31,10 +31,7 @@
     "bowser": "~0.7.2",
     "pako": "~0.2.6",
     "iron-menu-behavior": "PolymerElements/iron-menu-behavior#~1.0.1",
-<<<<<<< HEAD
-=======
-    "jsorolla": "https://github.com/opencb/jsorolla.git#develop",
->>>>>>> develop
+    "jsorolla": "https://github.com/opencb/jsorolla.git#develop-0.8",
     "file-saver.js": "~1.20150507.2",
     "paper-slider": "^1.0.11"
   }
