@@ -6,6 +6,8 @@ CELLBASE_VERSION = "v3";
 
 OPENCGA_HOST = "http://test.babelomics.org/opencga-0.7-dev";
 
+CONTACT_MAIL='bioinfo.notifications@cipf.es'
+
 CONSEQUENCE_TYPES = [{
     "name": "transcript_ablation",
     "text": "Transcript ablation",
