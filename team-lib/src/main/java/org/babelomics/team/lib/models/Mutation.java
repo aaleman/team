@@ -4,6 +4,7 @@ package org.babelomics.team.lib.models;
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
  */
 public class Mutation {
+    public int count;
     public String chr;
     public int pos;
     public String ref;
@@ -11,6 +12,13 @@ public class Mutation {
     public String phe;
     public String src;
 
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
     public Mutation() {
     }
 
