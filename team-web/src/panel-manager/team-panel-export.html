@@ -1,0 +1,258 @@
+<dom-module id="team-panel-export">
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
+        :host {
+            display: block;
+            position: relative;
+            box-sizing: border-box;
+            transition: all 0.2s;
+            background-color: inherit;
+            padding: 20px;
+            box-sizing: border-box;
+            height: 100%;
+            /*@apply(--layout-horizontal);*/
+        }
+
+        .titlePreview {
+            color: var(--dark-primary-color);
+            margin: 2px 0 2px 0;
+            font-size: 15px;
+            border-bottom: 1px solid var(--dark-primary-color);
+        }
+
+        @media print {
+            @page {
+                margin-top: 20px;
+            }
+            body {
+                margin: 1.6cm;
+            }
+        }
+
+        .jobName {
+            font-size: 25px;
+            color: #445D76;
+            font-weight: bold;
+        }
+
+        table {
+            margin-top: 20px;
+            border: 2px solid #dadada;
+            border-collapse: collapse;
+            background-color: #fcfcfc;
+            font-size: 10px;
+            word-wrap: break-word;
+        }
+
+        th,
+        td {
+            border: 1px solid #dadada;
+            padding: 3px;
+        }
+
+        th {
+            background-color: #F1F3F5;
+        }
+
+        #export {
+            border: 1px solid #d0d0d0;
+            width: 60%;
+            /*width: 750px;*/
+            height: 750px;
+            margin: 0 auto;
+            margin-left: 0px;
+            margin-top: 10px;
+            overflow-y: auto;
+            background-color: white;
+            padding: 20px;
+            page-break-inside: avoid;
+        }
+        .tableTitle {
+            font-size: 18px;
+            color: #445D76;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #445D76;
+            padding: 2px;
+        }
+    </style>
+    <template>
+        <div id="export" hidden>
+            <div class="team-panel-export-0">
+                <div class="horizontal layout">
+                    <img style="margin:3px;height:35px;" src="../../images/bier-text.svg" />
+                    <div class="flex jobName">Team Panel</div>
+                    <div style="end-justify;color:#888; margin-right:15px;"><i>Cellbase&nbsp;
+                      <span>{{cellbaseVersion}}</span></i>
+                    </div>
+                    <div style="end-justify">&nbsp;
+                        <span>{{requestDate}}</span>
+                    </div>
+                </div>
+                <br>
+                <div>Panel name: &nbsp;
+                    <span><b>{{name}}</b></span></div>
+                <div>Panel author: &nbsp;
+                    <span><i>{{author}}</i></span></div>
+                <div>Panel version: &nbsp;
+                    <span><b>{{version}}</b></span></div>
+                <div>Panel description: &nbsp;
+                    <span><i>{{description}}</i></span></div>
+                <br>
+                <div class="tableTitle">
+                    Diseases Table
+                </div>
+                <ul>
+                    <div id="diseases">
+                    </div>
+                </ul>
+                <div class="tableTitle">
+                    Genes Table
+                </div>
+                <ul>
+                    <div id="genes">
+                    </div>
+                </ul>
+                <div class="tableTitle">
+                    Mutations Table
+                </div>
+                <ul>
+                    <div id="mutations">
+                    </div>
+                </ul>
+            </div>
+        </div>
+
+    </template>
+
+</dom-module>
+<script>
+    Polymer({
+        is: "team-panel-export",
+        properties: {
+            diseaseColumns: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+            geneColumns: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            },
+            mutationColumns: {
+                type: Array,
+                value: function() {
+                    return [];
+                }
+            }
+
+        },
+        ready: function() {
+            this.cellbaseVersion = CELLBASE_VERSION;
+            var date = new Date();
+            this.requestDate = date.toLocaleString();
+
+            this.geneColumns = [{
+                name: 'name',
+                title: 'Name',
+            }, {
+                name: 'chr',
+                title: 'Chr',
+                defaultValue: '.',
+            }, {
+                name: 'start',
+                title: 'Start',
+                defaultValue: '.',
+            }, {
+                name: 'end',
+                title: 'End',
+                defaultValue: '.',
+            }];
+            this.mutationColumns = [{
+                name: 'chr',
+                title: 'Chr',
+            }, {
+                name: 'pos',
+                title: 'Pos',
+            }, {
+                name: 'ref',
+                title: 'Ref',
+            }, {
+                name: 'alt',
+                title: 'Alt',
+            }, {
+                name: 'phe',
+                title: 'Phenotype',
+            }, {
+                name: 'src',
+                title: 'Source',
+            }];
+            this.diseaseColumns = [{
+                name: 'phenotype',
+                title: 'Phenotype',
+                type: 'text',
+                width: 500
+            }, {
+                name: 'source',
+                title: 'Source',
+                type: 'select',
+                options: ["clinvar", "gwas"],
+            }];
+
+        },
+
+        exportPDF: function(selectedPanel) {
+            this.$.export.hidden = false;
+            this.name=selectedPanel.name;
+            this.author=selectedPanel.author;
+            this.version=selectedPanel.version;
+            this.description=selectedPanel.description;
+            this._getTable(this.diseaseColumns, selectedPanel.diseases, this.$.diseases);
+            this._getTable(this.geneColumns, selectedPanel.genes, this.$.genes);
+            this._getTable(this.mutationColumns, selectedPanel.mutations, this.$.mutations);
+            this.print(this.$.export.innerHTML);
+            return;
+        },
+        print: function(data) {
+
+            var mywindow = window.open('', '', 'height=1000,width=1000');
+            mywindow.document.write('<html><head>');
+            var styles = document.getElementsByTagName('style');
+
+            mywindow.document.write('<style>');
+            var atrib = [];
+            for (var i = 0; i < styles.length; i++) {
+                var aux = styles[i];
+                // atrib.push(aux.getAttribute('scope'));
+                mywindow.document.write(styles[i].innerHTML);
+            }
+
+            mywindow.document.write('</style>');
+
+            mywindow.document.write('</head><body>');
+            mywindow.document.write(data);
+            mywindow.document.write('</body></html>');
+
+            mywindow.document.close(); // necessary for IE >= 10
+            mywindow.focus(); // necessary for IE >= 10
+            mywindow.print();
+            mywindow.close();
+
+            this.$.export.hidden = true;
+
+            return true;
+        },
+        _getTable: function(columns, data, ref) {
+            var table = ref.querySelector('table');
+            if (table != null) {
+                ref.removeChild(table);
+            }
+            var jsoTable = document.createElement("jso-table");
+            jsoTable.columns = columns;
+            jsoTable.data = data;
+            Polymer.dom(ref).appendChild(jsoTable.exportToTable());
+        },
+    });
+</script>

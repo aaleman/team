@@ -1,5 +1,5 @@
 <link rel="import" href="team-panel-preview.html">
-
+<link rel="import" href="team-panel-export.html">
 <dom-module id="team-panel-manager">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
@@ -80,6 +80,15 @@
             border-bottom: 1px solid var(--dark-primary-color);
         }
 
+        .tableTitle {
+            font-size: 18px;
+            color: #445D76;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #445D76;
+            padding: 2px;
+        }
+
         .colorButton {
             color: var(--text-primary-color);
             margin-top: 15px;
@@ -113,6 +122,61 @@
             width: 100%;
             margin-top: 6px;
             font-size: 12px;
+        }
+
+        .exportBut {
+            /*width: 200px;*/
+            margin-top: 10px;
+            color: #445D76;
+            font-weight: bold;
+        }
+
+        @media print {
+            @page {
+                margin-top: 20px;
+            }
+            body {
+                margin: 1.6cm;
+            }
+        }
+
+        .jobName {
+            font-size: 25px;
+            color: #445D76;
+            font-weight: bold;
+        }
+
+        table {
+            margin-top: 20px;
+            border: 2px solid #dadada;
+            border-collapse: collapse;
+            background-color: #fcfcfc;
+            font-size: 10px;
+            word-wrap: break-word;
+        }
+
+        th,
+        td {
+            border: 1px solid #dadada;
+            padding: 3px;
+        }
+
+        th {
+            background-color: #F1F3F5;
+        }
+
+        #export {
+            border: 1px solid #d0d0d0;
+            width: 60%;
+            /*width: 750px;*/
+            height: 750px;
+            margin: 0 auto;
+            margin-left: 0px;
+            margin-top: 10px;
+            overflow-y: auto;
+            background-color: white;
+            padding: 20px;
+            page-break-inside: avoid;
         }
     </style>
     <template>
@@ -167,17 +231,17 @@
             <div class="colorButton jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
                 <i class="fa fa-plus"></i>&nbsp; New Panel
             </div>
+
+            <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export panel to PDF/Print</div>
         </div>
 
         <div id="right">
             <div class="titlePreview">
                 <i class="fa fa-eye"></i>&nbsp; Panel Preview
             </div>
-            <team-panel-preview selected-panel="{{selectedPanel}}">
+            <team-panel-preview id="panelPreview" selected-panel="{{selectedPanel}}">
             </team-panel-preview>
-
         </div>
-
 
         <jso-panel fixed modal closable id="newPanelPanel" hidden>
             <div class="header" style="text-align:left;font-size:15px;">
@@ -187,6 +251,9 @@
             </div>
             <team-panel-form-wizard panel-config="{{panelConfig}}" id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
         </jso-panel>
+
+        <team-panel-export id="panelExport">
+        </team-panel-export hidden>
 
     </template>
 
@@ -223,19 +290,6 @@
             view: {
                 type: String,
                 value: 'main'
-            },
-
-            geneColumns: {
-                type: Array,
-                value: function() {
-                    return [];
-                }
-            },
-            mutationColumns: {
-                type: Array,
-                value: function() {
-                    return [];
-                }
             },
             formData: {
                 type: Object,
@@ -280,7 +334,6 @@
         ready: function() {
             this.formData = new Panel();
             this.formData.polymer = this;
-
         },
         panelConfigChanged: function(neo, old) {
             if (neo.panels) {
@@ -442,8 +495,8 @@
                 selectedPanel.mutations = panelAux.mutations;
                 selectedPanel.date = panelAux.date;
                 selectedPanel.disease = panelAux.disease;
-                var a=panelAux.version;
-                selectedPanel.version = a+1;
+                var a = panelAux.version;
+                selectedPanel.version = a + 1;
                 selectedPanel.archived = panelAux.archived;
                 selectedPanel.used = used;
 
@@ -489,6 +542,13 @@
                 }
             }
             return filteredPanels;
+        },
+        handleExportPDF: function(e) {
+            if (Object.keys(this.selectedPanel).length == 0) {
+                alert("No panel selected");
+            } else {
+              this.$.panelExport.exportPDF(this.selectedPanel);
+            }
         },
     });
 </script>

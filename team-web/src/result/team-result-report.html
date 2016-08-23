@@ -1,4 +1,5 @@
-<link rel="import" href="report-page.html">
+<!-- <link rel="import" href="report-page.html"> -->
+<link rel="import" href="../panel-manager/team-panel-export.html">
 <dom-module id="team-result-report">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
@@ -105,6 +106,16 @@
                 margin: 1.6cm;
             }
         }
+        .colorButton {
+            color: var(--text-primary-color);
+            margin-top: 15px;
+            background-color: var(--dark-button-color);
+            width: 200px;
+        }
+
+        .colorButton:hover {
+            background-color: var(--light-button-color);
+        }
     </style>
     <template>
         <div class="horizontal layout">
@@ -130,21 +141,23 @@
                     <div class="">
                         <input id="panelsInfoAnexII" on-click="showInReport" type="checkbox" value="anexII" checked> Panel used</div>
                 </ul>
-                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export to PDF/Print</div>
-                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleSaveReport" title="Save report for this Job"><i class="fa fa-floppy-o"></i>&nbsp; Save report</div>
+                <div class="jso-btn jso-btn-shdw colorButton" on-click="handleSaveReport" title="Save report for this Job"><i class="fa fa-floppy-o"></i>&nbsp; Save report</div>
+                <br>
+                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export report to PDF/Print</div>
+                <div class="jso-btn jso-btn-shdw exportBut" on-click="exportPanelPDF"><i class="fa fa-download"></i>&nbsp; Export panel to PDF/Print</div>
             </div>
+            <team-panel-export id="panelExport">
+            </team-panel-export hidden>
 
             <div id="report">
-                <div class="">
-                    <div class="horizontal layout">
-                        <img style="margin:3px;height:35px;" src="../../images/bier-text.svg" />
-                        <div class="flex jobName">Team report</div>
-                        <div style="end-justify;color:#888; margin-right:15px;"><i>Cellbase&nbsp;
+                <div class="horizontal layout">
+                    <img style="margin:3px;height:35px;" src="../../images/bier-text.svg" />
+                    <div class="flex jobName">Team report</div>
+                    <div style="end-justify;color:#888; margin-right:15px;"><i>Cellbase&nbsp;
                             <span>{{cellbaseVersion}}</span></i>
-                        </div>
-                        <div style="end-justify">&nbsp;
-                            <span>{{requestDate}}</span>
-                        </div>
+                    </div>
+                    <div style="end-justify">&nbsp;
+                        <span>{{requestDate}}</span>
                     </div>
                 </div>
                 <br>
@@ -415,6 +428,12 @@
                 },
                 notify: true
             },
+            selectedPanel: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
+            },
             suspDiag: {
                 type: String,
                 value: ""
@@ -648,52 +667,6 @@
             this.cellbaseVersion = CELLBASE_VERSION;
             var date = new Date();
             this.requestDate = date.toLocaleString();
-            this.geneColumns = [{
-                name: 'name',
-                title: 'Name',
-            }, {
-                name: 'chr',
-                title: 'Chr',
-                defaultValue: '.',
-            }, {
-                name: 'start',
-                title: 'Start',
-                defaultValue: '.',
-            }, {
-                name: 'end',
-                title: 'End',
-                defaultValue: '.',
-            }];
-            this.mutationColumns = [{
-                name: 'chr',
-                title: 'Chr',
-            }, {
-                name: 'pos',
-                title: 'Pos',
-            }, {
-                name: 'ref',
-                title: 'Ref',
-            }, {
-                name: 'alt',
-                title: 'Alt',
-            }, {
-                name: 'phe',
-                title: 'Phenotype',
-            }, {
-                name: 'src',
-                title: 'Source',
-            }];
-            this.diseaseColumns = [{
-                name: 'phenotype',
-                title: 'Phenotype',
-                type: 'text',
-                width: 500
-            }, {
-                name: 'source',
-                title: 'Source',
-                type: 'select',
-                options: ["clinvar", "gwas"],
-            }];
             if (localStorage.bioinfo_team_diseases != null) {
                 this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
             } else {
@@ -862,6 +835,7 @@
                 }
             }
             console.log(jobPanel)
+            this.selectedPanel = jobPanel;
             this.panelName = jobPanel.name;
             this.panelVersion = jobPanel.version;
 
@@ -1057,6 +1031,13 @@
                     }
                 }
             });
+        },
+        exportPanelPDF: function(e) {
+            if (Object.keys(this.selectedPanel).length == 0) {
+                alert("No panel selected");
+            } else {
+                this.$.panelExport.exportPDF(this.selectedPanel);
+            }
         }
     });
 </script>
