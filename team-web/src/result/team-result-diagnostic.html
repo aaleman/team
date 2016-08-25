@@ -249,6 +249,11 @@
             width: 50,
             defaultValue: '.'
         }, {
+            name: 'grep',
+            title: 'Grep',
+            width: 50,
+            defaultValue: '.'
+        }, {
             name: 'sift',
             title: 'SIFT',
             width: 50,
@@ -419,6 +424,11 @@
             width: 50,
             defaultValue: '.'
         }, {
+            name: 'grep',
+            title: 'Grep',
+            width: 50,
+            defaultValue: '.'
+        }, {
             name: 'sift',
             title: 'SIFT',
             width: 50,
@@ -464,25 +474,25 @@
             width: 100,
             defaultValue: '.',
             formula: function(row) {
-              if(row.maf1000GP3 == "."){
-                return '.';
-              }
-                var d=document.createElement("div");
-                var dt=document.createElement("div");
-                var db=document.createElement("div");
-                var dbp=document.createElement("div");
-                dt.style.display="inline-block";
-                dt.style.width="45px";
-                dt.style.marginRight="3px";
-                db.style.display="inline-block";
-                dt.innerHTML=row.maf1000GP3;
-                db.style.width="40px";
-                db.style.height="10px";
-                db.style.position="relative";
-                db.style.border="1px solid steelblue";
-                dbp.style.height="100%";
-                dbp.style.width=row.maf1000GP3*100/0.5 + "%";
-                dbp.style.backgroundColor="steelblue";
+                if (row.maf1000GP3 == ".") {
+                    return '.';
+                }
+                var d = document.createElement("div");
+                var dt = document.createElement("div");
+                var db = document.createElement("div");
+                var dbp = document.createElement("div");
+                dt.style.display = "inline-block";
+                dt.style.width = "45px";
+                dt.style.marginRight = "3px";
+                db.style.display = "inline-block";
+                dt.innerHTML = row.maf1000GP3;
+                db.style.width = "40px";
+                db.style.height = "10px";
+                db.style.position = "relative";
+                db.style.border = "1px solid steelblue";
+                dbp.style.height = "100%";
+                dbp.style.width = row.maf1000GP3 * 100 / 0.5 + "%";
+                dbp.style.backgroundColor = "steelblue";
                 db.appendChild(dbp);
                 d.appendChild(dt);
                 d.appendChild(db);
@@ -495,25 +505,25 @@
             width: 100,
             defaultValue: '.',
             formula: function(row) {
-              if(row.esp6500 == "."){
-                return '.';
-              }
-                var d=document.createElement("div");
-                var dt=document.createElement("div");
-                var db=document.createElement("div");
-                var dbp=document.createElement("div");
-                dt.style.display="inline-block";
-                dt.style.width="45px";
-                dt.style.marginRight="3px";
-                db.style.display="inline-block";
-                dt.innerHTML=row.esp6500;
-                db.style.width="40px";
-                db.style.height="10px";
-                db.style.position="relative";
-                db.style.border="1px solid steelblue";
-                dbp.style.height="100%";
-                dbp.style.width=row.esp6500*100/0.5 + "%";
-                dbp.style.backgroundColor="steelblue";
+                if (row.esp6500 == ".") {
+                    return '.';
+                }
+                var d = document.createElement("div");
+                var dt = document.createElement("div");
+                var db = document.createElement("div");
+                var dbp = document.createElement("div");
+                dt.style.display = "inline-block";
+                dt.style.width = "45px";
+                dt.style.marginRight = "3px";
+                db.style.display = "inline-block";
+                dt.innerHTML = row.esp6500;
+                db.style.width = "40px";
+                db.style.height = "10px";
+                db.style.position = "relative";
+                db.style.border = "1px solid steelblue";
+                dbp.style.height = "100%";
+                dbp.style.width = row.esp6500 * 100 / 0.5 + "%";
+                dbp.style.backgroundColor = "steelblue";
                 db.appendChild(dbp);
                 d.appendChild(dt);
                 d.appendChild(db);
@@ -526,25 +536,25 @@
             width: 100,
             defaultValue: '.',
             formula: function(row) {
-              if(row.spanishmaf == "."){
-                return '.';
-              }
-                var d=document.createElement("div");
-                var dt=document.createElement("div");
-                var db=document.createElement("div");
-                var dbp=document.createElement("div");
-                dt.style.display="inline-block";
-                dt.style.width="45px";
-                dt.style.marginRight="3px";
-                db.style.display="inline-block";
-                dt.innerHTML=row.spanishmaf;
-                db.style.width="40px";
-                db.style.height="10px";
-                db.style.position="relative";
-                db.style.border="1px solid steelblue";
-                dbp.style.height="100%";
-                dbp.style.width=row.spanishmaf*100/0.5 + "%";
-                dbp.style.backgroundColor="steelblue";
+                if (row.spanishmaf == ".") {
+                    return '.';
+                }
+                var d = document.createElement("div");
+                var dt = document.createElement("div");
+                var db = document.createElement("div");
+                var dbp = document.createElement("div");
+                dt.style.display = "inline-block";
+                dt.style.width = "45px";
+                dt.style.marginRight = "3px";
+                db.style.display = "inline-block";
+                dt.innerHTML = row.spanishmaf;
+                db.style.width = "40px";
+                db.style.height = "10px";
+                db.style.position = "relative";
+                db.style.border = "1px solid steelblue";
+                dbp.style.height = "100%";
+                dbp.style.width = row.spanishmaf * 100 / 0.5 + "%";
+                dbp.style.backgroundColor = "steelblue";
                 db.appendChild(dbp);
                 d.appendChild(dt);
                 d.appendChild(db);
@@ -557,35 +567,35 @@
             width: 100,
             defaultValue: '.',
             formula: function(row) {
-              if(row.mafEXAC == "."){
-                return '.';
-              }
-                var d=document.createElement("div");
-                var dt=document.createElement("div");
-                var db=document.createElement("div");
-                var dbp=document.createElement("div");
-                dt.style.display="inline-block";
-                dt.style.width="45px";
-                dt.style.marginRight="3px";
-                db.style.display="inline-block";
-                dt.innerHTML=row.mafEXAC;
-                db.style.width="40px";
-                db.style.height="10px";
-                db.style.position="relative";
-                db.style.border="1px solid steelblue";
-                dbp.style.height="100%";
-                dbp.style.width=row.mafEXAC*100/0.5 + "%";
-                dbp.style.backgroundColor="steelblue";
-                db.appendChild(dbp);
-                d.appendChild(dt);
-                d.appendChild(db);
+                    if (row.mafEXAC == ".") {
+                        return '.';
+                    }
+                    var d = document.createElement("div");
+                    var dt = document.createElement("div");
+                    var db = document.createElement("div");
+                    var dbp = document.createElement("div");
+                    dt.style.display = "inline-block";
+                    dt.style.width = "45px";
+                    dt.style.marginRight = "3px";
+                    db.style.display = "inline-block";
+                    dt.innerHTML = row.mafEXAC;
+                    db.style.width = "40px";
+                    db.style.height = "10px";
+                    db.style.position = "relative";
+                    db.style.border = "1px solid steelblue";
+                    dbp.style.height = "100%";
+                    dbp.style.width = row.mafEXAC * 100 / 0.5 + "%";
+                    dbp.style.backgroundColor = "steelblue";
+                    db.appendChild(dbp);
+                    d.appendChild(dt);
+                    d.appendChild(db);
 
-                return d.outerHTML;
-            }
-            // formula: function(row) {
-            //     var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
-            //     return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
-            // }
+                    return d.outerHTML;
+                }
+                // formula: function(row) {
+                //     var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                //     return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+                // }
         }, {
             name: 'beacon',
             title: 'Beacon',
@@ -744,6 +754,8 @@
                     match = this._computeInputOption(data.phylop, query);
                 } else if (key === "phastcons") {
                     match = this._computeInputOption(data.phastcons, query);
+                } else if (key === "grep") {
+                    match = this._computeInputOption(data.grep, query);
                 } else if (key === "annot-ct") {
                     ct_aux = data.ct.split(",");
                     match = this._checkValue(ct_aux, query);

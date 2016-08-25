@@ -409,15 +409,65 @@
             this.$.jsoHeader.anonymousSign();
         },
         projectsChanged: function(neo, old) {
-
+            var me = this;
             if (neo.length > 0) {
                 var projects = neo;
 
                 var defaultProject = null;
                 var defaultStudy = null;
-                defaultProject = projects[0];
-                if (defaultProject.studies.length>0) {
-                    defaultStudy = defaultProject.studies[0];
+
+                for (var i = 0; defaultProject == null && projects && i < projects.length; i++) {
+                    var proj = projects[i];
+                    if (proj.alias === "defaultPr") {
+                        defaultProject = proj;
+                        for (var j = 0; defaultStudy == null && defaultProject.studies && j < defaultProject.studies.length; j++) {
+                            var stu = defaultProject.studies[j];
+                            if (stu.alias === "defaultSt") {
+                                defaultStudy = stu;
+                            }
+                        }
+                    }
+                }
+
+                if (defaultProject == null) {
+                    defaultProject = projects[0];
+                    if (defaultProject.studies.length > 0) {
+                        defaultStudy = defaultProject.studies[0];
+                    } else {
+                        var url = OpencgaManager.studies.create({
+                            query: {
+                                sid: Cookies('bioinfo_sid'),
+                                projectId: defaultProject.id
+                            },
+                            request: {
+                                method: "POST",
+                                url: true
+                            }
+                        });
+
+                        var query = {
+                            name: "defaultStudy",
+                            alias: "defaultStudy",
+                            description: '',
+                            type: "FAMILY",
+                        }
+
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', url, true);
+                        xhr.setRequestHeader("Content-Type", "application/json");
+
+                        xhr.onload = function(e) {
+                            var response = JSON.parse(this.response);
+                            if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                                me.name = "";
+                                me.fire('need-refresh');
+                                me.fire('study-created');
+                            } else {
+                                console.log('Server error, try again later.');
+                            }
+                        };
+                        xhr.send(JSON.stringify([query]));
+                    }
                 }
 
                 if (defaultProject != null && defaultStudy != null) {
@@ -438,7 +488,6 @@
                 }
             }
         },
-
         _getTEAMConfigFolder: function(studyId) {
             var me = this;
             var folder;

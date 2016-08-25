@@ -1,4 +1,5 @@
-<link rel="import" href="report-page.html">
+<!-- <link rel="import" href="report-page.html"> -->
+<link rel="import" href="../panel-manager/team-panel-export.html">
 <dom-module id="team-result-report">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
@@ -105,6 +106,17 @@
                 margin: 1.6cm;
             }
         }
+
+        .colorButton {
+            color: var(--text-primary-color);
+            margin-top: 15px;
+            background-color: var(--dark-button-color);
+            width: 200px;
+        }
+
+        .colorButton:hover {
+            background-color: var(--light-button-color);
+        }
     </style>
     <template>
         <div class="horizontal layout">
@@ -130,12 +142,16 @@
                     <div class="">
                         <input id="panelsInfoAnexII" on-click="showInReport" type="checkbox" value="anexII" checked> Panel used</div>
                 </ul>
-                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export to PDF/Print</div>
-                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleSaveReport" title="Save report for this Job"><i class="fa fa-floppy-o"></i>&nbsp; Save report</div>
+                <div class="jso-btn jso-btn-shdw colorButton" on-click="handleSaveReport" title="Save report for this Job"><i class="fa fa-floppy-o"></i>&nbsp; Save report</div>
+                <br>
+                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export report to PDF/Print</div>
+                <div class="jso-btn jso-btn-shdw exportBut" on-click="exportPanelPDF"><i class="fa fa-download"></i>&nbsp; Export panel to PDF/Print</div>
             </div>
+            <team-panel-export id="panelExport">
+            </team-panel-export hidden>
 
             <div id="report">
-                <div class="">
+                <div class="team-result-report-0">
                     <div class="horizontal layout">
                         <img style="margin:3px;height:35px;" src="../../images/bier-text.svg" />
                         <div class="flex jobName">Team report</div>
@@ -146,46 +162,45 @@
                             <span>{{requestDate}}</span>
                         </div>
                     </div>
-                </div>
-                <br>
-                <div>Job name: &nbsp;
-                    <span><b>{{job.name}}</b></span></div>
-                <div>Job description: &nbsp;
-                    <span><i>{{job.description}}</i></span></div>
-                <br>
-                <div class="" id="aditional">
-                    <div class="titlePreview">
-                        Patient data
-                    </div>
-                    <ul>
-                        <div>
-                            Patient ID:&nbsp;
-                            <b><input type="text" data-name="patientID">
+                    <br>
+                    <div>Job name: &nbsp;
+                        <span><b>{{job.name}}</b></span></div>
+                    <div>Job description: &nbsp;
+                        <span><i>{{job.description}}</i></span></div>
+                    <br>
+                    <div class="" id="aditional">
+                        <div class="titlePreview">
+                            Patient data
+                        </div>
+                        <ul>
+                            <div>
+                                Patient ID:&nbsp;
+                                <b><input type="text" data-name="patientID">
                             <span id="patientID" hidden>{{patientID}}</span></b>
-                        </div>
-                        <div>
-                            Instrument:&nbsp;
-                            <b><input type="text" data-name="instrument">
+                            </div>
+                            <div>
+                                Instrument:&nbsp;
+                                <b><input type="text" data-name="instrument">
                             <span id="instrument" hidden>{{instrument}}</span></b>
-                        </div>
-                        <div>
-                            Analyzed by:&nbsp;
-                            <b><input type="text" data-name="analyzedBy">
+                            </div>
+                            <div>
+                                Analyzed by:&nbsp;
+                                <b><input type="text" data-name="analyzedBy">
                             <span id="analyzedBy" hidden>{{analyzedBy}}</span></b>
-                        </div>
-                        <div>
-                            Sample Origin:&nbsp;
-                            <b><input type="text" data-name="sampleOrigin">
+                            </div>
+                            <div>
+                                Sample Origin:&nbsp;
+                                <b><input type="text" data-name="sampleOrigin">
                             <span id="sampleOrigin" hidden>{{sampleOrigin}}</span></b>
-                        </div>
-                        <div>
-                            Patient Suspected Diagnosis:&nbsp;
-                            <b><span id="suspDiag">{{suspDiag}}</span></b>
-                        </div>
-                        <div>
-                            Patient Diagnosis:&nbsp;
-                            <!-- <input type="text" data-name="confDiag"> -->
-                            <b><input list="dataListPheVCF" data-name="confDiag">
+                            </div>
+                            <div>
+                                Patient Suspected Diagnosis:&nbsp;
+                                <b><span id="suspDiag">{{suspDiag}}</span></b>
+                            </div>
+                            <div>
+                                Patient Diagnosis:&nbsp;
+                                <!-- <input type="text" data-name="confDiag"> -->
+                                <b><input list="dataListPheVCF" data-name="confDiag">
                             <datalist id="dataListPheVCF">
                                 <template is="dom-repeat" items="{{allDiseasesData}}">
                                     <option value="{{item.phenotype}}">{{item.phenotype}}</option>
@@ -193,149 +208,149 @@
                             </datalist>
                             <!-- <jso-tooltip icon="arrow-circle-down"></jso-tooltip> -->
                             <span id="confDiag" hidden>{{confDiag}}</span></b>
+                            </div>
+                        </ul>
+                    </div>
+                    <br>
+                    <div id="stadistics">
+                        <div class="titlePreview">
+                            Generic data
                         </div>
-                    </ul>
-                </div>
-                <br>
-                <div id="stadistics">
-                    <div class="titlePreview">
-                        Generic data
+                        <ul>
+                            <div>Total Variants: &nbsp;
+                                <span><b>{{totalData}}</b></span></div>
+                            <div>Diagnostic Variants: &nbsp;
+                                <span><b>{{diagData.length}}</b></span></div>
+                            <div>Secondary Variants: &nbsp;
+                                <span><b>{{secData.length}}</b></span></div>
+                        </ul>
                     </div>
-                    <ul>
-                        <div>Total Variants: &nbsp;
-                            <span><b>{{totalData}}</b></span></div>
-                        <div>Diagnostic Variants: &nbsp;
-                            <span><b>{{diagData.length}}</b></span></div>
-                        <div>Secondary Variants: &nbsp;
-                            <span><b>{{secData.length}}</b></span></div>
-                    </ul>
-                </div>
-                <br>
-                <div id="values">
-                    <div class="titlePreview">
-                        Static filter resume
-                    </div>
-                    <ul>
-                        <b>
+                    <br>
+                    <div id="values">
+                        <div class="titlePreview">
+                            Static filter resume
+                        </div>
+                        <ul>
+                            <b>
                             Variants found with static filters:
                         </b>
-                        <ul>
-                            <div>A: Most Likely Pathogenic: &nbsp;
-                                <span><b>{{value.mlp}}</b></span>
-                            </div>
-                            <div>B: Potentially Pathogenic: &nbsp;
-                                <span><b>{{value.pp}}</b></span>
-                            </div>
-                            <div>C: Unkown Significance: &nbsp;
-                                <span><b>{{value.us}}</b></span>
-                            </div>
-                            <div>D: Likely Benign: &nbsp;
-                                <span><b>{{value.lb}}</b></span>
-                            </div>
-                        </ul>
-                        <br>
-                        <b>
+                            <ul>
+                                <div>A: Most Likely Pathogenic: &nbsp;
+                                    <span><b>{{value.mlp}}</b></span>
+                                </div>
+                                <div>B: Potentially Pathogenic: &nbsp;
+                                    <span><b>{{value.pp}}</b></span>
+                                </div>
+                                <div>C: Unkown Significance: &nbsp;
+                                    <span><b>{{value.us}}</b></span>
+                                </div>
+                                <div>D: Likely Benign: &nbsp;
+                                    <span><b>{{value.lb}}</b></span>
+                                </div>
+                            </ul>
+                            <br>
+                            <b>
                             Static filters description:
                         </b>
+                            <ul>
+                                <div>A: Most Likely Pathogenic: &nbsp;
+                                    <span><i>Sift least than <b>0.05</b> and Polyphen bigger than <b>0.95</b></i></span>
+                                </div>
+                                <div>B: Potentially Pathogenic: &nbsp;
+                                    <span><i>At least one condition is met</i></span>
+                                </div>
+                                <div>C: Unkown Significance: &nbsp;
+                                    <span><i>Missing Values</i></span>
+                                </div>
+                                <div>D: Likely Benign: &nbsp;
+                                    <span><i>Else</i></span>
+                                </div>
+                            </ul>
+                        </ul>
+                    </div>
+                    <br>
+                    <div id="customFilters">
+                        <div class="titlePreview">
+                            Custom filter resume
+                        </div>
                         <ul>
-                            <div>A: Most Likely Pathogenic: &nbsp;
-                                <span><i>Sift least than <b>0.05</b> and Polyphen bigger than <b>0.95</b></i></span>
+                            <div>Variants Found: &nbsp;
+                                <span><b>{{filterData.length}}</b></span>
                             </div>
-                            <div>B: Potentially Pathogenic: &nbsp;
-                                <span><i>At least one condition is met</i></span>
-                            </div>
-                            <div>C: Unkown Significance: &nbsp;
-                                <span><i>Missing Values</i></span>
-                            </div>
-                            <div>D: Likely Benign: &nbsp;
-                                <span><i>Else</i></span>
+                            <div>Custom Filter Used: &nbsp;
+                                <span><i>{{filter}}</i></span>
                             </div>
                         </ul>
-                    </ul>
-                </div>
-                <br>
-                <div id="customFilters">
-                    <div class="titlePreview">
-                        Custom filter resume
                     </div>
-                    <ul>
-                        <div>Variants Found: &nbsp;
-                            <span><b>{{filterData.length}}</b></span>
+                    <br>
+                    <div id="reportConclusions" style="margin-top: 10px" hidden>
+                        <div class="titlePreview">
+                            Conclusions
                         </div>
-                        <div>Custom Filter Used: &nbsp;
-                            <span><i>{{filter}}</i></span>
-                        </div>
-                    </ul>
-                </div>
-                <br>
-                <div id="reportConclusions" style="margin-top: 10px" hidden>
-                    <div class="titlePreview">
-                        Conclusions
-                    </div>
-                    <ul>
-                        <textarea class="conclusions"></textarea>
-                        <div id="divConclusions" hidden><i>{{divConclusions}}</i></div>
-                    </ul>
-                </div>
-                <br>
-                <div id="diagResult">
-                    <div class="titlePreview">
-                        Diagnostic Table
-                    </div>
-                    <ul>
-                        <div><i>Comments: &nbsp;</i>
-                            <span>{{comDiag}}</span>
-                        </div>
-                        <div id="reportDiagnostic">
-                        </div>
-                    </ul>
-                </div>
-                <br>
-                <div id="mostPathogenicResult" hidden>
-                    <div class="titlePreview">Most Pathogenic Data Table</div>
-                    <ul>
-                        <div id="reportMostPathogenic">
-                        </div>
-                    </ul>
-                </div>
-                <div id="secResult" style="width: 500px; page-break-inside: avoid;" hidden>
-                    <div class="titlePreview">
-                        Secondary Filter Data Table
-                    </div>
-                    <ul>
-                        <div><i>Comments: &nbsp;</i>
-                            <span>{{comSec}}</span>
-                        </div>
-                        <div id="reportSecondary">
-                        </div>
-                    </ul>
-                </div>
-                <br>
-                <div id="anexII">
-                    <div class="titlePreview">
-                        Panel Used
-                    </div>
-                    <ul>
-                        <div>Panel Name: &nbsp;
-                            <span><b>{{panelName}}</b></span>
-                        </div>
-                        <div>Panel Version: &nbsp;
-                            <span><b>{{panelVersion}}</b></span>
-                        </div>
-                        <br>
-                        <div><b>Variants found for each gene in panel used:</b></div>
                         <ul>
-                            <div>
-                                <template is="dom-repeat" items="{{geneList}}">
-                                    <span style="margin-right:50px;">{{item.gene}}
+                            <textarea class="conclusions"></textarea>
+                            <div id="divConclusions" hidden><i>{{divConclusions}}</i></div>
+                        </ul>
+                    </div>
+                    <br>
+                    <div id="diagResult">
+                        <div class="titlePreview">
+                            Diagnostic Table
+                        </div>
+                        <ul>
+                            <div><i>Comments: &nbsp;</i>
+                                <span>{{comDiag}}</span>
+                            </div>
+                            <div id="reportDiagnostic">
+                            </div>
+                        </ul>
+                    </div>
+                    <br>
+                    <div id="mostPathogenicResult" hidden>
+                        <div class="titlePreview">Most Pathogenic Data Table</div>
+                        <ul>
+                            <div id="reportMostPathogenic">
+                            </div>
+                        </ul>
+                    </div>
+                    <div id="secResult" style="width: 500px; page-break-inside: avoid;" hidden>
+                        <div class="titlePreview">
+                            Secondary Filter Data Table
+                        </div>
+                        <ul>
+                            <div><i>Comments: &nbsp;</i>
+                                <span>{{comSec}}</span>
+                            </div>
+                            <div id="reportSecondary">
+                            </div>
+                        </ul>
+                    </div>
+                    <br>
+                    <div id="anexII">
+                        <div class="titlePreview">
+                            Panel Used
+                        </div>
+                        <ul>
+                            <div>Panel Name: &nbsp;
+                                <span><b>{{panelName}}</b></span>
+                            </div>
+                            <div>Panel Version: &nbsp;
+                                <span><b>{{panelVersion}}</b></span>
+                            </div>
+                            <br>
+                            <div><b>Variants found for each gene in panel used:</b></div>
+                            <ul>
+                                <div>
+                                    <template is="dom-repeat" items="{{geneList}}">
+                                        <span style="margin-right:50px;">{{item.gene}}
                                     <span>:&nbsp;<b>{{item.value}}</b></span></span>
-                                </template>
-                            </div>
+                                    </template>
+                                </div>
+                            </ul>
                         </ul>
-                    </ul>
+                    </div>
                 </div>
             </div>
-
         </div>
 
     </template>
@@ -414,6 +429,12 @@
                     return {};
                 },
                 notify: true
+            },
+            selectedPanel: {
+                type: Object,
+                value: function() {
+                    return {};
+                }
             },
             suspDiag: {
                 type: String,
@@ -648,52 +669,6 @@
             this.cellbaseVersion = CELLBASE_VERSION;
             var date = new Date();
             this.requestDate = date.toLocaleString();
-            this.geneColumns = [{
-                name: 'name',
-                title: 'Name',
-            }, {
-                name: 'chr',
-                title: 'Chr',
-                defaultValue: '.',
-            }, {
-                name: 'start',
-                title: 'Start',
-                defaultValue: '.',
-            }, {
-                name: 'end',
-                title: 'End',
-                defaultValue: '.',
-            }];
-            this.mutationColumns = [{
-                name: 'chr',
-                title: 'Chr',
-            }, {
-                name: 'pos',
-                title: 'Pos',
-            }, {
-                name: 'ref',
-                title: 'Ref',
-            }, {
-                name: 'alt',
-                title: 'Alt',
-            }, {
-                name: 'phe',
-                title: 'Phenotype',
-            }, {
-                name: 'src',
-                title: 'Source',
-            }];
-            this.diseaseColumns = [{
-                name: 'phenotype',
-                title: 'Phenotype',
-                type: 'text',
-                width: 500
-            }, {
-                name: 'source',
-                title: 'Source',
-                type: 'select',
-                options: ["clinvar", "gwas"],
-            }];
             if (localStorage.bioinfo_team_diseases != null) {
                 this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
             } else {
@@ -862,6 +837,7 @@
                 }
             }
             console.log(jobPanel)
+            this.selectedPanel = jobPanel;
             this.panelName = jobPanel.name;
             this.panelVersion = jobPanel.version;
 
@@ -1057,6 +1033,13 @@
                     }
                 }
             });
+        },
+        exportPanelPDF: function(e) {
+            if (Object.keys(this.selectedPanel).length == 0) {
+                alert("No panel selected");
+            } else {
+                this.$.panelExport.exportPDF(this.selectedPanel);
+            }
         }
     });
 </script>
