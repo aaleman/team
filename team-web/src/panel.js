@@ -50,8 +50,8 @@ Panel.prototype = {
                         species: 'hsapiens',
                         category: 'feature',
                         subCategory: 'clinical',
-                        resource: 'all',
-                        // resource: 'search',
+                        // resource: 'all',
+                        resource: 'search',
                         async: false,
                         params: {
                             source: 'clinvar',
