@@ -233,7 +233,7 @@
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <= </jso-option>
+                                                <=< /jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
@@ -250,7 +250,7 @@
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <= </jso-option>
+                                                <=< /jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
@@ -267,7 +267,7 @@
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <= </jso-option>
+                                                <=< /jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
@@ -284,7 +284,7 @@
                                     <jso-option value="<" selected>
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <= </jso-option>
+                                                <=< /jso-option>
                                                     <jso-option value=">">></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
@@ -326,7 +326,7 @@
                                     <jso-option value="<">
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <= </jso-option>
+                                                <=< /jso-option>
                                                     <jso-option value=">" selected>></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
@@ -343,7 +343,7 @@
                                     <jso-option value="<">
                                         < </jso-option>
                                             <jso-option value="<=">
-                                                <= </jso-option>
+                                                <=< /jso-option>
                                                     <jso-option value=">" selected>></jso-option>
                                                     <jso-option value=">=">>=</jso-option>
                                 </jso-select>
@@ -437,6 +437,9 @@
                 type: Number,
             },
             phastconsValue: {
+                type: Number,
+            },
+            grepValue: {
                 type: Number,
             },
             historyFilters: {
@@ -593,6 +596,10 @@
             if (phastcons != null) {
                 q["phastcons"] = phastcons;
             }
+            var grep = this.$.filterConservation.checkGrep(2);
+            if (grep != null) {
+                q["grep"] = grep;
+            }
 
             var phylop = this.$.filterConservation.checkPhylop(2);
             if (phylop != null) {
@@ -656,7 +663,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
+                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.grep != null || q["annot-ct"] != null || q["gt"] != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -704,7 +711,7 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q["annot-ct"] != null || q["gt"] != null) {
+            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.grep != null || q["annot-ct"] != null || q["gt"] != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
@@ -731,6 +738,10 @@
                 for (var i = 0; i < fC.length; i++) {
                     filterName.push(fC[i]);
                 }
+            }
+            var fCg = this.$.filterConservation.loadGrep(hf);
+            if (fCg != "") {
+                filterName.push(fCg);
             }
 
             var fCT = this.$.filterCT.load(hf, 2);
