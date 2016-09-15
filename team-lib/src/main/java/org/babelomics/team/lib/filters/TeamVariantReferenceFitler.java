@@ -2,7 +2,8 @@ package org.babelomics.team.lib.filters;
 
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.tools.variant.filtering.VariantFilter;
-import org.opencb.opencga.catalog.CatalogManager;
+// import org.opencb.opencga.catalog.CatalogManager;
+import org.opencb.opencga.catalog.managers.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
 import org.opencb.opencga.catalog.models.Sample;
 

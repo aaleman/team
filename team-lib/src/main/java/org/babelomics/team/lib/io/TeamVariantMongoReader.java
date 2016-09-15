@@ -7,11 +7,13 @@ import org.opencb.biodata.models.variant.Variant;
 import org.opencb.commons.datastore.core.Query;
 import org.opencb.commons.datastore.core.QueryOptions;
 import org.opencb.opencga.analysis.storage.AnalysisFileIndexer;
-import org.opencb.opencga.catalog.CatalogManager;
+// import org.opencb.opencga.catalog.CatalogManager;
+import org.opencb.opencga.catalog.managers.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
 import org.opencb.opencga.catalog.models.DataStore;
 import org.opencb.opencga.catalog.models.File;
 // import org.opencb.opencga.storage.core.StorageManagerException;
+import org.opencb.opencga.storage.core.StorageManager;
 import org.opencb.opencga.storage.core.exceptions.StorageManagerException;
 import org.opencb.opencga.storage.core.StorageManagerFactory;
 import org.opencb.opencga.storage.core.config.StorageConfiguration;
@@ -52,13 +54,15 @@ public class TeamVariantMongoReader implements VariantReader {
 
     @Override
     public boolean open() {
+
         boolean res = true;
         try {
 
             DataStore dataStore = AnalysisFileIndexer.getDataStore(catalogManager, studyId, File.Bioformat.VARIANT, sessionId);
             String storageEngine = dataStore.getStorageEngine();
             String dbName = dataStore.getDbName();
-            StorageManagerFactory storageManagerFactory = new StorageManagerFactory(storageConfiguration);
+//          StorageManagerFactory storageManagerFactory = new StorageManagerFactory(storageConfiguration);
+            StorageManagerFactory storageManagerFactory = StorageManagerFactory.get(storageConfiguration);
 
             VariantStorageManager storageManager = storageManagerFactory.getVariantStorageManager(storageEngine);
             VariantDBAdaptor dbAdaptor = storageManager.getDBAdaptor(dbName);
@@ -70,7 +74,7 @@ public class TeamVariantMongoReader implements VariantReader {
             // iterator = dbAdaptor.iterator(new QueryOptions());
             iterator = dbAdaptor.iterator(q, new QueryOptions());
 
-        } catch (CatalogException | ClassNotFoundException  | IllegalAccessException | InstantiationException e) {
+        } catch (CatalogException | ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
             res = false;
         } catch (StorageManagerException e) {
