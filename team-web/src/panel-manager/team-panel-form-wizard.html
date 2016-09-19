@@ -843,8 +843,9 @@
 
             } else {
                 $.ajax({
-                     url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    //  url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     // url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    url: "http://ws.babelomics.org/cellbase/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
@@ -1160,10 +1161,10 @@
                         console.log(lines.length);
 
                         for (var i = 0; i < lines.length; i++) {
-                            var line = lines[i];
+                            var l = lines[i];
 
-                            if ((line.indexOf("#") < 0 && line.indexOf("browser") < 0 && line.indexOf("track") < 0) && line != '') {
-                                var fields = line.split("\t");
+                            if ((l.indexOf("#") < 0 && l.indexOf("browser") < 0 && l.indexOf("track") < 0) && l != '') {
+                                var fields = l.split("\t");
                                 var chr = fields[0];
                                 var start = fields[1];
                                 var end = fields[2];
@@ -1249,9 +1250,9 @@
                         }
                         console.log(lines.length);
                         for (var i = 0; i < lines.length; i++) {
-                            var line = lines[i];
-                            if (line.indexOf("#") < 0 && line != '') {
-                                var fields = line.split("\t");
+                            var l = lines[i];
+                            if (l.indexOf("#") < 0 && l != '') {
+                                var fields = l.split("\t");
                                 var chr = fields[0];
                                 var pos = fields[1];
                                 var ref = fields[3];
@@ -1287,21 +1288,30 @@
             var csv_file = this.$.mutationCSVFileInput.files[0];
             var src = "user-defined";
             setTimeout(function() {
+                var log = [];
+                var line = 0;
+
                 if (csv_file != null) {
-                    var reader = new FileReader();
                     var separator = me.$.mutationCSVSeparator.selectedOption.value;
                     separator = (separator === "tab") ? '\t' : separator;
-
                     var ignoreHeader = me.$.mutationCSVHeader.checked;
 
-                    var lr = new LineReader();
-                    lr.on("line", function(line, next) {
+                    var _navigator = new FileNavigator(csv_file);
+                    var indexToStartWith = 0;
 
-                        if (ignoreHeader) {
-                            ignoreHeader = false;
-                        } else {
-                            if (line != '') {
-                                var fields = line.split(separator);
+                    _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
+                        if (err) {
+                            return;
+                        }
+                        console.log(lines.length);
+
+                        for (var i = 0; i < lines.length; i++) {
+                            var l = lines[i];
+                            if (ignoreHeader) {
+                                ignoreHeader = false;
+                            } else {
+
+                                var fields = l.split(separator);
                                 var chr = fields[0];
                                 var pos = fields[1];
                                 var ref = fields[2];
@@ -1314,19 +1324,21 @@
                                     alt: alt,
                                     phe: phe,
                                     src: src
-                                };
+                                }
                                 me.formData.addMutation(mut);
                             }
+                            line++;
                         }
-                        next();
-                    });
-                    lr.read(csv_file);
-                    me.$.mutationTable.set("data", me.formData.mutations);
-                    me.$.mutationTable.setLoading(false);
+                        if (eof) {
+                            me.$.mutationTable.set("data", me.formData.mutations);
+                            me.$.mutationTable.setLoading(false);
+                            return;
+                        }
+                        _navigator.readSomeLines(index + lines.length, linesReadHandler);
+                    })
                 } else {
                     me.$.mutationTable.setLoading(false);
                 }
-                me.$.mutationCSVFileInput.value = "";
             }, 50);
         },
         handleClickMutationListClear: function(e) {
