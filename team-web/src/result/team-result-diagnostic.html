@@ -851,7 +851,9 @@
                     return true;
                 }
             } else if (query === "filterB") {
-                if (sift <= 0.05 || polyphen >= 0.95 && (sift != '.' || polyphen != '.')) {
+                if (sift <= 0.05 && polyphen >= 0.95) {
+                    return false;
+                } else if (sift <= 0.05 || polyphen >= 0.95 && (sift != '.' || polyphen != '.')) {
                     return true;
                 }
             } else if (query === "filterC") {
