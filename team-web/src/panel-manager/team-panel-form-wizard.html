@@ -1805,8 +1805,8 @@
             // this.set('formData.name', (selectedPanel.name + "_2"));
             // this.set('formData.version', (selectedPanel.version + 1));
             // this.set('formData.id',Utils.genId("Panel"));
-            this.editingPanel = Utils.clone(selectedPanel);
-            this.set('formData', this.editingPanel);
+            this.set('formData', selectedPanel);
+            this.editingPanel = Utils.clone(this.formData);
             this.$.selectedDiseases.set("data", this.formData.diseases);
             this.$.geneTable.set("data", this.formData.genes);
             this.$.mutationTable.set("data", this.formData.mutations);
