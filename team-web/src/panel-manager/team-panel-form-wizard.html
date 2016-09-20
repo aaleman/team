@@ -1024,22 +1024,26 @@
             return neo;
         },
         handleAddSelectedDiseases: function() {
-            var me = this;
-            var auxDisease = [];
-            this.$.selectedDiseases.setLoading(true);
+            if (this.currentSelectedDiseasesData.length > 0) {
+                var me = this;
+                var auxDisease = [];
+                this.$.selectedDiseases.setLoading(true);
 
-            setTimeout(function() {
-                me.formData.addDiseases(me.currentSelectedDiseasesData);
-                me.$.selectedDiseases.set("data", me.formData.diseases);
-                me.$.geneTable.set("data", me.formData.genes);
-                me.$.mutationTable.set("data", me.formData.mutations);
-                //
-                // for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
-                //     var row = me.currentSelectedDiseasesData[i];
-                //     me.formData.addDisease(row);
-                // }
-                me.$.selectedDiseases.setLoading(false);
-            }, 50)
+                setTimeout(function() {
+                    me.formData.addDiseases(me.currentSelectedDiseasesData);
+                    me.$.selectedDiseases.set("data", me.formData.diseases);
+                    me.$.geneTable.set("data", me.formData.genes);
+                    me.$.mutationTable.set("data", me.formData.mutations);
+                    //
+                    // for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
+                    //     var row = me.currentSelectedDiseasesData[i];
+                    //     me.formData.addDisease(row);
+                    // }
+                    me.$.selectedDiseases.setLoading(false);
+                }, 50)
+            }else{
+              alert('No disease selected.');
+            }
         },
         handleClearSelectedDiseases: function() {
             this.formData.clearDiseases();
@@ -1798,18 +1802,21 @@
             this.errorAddGenes = "";
         },
         addFromPanelManager: function(selectedPanel, op) {
-            this.set('formData', selectedPanel);
-            this.set('formData.name', (selectedPanel.name + "_2"));
+            // this.set('formData.name', (selectedPanel.name + "_2"));
             // this.set('formData.version', (selectedPanel.version + 1));
-            this.editingPanel = Utils.clone(this.formData);
+            this.editingPanel = Utils.clone(selectedPanel);
+            this.set('formData', this.editingPanel);
+            this.$.selectedDiseases.set("data", this.formData.diseases);
+            this.$.geneTable.set("data", this.formData.genes);
+            this.$.mutationTable.set("data", this.formData.mutations);
             this.formData.polymer = this;
             // this.set('formData.id',Utils.genId("Panel"));
             // var aux = this.$.personalData.querySelectorAll("input");
             if (op == "edit") {
                 //     aux[0].disabled = true;
                 //     aux[1].disabled = true;
+                this.set('formData.name', (selectedPanel.name + "_2"));
                 if (this.formData.used == true) {
-                    this.set('formData.name', (selectedPanel.name + "_2"));
                     this.$.saveAsPanel.hidden = false;
                     this.$.savePanel.hidden = true;
                 } else {
