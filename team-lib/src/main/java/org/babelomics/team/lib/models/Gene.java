@@ -29,8 +29,10 @@ public class Gene {
     }
 
     public String getChr() {
-        return chr.replace("chrom", "").replace("chro", "").replace("chr", "").replace("ch", "");
-
+        if(this.chr == null){
+            return null;
+        }
+        return this.chr.replace("chrom", "").replace("chro", "").replace("chr", "").replace("ch", "");
     }
 
     public void setChr(String chr) {

@@ -208,6 +208,7 @@ public class TeamMain {
     }
 
     private static boolean isDiagnosticVariant(TeamVariant teamVariant, Panel panel) {
+
         Variant variant = teamVariant.getVariant();
         for (Mutation mutation : panel.getMutations()) {
             if (mutation.getChr().equalsIgnoreCase(variant.getChromosome()) &&
