@@ -24,6 +24,37 @@ Panel.prototype = {
     _incModCount: function () {
         this.modCount++;
     },
+
+    _retrieveMutations: function (source, phenotype, exclude, skip, limit, cb) {
+        var me = this;
+        CellBaseManager.get({
+            species: 'hsapiens',
+            category: 'feature',
+            subCategory: 'clinical',
+            // resource: 'all',
+            resource: 'search',
+            async: false,
+            params: {
+                skip: skip,
+                limit: limit,
+                source: source,
+                phenotype: phenotype,
+                exclude: exclude
+            },
+            success: function (data) {
+                try {
+                    var numResults = data.response[0].numResults;
+                    cb(data);
+                    if (numResults > 0) {
+                        me._retrieveMutations(source, phenotype, exclude, skip + limit, limit, cb);
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+
+            }
+        });
+    },
     addDiseases: function (diseases) {
         var me = this;
         var genes = [];
@@ -45,39 +76,25 @@ Panel.prototype = {
                 }
 
                 if (disease.source == "clinvar") {
-
-                    CellBaseManager.get({
-                        species: 'hsapiens',
-                        category: 'feature',
-                        subCategory: 'clinical',
-                        // resource: 'all',
-                        resource: 'search',
-                        async: false,
-                        params: {
-                            source: 'clinvar',
-                            phenotype: disease.phenotype,
-                            exclude: "annot,clinvarSet"
-                        },
-                        success: function (data) {
-                            if (data.response && data.response.length > 0) {
-                                var result = data.response[0].result;
-                                for (var i = 0; i < result.length; i++) {
-                                    var row = result[i];
-                                    var mut = {
-
-                                        chr: row.chromosome,
-                                        pos: row.start,
-                                        ref: row.reference,
-                                        alt: row.alternate,
-                                        phe: disease.phenotype,
-                                        src: disease.source
-                                    }
-                                    me.addMutation(mut);
-
+                    me._retrieveMutations('clinvar', disease.phenotype, "annot,clinvarSet", 0, 1000, function (data) {
+                        if (data.response && data.response.length > 0) {
+                            var result = data.response[0].result;
+                            for (var i = 0; i < result.length; i++) {
+                                var row = result[i];
+                                var mut = {
+                                    chr: row.chromosome,
+                                    pos: row.start,
+                                    ref: row.reference,
+                                    alt: row.alternate,
+                                    phe: disease.phenotype,
+                                    src: disease.source
                                 }
+                                me.addMutation(mut);
+
                             }
                         }
-                    });
+                    })
+
                 }
 
             }
@@ -316,22 +333,22 @@ Panel.prototype = {
         return null;
     },
     addMutation: function (mutation) {
-      var panelMutations = [];
+        var panelMutations = [];
 
-      for (var i = 0; i < this.mutations.length; i++) {
-          panelMutations.push(this.mutations[i]);
-      }
-      var auxMutation = this.containsMutation(mutation);
+        for (var i = 0; i < this.mutations.length; i++) {
+            panelMutations.push(this.mutations[i]);
+        }
+        var auxMutation = this.containsMutation(mutation);
 
-      if (auxMutation) {
-          auxMutation.count++;
-      } else {
-          mutation.count = 1;
-          panelMutations.push(mutation);
-      }
-      this._incModCount();
-      this.polymer.push('formData.mutations', mutation);
-      this.polymer.$.mutationTable.set("data", this.polymer.formData.mutations);
+        if (auxMutation) {
+            auxMutation.count++;
+        } else {
+            mutation.count = 1;
+            panelMutations.push(mutation);
+        }
+        this._incModCount();
+        this.polymer.push('formData.mutations', mutation);
+        this.polymer.$.mutationTable.set("data", this.polymer.formData.mutations);
     },
     containsMutation: function (mutation) {
         // var mutName = mutation.chr + "_" + mutation.pos + "_" + mutation.ref + "_" + mutation.alt + "_" + mutation.phe + "_" + mutation.src;
