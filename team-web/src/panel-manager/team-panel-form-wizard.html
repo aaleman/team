@@ -843,9 +843,8 @@
 
             } else {
                 $.ajax({
-                    //  url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
-                    // url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
-                    url: "http://ws.babelomics.org/cellbase/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                     url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                     //only in cellbase v3                    
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
