@@ -258,6 +258,21 @@
         .mut-element {
             width: 275px;
         }
+
+        #progressDiv {
+            background: black;
+            opacity: 0.2;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        #progressBar {
+            z-index: 1000;
+        }
     </style>
     <template>
 
@@ -290,6 +305,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <div class="step">
                     <div class="horizontal layout">
@@ -604,7 +620,10 @@
                     </div>
                 </div>
         </jso-wizard>
+        <div id="progressDiv" hidden>
 
+        </div>
+        <jso-progress-bar id="progressBar" percent="{{percent}}" text="{{textbar}}" hidden></jso-progress-bar>
 
     </template>
 </dom-module>
@@ -781,6 +800,14 @@
                     validator: VCFValidator
                 }
             },
+            percent: {
+                type: Number,
+                value: 0
+            },
+            textbar: {
+                type: String,
+                value: 'Adding mutations...'
+            },
         },
         observers: [
             "handleUpdatedGenes(formData.modCount)",
@@ -843,8 +870,8 @@
 
             } else {
                 $.ajax({
-                     url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
-                     //only in cellbase v3                    
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    //only in cellbase v3
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
@@ -1027,21 +1054,30 @@
                 var me = this;
                 var auxDisease = [];
                 this.$.selectedDiseases.setLoading(true);
+                this.$.progressBar.hidden = false;
+                me.$.progressDiv.hidden = false;
 
-                setTimeout(function() {
-                    me.formData.addDiseases(me.currentSelectedDiseasesData);
-                    me.$.selectedDiseases.set("data", me.formData.diseases);
-                    me.$.geneTable.set("data", me.formData.genes);
-                    me.$.mutationTable.set("data", me.formData.mutations);
-                    //
-                    // for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
-                    //     var row = me.currentSelectedDiseasesData[i];
-                    //     me.formData.addDisease(row);
-                    // }
-                    me.$.selectedDiseases.setLoading(false);
-                }, 50)
-            }else{
-              alert('No disease selected.');
+                me.formData.addDiseases(me.currentSelectedDiseasesData, function(err) {
+                    if (err == null) {
+                        me.$.selectedDiseases.set("data", me.formData.diseases);
+                        me.$.geneTable.set("data", me.formData.genes);
+                        me.$.mutationTable.set("data", me.formData.mutations);
+                        me.$.selectedDiseases.setLoading(false);
+                        me.$.progressBar.hidden = true;
+                        me.$.progressDiv.hidden = true;
+                    } else {
+                        this.formData.clearDiseases();
+                        this.$.selectedDiseases.set("data", this.formData.diseases);
+                        this.formData.clearGenes();
+                        this.$.geneTable.set("data", this.formData.genes);
+                        this.formData.clearMutations();
+                        this.$.mutationTable.set("data", this.formData.mutations);
+                        alert(err);
+                    }
+                });
+
+            } else {
+                alert('No disease selected.');
             }
         },
         handleClearSelectedDiseases: function() {
