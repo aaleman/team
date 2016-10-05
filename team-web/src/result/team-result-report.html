@@ -1026,7 +1026,7 @@
                 request: {
                     async: false,
                     success: function(response) {
-                        alert("The sample aditional information has been saved succesfully.")
+                        new StvDialog().alert("The sample aditional information has been saved succesfully.")
                     },
                     error: function() {
 
@@ -1036,7 +1036,7 @@
         },
         exportPanelPDF: function(e) {
             if (Object.keys(this.selectedPanel).length == 0) {
-                alert("No panel selected");
+                new StvDialog().alert("No panel selected");
             } else {
                 this.$.panelExport.exportPDF(this.selectedPanel);
             }

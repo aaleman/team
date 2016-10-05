@@ -870,7 +870,7 @@
 
             } else {
                 $.ajax({
-                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-legacy/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
                     //only in cellbase v3
                     dataType: 'json',
                     async: false,
@@ -1072,12 +1072,12 @@
                         this.$.geneTable.set("data", this.formData.genes);
                         this.formData.clearMutations();
                         this.$.mutationTable.set("data", this.formData.mutations);
-                        alert(err);
+                        new StvDialog().alert(err);
                     }
                 });
 
             } else {
-                alert('No disease selected.');
+                new StvDialog().alert('No disease selected.');
             }
         },
         handleClearSelectedDiseases: function() {
@@ -1120,7 +1120,7 @@
                         var start = parseInt(groups[2]);
                         var end = parseInt(groups[3]);
                         if (start > end) {
-                            alert("Malformed Region: " + geneName + ", END must be greater than or equal to START");
+                            new StvDialog().alert("Malformed Region: " + geneName + ", END must be greater than or equal to START");
                             return;
                         } else {
                             var gene = {
@@ -1168,7 +1168,7 @@
                                         // me.formData.addGene({
                                         //     name: elem.id
                                         // });
-                                        alert("Gene/Region '" + geneName + "' not exits");
+                                        new StvDialog().alert("Gene/Region '" + geneName + "' not exits");
                                     }
                                 }
                             }
@@ -1270,7 +1270,7 @@
             this.$.mutationTable.setLoading(true);
             var phe = this.$.mutationGVPheVCF.value;
             if (phe == "") {
-                alert("Phenotype is mandatory");
+                new StvDialog().alert("Phenotype is mandatory");
                 return;
             }
             var src = "user-defined";
@@ -1395,13 +1395,13 @@
             var re = /^[ACTG]*$/;
 
             if (chr == "" || pos.length == 0 || phe == "") {
-                alert("Chromosome, Position and Phenotype are mandatory");
+                new StvDialog().alert("Chromosome, Position and Phenotype are mandatory");
                 return;
             } else if (ref == "" && alt == "") {
-                alert("Reference or Alternate is mandatory");
+                new StvDialog().alert("Reference or Alternate is mandatory");
                 return;
             } else if (!re.test(ref) || !re.test(alt)) {
-                alert("Reference and Alternate must contain only ACTG");
+                new StvDialog().alert("Reference and Alternate must contain only ACTG");
                 return;
             }
             var src = "user-defined";
@@ -1427,59 +1427,61 @@
             this.formData.name = this.formData.name.replace(/[^a-zA-Z0-9._\-]/g, "_");
             // var re = /[¿\?\[\]<>\^\{\}\|#%"\\\\]/;
             // if (re.test(this.formData.name)) {
-            //     alert("The Panel name shouldn't have these characteres '¿ ? [ ] < > ^ { } | # % \\ \" ' ");
+            //     new StvDialog().alert("The Panel name shouldn't have these characteres '¿ ? [ ] < > ^ { } | # % \\ \" ' ");
             //     return;
             // }
             if (this.formData.name == "") {
-                alert("The Panel name is mandatory");
+                new StvDialog().alert("The Panel name is mandatory");
                 return;
             }
             for (var i = 0; i < this.panelConfig.panels.length; i++) {
                 if (this.formData.name === this.panelConfig.panels[i].name) {
-                    alert("The Panel name already exists");
+                    new StvDialog().alert("The Panel name already exists");
                     return;
                 }
             }
             if (JSON.stringify(this.formData) === JSON.stringify(this.editingPanel)) {
-                alert("The panel hasn't been modified");
+                new StvDialog().alert("The panel hasn't been modified");
                 return;
             }
-            if (confirm("Are you sure?")) {
-                if (this.defaultStudy && this.teamConfigFolder) {
-                    //                    var content = pako.deflate(JSON.stringify(this.formData));
-                    content = JSON.stringify(this.formData);
-                    var separator = "-_-";
-                    var fileName = "panel" + separator + this.formData.name + separator + this.formData.version;
-                    var jsonPanelData = {
-                        "name": this.formData.name,
-                        "version": this.formData.version,
-                        "archived": false,
-                        "used": 0,
-                        "fileId": null
-                    };
 
-                    this.uploadFile(content, fileName, this.defaultStudy.id, function(id) {
-                        var _me = me;
+            new StvDialog().confirm("Are you sure?", function(answer) {
+                if (answer == true) {
+                    if (me.defaultStudy && me.teamConfigFolder) {
+                        //                    var content = pako.deflate(JSON.stringify(this.formData));
+                        content = JSON.stringify(me.formData);
+                        var separator = "-_-";
+                        var fileName = "panel" + separator + me.formData.name + separator + me.formData.version;
+                        var jsonPanelData = {
+                            "name": me.formData.name,
+                            "version": me.formData.version,
+                            "archived": false,
+                            "used": 0,
+                            "fileId": null
+                        };
 
-                        var userData = _me.userData;
+                        me.uploadFile(content, fileName, me.defaultStudy.id, function(id) {
+                            var _me = me;
 
-                        jsonPanelData.fileId = id;
-                        _me.panelConfig.addPanelConfig(jsonPanelData);
+                            var userData = _me.userData;
 
-                    });
+                            jsonPanelData.fileId = id;
+                            _me.panelConfig.addPanelConfig(jsonPanelData);
+
+                            _me.formData = new Panel();
+                            _me.formData.polymer = this;
+
+                            _me.$.jsoFormWizard.goToStep(1);
+                            // var a = document.getElementById("manager");
+                            // a.$.newPanelPanel.hidden = true;
+                            new StvDialog().alert("The panel has been created succesfully");
+
+                        });
+                    }
+                } else {
+                    return;
                 }
-            } else {
-                return;
-            }
-
-            this.formData = new Panel();
-            this.formData.polymer = this;
-
-            this.$.jsoFormWizard.goToStep(1);
-            // var a = document.getElementById("manager");
-            // a.$.newPanelPanel.hidden = true;
-            alert("The panel has been created succesfully");
-
+            });
         },
         uploadFile: function(fileContent, fileName, studyId, callback) {
             var url = OpencgaManager.files.upload({
@@ -1569,7 +1571,7 @@
                     this.$.panelPreview.hidden = false;
                 }
             } else {
-                alert("No panel selected");
+                new StvDialog().alert("No panel selected");
             }
         },
         handleImportGenesPanel: function(e) {
@@ -1601,7 +1603,7 @@
                                 if (me.selectedPanel.genes != "") {
                                     me.genes = me.selectedPanel.genes;
                                 } else {
-                                    alert("The selected panel hasn't got genes");
+                                    new StvDialog().alert("The selected panel hasn't got genes");
                                     me.$.geneTable.setLoading(false);
                                     return;
                                 }
@@ -1613,7 +1615,7 @@
                     me.$.geneTable.set("data", me.formData.genes);
                     me.$.geneTable.setLoading(false);
                 } else {
-                    alert("No panel selected");
+                    new StvDialog().alert("No panel selected");
                     me.$.geneTable.setLoading(false);
                     return;
                 }
@@ -1649,7 +1651,7 @@
                     this.$.panelPreviewMut.hidden = false;
                 }
             } else {
-                alert("No panel selected");
+                new StvDialog().alert("No panel selected");
             }
         },
         handleImportMutationsPanel: function(e) {
@@ -1680,7 +1682,7 @@
                                     if (me.selectedPanel.mutations != "") {
                                         me.mutations = me.selectedPanel.mutations;
                                     } else {
-                                        alert("The selected panel hasn't got mutations");
+                                        new StvDialog().alert("The selected panel hasn't got mutations");
                                         me.$.mutationTable.setLoading(false);
                                         return;
                                     }
@@ -1707,7 +1709,7 @@
                         me.$.mutationTable.set("data", me.formData.mutations);
                         me.$.mutationTable.setLoading(false);
                     } else {
-                        alert("No panel selected");
+                        new StvDialog().alert("No panel selected");
                         me.$.mutationTable.setLoading(false);
                         return;
                     }
@@ -1764,74 +1766,81 @@
                         lowLevel = true;
                     }
                 }
-
-                if (lowLevel && !confirm("Your selection contains genes with low level of confidence. Do you want to continue?")) {
-                    return;
-                }
-
-                if (me.$.panelAppSelectedGenes.selected.length > 0) {
-                    me.errorAddGenes = "";
-                    var geneName = [];
-                    var sgenes = me.$.panelAppSelectedGenes.selected;
-                    for (var i = 0; i < sgenes.length; i++) {
-                        geneName[i] = sgenes[i].GeneSymbol;
-                    }
-                    geneName = geneName.join(",");
-                    // var me = this;
-                    var genes = [];
-                    CellBaseManager.get({
-                        species: 'hsapiens',
-                        category: 'feature',
-                        subCategory: 'gene',
-                        resource: 'info',
-                        async: false,
-                        query: geneName,
-                        params: {
-                            include: "name,chromosome,start,end"
-                        },
-                        success: function(data) {
-
-                            if (data.response && data.response.length > 0) {
-
-                                for (var i = 0; i < data.response.length; i++) {
-                                    var elem = data.response[i];
-                                    if (elem.result.length > 0) {
-                                        var row = data.response[i].result[0];
-                                        var gene = {
-                                            name: row.name,
-                                            chr: row.chromosome,
-                                            start: row.start,
-                                            end: row.end
-                                        };
-                                        // me.formData.addGene(gene);
-                                        genes.push(gene);
-                                    } else {
-                                        // me.formData.addGene({
-                                        //     name: elem.id
-                                        // });
-                                        genes.push({
-                                            name: elem.id
-                                        });
-                                    }
-                                }
-                            }
+                if (lowLevel) {
+                    new StvDialog().confirm("Your selection contains genes with low level of confidence. Do you want to continue?", function(answer) {
+                        if (answer == true) {
+                          me._addGenesPanelApp(me.$.panelAppSelectedGenes.selected);
+                        } else {
+                            return;
                         }
+
                     });
-                    var panelGenes = me.formData.addAllGenes(genes);
-                    me.set('formData.genes', panelGenes);
-                    me.$.geneTable.set("data", me.formData.genes);
-                    me.$.appPanel.hidden = true;
-                    me.panelAppGenes = "";
-                    me.$.panelAppSelectedGenes.selected = [];
-                    me.$.panelAppSelectedDisease.selected = [];
-                    me.$.geneTable.setLoading(false);
                 } else {
-                    // this.errorAddGenes = "No gene selected";
-                    alert("Any selected gene");
-                    me.$.geneTable.setLoading(false);
-                    return;
+                    if (me.$.panelAppSelectedGenes.selected.length == 0) {
+                        new StvDialog().alert("Any selected gene");
+                        me.$.geneTable.setLoading(false);
+                        return;
+                    }else{
+                      me._addGenesPanelApp(me.$.panelAppSelectedGenes.selected);
+                    }
                 }
             }, 50)
+        },
+        _addGenesPanelApp: function(sgenes){
+              this.errorAddGenes = "";
+              var geneName = [];
+              for (var i = 0; i < sgenes.length; i++) {
+                  geneName[i] = sgenes[i].GeneSymbol;
+              }
+              geneName = geneName.join(",");
+              // var me = this;
+              var genes = [];
+              CellBaseManager.get({
+                  species: 'hsapiens',
+                  category: 'feature',
+                  subCategory: 'gene',
+                  resource: 'info',
+                  async: false,
+                  query: geneName,
+                  params: {
+                      include: "name,chromosome,start,end"
+                  },
+                  success: function(data) {
+
+                      if (data.response && data.response.length > 0) {
+
+                          for (var i = 0; i < data.response.length; i++) {
+                              var elem = data.response[i];
+                              if (elem.result.length > 0) {
+                                  var row = data.response[i].result[0];
+                                  var gene = {
+                                      name: row.name,
+                                      chr: row.chromosome,
+                                      start: row.start,
+                                      end: row.end
+                                  };
+                                  // me.formData.addGene(gene);
+                                  genes.push(gene);
+                              } else {
+                                  // me.formData.addGene({
+                                  //     name: elem.id
+                                  // });
+                                  genes.push({
+                                      name: elem.id
+                                  });
+                              }
+                          }
+                      }
+                  }
+              });
+              var panelGenes = this.formData.addAllGenes(genes);
+              this.set('formData.genes', panelGenes);
+              this.$.geneTable.set("data", this.formData.genes);
+              this.$.appPanel.hidden = true;
+              this.panelAppGenes = "";
+              this.$.panelAppSelectedGenes.selected = [];
+              this.$.panelAppSelectedDisease.selected = [];
+              this.$.geneTable.setLoading(false);
         },
         handlePanelAppSelectedGen: function(e) {
             this.errorAddGenes = "";
@@ -1880,7 +1889,7 @@
             if (this.$.mutationGVPheVCF.value != "") {
                 this.$.importVCFComponent.hidden = false;
             } else {
-                alert("Phenotype is mandatory");
+                new StvDialog().alert("Phenotype is mandatory");
                 return;
             }
         },
