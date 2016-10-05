@@ -418,7 +418,7 @@
                         <div class="jso-formcontent horizontal layout container">
 
                             <div id="panelAppDiseases" class="vertical layout">
-                                <jso-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:430px" page-size="12"></jso-table>
+                                <jso-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:450px" page-size="12"></jso-table>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
@@ -429,7 +429,7 @@
                                     </div>
                                 </div>
                                 <div id="panelAppGenes" class="vertical layout">
-                                    <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" on-selected="handlePanelAppSelectedGen" enable-select hide-column-selector style="height:430px"></jso-table>
+                                    <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" on-selected="handlePanelAppSelectedGen" enable-select hide-column-selector enable-paging style="height:450px"></jso-table>
                                     <div class="horizontal layout">
                                         <div class="flex errmsg">{{errorAddGenes}}</div>
                                         <div class="jso-btn jso-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
