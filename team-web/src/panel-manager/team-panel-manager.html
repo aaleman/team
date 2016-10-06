@@ -467,7 +467,7 @@
             this.set('mode', "Edit");
             var me = this;
             var fileId = e.currentTarget.dataset.file;
-            var used = e.currentTarget.dataset.used;
+            // var used = e.currentTarget.dataset.used;
 
             var panelContent = "";
             OpencgaManager.files.content({
@@ -479,30 +479,31 @@
                     async: false,
                     success: function(response) {
                         panelContent = response;
+                        if (panelContent != "") {
+                            var selectedPanel = new Panel();
+                            var panelAux = JSON.parse(panelContent);
+                            selectedPanel.id = panelAux.id;
+                            selectedPanel.name = panelAux.name;
+                            selectedPanel.author = panelAux.author;
+                            selectedPanel.description = panelAux.description;
+                            selectedPanel.diseases = panelAux.diseases;
+                            selectedPanel.genes = panelAux.genes;
+                            selectedPanel.mutations = panelAux.mutations;
+                            selectedPanel.date = panelAux.date;
+                            selectedPanel.disease = panelAux.disease;
+                            var a = panelAux.version;
+                            selectedPanel.version = a + 1;
+                            selectedPanel.archived = panelAux.archived;
+                            selectedPanel.used = false;
+
+                            me.$.newPanelPanel.hidden = false;
+                            me.$.formWizard.addFromPanelManager(selectedPanel, "edit");
+                        }
                     },
                     error: function() {}
                 }
             });
-            if (panelContent != "") {
-                var selectedPanel = new Panel();
-                var panelAux = JSON.parse(panelContent);
-                selectedPanel.id = panelAux.id;
-                selectedPanel.name = panelAux.name;
-                selectedPanel.author = panelAux.author;
-                selectedPanel.description = panelAux.description;
-                selectedPanel.diseases = panelAux.diseases;
-                selectedPanel.genes = panelAux.genes;
-                selectedPanel.mutations = panelAux.mutations;
-                selectedPanel.date = panelAux.date;
-                selectedPanel.disease = panelAux.disease;
-                var a = panelAux.version;
-                selectedPanel.version = a + 1;
-                selectedPanel.archived = panelAux.archived;
-                selectedPanel.used = used;
 
-                this.$.newPanelPanel.hidden = false;
-                this.$.formWizard.addFromPanelManager(selectedPanel, "edit");
-            }
         },
         computeMode: function(mode) {
             if (mode == "Edit") {
@@ -545,7 +546,7 @@
         },
         handleExportPDF: function(e) {
             if (Object.keys(this.selectedPanel).length == 0) {
-                alert("No panel selected");
+                new StvDialog().alert("No panel selected");
             } else {
               this.$.panelExport.exportPDF(this.selectedPanel);
             }

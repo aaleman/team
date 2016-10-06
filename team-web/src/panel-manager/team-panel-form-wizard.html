@@ -258,6 +258,21 @@
         .mut-element {
             width: 275px;
         }
+
+        #progressDiv {
+            background: black;
+            opacity: 0.2;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        #progressBar {
+            z-index: 1000;
+        }
     </style>
     <template>
 
@@ -290,6 +305,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <div class="step">
                     <div class="horizontal layout">
@@ -402,7 +418,7 @@
                         <div class="jso-formcontent horizontal layout container">
 
                             <div id="panelAppDiseases" class="vertical layout">
-                                <jso-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:430px" page-size="12"></jso-table>
+                                <jso-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:450px" page-size="12"></jso-table>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
@@ -413,7 +429,7 @@
                                     </div>
                                 </div>
                                 <div id="panelAppGenes" class="vertical layout">
-                                    <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" on-selected="handlePanelAppSelectedGen" enable-select hide-column-selector style="height:430px"></jso-table>
+                                    <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" on-selected="handlePanelAppSelectedGen" enable-select hide-column-selector enable-paging style="height:450px"></jso-table>
                                     <div class="horizontal layout">
                                         <div class="flex errmsg">{{errorAddGenes}}</div>
                                         <div class="jso-btn jso-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
@@ -604,7 +620,10 @@
                     </div>
                 </div>
         </jso-wizard>
+        <div id="progressDiv" hidden>
 
+        </div>
+        <jso-progress-bar id="progressBar" percent="{{percent}}" text="{{textbar}}" hidden></jso-progress-bar>
 
     </template>
 </dom-module>
@@ -781,6 +800,14 @@
                     validator: VCFValidator
                 }
             },
+            percent: {
+                type: Number,
+                value: 0
+            },
+            textbar: {
+                type: String,
+                value: 'Adding mutations...'
+            },
         },
         observers: [
             "handleUpdatedGenes(formData.modCount)",
@@ -843,8 +870,8 @@
 
             } else {
                 $.ajax({
-                     url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
-                    // url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-legacy/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    //only in cellbase v3
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
@@ -1023,22 +1050,35 @@
             return neo;
         },
         handleAddSelectedDiseases: function() {
-            var me = this;
-            var auxDisease = [];
-            this.$.selectedDiseases.setLoading(true);
+            if (this.currentSelectedDiseasesData.length > 0) {
+                var me = this;
+                var auxDisease = [];
+                this.$.selectedDiseases.setLoading(true);
+                this.$.progressBar.hidden = false;
+                me.$.progressDiv.hidden = false;
 
-            setTimeout(function() {
-                me.formData.addDiseases(me.currentSelectedDiseasesData);
-                me.$.selectedDiseases.set("data", me.formData.diseases);
-                me.$.geneTable.set("data", me.formData.genes);
-                me.$.mutationTable.set("data", me.formData.mutations);
-                //
-                // for (var i = 0; i < me.currentSelectedDiseasesData.length; i++) {
-                //     var row = me.currentSelectedDiseasesData[i];
-                //     me.formData.addDisease(row);
-                // }
-                me.$.selectedDiseases.setLoading(false);
-            }, 50)
+                me.formData.addDiseases(me.currentSelectedDiseasesData, function(err) {
+                    if (err == null) {
+                        me.$.selectedDiseases.set("data", me.formData.diseases);
+                        me.$.geneTable.set("data", me.formData.genes);
+                        me.$.mutationTable.set("data", me.formData.mutations);
+                        me.$.selectedDiseases.setLoading(false);
+                        me.$.progressBar.hidden = true;
+                        me.$.progressDiv.hidden = true;
+                    } else {
+                        this.formData.clearDiseases();
+                        this.$.selectedDiseases.set("data", this.formData.diseases);
+                        this.formData.clearGenes();
+                        this.$.geneTable.set("data", this.formData.genes);
+                        this.formData.clearMutations();
+                        this.$.mutationTable.set("data", this.formData.mutations);
+                        new StvDialog().alert(err);
+                    }
+                });
+
+            } else {
+                new StvDialog().alert('No disease selected.');
+            }
         },
         handleClearSelectedDiseases: function() {
             this.formData.clearDiseases();
@@ -1080,7 +1120,7 @@
                         var start = parseInt(groups[2]);
                         var end = parseInt(groups[3]);
                         if (start > end) {
-                            alert("Malformed Region: " + geneName + ", END must be greater than or equal to START");
+                            new StvDialog().alert("Malformed Region: " + geneName + ", END must be greater than or equal to START");
                             return;
                         } else {
                             var gene = {
@@ -1128,7 +1168,7 @@
                                         // me.formData.addGene({
                                         //     name: elem.id
                                         // });
-                                        alert("Gene/Region '" + geneName + "' not exits");
+                                        new StvDialog().alert("Gene/Region '" + geneName + "' not exits");
                                     }
                                 }
                             }
@@ -1160,10 +1200,10 @@
                         console.log(lines.length);
 
                         for (var i = 0; i < lines.length; i++) {
-                            var line = lines[i];
+                            var l = lines[i];
 
-                            if ((line.indexOf("#") < 0 && line.indexOf("browser") < 0 && line.indexOf("track") < 0) && line != '') {
-                                var fields = line.split("\t");
+                            if ((l.indexOf("#") < 0 && l.indexOf("browser") < 0 && l.indexOf("track") < 0) && l != '') {
+                                var fields = l.split("\t");
                                 var chr = fields[0];
                                 var start = fields[1];
                                 var end = fields[2];
@@ -1230,7 +1270,7 @@
             this.$.mutationTable.setLoading(true);
             var phe = this.$.mutationGVPheVCF.value;
             if (phe == "") {
-                alert("Phenotype is mandatory");
+                new StvDialog().alert("Phenotype is mandatory");
                 return;
             }
             var src = "user-defined";
@@ -1249,9 +1289,9 @@
                         }
                         console.log(lines.length);
                         for (var i = 0; i < lines.length; i++) {
-                            var line = lines[i];
-                            if (line.indexOf("#") < 0 && line != '') {
-                                var fields = line.split("\t");
+                            var l = lines[i];
+                            if (l.indexOf("#") < 0 && l != '') {
+                                var fields = l.split("\t");
                                 var chr = fields[0];
                                 var pos = fields[1];
                                 var ref = fields[3];
@@ -1287,21 +1327,30 @@
             var csv_file = this.$.mutationCSVFileInput.files[0];
             var src = "user-defined";
             setTimeout(function() {
+                var log = [];
+                var line = 0;
+
                 if (csv_file != null) {
-                    var reader = new FileReader();
                     var separator = me.$.mutationCSVSeparator.selectedOption.value;
                     separator = (separator === "tab") ? '\t' : separator;
-
                     var ignoreHeader = me.$.mutationCSVHeader.checked;
 
-                    var lr = new LineReader();
-                    lr.on("line", function(line, next) {
+                    var _navigator = new FileNavigator(csv_file);
+                    var indexToStartWith = 0;
 
-                        if (ignoreHeader) {
-                            ignoreHeader = false;
-                        } else {
-                            if (line != '') {
-                                var fields = line.split(separator);
+                    _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
+                        if (err) {
+                            return;
+                        }
+                        console.log(lines.length);
+
+                        for (var i = 0; i < lines.length; i++) {
+                            var l = lines[i];
+                            if (ignoreHeader) {
+                                ignoreHeader = false;
+                            } else {
+
+                                var fields = l.split(separator);
                                 var chr = fields[0];
                                 var pos = fields[1];
                                 var ref = fields[2];
@@ -1314,19 +1363,21 @@
                                     alt: alt,
                                     phe: phe,
                                     src: src
-                                };
+                                }
                                 me.formData.addMutation(mut);
                             }
+                            line++;
                         }
-                        next();
-                    });
-                    lr.read(csv_file);
-                    me.$.mutationTable.set("data", me.formData.mutations);
-                    me.$.mutationTable.setLoading(false);
+                        if (eof) {
+                            me.$.mutationTable.set("data", me.formData.mutations);
+                            me.$.mutationTable.setLoading(false);
+                            return;
+                        }
+                        _navigator.readSomeLines(index + lines.length, linesReadHandler);
+                    })
                 } else {
                     me.$.mutationTable.setLoading(false);
                 }
-                me.$.mutationCSVFileInput.value = "";
             }, 50);
         },
         handleClickMutationListClear: function(e) {
@@ -1344,13 +1395,13 @@
             var re = /^[ACTG]*$/;
 
             if (chr == "" || pos.length == 0 || phe == "") {
-                alert("Chromosome, Position and Phenotype are mandatory");
+                new StvDialog().alert("Chromosome, Position and Phenotype are mandatory");
                 return;
             } else if (ref == "" && alt == "") {
-                alert("Reference or Alternate is mandatory");
+                new StvDialog().alert("Reference or Alternate is mandatory");
                 return;
             } else if (!re.test(ref) || !re.test(alt)) {
-                alert("Reference and Alternate must contain only ACTG");
+                new StvDialog().alert("Reference and Alternate must contain only ACTG");
                 return;
             }
             var src = "user-defined";
@@ -1376,58 +1427,61 @@
             this.formData.name = this.formData.name.replace(/[^a-zA-Z0-9._\-]/g, "_");
             // var re = /[¿\?\[\]<>\^\{\}\|#%"\\\\]/;
             // if (re.test(this.formData.name)) {
-            //     alert("The Panel name shouldn't have these characteres '¿ ? [ ] < > ^ { } | # % \\ \" ' ");
+            //     new StvDialog().alert("The Panel name shouldn't have these characteres '¿ ? [ ] < > ^ { } | # % \\ \" ' ");
             //     return;
             // }
             if (this.formData.name == "") {
-                alert("The Panel name is mandatory");
+                new StvDialog().alert("The Panel name is mandatory");
                 return;
             }
             for (var i = 0; i < this.panelConfig.panels.length; i++) {
                 if (this.formData.name === this.panelConfig.panels[i].name) {
-                    alert("The Panel name already exists");
+                    new StvDialog().alert("The Panel name already exists");
                     return;
                 }
             }
             if (JSON.stringify(this.formData) === JSON.stringify(this.editingPanel)) {
-                alert("The panel hasn't been modified");
+                new StvDialog().alert("The panel hasn't been modified");
                 return;
             }
-            if (confirm("Are you sure?")) {
-                if (this.defaultStudy && this.teamConfigFolder) {
-                    //                    var content = pako.deflate(JSON.stringify(this.formData));
-                    content = JSON.stringify(this.formData);
-                    var separator = "-_-";
-                    var fileName = "panel" + separator + this.formData.name + separator + this.formData.version;
-                    var jsonPanelData = {
-                        "name": this.formData.name,
-                        "version": this.formData.version,
-                        "archived": false,
-                        "used": 0,
-                        "fileId": null
-                    };
-                    this.uploadFile(content, fileName, this.defaultStudy.id, function(id) {
-                        var _me = me;
 
-                        var userData = _me.userData;
+            new StvDialog().confirm("Are you sure?", function(answer) {
+                if (answer == true) {
+                    if (me.defaultStudy && me.teamConfigFolder) {
+                        //                    var content = pako.deflate(JSON.stringify(this.formData));
+                        content = JSON.stringify(me.formData);
+                        var separator = "-_-";
+                        var fileName = "panel" + separator + me.formData.name + separator + me.formData.version;
+                        var jsonPanelData = {
+                            "name": me.formData.name,
+                            "version": me.formData.version,
+                            "archived": false,
+                            "used": 0,
+                            "fileId": null
+                        };
 
-                        jsonPanelData.fileId = id;
-                        _me.panelConfig.addPanelConfig(jsonPanelData);
+                        me.uploadFile(content, fileName, me.defaultStudy.id, function(id) {
+                            var _me = me;
 
-                    });
+                            var userData = _me.userData;
+
+                            jsonPanelData.fileId = id;
+                            _me.panelConfig.addPanelConfig(jsonPanelData);
+
+                            _me.formData = new Panel();
+                            _me.formData.polymer = this;
+
+                            _me.$.jsoFormWizard.goToStep(1);
+                            // var a = document.getElementById("manager");
+                            // a.$.newPanelPanel.hidden = true;
+                            new StvDialog().alert("The panel has been created succesfully");
+
+                        });
+                    }
+                } else {
+                    return;
                 }
-            } else {
-                return;
-            }
-
-            this.formData = new Panel();
-            this.formData.polymer = this;
-
-            this.$.jsoFormWizard.goToStep(1);
-            // var a = document.getElementById("manager");
-            // a.$.newPanelPanel.hidden = true;
-            alert("The panel has been created succesfully");
-
+            });
         },
         uploadFile: function(fileContent, fileName, studyId, callback) {
 
@@ -1545,7 +1599,7 @@
                     this.$.panelPreview.hidden = false;
                 }
             } else {
-                alert("No panel selected");
+                new StvDialog().alert("No panel selected");
             }
         },
         handleImportGenesPanel: function(e) {
@@ -1577,7 +1631,7 @@
                                 if (me.selectedPanel.genes != "") {
                                     me.genes = me.selectedPanel.genes;
                                 } else {
-                                    alert("The selected panel hasn't got genes");
+                                    new StvDialog().alert("The selected panel hasn't got genes");
                                     me.$.geneTable.setLoading(false);
                                     return;
                                 }
@@ -1589,7 +1643,7 @@
                     me.$.geneTable.set("data", me.formData.genes);
                     me.$.geneTable.setLoading(false);
                 } else {
-                    alert("No panel selected");
+                    new StvDialog().alert("No panel selected");
                     me.$.geneTable.setLoading(false);
                     return;
                 }
@@ -1625,7 +1679,7 @@
                     this.$.panelPreviewMut.hidden = false;
                 }
             } else {
-                alert("No panel selected");
+                new StvDialog().alert("No panel selected");
             }
         },
         handleImportMutationsPanel: function(e) {
@@ -1656,7 +1710,7 @@
                                     if (me.selectedPanel.mutations != "") {
                                         me.mutations = me.selectedPanel.mutations;
                                     } else {
-                                        alert("The selected panel hasn't got mutations");
+                                        new StvDialog().alert("The selected panel hasn't got mutations");
                                         me.$.mutationTable.setLoading(false);
                                         return;
                                     }
@@ -1683,7 +1737,7 @@
                         me.$.mutationTable.set("data", me.formData.mutations);
                         me.$.mutationTable.setLoading(false);
                     } else {
-                        alert("No panel selected");
+                        new StvDialog().alert("No panel selected");
                         me.$.mutationTable.setLoading(false);
                         return;
                     }
@@ -1740,91 +1794,101 @@
                         lowLevel = true;
                     }
                 }
-
-                if (lowLevel && !confirm("Your selection contains genes with low level of confidence. Do you want to continue?")) {
-                    return;
-                }
-
-                if (me.$.panelAppSelectedGenes.selected.length > 0) {
-                    me.errorAddGenes = "";
-                    var geneName = [];
-                    var sgenes = me.$.panelAppSelectedGenes.selected;
-                    for (var i = 0; i < sgenes.length; i++) {
-                        geneName[i] = sgenes[i].GeneSymbol;
-                    }
-                    geneName = geneName.join(",");
-                    // var me = this;
-                    var genes = [];
-                    CellBaseManager.get({
-                        species: 'hsapiens',
-                        category: 'feature',
-                        subCategory: 'gene',
-                        resource: 'info',
-                        async: false,
-                        query: geneName,
-                        params: {
-                            include: "name,chromosome,start,end"
-                        },
-                        success: function(data) {
-
-                            if (data.response && data.response.length > 0) {
-
-                                for (var i = 0; i < data.response.length; i++) {
-                                    var elem = data.response[i];
-                                    if (elem.result.length > 0) {
-                                        var row = data.response[i].result[0];
-                                        var gene = {
-                                            name: row.name,
-                                            chr: row.chromosome,
-                                            start: row.start,
-                                            end: row.end
-                                        };
-                                        // me.formData.addGene(gene);
-                                        genes.push(gene);
-                                    } else {
-                                        // me.formData.addGene({
-                                        //     name: elem.id
-                                        // });
-                                        genes.push({
-                                            name: elem.id
-                                        });
-                                    }
-                                }
-                            }
+                if (lowLevel) {
+                    new StvDialog().confirm("Your selection contains genes with low level of confidence. Do you want to continue?", function(answer) {
+                        if (answer == true) {
+                          me._addGenesPanelApp(me.$.panelAppSelectedGenes.selected);
+                        } else {
+                            return;
                         }
+
                     });
-                    var panelGenes = me.formData.addAllGenes(genes);
-                    me.set('formData.genes', panelGenes);
-                    me.$.geneTable.set("data", me.formData.genes);
-                    me.$.appPanel.hidden = true;
-                    me.panelAppGenes = "";
-                    me.$.panelAppSelectedGenes.selected = [];
-                    me.$.panelAppSelectedDisease.selected = [];
-                    me.$.geneTable.setLoading(false);
                 } else {
-                    // this.errorAddGenes = "No gene selected";
-                    alert("Any selected gene");
-                    me.$.geneTable.setLoading(false);
-                    return;
+                    if (me.$.panelAppSelectedGenes.selected.length == 0) {
+                        new StvDialog().alert("Any selected gene");
+                        me.$.geneTable.setLoading(false);
+                        return;
+                    }else{
+                      me._addGenesPanelApp(me.$.panelAppSelectedGenes.selected);
+                    }
                 }
             }, 50)
+        },
+        _addGenesPanelApp: function(sgenes){
+              this.errorAddGenes = "";
+              var geneName = [];
+              for (var i = 0; i < sgenes.length; i++) {
+                  geneName[i] = sgenes[i].GeneSymbol;
+              }
+              geneName = geneName.join(",");
+              // var me = this;
+              var genes = [];
+              CellBaseManager.get({
+                  species: 'hsapiens',
+                  category: 'feature',
+                  subCategory: 'gene',
+                  resource: 'info',
+                  async: false,
+                  query: geneName,
+                  params: {
+                      include: "name,chromosome,start,end"
+                  },
+                  success: function(data) {
+
+                      if (data.response && data.response.length > 0) {
+
+                          for (var i = 0; i < data.response.length; i++) {
+                              var elem = data.response[i];
+                              if (elem.result.length > 0) {
+                                  var row = data.response[i].result[0];
+                                  var gene = {
+                                      name: row.name,
+                                      chr: row.chromosome,
+                                      start: row.start,
+                                      end: row.end
+                                  };
+                                  // me.formData.addGene(gene);
+                                  genes.push(gene);
+                              } else {
+                                  // me.formData.addGene({
+                                  //     name: elem.id
+                                  // });
+                                  genes.push({
+                                      name: elem.id
+                                  });
+                              }
+                          }
+                      }
+                  }
+              });
+              var panelGenes = this.formData.addAllGenes(genes);
+              this.set('formData.genes', panelGenes);
+              this.$.geneTable.set("data", this.formData.genes);
+              this.$.appPanel.hidden = true;
+              this.panelAppGenes = "";
+              this.$.panelAppSelectedGenes.selected = [];
+              this.$.panelAppSelectedDisease.selected = [];
+              this.$.geneTable.setLoading(false);
         },
         handlePanelAppSelectedGen: function(e) {
             this.errorAddGenes = "";
         },
         addFromPanelManager: function(selectedPanel, op) {
-            this.set('formData', selectedPanel);
-            this.set('formData.name', (selectedPanel.name + "_2"));
+            // this.set('formData.name', (selectedPanel.name + "_2"));
             // this.set('formData.version', (selectedPanel.version + 1));
-            this.editingPanel = Utils.clone(this.formData);
-            this.formData.polymer = this;
             // this.set('formData.id',Utils.genId("Panel"));
+            this.set('formData', selectedPanel);
+            this.editingPanel = Utils.clone(this.formData);
+            this.$.selectedDiseases.set("data", this.formData.diseases);
+            this.$.geneTable.set("data", this.formData.genes);
+            this.$.mutationTable.set("data", this.formData.mutations);
+            this.formData.polymer = this;
             // var aux = this.$.personalData.querySelectorAll("input");
             if (op == "edit") {
                 //     aux[0].disabled = true;
                 //     aux[1].disabled = true;
+                this.set('formData.name', (selectedPanel.name + "_2"));
                 if (this.formData.used == true) {
-                    this.set('formData.name', (selectedPanel.name + "_2"));
                     this.$.saveAsPanel.hidden = false;
                     this.$.savePanel.hidden = true;
                 } else {
@@ -1853,7 +1917,7 @@
             if (this.$.mutationGVPheVCF.value != "") {
                 this.$.importVCFComponent.hidden = false;
             } else {
-                alert("Phenotype is mandatory");
+                new StvDialog().alert("Phenotype is mandatory");
                 return;
             }
         },

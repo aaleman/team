@@ -1,12 +1,15 @@
 // CELLBASE_HOST = "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0";
-// CELLBASE_VERSION = "v4";
+CELLBASE_HOST ="http://ws.babelomics.org/cellbase";
+CELLBASE_VERSION = "v4";
 //
-CELLBASE_HOST = "http://bioinfodev.hpc.cam.ac.uk/cellbase";
-CELLBASE_VERSION = "v3";
+// CELLBASE_HOST = "http://bioinfodev.hpc.cam.ac.uk/cellbase";
+// CELLBASE_VERSION = "v3";
 
 OPENCGA_HOST = "http://test.babelomics.org/opencga-0.8-dev";
 
-CONTACT_MAIL='bioinfo.notifications@cipf.es'
+CONTACT_MAIL='bioinfo.notifications@cipf.es';
+
+VCF_VALIDATOR=true;
 
 CONSEQUENCE_TYPES = [{
     "name": "transcript_ablation",
