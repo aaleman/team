@@ -295,9 +295,13 @@
             this.selectedSamples = this._getSelectedSamples();
             if (this.selectedSamples == null) {
                 this.errorMessageFile = "No sample/s selected or sample/s status are not READY or sample/s suspected diagnosis is not defined."
+            }else{
+                this.errorMessageFile ="";
             }
             if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
+            }else{
+                this.errorMessagePanel ="";
             }
             if (this.selectedSamples != null && this.selectedPanelId != null) {
                 this.$.progressBar.hidden = false;
@@ -335,7 +339,8 @@
                     }
                 }, 50);
             } else {
-                alert("There are errors in the form. Correct them before launching work");
+                new StvDialog().alert("There are errors in the form. Correct them before launching work");
+                this.errorMessage = this.errorMessageFile + '\n' + this.errorMessagePanel;
                 return;
             }
         },
@@ -373,9 +378,7 @@
         handlePanelClick: function(e) {
             this.selectedPanelId = e.detail.fileId;
             this.errorMessagePanel = " ";
-            if (this.selectedSamples.length > 0) {
-                this.errorMessage = "";
-            }
+            this.errorMessage = this.errorMessageFile + '\n' + this.errorMessagePanel;
 
             var data;
 
@@ -408,21 +411,40 @@
         },
         handleFileSelected: function(e) {
             this.inputSelectedFile = e.detail;
-            this.errorMessageFile = " ";
+            this.errorMessageFile = "";
         },
         handleSampleSelected: function(e) {
-            // this.selectedSample = {};
-            // if (e.detail.status != "READY") {
-            //     alert("Sample status must be READY");
-            //     return;
-            // } else {
-            //     this.selectedSample = e.detail;
-            //     this.push('selectedSamples', e.detail)
-            //     this.errorMessageFile = " ";
-            //     if (this.selectedPanelId != "") {
-            //         this.errorMessage = "";
-            //     }
-            // }
+          var me=this;
+            if (e.detail.status != "READY") {
+                new StvDialog().alert("Sample status must be READY");
+                return;
+            } else {
+              OpencgaManager.samples.info({
+                  id: e.detail.id,
+                  query: {
+                      sid: Cookies('bioinfo_sid'),
+                  },
+                  request: {
+                      async: false,
+                      success: function(response) {
+                          if (response.response[0].result[0] != null) {
+                              var sample = response.response[0].result[0];
+                              if (sample.description == "") {
+                                  new StvDialog().alert('All selected samples must have suspected diagnosis');
+                                  me.errorMessageFile = "No sample/s selected or sample/s status are not READY or sample/s suspected diagnosis is not defined.";
+                              } else {
+                                me.errorMessageFile = "";
+                                me.errorMessage = me.errorMessageFile + '\n' + me.errorMessagePanel;
+                              }
+                          }
+                      },
+                      error: function() {
+
+                      }
+                  }
+              });
+
+            }
         },
         handleNewPanel: function(e) {
             this.$.newPanelPanel.hidden = false;
@@ -454,14 +476,14 @@
             var samples = this.$.sampleBrowser.querySelectorAll('jso-opencga-sample-list-item[selected]')
 
             if (samples.length == 0) {
-                if (this.filteredSamples.length == 0) {
-                    alert('You must select at least one sample');
+                if (this.filteredSamples.length != 0) {
+                    new StvDialog().alert('You must select at least one sample');
                 }
                 return null;
             } else {
                 for (var i = 0; i < samples.length; i++) {
                     if (samples[i].sample.status != 'READY') {
-                        alert('All selected samples must be READY');
+                        new StvDialog().alert('All selected samples must be READY');
                         return null;
                     }
                     OpencgaManager.samples.info({
@@ -475,7 +497,7 @@
                                 if (response.response[0].result[0] != null) {
                                     var sample = response.response[0].result[0];
                                     if (sample.description == "") {
-                                        alert('All selected samples must have suspected diagnosis');
+                                        new StvDialog().alert('All selected samples must have suspected diagnosis');
                                     } else {
                                         samplesArray.push(sample);
                                     }
@@ -489,6 +511,10 @@
 
                 }
                 if (samplesArray.length != 0){
+                  this.errorMessageFile = "";
+                     if (this.selectedPanelId!= null && this.selectedPanelId != "") {
+                         this.errorMessage = "";
+                     }
                   return samplesArray;
                 }else{
                   return null;

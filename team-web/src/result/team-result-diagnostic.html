@@ -1,3 +1,4 @@
+
 <dom-module id="team-result-diagnostic">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
@@ -636,6 +637,42 @@
                 this.$.table.columns = this._columnsDiag;
             } else if (this.typeData == "secondary") {
                 this.$.table.columns = this._columnsSec;
+            }
+
+            this.$.table.exportParsers.headerParser = function(columns) {
+                  var headerLine = this.comment;
+                  for (var i = 0; i < columns.length; i++) {
+                      if (columns[i].type === "action" || columns[i].name == "beacon" || columns[i].name == "omim") {
+                          continue;
+                      }
+                      headerLine += columns[i].title + this.separator;
+                  }
+                  return headerLine;
+              }
+
+            this.$.table.exportParsers.dataParser = function(columns, row) {
+
+                var dataLine = "";
+                for (var j = 0; j < columns.length; j++) {
+                    var column = columns[j];
+
+                    if (columns[j].type === "action" || columns[j].name == "beacon" || columns[j].name == "omim") {
+                        continue;
+                    }
+
+                    var key = column.name;
+                    var value = (column.defaultValue) ? column.defaultValue : "";
+
+                    if (column.formula) {
+                        value = column.formula(row);
+                    } else {
+                        value = row[key];
+                    }
+                    value = (value + "").replace(/<(?:.|\n)*?>/gm, '');
+
+                    dataLine += value + this.separator;
+                }
+                return dataLine;
             }
 
         },
