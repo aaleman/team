@@ -160,13 +160,13 @@
                 var re = /^[ACTG]*$/;
 
                 if (chr == "" || pos.length == 0 || phe == "") {
-                    alert("Chromosome, Position and Phenotype are mandatory");
+                    new StvDialog().alert("Chromosome, Position and Phenotype are mandatory");
                     return;
                 } else if (ref == "" && alt == "") {
-                    alert("Reference or Alternate is mandatory");
+                    new StvDialog().alert("Reference or Alternate is mandatory");
                     return;
                 } else if (!re.test(ref) || !re.test(alt)) {
-                    alert("Reference and Alternate must contain only ACTG");
+                    new StvDialog().alert("Reference and Alternate must contain only ACTG");
                     return;
                 }
 
@@ -184,7 +184,7 @@
             },
             handleCheck: function() {
                 if (this.chr == "" || this.pos.length == 0) {
-                    alert("Chromosome and Position are mandatory");
+                    new StvDialog().alert("Chromosome and Position are mandatory");
                     return;
                 }
                 var reg = this.chr + ":" + this.pos + "-" + this.pos;
