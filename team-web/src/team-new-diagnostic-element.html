@@ -295,13 +295,13 @@
             this.selectedSamples = this._getSelectedSamples();
             if (this.selectedSamples == null) {
                 this.errorMessageFile = "No sample/s selected or sample/s status are not READY or sample/s suspected diagnosis is not defined."
-            }else{
-                this.errorMessageFile ="";
+            } else {
+                this.errorMessageFile = "";
             }
             if (this.selectedPanelId == null) {
                 this.errorMessagePanel = "No panel selected";
-            }else{
-                this.errorMessagePanel ="";
+            } else {
+                this.errorMessagePanel = "";
             }
             if (this.selectedSamples != null && this.selectedPanelId != null) {
                 this.$.progressBar.hidden = false;
@@ -414,35 +414,40 @@
             this.errorMessageFile = "";
         },
         handleSampleSelected: function(e) {
-          var me=this;
+            var me = this;
             if (e.detail.status != "READY") {
                 new StvDialog().alert("Sample status must be READY");
                 return;
             } else {
-              OpencgaManager.samples.info({
-                  id: e.detail.id,
-                  query: {
-                      sid: Cookies('bioinfo_sid'),
-                  },
-                  request: {
-                      async: false,
-                      success: function(response) {
-                          if (response.response[0].result[0] != null) {
-                              var sample = response.response[0].result[0];
-                              if (sample.description == "") {
-                                  new StvDialog().alert('All selected samples must have suspected diagnosis');
-                                  me.errorMessageFile = "No sample/s selected or sample/s status are not READY or sample/s suspected diagnosis is not defined.";
-                              } else {
-                                me.errorMessageFile = "";
-                                me.errorMessage = me.errorMessageFile + '\n' + me.errorMessagePanel;
-                              }
-                          }
-                      },
-                      error: function() {
+                OpencgaManager.samples.info({
+                    id: e.detail.id,
+                    query: {
+                        sid: Cookies('bioinfo_sid'),
+                    },
+                    request: {
+                        async: false,
+                        success: function(response) {
+                            if (response.response[0].result[0] != null) {
+                                var sample = response.response[0].result[0];
+                                if (sample.description == "") {
+                                    if (me.errorMessageFile == "" || me.errorMessageFile == null) {
+                                        new StvDialog().alert('All selected samples must have suspected diagnosis');
+                                        me.errorMessageFile = "No sample/s selected or sample/s status are not READY or sample/s suspected diagnosis is not defined.";
+                                    } else {
+                                        me.errorMessageFile = "";
+                                        me.errorMessage = me.errorMessageFile + '\n' + me.errorMessagePanel;
+                                    }
+                                } else {
+                                    me.errorMessageFile = "";
+                                    me.errorMessage = me.errorMessageFile + '\n' + me.errorMessagePanel;
+                                }
+                            }
+                        },
+                        error: function() {
 
-                      }
-                  }
-              });
+                        }
+                    }
+                });
 
             }
         },
@@ -510,14 +515,14 @@
                     });
 
                 }
-                if (samplesArray.length != 0){
-                  this.errorMessageFile = "";
-                     if (this.selectedPanelId!= null && this.selectedPanelId != "") {
-                         this.errorMessage = "";
-                     }
-                  return samplesArray;
-                }else{
-                  return null;
+                if (samplesArray.length != 0) {
+                    this.errorMessageFile = "";
+                    if (this.selectedPanelId != null && this.selectedPanelId != "") {
+                        this.errorMessage = "";
+                    }
+                    return samplesArray;
+                } else {
+                    return null;
                 }
             }
         },
