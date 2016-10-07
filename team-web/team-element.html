@@ -480,8 +480,12 @@
 
                     if (teamConfigFolder == null) {
                         teamConfigFolder = this._createTEAMConfigFolder(defaultStudy.id);
-
                     }
+
+                    if (analysisFolder == null) {
+                        analysisFolder = this._createAnalysisFolder(defaultStudy.id);
+                    }
+
                     this.defaultStudy = defaultStudy;
                     this.teamConfigFolder = teamConfigFolder;
                     this.analysisFolder = analysisFolder;
@@ -550,7 +554,32 @@
             OpencgaManager.files.createFolder({
                 query: {
                     sid: Cookies('bioinfo_sid'),
-                    folder: '.team_config',
+                    folders: '.team_config',
+                    studyId: studyId
+                },
+                request: {
+                    async: false,
+                    success: function(response) {
+                        if (response.response[0].errorMsg === '' || response.response[0].errorMsg == null) {
+                            folder = response.response[0].result[0];
+                        } else {
+                            //                                me.message = response.response[0].errorMsg;
+                        }
+                    },
+                    error: function() {
+                        //                             me.message = 'Server error, try again later.';
+                    }
+                }
+            });
+            return folder;
+        },
+        _createAnalysisFolder: function(studyId) {
+            var me = this;
+            var folder;
+            OpencgaManager.files.createFolder({
+                query: {
+                    sid: Cookies('bioinfo_sid'),
+                    folders: 'analysis',
                     studyId: studyId
                 },
                 request: {
