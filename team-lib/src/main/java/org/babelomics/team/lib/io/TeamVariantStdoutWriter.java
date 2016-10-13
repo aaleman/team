@@ -1,28 +1,17 @@
 package org.babelomics.team.lib.io;
 
+import org.babelomics.team.lib.models.TeamVariant;
 import org.opencb.biodata.formats.variant.io.VariantWriter;
 import org.opencb.biodata.models.variant.Variant;
+import org.opencb.commons.io.DataWriter;
 
 import java.util.List;
 
 /**
  * @author Alejandro Alemán Ramos <aaleman@cipf.es>
  */
-public class TeamVariantStdoutWriter implements VariantWriter {
-    @Override
-    public void includeStats(boolean stats) {
+public class TeamVariantStdoutWriter implements DataWriter<TeamVariant> {
 
-    }
-
-    @Override
-    public void includeSamples(boolean samples) {
-
-    }
-
-    @Override
-    public void includeEffect(boolean effect) {
-
-    }
 
     @Override
     public boolean open() {
@@ -45,14 +34,14 @@ public class TeamVariantStdoutWriter implements VariantWriter {
     }
 
     @Override
-    public boolean write(Variant variant) {
-        System.out.println("variant = " + variant);
+    public boolean write(TeamVariant variant) {
+        System.out.println("Team Variant = " + variant);
         return true;
     }
 
     @Override
-    public boolean write(List<Variant> list) {
-        for (Variant v : list) {
+    public boolean write(List<TeamVariant> list) {
+        for (TeamVariant v : list) {
             this.write(v);
         }
         return true;

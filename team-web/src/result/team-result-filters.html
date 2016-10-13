@@ -2,7 +2,7 @@
 <link rel="import" href="team-result-form.html">
 
 <dom-module id="team-result-filters">
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
             display: block;
             position: relative;
@@ -68,43 +68,52 @@
             left: 180px;
             top: 35px;
         }*/
+
+        .titleVar {
+            font-size: 18px;
+            border-bottom: thin solid #edebe3;
+            color: #204854;
+            padding-bottom: 13px;
+        }
+
+        .tabs {
+            margin: 5px 15px 0 0;
+            padding: 0 2px;
+            border-bottom: 1px solid transparent;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .tabs:hover {
+            border-bottom: 1px solid #8ba7a7;
+            color: #8ba7a7;
+            font-weight: bold;
+        }
+
+        .tabs[data-checked] {
+            border-bottom: 2px solid #225e71;
+            color: #222;
+            font-size: 13px;
+        }
     </style>
     <template>
         <div id="filters">
+            <div class="titleVar">
+                Variant Filters
+            </div>
             <div class="horizontal layout" style="margin-bottom: 10px;">
-                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="static" data-checked$="{{computeView(view, 'static')}}">
+                <div class="tabs" on-click="handleView" data-value="static" data-checked$="{{computeView(view, 'static')}}">
                     Static Filters
                 </div>
-                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="custom" data-checked$="{{computeView(view, 'custom')}}">
+                <div class="tabs" on-click="handleView" data-value="custom" data-checked$="{{computeView(view, 'custom')}}">
                     Custom Filters &nbsp;
                 </div>
             </div>
             <team-result-static-filters id="teamResultStaticFilters" data="{{data}}" query={{query}} value={{value}} hidden$="{{!computeView(view, 'static')}}"></team-result-static-filters>
 
             <div id="teamResultCustomFilters" class="vertical layout" hidden$="{{!computeView(view, 'custom')}}">
-                <!-- <div class="horizontal layout filterHistory">
-                    Filters History &nbsp;
-                    <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History">
-                        <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
-                            Clear
-                        </div>
-                        <div id="filterHistoryTable" class="horizontal layout flex">
-                            <span class="title num"> Date </span>
-                            <span class="name title"> Name </span>
-                            <span class="title num"> Finded </span>
-                        </div>
-                        <template is="dom-repeat" items="{{historyFilters}}">
-                            <div class="horizontal layout flex" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">
-                                <span class="num">{{item.date}} </span>
-                                <span id="filter-name" class="name">{{item.name}} </span>
-                                <span class="num">{{item.finded}}</span>
-                            </div>
-                        </template>
-                    </jso-tooltip>
-                </div> -->
-                <team-result-form id="custom" query={{query}} filter-data="{{filterData}}" job="{{job}}"></team-result-form>
+                <team-result-form id="custom" query={{query}} filter-data="{{filterData}}" data="{{data}}" job="{{job}}"></team-result-form>
             </div>
-
             <div id="loading" hidden$="{{!loading}}">
                 <i class="fa fa-circle-o-notch fa-spin"></i> Loading...
             </div>
@@ -147,13 +156,6 @@
                     return {};
                 }
             },
-            // historyFilters: {
-            //     type: Array,
-            //     value: function() {
-            //         return [];
-            //     },
-            //     notify: true,
-            // },
             filterData: {
                 type: Array,
                 value: function() {
@@ -167,15 +169,7 @@
                 value: false
             }
         },
-        // observers: [
-        //     "filterChanged(historyFilters.splices)"
-        // ],
-
-        ready: function() {
-            // if (localStorage.bioinfo_team_filter_history) {
-            //     this.historyFilters = JSON.parse(localStorage.bioinfo_team_filter_history);
-            // }
-        },
+        ready: function() {},
         handleView: function(e) {
             var me = this;
             this.$.teamResultStaticFilters.hidden = true;
@@ -187,7 +181,6 @@
                 me.loading = false;
                 me.view = e.target.dataset.value;
             }, 50)
-
 
         },
         _clearFilter: function() {
@@ -202,22 +195,6 @@
         },
         queryChanged: function(neo, old) {},
         valueChanged: function(neo, old) {},
-        // filterChanged: function(neo, old) {
-        //     console.log(this.historyFilters)
-        // },
-        // loadFilter: function(e) {
-        //     e.stopPropagation();
-        //     this.$.custom.clearForm();
-        //     this.$.custom.loadForm(e.currentTarget.dataFilter);
-        //     this.$.filterHistoryTooltip.handleClose(e);
-        //
-        // },
-        // clearFiltersHistory: function(e) {
-        //     e.stopPropagation();
-        //     this.historyFilters = [];
-        //     localStorage.bioinfo_team_filter_history = JSON.stringify(this.historyFilters);
-        //
-        // },
         filterDataChanged: function(neo, old) {
 
         },

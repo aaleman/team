@@ -1,5 +1,5 @@
 <dom-module id="team-result-overview">
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
             display: block;
             position: relative;
@@ -10,7 +10,7 @@
         #overview {
             padding: 10px;
             border: 1px solid #d0d0d0;
-            width: 80%;
+            width:60%;
             /*height: 780px;*/
             margin: 0 auto;
         }
@@ -39,25 +39,28 @@
         .chart {
             height: 280px;
             padding: 10px;
-            border: 1px solid #d0d0d0;
+            /*border: 1px solid #d0d0d0;*/
             margin-top: 10px;
             overflow-x: auto;
         }
-
-        #filterChart,
+        #genesChart,
         #consTypeChart,
         #qualChart {
-            width: 50%;
+            width: 80%;
         }
 
-        #genesChart {
-            width: 90%;
+        #filterChart {
+            width: 50%
         }
 
         .down {
             color: #445D76;
             margin: 10px;
-            margin-left: 50px;
+            /*padding-left: 10px;*/
+            width: 50%;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
     </style>
     <template>
@@ -70,20 +73,20 @@
                 <div id="description">{{job.description}}</div>
 
                 <ul id="stadistics">
-                    <div>Total Genes: &nbsp;
+                    <div>Total Variants: &nbsp;
                         <span class="numbers">{{totalData}}</span>
                     </div>
-                    <div>Diagnostic Genes: &nbsp;
+                    <div>Diagnostic Variants: &nbsp;
                         <span class="numbers">{{diagData.length}}</span>
                     </div>
-                    <div>Secondary Genes: &nbsp;
+                    <div>Secondary Variants: &nbsp;
                         <span class="numbers">{{secData.length}}</span>
                     </div>
                 </ul>
                 <div class="horizontal layout">
                     <div id="filterChart" class="chart" hidden>
                     </div>
-                    <div class="vertical layout">
+                    <div class="vertical layout" style="width:50%">
 
                         <div class="jso-btn jso-btn-shdw down" on-click="downloadFiles" title="Download Files" data-file="{{diag}}">
                             <i class="fa fa-cloud-download"></i> &nbsp; Download Diagnostic File
@@ -139,6 +142,14 @@
                 type: Object,
                 observer: 'valueChange'
             },
+            geneMap:{
+              type: Object,
+              notify:true
+            },
+            geneNames:{
+              type: Array,
+              notify:true
+            }
         },
         ready: function() {
 
@@ -150,10 +161,10 @@
                 chart: {
                     type: 'column',
                     renderTo: this.$.filterChart,
-                    width: 600
+                    width: 350
                 },
                 pane: {
-                    size: 80
+                    size: 60
                 },
                 credits: {
                     enabled: false
@@ -212,12 +223,10 @@
             if (op === "gene") {
                 var renderTo = this.$.genesChart;
                 var title = "Number of Variants/GEN";
-                var w = 1100;
                 this.$.genesChart.hidden = false;
             } else if (op === "ct") {
                 var renderTo = this.$.consTypeChart;
-                var title = "Number of Variants/Consecuence Type";
-                var w = 600;
+                var title = "Number of Variants/Consequence Type";
                 this.$.consTypeChart.hidden = false;
             }
             var value = [];
@@ -229,13 +238,13 @@
                 chart: {
                     type: 'column',
                     renderTo: renderTo,
-                    width: w
+                    width: 550
                 },
                 credits: {
                     enabled: false
                 },
                 pane: {
-                    size: 80
+                    size: 60
                 },
                 legend: {
                     enabled: false
@@ -311,6 +320,10 @@
                     }
                 }
             }
+            if (option=="gene") {
+              this.set("geneNames",valueNames.sort());
+              this.set("geneMap", map);
+            }
             if (map[value] != null) {
                 this._createGenesChart(map, valueNames.sort(), option);
             }
@@ -344,10 +357,12 @@
             if (op === "qual") {
                 var renderTo = this.$.qualChart;
                 var title = "Qual/Variants";
+                var axisName= "Qual";
                 this.$.qualChart.hidden = false;
             } else if (op === "dp") {
                 var renderTo = this.$.depthChart;
                 var title = "Depth/Variants";
+                var axisName= "Depth";
                 this.$.depthChart.hidden = false;
             }
 
@@ -355,13 +370,13 @@
                 chart: {
                     type: 'column',
                     renderTo: renderTo,
-                    width: 600
+                    width: 550
                 },
                 credits: {
                     enabled: false
                 },
                 pane: {
-                    size: 80
+                    size: 60
                 },
                 legend: {
                     enabled: false
@@ -378,7 +393,7 @@
                         }
                     },
                     title: {
-                        text: "Qual"
+                        text: axisName,
                     }
                 },
 

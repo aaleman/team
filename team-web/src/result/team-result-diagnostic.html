@@ -1,5 +1,6 @@
+
 <dom-module id="team-result-diagnostic">
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
             display: block;
             position: relative;
@@ -7,9 +8,11 @@
         }
 
         .title {
-            font-size: 22px;
+            font-size: 18px;
             border-bottom: thin solid #edebe3;
             /*margin: 7px 5px;*/
+            color: #204854;
+            padding: 13px 0px;
         }
 
         jso-table {
@@ -38,18 +41,6 @@
             /*height: 370px;*/
         }
 
-        #menu {
-            margin-top: 5px;
-        }
-
-        #menu > div:hover {
-            background-color: rgba(125, 125, 125, 0.4);
-        }
-
-        #menu > div[selected] {
-            background-color: rgba(125, 125, 125, 0.4);
-        }
-
         #tools {
             margin-top: 5px;
         }
@@ -61,31 +52,70 @@
             height: 200px;
             margin-top: 10px;
         }
+
+        .tabs {
+            margin: 5px 15px 0 0;
+            padding: 0 2px;
+            border-bottom: 1px solid transparent;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .tabs:hover {
+            border-bottom: 1px solid #8ba7a7;
+            color: #8ba7a7;
+            font-weight: bold;
+        }
+
+        .tabs[data-checked] {
+            border-bottom: 2px solid #225e71;
+            color: #222;
+            font-size: 13px;
+        }
+
+        .numFilter {
+            /*padding: 1px 7px;*/
+            background-color: #445D76;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 10px;
+            margin-top: 2px;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            text-align: center;
+        }
     </style>
     <template>
         <div class="title">{{title}}</div>
         <jso-table id="table" data="{{_data}}" enable-paging enable-select enable-export enable-resize on-rowclick="handleRowClick"></jso-table>
 
+        <div class="title">
+            Variant Data
+        </div>
         <div id="menu" class="horizontal layout">
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="overview" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">Overview</div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="comments" data-value="comments" data-checked$="{{computeView(view, 'comments')}}">Comments</div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="frequency" data-value="frequency" data-checked$="{{computeView(view, 'frequency')}}">Frequencies</div>
-            <div class="jso-btn jso-btn-shdw tabs" on-click="handleMenuClick" data-option="gv" data-value="gv" data-checked$="{{computeView(view, 'gv')}}">Viewer</div>
+            <div class="tabs" on-click="handleMenuClick" data-option="overview" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">Overview
+            </div>
+            <div class="tabs" on-click="handleMenuClick" data-option="comments" data-value="comments" data-checked$="{{computeView(view, 'comments')}}">Comments
+            </div>
+            <div class="tabs" on-click="handleMenuClick" data-option="frequency" data-value="frequency" data-checked$="{{computeView(view, 'frequency')}}">Frequencies
+            </div>
+            <div class="tabs" on-click="handleMenuClick" data-option="gv" data-value="gv" data-checked$="{{computeView(view, 'gv')}}">Genome Viewer
+            </div>
         </div>
 
         <div id="tools">
-            <div hidden$="{{!computeView(view, 'overview')}}">
-                <div id="overview">
-                </div>
-                <div style="font-style:italic">{{overviewComent}}</div>
-            </div>
+            <jso-variant-overview id="overview" hidden$="{{!computeView(view, 'overview')}}"></jso-variant-overview>
             <div id="comments" hidden$="{{!computeView(view, 'comments')}}">
                 <div style="margin-top: 10px">
                     <textarea id="commentsTextArea" class="jso commentsTextArea" placeholder="Comments..."></textarea>
                 </div>
             </div>
             <jso-variant-frequencies-grid id="frequency" hidden$="{{!computeView(view, 'frequency')}}"></jso-variant-frequencies-grid>
-            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}"></jso-genome-viewer-element>
+            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}" on-hidden="handleGenomeViewerHidden"></jso-genome-viewer-element>
+            <br>
         </div>
     </template>
 </dom-module>
@@ -137,51 +167,73 @@
             typeData: {
                 type: String,
                 value: ""
+            },
+            _lastSelectedRow: {
+                type: Object
             }
         },
         _columnsDiag: [{
             name: 'chr',
             title: "Chr",
-            width: 100
+            width: 30
         }, {
             name: 'pos',
             title: "Pos",
-            width: 100
+            width: 80
         }, {
             name: 'ref',
             title: "Ref",
-            width: 100
+            width: 30
         }, {
             name: 'alt',
             title: "Alt",
-            width: 100
+            width: 30
+        }, {
+            name: 'gt',
+            title: "Gt",
+            width: 30
         }, {
             name: 'id',
             title: 'SNP Id',
-            width: 100,
-            defaultValue: '.'
+            width: 80,
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
+                return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
+            },
         }, {
             name: 'qual',
             title: 'Qual',
-            width: 100,
+            width: 50,
             defaultValue: '.',
             formula: function(row) {
                 if (isNaN(row.qual)) {
                     return ".";
                 }
-                return parseFloat(row.qual, 3);
-
+                // return parseFloat(row.qual, 3);
+                aux = parseFloat(row.qual);
+                return aux.toFixed(3);
             }
         }, {
             name: 'dp',
             title: 'DP',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'gene',
             title: 'Gene',
-            width: 200,
-            defaultValue: '.'
+            width: 160,
+            defaultValue: '.',
+            formula: function(row) {
+                var genes = row.gene.split(",");
+                var links = [];
+                for (var i = 0; i < genes.length; i++) {
+                    var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                    links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                }
+
+                return links.join(",");
+            }
         }, {
             name: 'ct',
             title: 'Conseq. Type',
@@ -190,33 +242,99 @@
         }, {
             name: 'phylop',
             title: 'phyloP',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'phastcons',
             title: 'Phastcons',
-            width: 100,
+            width: 50,
+            defaultValue: '.'
+        }, {
+            name: 'grep',
+            title: 'Grep',
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'sift',
             title: 'SIFT',
-            width: 100,
-            defaultValue: '.'
+            width: 50,
+            defaultValue: '.',
+            styleFormula: function(row) {
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
+                if (row.sift == '.') {
+                    style.backgroundColor = '#76afd5';
+                } else if (row.sift <= 0.05) {
+                    style.backgroundColor = '#f47070';
+                }
+                return style;
+            },
         }, {
             name: 'polyphen',
             title: 'Polyphen',
-            width: 100,
-            defaultValue: '.'
+            width: 50,
+            defaultValue: '.',
+            styleFormula: function(row) {
+
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
+                if (row.polyphen == '.') {
+                    style.backgroundColor = '#76afd5';
+                } else if (row.polyphen >= 0.95) {
+                    style.backgroundColor = '#f47070';
+                }
+                return style;
+            }
         }, {
-            name: 'maf1000G',
-            title: 'MAF 1000G',
-            width: 100,
+            name: 'cadd',
+            title: 'CADD',
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'maf1000GP3',
             title: 'MAF 1000G Phase 3',
-            width: 100,
+            width: 50,
             defaultValue: '.'
+        }, {
+            name: 'esp6500',
+            title: 'ESP 6500',
+            width: 50,
+            defaultValue: '.'
+        }, {
+            name: 'spanishmaf',
+            title: 'Spanish MAF',
+            width: 50,
+            defaultValue: '.'
+        }, {
+            name: 'mafEXAC',
+            title: 'EXAC',
+            width: 50,
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+            }
+        }, {
+            name: 'beacon',
+            title: 'Beacon',
+            width: 50,
+            formula: function(row) {
+                var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
+                    // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            }
+        }, {
+            name: 'omim',
+            title: 'OMIM',
+            width: 50,
+            formula: function(row) {
+                var url = "http://www.omim.org/search/?index=geneMap&start=1&search=" + row.gene + "&limit=10";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/omim-logo.png"/></a>'
+            }
         }, {
             name: 'phenotype',
             title: 'Phenotype',
@@ -232,46 +350,65 @@
         _columnsSec: [{
             name: 'chr',
             title: "Chr",
-            width: 100
+            width: 30
         }, {
             name: 'pos',
             title: "Pos",
-            width: 100
+            width: 80
         }, {
             name: 'ref',
             title: "Ref",
-            width: 100
+            width: 30
         }, {
             name: 'alt',
             title: "Alt",
-            width: 100
+            width: 30
+        }, {
+            name: 'gt',
+            title: "Gt",
+            width: 30
         }, {
             name: 'id',
             title: 'SNP Id',
-            width: 100,
-            defaultValue: '.'
+            width: 80,
+            defaultValue: '.',
+            formula: function(row) {
+                var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
+                return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
+            },
         }, {
             name: 'qual',
             title: 'Qual',
-            width: 100,
+            width: 80,
             defaultValue: '.',
             formula: function(row) {
                 if (isNaN(row.qual)) {
                     return ".";
                 }
-                return parseFloat(row.qual, 3);
-
+                // return parseFloat(row.qual, 3);
+                aux = parseFloat(row.qual);
+                return aux.toFixed(3);
             }
         }, {
             name: 'dp',
             title: 'DP',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'gene',
             title: 'Gene',
-            width: 200,
-            defaultValue: '.'
+            width: 160,
+            defaultValue: '.',
+            formula: function(row) {
+                var genes = row.gene.split(",");
+                var links = [];
+                for (var i = 0; i < genes.length; i++) {
+                    var url = "http://www.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=" + genes[i] + ";r=" + row.chr + ":" + row.pos + "-" + row.pos;
+                    links.push('<a href="' + url + '" target="_blank">' + genes[i] + '</a>');
+                }
+
+                return links.join(",");
+            }
         }, {
             name: 'ct',
             title: 'Conseq. Type',
@@ -280,33 +417,203 @@
         }, {
             name: 'phylop',
             title: 'phyloP',
-            width: 100,
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'phastcons',
             title: 'Phastcons',
-            width: 100,
+            width: 50,
+            defaultValue: '.'
+        }, {
+            name: 'grep',
+            title: 'Grep',
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'sift',
             title: 'SIFT',
-            width: 100,
-            defaultValue: '.'
+            width: 50,
+            defaultValue: '.',
+            styleFormula: function(row) {
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
+                if (row.sift == '.') {
+                    style.backgroundColor = '#76afd5';
+                } else if (row.sift <= 0.05) {
+                    style.backgroundColor = '#f47070';
+                }
+                return style;
+            },
         }, {
             name: 'polyphen',
             title: 'Polyphen',
-            width: 100,
-            defaultValue: '.'
+            width: 50,
+            defaultValue: '.',
+            styleFormula: function(row) {
+
+                var style = {
+                    backgroundColor: '#8ccd8c',
+                    color: '#fff'
+                };
+                if (row.polyphen == '.') {
+                    style.backgroundColor = '#76afd5';
+                } else if (row.polyphen >= 0.95) {
+                    style.backgroundColor = '#f47070';
+                }
+                return style;
+            }
         }, {
-            name: 'maf1000G',
-            title: 'MAF 1000G',
-            width: 100,
+            name: 'cadd',
+            title: 'CADD',
+            width: 50,
             defaultValue: '.'
         }, {
             name: 'maf1000GP3',
             title: 'MAF 1000G Phase 3',
             width: 100,
-            defaultValue: '.'
+            defaultValue: '.',
+            formula: function(row) {
+                if (row.maf1000GP3 == ".") {
+                    return '.';
+                }
+                var d = document.createElement("div");
+                var dt = document.createElement("div");
+                var db = document.createElement("div");
+                var dbp = document.createElement("div");
+                dt.style.display = "inline-block";
+                dt.style.width = "45px";
+                dt.style.marginRight = "3px";
+                db.style.display = "inline-block";
+                dt.innerHTML = row.maf1000GP3;
+                db.style.width = "40px";
+                db.style.height = "10px";
+                db.style.position = "relative";
+                db.style.border = "1px solid steelblue";
+                dbp.style.height = "100%";
+                dbp.style.width = row.maf1000GP3 * 100 / 0.5 + "%";
+                dbp.style.backgroundColor = "steelblue";
+                db.appendChild(dbp);
+                d.appendChild(dt);
+                d.appendChild(db);
+
+                return d.outerHTML;
+            }
+        }, {
+            name: 'esp6500',
+            title: 'ESP 6500',
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+                if (row.esp6500 == ".") {
+                    return '.';
+                }
+                var d = document.createElement("div");
+                var dt = document.createElement("div");
+                var db = document.createElement("div");
+                var dbp = document.createElement("div");
+                dt.style.display = "inline-block";
+                dt.style.width = "45px";
+                dt.style.marginRight = "3px";
+                db.style.display = "inline-block";
+                dt.innerHTML = row.esp6500;
+                db.style.width = "40px";
+                db.style.height = "10px";
+                db.style.position = "relative";
+                db.style.border = "1px solid steelblue";
+                dbp.style.height = "100%";
+                dbp.style.width = row.esp6500 * 100 / 0.5 + "%";
+                dbp.style.backgroundColor = "steelblue";
+                db.appendChild(dbp);
+                d.appendChild(dt);
+                d.appendChild(db);
+
+                return d.outerHTML;
+            }
+        }, {
+            name: 'spanishmaf',
+            title: 'Spanish MAF',
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+                if (row.spanishmaf == ".") {
+                    return '.';
+                }
+                var d = document.createElement("div");
+                var dt = document.createElement("div");
+                var db = document.createElement("div");
+                var dbp = document.createElement("div");
+                dt.style.display = "inline-block";
+                dt.style.width = "45px";
+                dt.style.marginRight = "3px";
+                db.style.display = "inline-block";
+                dt.innerHTML = row.spanishmaf;
+                db.style.width = "40px";
+                db.style.height = "10px";
+                db.style.position = "relative";
+                db.style.border = "1px solid steelblue";
+                dbp.style.height = "100%";
+                dbp.style.width = row.spanishmaf * 100 / 0.5 + "%";
+                dbp.style.backgroundColor = "steelblue";
+                db.appendChild(dbp);
+                d.appendChild(dt);
+                d.appendChild(db);
+
+                return d.outerHTML;
+            }
+        }, {
+            name: 'mafEXAC',
+            title: 'EXAC',
+            width: 100,
+            defaultValue: '.',
+            formula: function(row) {
+                    if (row.mafEXAC == ".") {
+                        return '.';
+                    }
+                    var d = document.createElement("div");
+                    var dt = document.createElement("div");
+                    var db = document.createElement("div");
+                    var dbp = document.createElement("div");
+                    dt.style.display = "inline-block";
+                    dt.style.width = "45px";
+                    dt.style.marginRight = "3px";
+                    db.style.display = "inline-block";
+                    dt.innerHTML = row.mafEXAC;
+                    db.style.width = "40px";
+                    db.style.height = "10px";
+                    db.style.position = "relative";
+                    db.style.border = "1px solid steelblue";
+                    dbp.style.height = "100%";
+                    dbp.style.width = row.mafEXAC * 100 / 0.5 + "%";
+                    dbp.style.backgroundColor = "steelblue";
+                    db.appendChild(dbp);
+                    d.appendChild(dt);
+                    d.appendChild(db);
+
+                    return d.outerHTML;
+                }
+                // formula: function(row) {
+                //     var url = "http://exac.broadinstitute.org/variant/" + row.chr + "-" + row.pos + "-" + row.ref + "-" + row.alt;
+                //     return '<a href="' + url + '" target="_blank">' + row.mafEXAC + '</a>'
+                // }
+        }, {
+            name: 'beacon',
+            title: 'Beacon',
+            width: 50,
+            formula: function(row) {
+                var url = "https://beacon-network.org/#/search?allele=G&chrom=" + row.chr + "&pos=" + row.pos + "&ref=" + row.ref + "&rs=GRCh37";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/beacon-network-logo-dark.svg"/></a>'
+                    // return '<a href="'+url+'" target="_blank"><i class="fa fa-search"></i></a>'
+            }
+        }, {
+            name: 'omim',
+            title: 'OMIM',
+            width: 50,
+            formula: function(row) {
+                var url = "http://www.omim.org/search/?index=geneMap&start=1&search=" + row.gene + "&limit=10";
+                return '<a href="' + url + '" target="_blank"><img style="margin:1px;height:18px;font-weight:bold" src="images/omim-logo.png"/></a>'
+            }
         }, {
             name: 'clinvar',
             title: 'Clinvar',
@@ -325,29 +632,76 @@
         }],
 
         ready: function() {
-                if (this.typeData == "diagnostic") {
-                    this.$.table.columns = this._columnsDiag;
-                } else if (this.typeData == "secondary") {
-                    this.$.table.columns = this._columnsSec;
-                }
             var me = this;
-            this.async(function() {
-                this.$.gv.createGenomeViewer();
-                var seq = this.$.gv.genomeViewer.trackListPanel.tracks[2];
-                this.$.gv.genomeViewer.draw();
+            if (this.typeData == "diagnostic") {
+                this.$.table.columns = this._columnsDiag;
+            } else if (this.typeData == "secondary") {
+                this.$.table.columns = this._columnsSec;
+            }
 
-                this.genomeViewer = this.$.gv.genomeViewer;
-            });
+            this.$.table.exportParsers.headerParser = function(columns) {
+                  var headerLine = this.comment;
+                  for (var i = 0; i < columns.length; i++) {
+                      if (columns[i].type === "action" || columns[i].name == "beacon" || columns[i].name == "omim") {
+                          continue;
+                      }
+                      headerLine += columns[i].title + this.separator;
+                  }
+                  return headerLine;
+              }
+
+            this.$.table.exportParsers.dataParser = function(columns, row) {
+
+                var dataLine = "";
+                for (var j = 0; j < columns.length; j++) {
+                    var column = columns[j];
+
+                    if (columns[j].type === "action" || columns[j].name == "beacon" || columns[j].name == "omim") {
+                        continue;
+                    }
+
+                    var key = column.name;
+                    var value = (column.defaultValue) ? column.defaultValue : "";
+
+                    if (column.formula) {
+                        value = column.formula(row);
+                    } else {
+                        value = row[key];
+                    }
+                    value = (value + "").replace(/<(?:.|\n)*?>/gm, '');
+
+                    dataLine += value + this.separator;
+                }
+                return dataLine;
+            }
+
+        },
+        handleGenomeViewerHidden: function() {
+            if (this.$.gv.hidden == false && this.$.gv.genomeViewer == null) {
+                this.async(function() {
+                    var region;
+                    if (this._lastSelectedRow != null) {
+                        var row = this._lastSelectedRow;
+                        var reg = row.chr + ":" + row.pos + "-" + row.pos;
+                        region = new Region(reg);
+                    }
+                    this.$.gv.createGenomeViewer(null, region);
+                    this.$.gv.genomeViewer.draw();
+                    this.genomeViewer = this.$.gv.genomeViewer;
+                }, 10);
+            } else {
+                if (this.$.gv.genomeViewer != null) {
+                    this.$.gv.genomeViewer.destroy();
+                    this.$.gv.genomeViewer = null;
+                }
+            }
         },
         handleRowClick: function(e) {
             var row = e.detail.row;
             this._rowSelected(row);
         },
         _rowSelected: function(row) {
-            var reg = row.chr + ":" + row.pos + "-" + row.pos;
-            var region = new Region(reg);
-
-            this.$.gv.genomeViewer.setRegion(region);
+            this.set('_lastSelectedRow', row);
 
             var rowFreq = {
                 chromosome: row.chr,
@@ -356,9 +710,7 @@
                 alternate: row.alt
             };
             this.$.frequency.row = rowFreq;
-            this.view = 'overview';
-            this.overviewComent = "Graphic weighted between zero and one"
-            this._createPolarChart(row);
+            this.$.overview.row = rowFreq;
         },
         dataChanged: function(neo, old) {
             var _data = [];
@@ -374,7 +726,6 @@
                 this._rowSelected(this._data[0]);
             } else {
                 this.$.overview.hidden = true;
-                this.overviewComent = "No data found";
             }
 
         },
@@ -413,26 +764,40 @@
                 } else if (key === "gene") {
                     var gene_aux = data.gene.toUpperCase().split(",");
                     match = this._checkValue(gene_aux, query);
+                } else if (key === "ids") {
+                    var snpId_aux = data.id.toLowerCase().split(",");
+                    match = this._checkValue(snpId_aux, query);
                 } else if (key === "dp") {
                     match = this._computeInputOption(data.dp, query, filters["dp_op"]);
                 } else if (key === "qual") {
                     match = this._computeInputOption(data.qual, query, filters["qual_op"]);
                 } else if (key === "maf1000g") {
-                    match = this._computeInputOption(data.maf1000g, query, filters["maf1000g_op"]);
-                } else if (key === "mafEVS") {
-                    // match = this._computeInputOption(data.mafEVS, query, filters["mafEVS_op"]);
-                    match = true;
+                    match = this._computeInputOption(data.maf1000G, query, filters["maf1000g_op"]);
+                } else if (key === "maf1000GP3") {
+                    match = this._computeInputOption(data.maf1000GP3, query, filters["maf1000GP3_op"]);
+                } else if (key === "esp6500") {
+                    match = this._computeInputOption(data.esp6500, query, filters["esp6500_op"]);
+                } else if (key === "spanishmaf") {
+                    match = this._computeInputOption(data.spanishmaf, query, filters["spanishmaf_op"]);
+                } else if (key === "mafEXAC") {
+                    match = this._computeInputOption(data.mafEXAC, query, filters["mafEXAC_op"]);
                 } else if (key === "sift") {
-                    match = this._computeInputOption(data.sift, query, filters["sift_op"]);
+                    match = this._computeInputOption(data.sift, query);
                 } else if (key === "polyphen") {
-                    match = this._computeInputOption(data.polyphen, query, filters["polyphen_op"]);
+                    match = this._computeInputOption(data.polyphen, query);
+                } else if (key === "cadd") {
+                    match = this._computeInputOption(data.cadd, query);
                 } else if (key === "phylop") {
-                    match = this._computeInputOption(data.phylop, query, filters["phylop_op"]);
+                    match = this._computeInputOption(data.phylop, query);
                 } else if (key === "phastcons") {
-                    match = this._computeInputOption(data.phastcons, query, filters["phastcons_op"]);
-                } else if (key === "ct") {
+                    match = this._computeInputOption(data.phastcons, query);
+                } else if (key === "grep") {
+                    match = this._computeInputOption(data.grep, query);
+                } else if (key === "annot-ct") {
                     ct_aux = data.ct.split(",");
                     match = this._checkValue(ct_aux, query);
+                } else if (key === "gt") {
+                    match = this._checkGT(data.gt, query);
                 } else if (key.endsWith("_op")) {
                     continue;
                 }
@@ -441,20 +806,29 @@
             return filtered;
         },
         _computeInputOption: function(value, query, op) {
+            if (op == null) {
+                var aux = query.split("");
+                var val = "";
+                var valOp = "";
+                var n = 0;
+                for (var i = 0; i < 2; i++) {
+                    if (isNaN(aux[i]) && aux[i] != "-") {
+                        valOp += aux[i];
+                        n++;
+                    }
+                }
+                for (var i = n; i < aux.length; i++) {
+                    val += aux[i];
+                }
+                query = parseFloat(val);
+                op = valOp;
+            }
             var aux = false;
             if (value === ".") {
                 aux = true;
             }
             value = parseFloat(value);
-            if (op == "==") {
-                if (value == query) {
-                    aux = true;
-                }
-            } else if (op == "!=") {
-                if (value != query) {
-                    aux = true;
-                }
-            } else if (op == "<") {
+            if (op == "<") {
                 if (value < query) {
                     aux = true;
                 }
@@ -474,9 +848,10 @@
             return aux;
         },
         _checkValue: function(value, query) {
-            for (var i = 0; i < query.length; i++) {
+            var q = query.split(",");
+            for (var i = 0; i < q.length; i++) {
                 for (var j = 0; j < value.length; j++) {
-                    if (value[j] == query[i]) {
+                    if (value[j] == q[i]) {
                         return true;
                     }
                 }
@@ -484,15 +859,20 @@
             return false;
         },
         _checkPosition: function(chr, position, query) {
-            for (var i = 0; i < query.length; i++) {
-                var a = query[i].split(":");
+            var q = query.split(",");
+            for (var i = 0; i < q.length; i++) {
+                var a = q[i].split(":");
                 var chr_aux = a[0];
                 if (chr == chr_aux) {
-                    var pos = a[1].split("-");
-                    var start = parseInt(pos[0]);
-                    var end = parseInt(pos[1]);
-                    if (position >= start && position <= end) {
+                    if (a.length == 1) {
                         return true;
+                    } else {
+                        var pos = a[1].split("-");
+                        var start = parseInt(pos[0]);
+                        var end = parseInt(pos[1]);
+                        if (position >= start && position <= end) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -504,19 +884,21 @@
             if (query === "none") {
                 return true;
             } else if (query === "filterA") {
-                if (sift <= "0.05" && polyphen >= "0.95") {
+                if (sift <= 0.05 && polyphen >= 0.95) {
                     return true;
                 }
-                //}else if (query === "filterB") {
-                //     if ((sift <= "0.25" && sift > "0.05") && (polyphen < "0.95" && polyphen >= "0.75")) {
-                //         return true;
-                //     }
-                // } else if (query === "filterC") {
-                //     if (((sift <= "0.50" && sift > "0.25") && (polyphen < "0.75" && polyphen >= "0.50")) || sift=='.' || polyphen=='.') {
-                //         return true;
-                //     }
+            } else if (query === "filterB") {
+                if (sift <= 0.05 && polyphen >= 0.95) {
+                    return false;
+                } else if (sift <= 0.05 || polyphen >= 0.95 && (sift != '.' || polyphen != '.')) {
+                    return true;
+                }
+            } else if (query === "filterC") {
+                if (sift == '.' && polyphen == '.') {
+                    return true;
+                }
             } else if (query === "filterD") {
-                if (sift <= "0.05" && polyphen >= "0.95") {
+                if (sift <= 0.05 || polyphen >= 0.95 || sift == '.' || polyphen == '.') {
                     return false;
                 } else {
                     return true;
@@ -543,64 +925,6 @@
                 this.$[neo.dataset.option].removeAttribute('hidden');
             }
         },
-        _parseFloat: function(data) {
-            var aux = parseFloat(data);
-            aux = isNaN(aux) ? null : aux;
-            return aux;
-        },
-        _createPolarChart: function(row) {
-            var phylop = Math.abs(row.phylop);
-            if (phylop > 1) {
-                phylop = 1 / phylop;
-            }
-            var phastcons = Math.abs(row.phastcons);
-            if (phastcons > 1) {
-                phastcons = 1 / phastcons;
-            }
-
-            var chart = new Highcharts.Chart({
-                chart: {
-                    polar: true,
-                    type: 'line',
-                    renderTo: this.$.overview,
-                    width: 510,
-                    height: 300
-
-                },
-                credits: {
-                    enabled: false
-                },
-                legend: {
-                    enabled: false
-                },
-                title: {
-                    text: row.gene,
-                    x: -80
-                },
-                xAxis: {
-                    categories: ['Sift', 'Polyphen', 'Phylop', 'Phastcons'],
-                    tickmarkPlacement: 'on',
-                    lineWidth: 1
-                },
-
-                yAxis: {
-                    gridLineInterpolation: 'polygon',
-                    lineWidth: 0,
-                    min: 0,
-                    max: 1
-                },
-
-                series: [{
-                    type: 'area',
-                    name: row.gene,
-                    data: [this._parseFloat(row.sift), 1 - this._parseFloat(row.polyphen), this._parseFloat(phylop),
-                        this._parseFloat(phastcons)
-                    ],
-                    pointPlacement: 'on'
-                }]
-
-            });
-        },
         filterDataChanged: function(neo, old) {
             this.set('filterData', neo);
             if (this.filterData[0] != null) {
@@ -612,5 +936,20 @@
                 this.overviewComent = "";
             }
         },
+
+        _checkGT: function(gt, query) {
+            var splits = gt.split(/[|\/]/);
+            if (splits.length == 1) {
+                return true;
+            } else if (splits.length == 2) {
+                if (query === "het") {
+                    return splits[0] != splits[1];
+                } else { // hom
+                    return splits[0] == splits[1];
+                }
+            } else {
+                return false;
+            }
+        }
     });
 </script>

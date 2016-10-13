@@ -16,12 +16,12 @@
 
     <properties>
         <compileSource>1.7</compileSource>
-        <biodata.version>0.6.0-SNAPSHOT</biodata.version>
-        <jcl.version>3.1.0-SNAPSHOT</jcl.version>
+        <biodata.version>0.6.0</biodata.version>
+        <jcl.version>3.1.0</jcl.version>
         <opencga.version>0.7-dev</opencga.version>
-        <datastore.version>0.5.0-SNAPSHOT</datastore.version>
-        <cellbase.version>3.1.3</cellbase.version>
-        <team.version>1.0.0</team.version>
+        <datastore.version>0.5.0</datastore.version>
+        <cellbase.version>4.0.0-rc</cellbase.version>
+        <team.version>1.2.0</team.version>
     </properties>
 
     <dependencyManagement>
@@ -80,12 +80,6 @@
                 <groupId>org.opencb.cellbase</groupId>
                 <artifactId>cellbase-core</artifactId>
                 <version>${cellbase.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.opencb.datastore</groupId>
-                <artifactId>datastore-core</artifactId>
-                <version>${datastore.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

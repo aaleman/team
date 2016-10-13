@@ -3,8 +3,8 @@
 <link rel="import" href="team-result-filters.html">
 <link rel="import" href="team-result-report.html">
 <dom-module id="team-result">
-    <style>
-    :host {
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
+        :host {
             display: block;
             position: relative;
             box-sizing: border-box;
@@ -30,27 +30,6 @@
             width: 270px;
         }
 
-        #menu {
-            margin-top: 15px;
-        }
-
-        #menu > div {
-            font-size: 17px;
-            padding: 5px 5px;
-            margin: 0 20px;
-            border-bottom: 2px solid transparent;
-            transition: all 0.1s;
-            cursor: pointer;
-        }
-
-        #menu > div:hover {
-            border-bottom-color: rgba(125, 125, 125, 0.4);
-        }
-
-        #menu > div[selected] {
-            border-bottom-color: rgba(125, 125, 125, 0.7);
-        }
-
         team-result-diagnostic {
             height: 400px;
         }
@@ -63,37 +42,69 @@
             margin: 10px;
         }
 
-        .tabs {
-            height: 30px;
-            line-height: 30px;
+        .tab {
+            height: 20px;
+            line-height: 20px;
             font-size: 14px;
             width: 150px;
+            padding: 5px 10px;
+            color: #666;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
         }
-    }
-    .value {
-        border: 1px solid #d0d0d0;
-        box-sizing: border-box;
-        height: 20px;
-        font-size: 13px;
-    }
+
+        .tab[data-checked] {
+            background-color: #fff;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+            color: #222;
+            border: 1px solid #ddd;
+            border-bottom: 1px solid transparent;
+            box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:hover {
+            /*background-color: #eee;*/
+            /*border-radius: 7px;*/
+            color: #8ba7a7;
+            font-weight: bold;
+        }
+
+        .value {
+            border: 1px solid #d0d0d0;
+            box-sizing: border-box;
+            height: 20px;
+            font-size: 13px;
+        }
+
+        #submenu {
+            padding-top: 10px;
+            background-color: #e2e9e9;
+            padding-left: 10px;
+        }
     </style>
     <template>
         <div class="vertical layout flex">
-            <div class="horizontal layout">
-                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
+            <div id="submenu" class="horizontal layout">
+
+                <div class="tab" on-click="handleView" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">
                     Overview
                 </div>
-                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
+                <div class="tab" on-click="handleView" data-value="diagnostic" data-checked$="{{computeView(view, 'diagnostic')}}">
                     Diagnostic
                 </div>
-                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
+                <div class="tab" on-click="handleView" data-value="secondary" data-checked$="{{computeView(view, 'secondary')}}">
                     Secondary Findings
                 </div>
-                <div class="jso-btn jso-btn-shdw tabs" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
+                <div class="tab" on-click="handleView" data-value="report" data-checked$="{{computeView(view, 'report')}}">
                     Report
                 </div>
+                <div class="tab flex" style="cursor:default">
+
+                </div>
             </div>
-            <team-result-overview id="ower" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
+            <team-result-overview id="ower" job="{{job}}" gene-map="{{geneMap}}" gene-names="{{geneNames}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" diag="{{diag}}" sec="{{sec}}" hidden$="{{!computeView(view, 'overview')}}"></team-result-overview>
 
             <div class="vertical layout" hidden$="{{!computeView(view, 'diagnostic')}}">
                 <team-result-diagnostic id="diagnosticResult" data="{{diagData}}" title="Diagnostic" type-data="diagnostic"></team-result-diagnostic>
@@ -109,7 +120,7 @@
             </div>
 
             <div hidden$="{{!computeView(view, 'report')}}" id="result">
-                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}"></team-result-report>
+                <team-result-report id="teamResultReport" job="{{job}}" diag-data="{{diagData}}" sec-data="{{secData}}" total-data="{{totalData}}" value="{{value}}" filter-data="{{filterData}}" panel-config="{{panelConfig}}" gene-map="{{geneMap}}" gene-names="{{geneNames}}"></team-result-report>
 
             </div>
 
@@ -142,7 +153,7 @@
                         return {};
                     },
                     observer: 'jobChanged',
-                    notify:true
+                    notify: true
                 },
                 diagData: {
                     type: Array,
@@ -180,17 +191,32 @@
                     type: Number,
                     value: 0
 
+                },
+                panelConfig: {
+                    type: Object,
+                    value: function() {
+                        return {};
+                    },
+                    notify: true
+                },
+                geneMap:{
+                  type: Object,
+                  observer:"geneMapChange"
+                },
+                geneNames:{
+                  type: Array,
+                    observer:"geneNamesChange"
                 }
-
             },
             created: function() {},
             ready: function() {
 
             },
-
+            geneMapChange:function(neo,old){},
+            geneNamesChange:function(neo,old){},
             jobChanged: function(neo, old) {
-              this.set('jobId', neo.id);
-              this.view='overview';
+                this.set('jobId', neo.id);
+                this.view = 'overview';
                 if (neo.output) {
 
                     var files = [];
@@ -272,30 +298,35 @@
                             if (diagRaw[i] != "") {
 
                                 var splits = diagRaw[i].split("\t");
-
                                 var elem = {
                                     chr: splits[0],
                                     pos: splits[1],
                                     ref: splits[2],
                                     alt: splits[3],
-                                    qual: splits[4],
-                                    dp: splits[5],
-                                    id: splits[6],
-                                    gene: splits[7],
-                                    ct: splits[8],
-                                    phylop: splits[9],
-                                    phastcons: splits[10],
-                                    sift: splits[11],
-                                    polyphen: splits[12],
-                                    maf1000G: splits[13],
-                                    amaf1000G: splits[14],
-                                    maf1000GP3: splits[15],
-                                    amaf1000GP3: splits[16],
-                                    phenotype: splits[17],
-                                    source: splits[18]
-                                    // clinvar: splits[17],
-                                    // cosmic: splits[18],
-                                    // gwas: splits[19],
+                                    gt: splits[4],
+                                    qual: splits[5],
+                                    dp: splits[6],
+                                    id: splits[7],
+                                    gene: splits[8],
+                                    ct: splits[9],
+                                    phylop: splits[10],
+                                    phastcons: splits[11],
+                                    grep: splits[12],
+                                    sift: splits[13],
+                                    polyphen: splits[14],
+                                    cadd: splits[15],
+                                    maf1000G: splits[16],
+                                    amaf1000G: splits[17],
+                                    maf1000GP3: splits[18],
+                                    amaf1000GP3: splits[19],
+                                    esp6500: splits[20],
+                                    aesp6500: splits[21],
+                                    spanishmaf: splits[22],
+                                    aspanishmaf: splits[23],
+                                    mafEXAC: splits[24],
+                                    amafEXAC: splits[25],
+                                    phenotype: splits[26],
+                                    source: splits[27]
 
                                 };
                                 diagData.push(elem);
@@ -306,28 +337,36 @@
                             if (secRaw[i] != "") {
 
                                 var splits = secRaw[i].split("\t");
-
                                 var elem = {
                                     chr: splits[0],
                                     pos: splits[1],
                                     ref: splits[2],
                                     alt: splits[3],
-                                    qual: splits[4],
-                                    dp: splits[5],
-                                    id: splits[6],
-                                    gene: splits[7],
-                                    ct: splits[8],
-                                    phylop: splits[9],
-                                    phastcons: splits[10],
-                                    sift: splits[11],
-                                    polyphen: splits[12],
-                                    maf1000G: splits[13],
-                                    amaf1000G: splits[14],
-                                    maf1000GP3: splits[15],
-                                    amaf1000GP3: splits[16],
-                                    clinvar: splits[17],
-                                    cosmic: splits[18],
-                                    gwas: splits[19],
+                                    gt: splits[4],
+                                    qual: splits[5],
+                                    dp: splits[6],
+                                    id: splits[7],
+                                    gene: splits[8],
+                                    ct: splits[9],
+                                    phylop: splits[10],
+                                    phastcons: splits[11],
+                                    grep: splits[12],
+                                    sift: splits[13],
+                                    polyphen: splits[14],
+                                    cadd: splits[15],
+                                    maf1000G: splits[16],
+                                    amaf1000G: splits[17],
+                                    maf1000GP3: splits[18],
+                                    amaf1000GP3: splits[19],
+                                    esp6500: splits[20],
+                                    aesp6500: splits[21],
+                                    spanishmaf: splits[22],
+                                    aspanishmaf: splits[23],
+                                    mafEXAC: splits[24],
+                                    amafEXAC: splits[25],
+                                    clinvar: splits[26],
+                                    cosmic: splits[27],
+                                    gwas: splits[28]
 
                                 };
                                 secData.push(elem);
@@ -346,7 +385,7 @@
             handleView: function(e) {
                 this.view = e.target.dataset.value;
                 if (this.view == 'report') {
-                    this.$.teamResultReport.computeFilter(2,this.jobId);
+                    this.$.teamResultReport.computeFilter(2, this.jobId);
                     this.$.teamResultReport._getCommentsInfo();
 
                 }

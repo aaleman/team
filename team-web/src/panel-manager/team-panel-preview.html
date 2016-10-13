@@ -1,17 +1,19 @@
 <dom-module id="team-panel-preview">
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
             display: block;
             position: relative;
             box-sizing: border-box;
-            margin: 5px;
             width: 600px;
-            padding: 10px;
+            height: 100%;
+            /*padding: 10px;*/
             /*height: 500px;*/
+            /*@apply(--layout-horizontal);*/
         }
 
         jso-table {
-            height: 480px;
+            min-height: 300px;
+            height: 100%;
         }
 
         .data {
@@ -19,13 +21,17 @@
         }
 
         #table {
-            border: 1px solid #d0d0d0;
-            margin-top: 5px;
+            position: relative;
+            height: calc(100% - 42px);
         }
 
-        jso-table::shadow .table-row {
-            height: 25px;
+        #table > div {
+            position: relative;
+            height: 100%;
         }
+        /*jso-table::shadow .table-row {
+            height: 15px;
+        }*/
 
         jso-table::shadow {
             font-size: 11px;
@@ -34,48 +40,94 @@
         jso-table::shadow .table-pager > input {
             width: 40px !important;
         }
+
+        .information {
+            box-sizing: border-box;
+            /*border: 1px solid var(--divider-color);*/
+            /*box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);*/
+            padding: 10px;
+            /*background-color: #ffffff*/
+            height: 100px;
+        }
+
+        .tabwrap {
+            box-sizing: border-box;
+            position: relative;
+            border: 1px solid var(--divider-color);
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            height: calc(100% - 100px);
+        }
+
+        .tab {
+            height: 20px;
+            line-height: 20px;
+            font-size: 14px;
+            width: 150px;
+            padding: 5px 10px;
+            color: #666;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .tab[data-checked] {
+            background-color: #fff;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+            color: #222;
+            border: 1px solid #ddd;
+            border-bottom: 1px solid transparent;
+            box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab:hover {
+            /*background-color: #eee;*/
+            /*border-radius: 7px;*/
+            color: #8ba7a7;
+            font-weight: bold;
+        }
+
+        #submenu {
+            background-color: #e2e9e9;
+            padding-left: 10px;
+            padding-top: 10px;
+        }
     </style>
     <template>
-        <div style="margin:5px">
-            <div class="horizontal layout" style="line-height: 25px;">
-                <div class="data">Name: &nbsp;</div>
-                <div class="flex">{{namePanel}}</div>
-
-
-                <div class="data">Author: &nbsp;</div>
-                <div class="flex">{{author}}</div>
-
-                <div class="data">Version: &nbsp;</div>
-                <div>{{vers}}</div>
-            </div>
-            <div class="horizontal layout" style="line-height: 25px;">
-                <div class="data">Description: &nbsp;</div>
-                <div>{{desc}}</div>
-            </div>
+        <div class="information">
+            <span class="data">Name:</span> &nbsp; {{namePanel}}
+            <br>
+            <span class="data">Author:</span> &nbsp; {{author}}
+            <br>
+            <span class="data">Version:</span> &nbsp; {{vers}}
+            <br>
+            <span class="data">Description:</span> &nbsp; {{desc}}
         </div>
 
-        <div class="horizontal layout" style="margin-top:10px">
-            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
-                Diseases
+        <div class="tabwrap">
+            <div id="submenu" class="horizontal layout">
+                <div class="tab" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
+                    Diseases
+                </div>
+                <div class="tab" on-click="handleOptions" data-value="genes" data-checked$="{{computeOptions(option, 'genes')}}">
+                    Genes/Regions
+                </div>
+                <div class="tab" on-click="handleOptions" data-value="mutations" data-checked$="{{computeOptions(option, 'mutations')}}">
+                    Mutations
+                </div>
+                <div class="tab flex" style="cursor:default"></div>
             </div>
-            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="genes" data-checked$="{{computeOptions(option, 'genes')}}">
-                Genes/Regions
+            <div id="table">
+                <div hidden$="{{!computeOptions(option, 'diseases')}}" id="diseases">
+                    <jso-table id="diseaseTable" columns="{{diseaseColumns}}" enable-paging hide-column-selector></jso-table>
+                </div>
+                <div hidden$="{{!computeOptions(option, 'genes')}}" id="genes">
+                    <jso-table id="geneTable" columns="{{geneColumns}}" enable-paging hide-column-selector> </jso-table>
+                </div>
+                <div hidden$="{{!computeOptions(option, 'mutations')}}" id="mutations">
+                    <jso-table id="mutationTable" columns="{{mutationColumns}}" enable-paging hide-column-selector></jso-table>
+                </div>
             </div>
-            <div class="jso-btn jso-btn-shdw flex" on-click="handleOptions" data-value="mutations" data-checked$="{{computeOptions(option, 'mutations')}}">
-                Mutations
-            </div>
-        </div>
-
-        <div id="table">
-            <template is="dom-if" if="{{computeOptions(option, 'diseases')}}">
-                <jso-table columns="{{diseaseColumns}}" data="{{diseases}}" hide-column-selector></jso-table>
-            </template>
-            <template is="dom-if" if="{{computeOptions(option, 'genes')}}">
-                <jso-table columns="{{geneColumns}}" data="{{genes}}" hide-column-selector> </jso-table>
-            </template>
-            <template is="dom-if" if="{{computeOptions(option, 'mutations')}}">
-                <jso-table columns="{{mutationColumns}}" data="{{mutations}}" hide-column-selector></jso-table>
-            </template>
         </div>
 
     </template>
@@ -130,7 +182,7 @@
                 this.mutationColumns = [{
                     name: 'chr',
                     title: 'Chr',
-                    width:70
+                    width: 70
                 }, {
                     name: 'pos',
                     title: 'Pos',
@@ -165,7 +217,6 @@
                     width: 240
                 }];
 
-
             },
 
             handleOptions: function(e) {
@@ -178,7 +229,7 @@
                 return option === value;
             },
             selectedPanelChanged: function(neo, old) {
-                if (neo) {
+                if (Object.keys(neo).length > 0) {
                     this.namePanel = this.selectedPanel.name;
                     this.vers = this.selectedPanel.version;
                     this.author = this.selectedPanel.author;
@@ -186,6 +237,7 @@
                     this.diseases = neo.diseases;
                     this.genes = neo.genes;
                     this.mutations = neo.mutations;
+                    this.refreshTables();
                 } else {
                     this.namePanel = "";
                     this.vers = "";
@@ -196,6 +248,11 @@
                     this.mutations = "";
                 }
             },
+            refreshTables: function() {
+                this.$.diseaseTable.set("data", this.diseases);
+                this.$.geneTable.set("data", this.genes);
+                this.$.mutationTable.set("data", this.mutations);
+            }
         })
     </script>
 </dom-module>

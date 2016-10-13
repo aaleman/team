@@ -1,5 +1,11 @@
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/jso-form-box.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-position.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-scores.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-conservation.html">
+<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-consequencetypes.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 <dom-module id="team-result-form">
-    <style>
+    <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
             display: block;
             position: relative;
@@ -20,7 +26,7 @@
         }
 
         #bar {
-            padding: 0 3px 5px 3px;
+            padding: 0 3px 5px 0;
         }
 
         #bar > .jso-btn {
@@ -78,6 +84,9 @@
         .conserv-elem {
             margin-bottom: 3px;
         }
+        /*.qual-elem {
+            width: 95%;
+        }*/
 
         .maf-elem > label,
         .qual-elem > label,
@@ -86,15 +95,15 @@
             width: 60px;
             text-align: right;
             font-weight: bold;
-            ;
         }
 
         .maf-elem > .jso-select,
-        .qual-elem > .jso-select,
         .pss-elem > .jso-select,
-        .conserv-elem > .jso-select {
+        .conserv-elem > .jso-select,
+        .qual-elem > .jso-select {
             width: 45px;
             margin-right: 3px;
+            align-self: center;
         }
 
         #filter-name {
@@ -145,11 +154,48 @@
             height: 700px;
             overflow-y: auto;
         }
+
+        .inputValue {
+            width: 150px;
+        }
+
+        .butstyle {
+            border-radius: 4px;
+        }
+
+        .numFilter {
+            /*padding: 1px 7px;*/
+            background-color: #445D76;
+            border-radius: 50%;
+            color: #fff;
+            font-weight: bold;
+            font-size: 12px;
+            margin-left: 10px;
+            margin-top: 2px;
+            line-height: 20px;
+            height: 20px;
+            width: 20px;
+            text-align: center;
+        }
+
+        paper-slider.sliderBar {
+            color: #a0a0a0;
+            --paper-slider-knob-color: #445D76;
+            --paper-slider-active-color: #445D76;
+            --paper-slider-pin-color: #445D76;
+            --paper-input-container-focus-color: #445D76;
+            width: 125%;
+        }
+
+        paper-slider::shadow #input {
+            width: calc(20vh - 40px);
+            font-size: 13px;
+        }
     </style>
     <template>
-        <div id="filter_form">
-            <div id="bar" class="horizontal layout center-justified">
-                <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw" title="Filters History" icon="filter">
+        <form id="filter_form">
+            <div id="bar" class="horizontal layout">
+                <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw butstyle" title="Filters History" icon="filter">
                     <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
                         Clear
                     </div>
@@ -163,222 +209,155 @@
                             <div class="horizontal layout flex" on-click="loadFilter" data-filter="{{item.filter}}" title="{{item.name}}">
                                 <span class="num">{{item.date}} </span>
                                 <span id="filter-name" class="name">{{item.name}} </span>
-                                <span class="num">{{item.finded}}</span>
+                                <span class="num">{{item.found}}</span>
                             </div>
                         </template>
                     </div>
                 </jso-tooltip>
-                <div class="jso-btn jso-btn-shdw flex" on-click="clearForm">Clear</div>
-                <div class="jso-btn jso-btn-shdw flex" on-click="submitForm">Search</div>
+                <div class="jso-btn jso-btn-shdw flex butstyle" on-click="clearForm">Clear</div>
+                <div class="jso-btn jso-btn-shdw flex butstyle" on-click="submitForm">Search</div>
             </div>
             <div id="customFiltersForm">
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
-                        Position
-                    </div>
-                    <div class="jso-formcontent">
-                        <label class="jso">Chromosomal location:</label>
-                        <textarea class="jso" id="region" name="region" placeholder="1:1-1000000,2:1-1000000" value="{{regionValue::change}}" rows="3" required>
-                        </textarea>
-
-                        <label class="jso">Gene:</label>
-                        <textarea class="jso" id="gene" name="gene" placeholder="BRCA2,PPL" value="{{geneValue::input}}" rows="3" required>
-                        </textarea>
-
-
-                        <!-- <jso-cellbase-search-field style="margin-top:5px;" placeholder="Search gene" on-featureselected="handleFeatureSelected"></jso-cellbase-search-field> -->
-
-                    </div>
-                </div>
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
+                <jso-filter-position id="filterPosition" collapsible enable-snpid></jso-filter-position>
+                <jso-form-box collapsible collapsed>
+                    <div class="header">
                         Population Freqs.
                     </div>
-                    <div class="jso-formcontent vertical layout">
-                        <div class="horizontal layout maf-elem">
-                            <label class="jso">1000G</label>
+                    <div class="container vertical layout">
 
+                        <label class="jso">1000G Phase 3</label>
+
+                        <div class="horizontal layout maf-elem">
                             <div class="jso-select">
-                                <select class="jso" name="maf1000g_op" id="maf1000g_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="maf1000GP3_op" id="maf1000GP3_op">
+                                    <jso-option value="<" selected>
+                                        < </jso-option>
+                                            <jso-option value="<=">
+                                                <=< /jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="maf1000g" name="maf1000g" min="0" max="1" step="0.001" value="{{maf1000gValue::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="maf1000GP3" editable></paper-slider>
+
                         </div>
 
-                        <div class="horizontal layout maf-elem">
-                            <label class="jso">EVS</label>
+                        <label class="jso">ESP 6500</label>
 
+                        <div class="horizontal layout maf-elem">
                             <div class="jso-select">
-                                <select class="jso" name="mafEVS_op" id="mafEVS_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="esp6500_op" id="esp6500_op">
+                                    <jso-option value="<" selected>
+                                        < </jso-option>
+                                            <jso-option value="<=">
+                                                <=< /jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="mafEVS" name="mafEVS" min="0" max="1" step="0.001" value="{{mafEVSValue::input}}" />
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="esp6500" editable></paper-slider>
+
+                        </div>
+
+                        <label class="jso">Spanish MAF</label>
+
+                        <div class="horizontal layout maf-elem">
+                            <div class="jso-select">
+                                <jso-select class="jso" name="spanishmaf_op" id="spanishmaf_op">
+                                    <jso-option value="<" selected>
+                                        < </jso-option>
+                                            <jso-option value="<=">
+                                                <=< /jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                </jso-select>
+                            </div>
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="spanishmaf" editable></paper-slider>
+
+                        </div>
+
+                        <label class="jso">EXAC</label>
+
+                        <div class="horizontal layout maf-elem">
+                            <div class="jso-select">
+                                <jso-select class="jso" name="mafEXAC_op" id="mafEXAC_op">
+                                    <jso-option value="<" selected>
+                                        < </jso-option>
+                                            <jso-option value="<=">
+                                                <=< /jso-option>
+                                                    <jso-option value=">">></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                </jso-select>
+                            </div>
+                            <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="mafEXAC" editable></paper-slider>
 
                         </div>
                     </div>
-                </div>
+                </jso-form-box>
 
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
+                <jso-form-box collapsible collapsed>
+                    <div class="header">
+                        Genotype
+                    </div>
+                    <div class="container vertical layout">
+                        <label class="jso-control horizontal layout" style="margin-bottom:2px;">
+                            <input value="het" type="checkbox" name="gt">
+                            <span class="flex">Heterozygous</span>
+                            <span class="numFilter">{{numHeterozygous}}</span>
+                        </label>
+                        <label class="jso-control horizontal layout" style="margin-top:2px;">
+                            <input value="hom" type="checkbox" name="gt">
+                            <span class="flex">Homozygous</span>
+                            <span class="numFilter">{{numHomozygous}}</span>
+                        </label>
+                    </div>
+                </jso-form-box>
+
+
+                <jso-form-box collapsible collapsed>
+                    <div class="header">
                         Quality
                     </div>
-                    <div class="jso-formcontent vertical layout">
-
+                    <div class="container vertical layout">
+                        <label class="jso">QUAL </label>
                         <div class="horizontal layout qual-elem">
-                            <label class="jso">QUAL</label>
                             <div class="jso-select">
-                                <select class="jso" name="qual_op" id="qual_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="qual_op" id="qual_op">
+                                    <jso-option value="<">
+                                        < </jso-option>
+                                            <jso-option value="<=">
+                                                <=< /jso-option>
+                                                    <jso-option value=">" selected>></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="qual" name="qual" value="{{qualValue::input}}" min="0" step="1" />
+                            <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="qual" editable></paper-slider>
                         </div>
 
+                        <div class="horizontal layout" style="line-height: 20px;">
+                            <label class="jso">DP </label>
+                        </div>
                         <div class="horizontal layout qual-elem">
-                            <label class="jso">DP</label>
                             <div class="jso-select">
-                                <select class="jso" name="dp_op" id="dp_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
+                                <jso-select class="jso" name="dp_op" id="dp_op">
+                                    <jso-option value="<">
+                                        < </jso-option>
+                                            <jso-option value="<=">
+                                                <=< /jso-option>
+                                                    <jso-option value=">" selected>></jso-option>
+                                                    <jso-option value=">=">>=</jso-option>
+                                </jso-select>
                             </div>
-                            <input class="jso flex" type="number" id="dp" name="dp" value="{{dpValue::input}}" />
+                            <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="dp" editable></paper-slider>
                         </div>
                     </div>
-                </div>
+                </jso-form-box>
+                <jso-filter-scores id="filterScores" collapsible collapsed enable-cadd></jso-filter-scores>
+                <jso-filter-conservation id="filterConservation" collapsible collapsed></jso-filter-conservation>
+                <jso-filter-consequencetypes id="filterCT" collapsible collapsed data="{{data}}" enable-result></jso-filter-consequencetypes>
 
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
-                        Protein Substitution Scores
-                    </div>
-                    <div class="jso-formcontent vertical layout">
-                        <div class="horizontal layout pss-elem">
-                            <label class="jso">SIFT</label>
-                            <div class="jso-select">
-                                <select name="sift_op" id="sift_op" class="jso">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
-                            </div>
-                            <input class="jso flex" type="number" id="sift" name="sift" min="0" max="1" step="0.001" value="{{siftValue::input}}" />
-                        </div>
-
-                        <div class="horizontal layout pss-elem">
-                            <label class="jso">Polyphen</label>
-                            <div class="jso-select">
-                                <select class="jso" name="polyphen_op" id="polyphen_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
-                            </div>
-                            <input class="jso flex" type="number" id="polyphen" name="polyphen" min="0" max="1" step="0.001" value="{{polyphenValue::input}}" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
-                        Conservation
-                    </div>
-                    <div class="jso-formcontent vertical layout">
-
-                        <div class="horizontal layout conserv-elem">
-                            <label class="jso">phyloP</label>
-                            <div class="jso-select">
-                                <select class="jso" name="phylop_op" id="phylop_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
-                            </div>
-                            <input class="jso flex" type="number" id="phylop" name="phylop" value="{{phylopValue::input}}" step="0.001" />
-
-                        </div>
-
-                        <div class="horizontal layout conserv-elem">
-                            <label class="jso">PhastCons</label>
-                            <div class="jso-select">
-                                <select class="jso" name="phastcons_op" id="phastcons_op">
-                                    <option value="==">==</option>
-                                    <option value="!=">!=</option>
-                                    <option value="<" selected>
-                                        <</option>
-                                            <option value="<=">
-                                                <=</option>
-                                                    <option value=">">></option>
-                                                    <option value=">=">>=</option>
-                                </select>
-                            </div>
-                            <input class="jso flex" type="number" id="phastcons" name="phastcons" value="{{phastconsValue::input}}" step="0.001" />
-
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="jso-formbox">
-                    <div class="jso-formtitle">
-                        Consequence Type
-                    </div>
-                    <div id="consequenceTypes" class="jso-formcontent">
-                        <template is="dom-repeat" items="{{consequenceTypes}}">
-                            <label class="jso-control">
-                                <input value="{{item.value}}" type="checkbox" name="consequence_type" data-consequence$="{{item.name}}">
-                                <span>{{item.text}}</span>
-                            </label>
-                        </template>
-                        <div class="input_container vertical layout">
-                        </div>
-                    </div>
-                </div>
             </div>
-        </div>
+        </form>
     </template>
 </dom-module>
 <script>
@@ -403,6 +382,11 @@
                 type: String,
                 notify: true,
                 value: '',
+            },
+            snpIdValue: {
+                type: String,
+                notify: true,
+                value: ''
             },
             fileName: {
                 type: String,
@@ -431,7 +415,16 @@
             maf1000gValue: {
                 type: Number,
             },
-            mafEVSValue: {
+            maf1000GP3Value: {
+                type: Number,
+            },
+            esp6500Value: {
+                type: Number,
+            },
+            spanishmafValue: {
+                type: Number,
+            },
+            mafEXACValue: {
                 type: Number,
             },
             siftValue: {
@@ -444,6 +437,9 @@
                 type: Number,
             },
             phastconsValue: {
+                type: Number,
+            },
+            grepValue: {
                 type: Number,
             },
             historyFilters: {
@@ -467,6 +463,13 @@
                 },
                 notify: true,
                 observer: "filterDataChanged"
+            },
+            data: {
+                type: Array,
+                value: function() {
+                    return [];
+                },
+                observer: "dataChanged"
             },
             job: {
                 type: Object,
@@ -512,80 +515,133 @@
             }
         },
         clearForm: function() {
-            this.regionValue = "";
-            this.geneValue = "";
+
+            this.$.filterPosition.clear();
+            this.$.filterScores.clear();
+            this.$.filterConservation.clear();
+            this.$.filterCT.clear();
+
+            ////
+            this.$.dp.value = 0;
             this.dpValue = "";
             this.$.dp_op.value = "<";
+            this.$.qual.value = 0;
             this.qualValue = "";
             this.$.qual_op.value = "<";
-            this.maf1000gValue = "";
-            this.$.maf1000g_op.value = "<";
-            this.mafEVSValue = "";
-            this.$.mafEVS_op.value = "<";
-            this.siftValue = "";
-            this.$.sift_op.value = "<";
-            this.polyphenValue = "";
-            this.$.polyphen_op.value = "<";
-            this.phylopValue = "";
-            this.$.phylop_op.value = "<";
-            this.phastconsValue = "";
-            this.$.phastcons_op.value = "<";
+            this.$.maf1000GP3.value = 0;
+            this.maf1000GP3Value = "";
+            this.$.maf1000GP3_op.value = "<";
+            this.$.esp6500.value = 0;
+            this.esp6500Value = "";
+            this.$.esp6500_op.value = "<";
+            this.$.spanishmaf.value = 0;
+            this.spanishmafValue = "";
+            this.$.spanishmaf_op.value = "<";
+            this.$.mafEXAC.value = 0;
+            this.mafEXACValue = "";
+            this.$.mafEXAC_op.value = "<";
 
-            /* Consequence Types */
-            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
-            for (var i = 0; i < els.length; i++) {
-                var el = els[i];
+            var gts = this.$.filter_form.querySelectorAll("input[name='gt']:checked");
+            for (var i = 0; i < gts.length; i++) {
+                var el = gts[i];
                 el.checked = false;
             }
+
             this.submitForm();
             document.getElementById('teamResultReport').computeFilter(0, this.jobId);
         },
         submitForm: function() {
             var hash = {};
             var q = {};
-            if (this.regionValue) {
-                q["region"] = this.inputRegionChange();
+
+            var regionQuery = this.$.filterPosition.checkRegion();
+            if (regionQuery == -1) {
+                return;
+            } else if (regionQuery != null) {
+                q["region"] = regionQuery;
             }
-            if (this.geneValue) {
-                q["gene"] = this.inputGeneChange();
+
+            var geneQuery = this.$.filterPosition.checkGene();
+            if (geneQuery != null) {
+                q["gene"] = geneQuery;
             }
+
+            var snpId = this.$.filterPosition.checkSNPId();
+            if (snpId != null) {
+                q["ids"] = snpId;
+            }
+
+            var sift = this.$.filterScores.checkSift();
+            if (sift == -1) {
+                return;
+            } else if (sift != null) {
+                q["sift"] = sift;
+            }
+
+            var polyphen = this.$.filterScores.checkPolyphen();
+            if (polyphen == -1) {
+                return;
+            } else if (polyphen != null) {
+                q["polyphen"] = polyphen;
+            }
+
+            var cadd = this.$.filterScores.checkCADD();
+            if (cadd == -1) {
+                return;
+            } else if (cadd != null) {
+                q["cadd"] = cadd;
+            }
+
+            var phastcons = this.$.filterConservation.checkPhastcons(2);
+            if (phastcons != null) {
+                q["phastcons"] = phastcons;
+            }
+            var grep = this.$.filterConservation.checkGrep(2);
+            if (grep != null) {
+                q["grep"] = grep;
+            }
+
+            var phylop = this.$.filterConservation.checkPhylop(2);
+            if (phylop != null) {
+                q["phylop"] = phylop;
+            }
+
+            var cts = this.$.filterCT.checkConsequenceTypes(2);
+            if (cts != null) {
+                q["annot-ct"] = cts.join(",");
+            }
+
+            var gts = this.$.filter_form.querySelectorAll("input[name='gt']:checked");
+            if (gts.length == 1) {
+                var gt = gts[0];
+                q["gt"] = gt.value;
+            }
+
             if (this.dpValue) {
-                q["dp"] = this.inputChange(this.dpValue);
-                q["dp_op"] = this._getOption(this.$.dp_op);
+                q["dp"] = parseFloat(this.dpValue);
+                q["dp_op"] = this.$.dp_op.value;
             }
             if (this.qualValue) {
-                q["qual"] = this.inputChange(this.qualValue);
-                q["qual_op"] = this._getOption(this.$.qual_op);
+                q["qual"] = parseFloat(this.qualValue);
+                q["qual_op"] = this.$.qual_op.value;
             }
-            if (this.maf1000gValue) {
-                q["maf1000g"] = this.inputChange(this.maf1000gValue);
-                q["maf1000g_op"] = this._getOption(this.$.maf1000g_op);
+            if (this.maf1000GP3Value) {
+                q["maf1000GP3"] = parseFloat(this.maf1000GP3Value);
+                q["maf1000GP3_op"] = this.$.maf1000GP3_op.value;
             }
-            if (this.mafEVSValue) {
-                q["mafEVS"] = this.inputChange(this.mafEVSValue);
-                q["mafEVS_op"] = this._getOption(this.$.mafEVS_op);
+            if (this.esp6500Value) {
+                q["esp6500"] = parseFloat(this.esp6500Value);
+                q["esp6500_op"] = this.$.esp6500_op.value;
             }
-            if (this.siftValue) {
-                q["sift"] = this.inputChange(this.siftValue);
-                q["sift_op"] = this._getOption(this.$.sift_op);
+            if (this.spanishmafValue) {
+                q["spanishmaf"] = parseFloat(this.spanishmafValue);
+                q["spanishmaf_op"] = this.$.spanishmaf_op.value;
             }
-            if (this.polyphenValue) {
-                q["polyphen"] = this.inputChange(this.polyphenValue);
-                q["polyphen_op"] = this._getOption(this.$.polyphen_op);
+            if (this.mafEXACValue) {
+                q["mafEXAC"] = parseFloat(this.mafEXACValue);
+                q["mafEXAC_op"] = this.$.mafEXAC_op.value;
             }
-            if (this.phylopValue) {
-                q["phylop"] = this.inputChange(this.phylopValue);
-                q["phylop_op"] = this._getOption(this.$.phylop_op);
-            }
-            if (this.phastconsValue) {
-                q["phastcons"] = this.inputChange(this.phastconsValue);
-                q["phastcons_op"] = this._getOption(this.$.phastcons_op);
-            }
-            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
-            if (els.length > 0) {
 
-                q["ct"] = this.inputCTChange();
-            }
             this.set('query', q);
 
             var filterHistory = [];
@@ -607,7 +663,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.grep != null || q["annot-ct"] != null || q["gt"] != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -615,13 +671,13 @@
                     }
                     var date = dateAux.getDate() + '/' + (dateAux.getMonth() + 1) + ' ' + dateAux.getHours() + ':' + minAux;
                     name = this.loadForm(q);
-                    var finded = this.filterData.length;
+                    var found = this.filterData.length;
                     var hf = {};
                     hf = {
                         date: date,
                         name: name,
                         filter: q,
-                        finded: finded
+                        found: found
                     };
 
                     var filters = new FilterHistory(5, filterHistory);
@@ -655,127 +711,98 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.dp != null || q.qual != null || q.maf1000g != null || q.mafEVS != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.ct != null) {
+            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.grep != null || q["annot-ct"] != null || q["gt"] != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
-        inputRegionChange: function() {
-            if (this.query) {
-                var q_aux = this.regionValue;
-                q = q_aux.split(",");
-            }
-            return q;
-        },
 
-        inputGeneChange: function() {
-            if (this.query) {
-                // var q = Utils.clone(this.query);
-                // delete q["gene"];
-                //  q["gene"] = e.toUpperCase();
-                var q_aux = this.geneValue.toUpperCase();
-                q = q_aux.split(",");
-                //  this.set('query', q);
-                return q;
-            }
-
-        },
-        inputChange: function(value) {
-            if (this.query) {
-                var q = parseFloat(value);
-            }
-            return q;
-        },
-        _getOption: function(input) {
-            var op = input.querySelectorAll("option");
-            for (i = 0; i < op.length; i++) {
-                if (op[i].selected) {
-                    var option = op[i].value;
-                    return option;
-                }
-
-            }
-        },
-        inputCTChange: function() {
-            var cons = [];
-            var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']:checked");
-            for (var i = 0; i < els.length; i++) {
-                var el = els[i].dataset.consequence;
-                cons[i] = el;
-            }
-            return cons;
-        },
         loadForm: function(hf) {
             var filterName = [];
-            if (hf.region != null) {
-                this.regionValue = hf.region.join(",");
-                filterName.push("Chromosomal Location: (" + hf.region.join(" or ") + ") ");
+
+            var fP = this.$.filterPosition.load(hf);
+            if (fP.length > 0) {
+                for (var i = 0; i < fP.length; i++) {
+                    filterName.push(fP[i]);
+                }
             }
-            if (hf.gene != null) {
-                this.geneValue = hf.gene.join(",");
-                filterName.push("Genes: (" + hf.gene.join(" or ") + ") ");
+
+            var fS = this.$.filterScores.load(hf);
+            if (fS.length > 0) {
+                for (var i = 0; i < fS.length; i++) {
+                    filterName.push(fS[i]);
+                }
             }
+
+            var fC = this.$.filterConservation.load(hf, 2);
+            if (fC.length > 0) {
+                for (var i = 0; i < fC.length; i++) {
+                    filterName.push(fC[i]);
+                }
+            }
+            var fCg = this.$.filterConservation.loadGrep(hf);
+            if (fCg != "") {
+                filterName.push(fCg);
+            }
+
+            var fCT = this.$.filterCT.load(hf, 2);
+            if (fCT.length > 0) {
+                for (var i = 0; i < fCT.length; i++) {
+                    filterName.push(fCT[i]);
+                }
+            }
+
+            if (hf.gt != null) {
+                var value = hf.gt;
+                var gts = this.$.filter_form.querySelectorAll("input[name='gt']");
+                for (var i = 0; i < gts.length; i++) {
+                    var el = gts[i];
+                    if (el.value == hf.gt) {
+                        el.checked = true;
+                    } else {
+                        el.checked = false;
+                    }
+                }
+
+                filterName.push("GT=" + hf.gt + " ");
+            }
+
             if (hf.dp != null) {
                 this.dpValue = hf.dp;
+                this.$.dp.value = hf.dp;
                 this.$.dp_op.value = hf.dp_op;
                 filterName.push("DP " + hf.dp_op + " " + hf.dp + " ");
             }
             if (hf.qual != null) {
                 this.qualValue = hf.qual;
+                this.$.qual.value = hf.qual;
                 this.$.qual_op.value = hf.qual_op;
                 filterName.push("Qual " + hf.qual_op + " " + hf.qual + " ");
             }
-            if (hf.maf1000g != null) {
-                this.maf1000gValue = hf.maf1000g;
-                this.$.maf1000g_op.value = hf.maf1000g_op;
-                filterName.push("MAF 1000G " + hf.maf1000g_op + " " + hf.maf1000g + " ");
+            if (hf.maf1000GP3 != null) {
+                this.maf1000GP3Value = hf.maf1000GP3;
+                this.$.maf1000GP3.value = hf.maf1000GP3;
+                this.$.maf1000GP3_op.value = hf.maf1000GP3_op;
+                filterName.push("MAF 1000GP3 " + hf.maf1000GP3_op + " " + hf.maf1000GP3 + " ");
             }
-            if (hf.mafEVS != null) {
-                this.mafEVSValue = hf.mafEVS;
-                this.$.mafEVS_op.value = hf.mafEVS_op;
-                filterName.push("MAF EVS " + hf.mafEVS_op + " " + hf.mafEVS + " ");
+            if (hf.esp6500 != null) {
+                this.esp6500Value = hf.esp6500;
+                this.$.esp6500.value = hf.esp6500;
+                this.$.esp6500_op.value = hf.esp6500_op;
+                filterName.push("ESP 6500 " + hf.esp6500_op + " " + hf.esp6500 + " ");
             }
-            if (hf.sift != null) {
-                this.siftValue = hf.sift;
-                this.$.sift_op.value = hf.sift_op;
-                filterName.push("Sift " + hf.sift_op + " " + hf.sift + " ");
+            if (hf.spanishmaf != null) {
+                this.spanishmafValue = hf.spanishmaf;
+                this.$.spanishmaf.value = hf.spanishmaf;
+                this.$.spanishmaf_op.value = hf.spanishmaf_op;
+                filterName.push("Spanish MAF " + hf.spanishmaf_op + " " + hf.spanishmaf + " ");
             }
-            if (hf.polyphen != null) {
-                this.polyphenValue = hf.polyphen;
-                this.$.polyphen_op.value = hf.polyphen_op;
-                filterName.push("Polyphen " + hf.polyphen_op + " " + hf.polyphen + " ");
+            if (hf.mafEXAC != null) {
+                this.mafEXACValue = hf.mafEXAC;
+                this.$.mafEXAC.value = hf.mafEXAC;
+                this.$.mafEXAC_op.value = hf.mafEXAC_op;
+                filterName.push("EXAC " + hf.mafEXAC_op + " " + hf.mafEXAC + " ");
             }
-            if (hf.phylop != null) {
-                this.phylopValue = hf.phylop;
-                this.$.phylop_op.value = hf.phylop_op;
-                filterName.push("Phylop " + hf.phylop_op + " " + hf.phylop + " ");
-            }
-            if (hf.phastcons != null) {
-                this.phastconsValue = hf.phastcons;
-                this.$.phastcons_op.value = hf.phastcons_op;
-                filterName.push("Phastcons " + hf.phastcons_op + " " + hf.phastcons + " ");
-            }
-            if (hf.ct != null) {
-                var els = this.$.consequenceTypes.querySelectorAll("input[name='consequence_type']");
-                var ctName = "";
-                var aux = 0;
-                for (var i = 0; i < hf.ct.length; i++) {
-                    var cons = hf.ct[i];
-                    for (var j = 0; j < els.length; j++) {
-                        var el = els[j];
-                        if (cons == el.dataset.consequence) {
-                            el.checked = true;
-                            if (aux == 0) {
-                                ctName += el.dataset.consequence;
-                                aux++;
-                            } else {
-                                ctName += " or " + el.dataset.consequence;
-                                aux++;
-                            }
-                        }
-                    }
-                }
-                filterName.push("Consequence Types: (" + ctName + ")");
-            }
+
             return filterName.join(" AND ");
         },
         filterDataChanged: function(neo, old) {},
@@ -799,6 +826,41 @@
             if (this.jobId) {
                 this.clearForm();
             }
-        }
+        },
+        dataChanged: function(neo, old) {
+            if (neo.length > 0) {
+                var het = 0;
+                var hom = 0;
+                for (var i = 0; i < neo.length; i++) {
+                    var splits = neo[i].gt.split(/[|\/]/);
+                    if (splits[0] == splits[1]) {
+                        hom++;
+                    } else {
+                        het++;
+                    }
+
+                    // for (var j = 0; j < neo[i].ct.length; j++) {
+                    //     var ct = neo[i].ct[j].split(",");
+                    //     for (var k = 0; k < this.consequenceTypes.length; k++) {
+                    //         if (this.consequenceTypes[k].name == ct[j]) {
+                    //             if (this.consequenceTypes[k].num == null) {
+                    //                 this.consequenceTypes[k].num = 1;
+                    //             } else {
+                    //                 this.consequenceTypes[k].num++;
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                }
+                // this.set('consequenceTypes',this.consequenceTypes);
+
+                this.numHeterozygous = het;
+                this.numHomozygous = hom;
+            }
+        },
+        sliderChange: function(e) {
+            var id = e.currentTarget.id + "Value";
+            this.set(id, e.currentTarget.value);
+        },
     });
 </script>

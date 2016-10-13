@@ -16,6 +16,8 @@ public class TeamVariant {
     private String gwas;
     private String cosmic;
 
+    private String genotype;
+
     public TeamVariant(Variant v) {
         this.variant = v;
     }
@@ -64,5 +66,13 @@ public class TeamVariant {
 
     public void setCosmic(String cosmic) {
         this.cosmic = cosmic;
+    }
+
+    public String getGenotype() {
+        return genotype;
+    }
+
+    public void setGenotype(String genotype) {
+        this.genotype = genotype;
     }
 }

@@ -30,6 +30,7 @@ import org.opencb.datastore.core.QueryOptions;
 import org.opencb.opencga.catalog.CatalogManager;
 import org.opencb.opencga.catalog.exceptions.CatalogException;
 import org.opencb.opencga.catalog.models.Sample;
+import org.opencb.opencga.core.common.Config;
 import org.opencb.opencga.storage.core.StorageManagerException;
 import org.opencb.opencga.storage.core.config.StorageConfiguration;
 
@@ -52,6 +53,7 @@ public class TeamMain {
         String outputFile;
         String panelFilename;
         String sessionId;
+        String opencgaHome;
         int studyId;
 
         try {
@@ -67,7 +69,9 @@ public class TeamMain {
         outputFile = parameters.getOutput();
         sessionId = parameters.getSessionId();
         studyId = parameters.getStudyId();
+        opencgaHome = parameters.getOpencgaHome();
 
+        Config.setOpenCGAHome(opencgaHome);
 
         Properties catalogProp = new Properties();
         catalogProp.load(TeamMain.class.getClassLoader().getResourceAsStream("catalog.properties"));
@@ -75,7 +79,7 @@ public class TeamMain {
 
 
         StorageConfiguration storageConfiguration = StorageConfiguration.load(TeamMain.class.getClassLoader().getResourceAsStream("storage-configuration.yml"));
-
+//        System.out.println(storageConfiguration);
         int batchSize = 1000;
 
         List<Variant> batch;
@@ -90,18 +94,19 @@ public class TeamMain {
 
         try {
             Panel panel = mapper.readValue(jsonPanelFile, Panel.class);
-
             List<Region> regionList = getRegionsFromPanel(panel);
-
 
             Sample sample = catalogManager.getSample(sampleId, new QueryOptions(), sessionId).getResult().get(0);
 
             VariantReader reader = new TeamVariantMongoReader(catalogManager, storageConfiguration, studyId, sessionId);
 
-            VariantWriter writer = new TeamVariantStdoutWriter();
 
             DataWriter<TeamVariant> diagnosticWriter = new TeamCSVDiagnosticFileWriter(sample, outputFile + "/diagnostic.csv");
             DataWriter<TeamVariant> secondaryFindingsWriter = new TeamCSVSSecondaryFileWriter(sample, outputFile + "/secondary.csv");
+
+//            diagnosticWriter = new TeamVariantStdoutWriter();
+//            secondaryFindingsWriter = new TeamVariantStdoutWriter();
+
 
             VariantFilter regionFilter = new TeamVariantGeneRegionFilter(regionList);
             VariantFilter referenceFilter = new TeamVariantReferenceFitler(sample);
@@ -110,12 +115,10 @@ public class TeamMain {
             filters.add(referenceFilter);
 
             reader.open();
-            writer.open();
             diagnosticWriter.open();
             secondaryFindingsWriter.open();
 
             reader.pre();
-            writer.pre();
             diagnosticWriter.pre();
             secondaryFindingsWriter.pre();
 
@@ -125,9 +128,10 @@ public class TeamMain {
 
                 FilterApplicator.filter(batch, filters);
 
-                run(batch, panel, diagnosticVariants, secondaryFindingsVariants);
+                run(batch, panel, sample, diagnosticVariants, secondaryFindingsVariants);
 
                 diagnosticWriter.write(diagnosticVariants);
+
                 secondaryFindingsWriter.write(secondaryFindingsVariants);
 
                 batch.clear();
@@ -139,12 +143,10 @@ public class TeamMain {
             }
 
             reader.post();
-            writer.post();
             diagnosticWriter.post();
             secondaryFindingsWriter.post();
 
             reader.close();
-            writer.close();
             diagnosticWriter.close();
             secondaryFindingsWriter.close();
 
@@ -153,13 +155,19 @@ public class TeamMain {
         }
     }
 
-    private static void run(List<Variant> batch, Panel panel, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
+    private static void run(List<Variant> batch, Panel panel, Sample sample, List<TeamVariant> diagnosticVariants, List<TeamVariant> secondaryFindingsVariants) {
         for (Variant variant : batch) {
             TeamVariant teamVariant = new TeamVariant(variant);
+
+            String gt = variant.getStudies().get(0).getSampleData(sample.getName(), "GT");
+            teamVariant.setGenotype(gt);
+//            System.out.println("variant " + teamVariant + "/n");
+
             if (isDiagnosticVariant(teamVariant, panel)) {
                 diagnosticVariants.add(teamVariant);
             } else {
                 VariantTraitAssociation variantTraitAssociation = variant.getAnnotation().getVariantTraitAssociation();
+
                 if (variantTraitAssociation == null) {
                     continue;
                 }
@@ -168,12 +176,13 @@ public class TeamMain {
                     for (ClinVar clinvar : variantTraitAssociation.getClinvar()) {
                         for (String trait : clinvar.getTraits()) {
                             // Not Specified,not specified,AllHighlyPenetrant,not provided
-                            if (!trait.equalsIgnoreCase("Not Specified") && !trait.equalsIgnoreCase("not provided") && !trait.equalsIgnoreCase("AllHighlyPenetrant")) {
+                            if (!trait.equalsIgnoreCase("Not Specified") && !trait.equalsIgnoreCase("not provided") && !trait.equalsIgnoreCase("AllHighlyPenetrant") && !trait.contains("http")) {
                                 traits.add(trait);
                             }
                         }
                     }
                     teamVariant.setClinvar(Joiner.on(",").join(traits));
+
                 }
                 if (variantTraitAssociation.getCosmic() != null && !variantTraitAssociation.getCosmic().isEmpty()) {
                     Set<String> traits = new HashSet<>();
@@ -199,8 +208,8 @@ public class TeamMain {
     }
 
     private static boolean isDiagnosticVariant(TeamVariant teamVariant, Panel panel) {
-        Variant variant = teamVariant.getVariant();
 
+        Variant variant = teamVariant.getVariant();
         for (Mutation mutation : panel.getMutations()) {
             if (mutation.getChr().equalsIgnoreCase(variant.getChromosome()) &&
                     mutation.getPos() == variant.getStart() &&
