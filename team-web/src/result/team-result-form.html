@@ -1,8 +1,7 @@
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/jso-form-box.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-position.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-scores.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-conservation.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-consequencetypes.html">
+<link rel="import" href="../../bower_components/stevia-elements/src/filter/stv-filter-position.html">
+<link rel="import" href="../../bower_components/stevia-elements/src/filter/stv-filter-scores.html">
+<link rel="import" href="../../bower_components/stevia-elements/src/filter/stv-filter-conservation.html">
+<link rel="import" href="../../bower_components/stevia-elements/src/filter/stv-filter-consequencetypes.html">
 <link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 <dom-module id="team-result-form">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
@@ -97,10 +96,10 @@
             font-weight: bold;
         }
 
-        .maf-elem > .jso-select,
-        .pss-elem > .jso-select,
-        .conserv-elem > .jso-select,
-        .qual-elem > .jso-select {
+        .maf-elem > .stv-select,
+        .pss-elem > .stv-select,
+        .conserv-elem > .stv-select,
+        .qual-elem > .stv-select {
             width: 45px;
             margin-right: 3px;
             align-self: center;
@@ -218,8 +217,8 @@
                 <div class="jso-btn jso-btn-shdw flex butstyle" on-click="submitForm">Search</div>
             </div>
             <div id="customFiltersForm">
-                <jso-filter-position id="filterPosition" collapsible enable-snpid></jso-filter-position>
-                <jso-form-box collapsible collapsed>
+                <stv-filter-position id="filterPosition" collapsible enable-snpid></stv-filter-position>
+                <stv-form-box collapsible collapsed>
                     <div class="header">
                         Population Freqs.
                     </div>
@@ -228,15 +227,15 @@
                         <label class="jso">1000G Phase 3</label>
 
                         <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="maf1000GP3_op" id="maf1000GP3_op">
-                                    <jso-option value="<" selected>
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">">></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="maf1000GP3_op" id="maf1000GP3_op">
+                                    <stv-option value="<" selected>
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">">></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="maf1000GP3" editable></paper-slider>
 
@@ -245,15 +244,15 @@
                         <label class="jso">ESP 6500</label>
 
                         <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="esp6500_op" id="esp6500_op">
-                                    <jso-option value="<" selected>
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">">></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="esp6500_op" id="esp6500_op">
+                                    <stv-option value="<" selected>
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">">></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="esp6500" editable></paper-slider>
 
@@ -262,15 +261,15 @@
                         <label class="jso">Spanish MAF</label>
 
                         <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="spanishmaf_op" id="spanishmaf_op">
-                                    <jso-option value="<" selected>
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">">></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="spanishmaf_op" id="spanishmaf_op">
+                                    <stv-option value="<" selected>
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">">></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="spanishmaf" editable></paper-slider>
 
@@ -279,23 +278,23 @@
                         <label class="jso">EXAC</label>
 
                         <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="mafEXAC_op" id="mafEXAC_op">
-                                    <jso-option value="<" selected>
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">">></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="mafEXAC_op" id="mafEXAC_op">
+                                    <stv-option value="<" selected>
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">">></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="mafEXAC" editable></paper-slider>
 
                         </div>
                     </div>
-                </jso-form-box>
+                </stv-form-box>
 
-                <jso-form-box collapsible collapsed>
+                <stv-form-box collapsible collapsed>
                     <div class="header">
                         Genotype
                     </div>
@@ -311,25 +310,25 @@
                             <span class="numFilter">{{numHomozygous}}</span>
                         </label>
                     </div>
-                </jso-form-box>
+                </stv-form-box>
 
 
-                <jso-form-box collapsible collapsed>
+                <stv-form-box collapsible collapsed>
                     <div class="header">
                         Quality
                     </div>
                     <div class="container vertical layout">
                         <label class="jso">QUAL </label>
                         <div class="horizontal layout qual-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="qual_op" id="qual_op">
-                                    <jso-option value="<">
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">" selected>></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="qual_op" id="qual_op">
+                                    <stv-option value="<">
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">" selected>></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="qual" editable></paper-slider>
                         </div>
@@ -338,23 +337,23 @@
                             <label class="jso">DP </label>
                         </div>
                         <div class="horizontal layout qual-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="dp_op" id="dp_op">
-                                    <jso-option value="<">
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">" selected>></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="dp_op" id="dp_op">
+                                    <stv-option value="<">
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">" selected>></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="dp" editable></paper-slider>
                         </div>
                     </div>
-                </jso-form-box>
-                <jso-filter-scores id="filterScores" collapsible collapsed enable-cadd></jso-filter-scores>
-                <jso-filter-conservation id="filterConservation" collapsible collapsed></jso-filter-conservation>
-                <jso-filter-consequencetypes id="filterCT" collapsible collapsed data="{{data}}" enable-result></jso-filter-consequencetypes>
+                </stv-form-box>
+                <stv-filter-scores id="filterScores" collapsible collapsed enable-cadd></stv-filter-scores>
+                <stv-filter-conservation id="filterConservation" collapsible collapsed></stv-filter-conservation>
+                <stv-filter-consequencetypes id="filterCT" collapsible collapsed data="{{data}}" enable-result></stv-filter-consequencetypes>
 
             </div>
         </form>

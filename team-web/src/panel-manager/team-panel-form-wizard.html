@@ -165,15 +165,15 @@
             box-sizing: border-box;
         }
 
-        jso-table::shadow .table-row {
+        stv-table::shadow .table-row {
             height: 25px;
         }
 
-        jso-table::shadow {
+        stv-table::shadow {
             font-size: 11px;
         }
 
-        jso-table::shadow .table-pager > input {
+        stv-table::shadow .table-pager > input {
             width: 40px !important;
         }
 
@@ -242,16 +242,16 @@
             height: 30px;
         }
 
-        jso-form-box {
+        stv-form-box {
             /*max-width: 200px;*/
             font-size: 11px;
         }
 
-        jso-form-box .header {
+        stv-form-box .header {
             font-size: 12px;
         }
 
-        jso-form-box .container {
+        stv-form-box .container {
             width: 100%;
         }
 
@@ -287,7 +287,7 @@
                 <div class="step">
                     <div class="jso-formcontent horizontal layout" style="border-top:0px;">
                         <div class="disease vertical layout">
-                            <jso-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter enable-paging hide-column-selector page-size="12"></jso-table>
+                            <stv-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter enable-paging hide-column-selector page-size="12"></stv-table>
                             <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
@@ -295,8 +295,8 @@
                             </div>
                         </div>
                         <div class="disease vertical layout">
-                            <jso-table id="selectedDiseases" class="flex" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" enable-paging page-size="13" hide-column-selector>
-                            </jso-table>
+                            <stv-table id="selectedDiseases" class="flex" columns="{{diseaseColumns}}" on-removerow="handleRemoveDisease" enable-paging page-size="13" hide-column-selector>
+                            </stv-table>
                             <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClearSelectedDiseases">
@@ -322,7 +322,7 @@
                         </div>
 
                         <div id="genes-tab" class="vertical layout">
-                            <jso-form-box collapsible>
+                            <stv-form-box collapsible>
                                 <div class="header">
                                     Genes/Regions &nbsp;
                                     <!-- <jso-tooltip type="info">
@@ -337,8 +337,8 @@
                                         </div>
                                     </div>
                                 </div>
-                            </jso-form-box>
-                            <jso-form-box collapsible collapsed>
+                            </stv-form-box>
+                            <stv-form-box collapsible collapsed>
                                 <div class="header">
                                     Import from BED &nbsp;
                                     <!-- <jso-tooltip type="info">
@@ -349,8 +349,8 @@
                                     <div class="jso-btn jso-btn-shdw file" on-click="showImportBEDComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
-                            </jso-form-box>
-                            <jso-form-box collapsible collapsed>
+                            </stv-form-box>
+                            <stv-form-box collapsible collapsed>
                                 <div class="header">
                                     Import from other Panel &nbsp;
                                     <!-- <jso-tooltip type="info">
@@ -372,8 +372,8 @@
                                         </div>
                                     </div>
                                 </div>
-                            </jso-form-box>
-                            <jso-form-box collapsible collapsed>
+                            </stv-form-box>
+                            <stv-form-box collapsible collapsed>
                                 <div class="header">
                                     Import from external App &nbsp;
                                     <!-- <jso-tooltip type="info">
@@ -384,11 +384,11 @@
                                     <div class="jso-btn jso-btn-shdw file" on-click="handleImportAppPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
-                            </jso-form-box>
+                            </stv-form-box>
                         </div>
 
                         <div id="genes-list">
-                            <jso-table id="geneTable" columns="{{geneColumns}}" enable-edit hide-column-selector enable-paging page-size="13"></jso-table>
+                            <stv-table id="geneTable" columns="{{geneColumns}}" enable-edit hide-column-selector enable-paging page-size="13"></stv-table>
                             <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
                                 <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
@@ -396,21 +396,21 @@
                         </div>
 
                     </div>
-                    <jso-panel id="importBEDComponent" modal closable hidden>
+                    <stv-panel id="importBEDComponent" modal closable hidden>
                         <div class="header">
                             <i class="fa fa-plus-square-o"></i> Import File
                         </div>
                         <jso-opencga-import-file id="importBEDFile" class="container" on-importbed="handleImportBEDFile" bioformat="{{bedBioformat}}"></jso-opencga-import-file>
-                    </jso-panel>
+                    </stv-panel>
 
-                    <jso-panel modal closable hidden id="panelPreview">
+                    <stv-panel modal closable hidden id="panelPreview">
                         <div class="header">
                             <i class="fa fa-eye"></i> Panel Preview
                         </div>
                         <team-panel-preview class="container" selected-panel="{{selectedPanel}}" style="width:662px;">
                         </team-panel-preview>
-                    </jso-panel>
-                    <jso-panel modal movable fixed closable hidden id="appPanel">
+                    </stv-panel>
+                    <stv-panel modal movable fixed closable hidden id="appPanel">
                         <div class="header">
                             <i class="fa fa-plus-square-o"></i> Import from PanelApp
                         </div>
@@ -418,7 +418,7 @@
                         <div class="jso-formcontent horizontal layout container">
 
                             <div id="panelAppDiseases" class="vertical layout">
-                                <jso-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:450px" page-size="12"></jso-table>
+                                <stv-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:450px" page-size="12"></stv-table>
 
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
@@ -429,7 +429,7 @@
                                     </div>
                                 </div>
                                 <div id="panelAppGenes" class="vertical layout">
-                                    <jso-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" on-selected="handlePanelAppSelectedGen" enable-select hide-column-selector enable-paging style="height:450px"></jso-table>
+                                    <stv-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" on-selected="handlePanelAppSelectedGen" enable-select hide-column-selector enable-paging style="height:450px"></stv-table>
                                     <div class="horizontal layout">
                                         <div class="flex errmsg">{{errorAddGenes}}</div>
                                         <div class="jso-btn jso-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
@@ -437,7 +437,7 @@
                                     </div>
                                 </div>
                             </div>
-                    </jso-panel>
+                    </stv-panel>
                     </div>
                     <div class="step">
                         <div class="horizontal layout">
@@ -453,7 +453,7 @@
                                 </div>
                             </div>
                             <div id="mutations-tab" flex>
-                                <jso-form-box collapsible class="mut-element">
+                                <stv-form-box collapsible class="mut-element">
                                     <div class="header">
                                         Genomic Pos. &nbsp;
                                     </div>
@@ -493,8 +493,8 @@
 
                                         </div>
                                     </div>
-                                </jso-form-box>
-                                <jso-form-box collapsible collapsed class="mut-element">
+                                </stv-form-box>
+                                <stv-form-box collapsible collapsed class="mut-element">
                                     <div class="header">
                                         Import VCF &nbsp;
                                     </div>
@@ -515,8 +515,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                </jso-form-box>
-                                <jso-form-box collapsible collapsed class="mut-element">
+                                </stv-form-box>
+                                <stv-form-box collapsible collapsed class="mut-element">
                                     <div class="header">
                                         Import CSV &nbsp;
                                     </div>
@@ -543,8 +543,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                </jso-form-box>
-                                <jso-form-box collapsible collapsed class="mut-element">
+                                </stv-form-box>
+                                <stv-form-box collapsible collapsed class="mut-element">
                                     <div class="header">
                                         Import from other Panel &nbsp;
                                     </div>
@@ -564,10 +564,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                </jso-form-box>
+                                </stv-form-box>
                             </div>
                             <div id="mutations-list" flex>
-                                <jso-table id="mutationTable" columns="{{mutationColumns}}" enable-paging page-size="13" enable-edit hide-column-selector></jso-table>
+                                <stv-table id="mutationTable" columns="{{mutationColumns}}" enable-paging page-size="13" enable-edit hide-column-selector></stv-table>
                                 <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                     <div class="flex"></div>
                                     <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear
@@ -576,27 +576,27 @@
                             </div>
 
                         </div>
-                        <jso-panel id="importVCFComponent" modal closable hidden>
+                        <stv-panel id="importVCFComponent" modal closable hidden>
                             <div class="header">
                                 <i class="fa fa-plus-square-o"></i> Import File
                             </div>
                             <jso-opencga-import-file id="importVCFFile" class="container" on-importbed="handleImportVCFFile" bioformat="{{vcfBioformat}}"></jso-opencga-import-file>
-                        </jso-panel>
-                        <jso-panel modal closable hidden id="panelPreviewMut">
+                        </stv-panel>
+                        <stv-panel modal closable hidden id="panelPreviewMut">
                             <div class="header">
                                 <i class="fa fa-eye"></i> Panel Preview
                             </div>
                             <team-panel-preview class="container" selected-panel="{{selectedPanel}}" style="width:662px;">
                             </team-panel-preview>
-                        </jso-panel>
+                        </stv-panel>
 
-                        <jso-panel fixed movable closable hidden id="panelGV">
+                        <stv-panel fixed movable closable hidden id="panelGV">
                             <div class="header">
                                 <i class="fa fa-eye"></i> View Mutation
                             </div>
                             <team-mutation-selector class="container" id="mutationSelector" on-created-mutation="handleAddedMutationFromGV">
                             </team-mutation-selector>
-                        </jso-panel>
+                        </stv-panel>
                     </div>
                     <div class="step layout center">
                         <div class="jso-formcontent vertical layout" id="personalData">
