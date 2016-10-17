@@ -61,7 +61,7 @@
             font-size: 14px;
         }
 
-        jso-btn {
+        stv-btn {
             position: absolute;
         }
     </style>
@@ -74,22 +74,22 @@
                 <span class="findedGenes">{{data.length}}</span>
 
             </div>
-            <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterA">
+            <div class="stv-btn stv-btn-shdw flex filterBut" on-click="handleView" data-value="filterA">
                 <div class="title">A: Most Likely Pathogenic &nbsp;</div>
                 <i class="fa fa-filter" style="color:#b30000"></i>
                 <span class="findedGenes">{{value.mlp}}</span>
             </div>
-            <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterB">
+            <div class="stv-btn stv-btn-shdw flex filterBut" on-click="handleView" data-value="filterB">
                 <div class="title">B: Potentially Pathogenic &nbsp;</div>
                 <i class="fa fa-filter" style="color:#ff751a"></i>
                 <span class="findedGenes">{{value.pp}}</span>
             </div>
-            <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterC">
+            <div class="stv-btn stv-btn-shdw flex filterBut" on-click="handleView" data-value="filterC">
                 <div class="title">C: Unkown Significance &nbsp;</div>
                 <i class="fa fa-filter" style="color:#005b99"></i>
                 <span class="findedGenes">{{value.us}}</span>
             </div>
-            <div class="jso-btn jso-btn-shdw flex filterBut" on-click="handleView" data-value="filterD">
+            <div class="stv-btn stv-btn-shdw flex filterBut" on-click="handleView" data-value="filterD">
                 <div class="title">D: Likely Benign &nbsp;</div>
                 <i class="fa fa-filter" style="color:#008000"></i>
                 <span class="findedGenes">{{value.lb}}</span>
@@ -138,10 +138,10 @@
                 var el = els[i];
                 if (el.dataset.value == "none") {
                     el.classList.add("but");
-                    el.classList.remove("jso-btn", "jso-btn-shdw");
+                    el.classList.remove("stv-btn", "stv-btn-shdw");
                 } else {
                     el.classList.remove("but");
-                    el.classList.add("jso-btn", "jso-btn-shdw");
+                    el.classList.add("stv-btn", "stv-btn-shdw");
                 }
             }
         },
@@ -150,10 +150,10 @@
             for (var i = 0; i < els.length; i++) {
                 var el = els[i];
                 el.classList.remove("but");
-                el.classList.add("jso-btn", "jso-btn-shdw");
+                el.classList.add("stv-btn", "stv-btn-shdw");
             }
             e.currentTarget.classList.add("but");
-            e.currentTarget.classList.remove("jso-btn", "jso-btn-shdw");
+            e.currentTarget.classList.remove("stv-btn", "stv-btn-shdw");
 
             var q = {};
             q["filterView"] = e.currentTarget.dataset.value;

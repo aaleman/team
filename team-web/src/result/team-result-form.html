@@ -28,7 +28,7 @@
             padding: 0 3px 5px 0;
         }
 
-        #bar > .jso-btn {
+        #bar > .stv-btn {
             margin: 0px 2px;
         }
 
@@ -131,7 +131,7 @@
             background-color: #f0f4f4 !important;
         }
 
-        jso-tooltip::shadow #messageInfo::shadow {
+        stv-tooltip::shadow #messageInfo::shadow {
             height: 300px;
             width: 500px;
             background-color: #e2e9e9;
@@ -140,7 +140,7 @@
             font-style: normal;
         }
 
-        jso-tooltip::shadow .closeInfo::shadow {
+        stv-tooltip::shadow .closeInfo::shadow {
             margin-left: 490px;
         }
 
@@ -194,8 +194,8 @@
     <template>
         <form id="filter_form">
             <div id="bar" class="horizontal layout">
-                <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw butstyle" title="Filters History" icon="filter">
-                    <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
+                <stv-tooltip id="filterHistoryTooltip" class="stv-btn stv-btn-shdw butstyle" title="Filters History" icon="filter">
+                    <div class="stv-btn stv-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
                         Clear
                     </div>
                     <div class="horizontal layout flex">
@@ -212,9 +212,9 @@
                             </div>
                         </template>
                     </div>
-                </jso-tooltip>
-                <div class="jso-btn jso-btn-shdw flex butstyle" on-click="clearForm">Clear</div>
-                <div class="jso-btn jso-btn-shdw flex butstyle" on-click="submitForm">Search</div>
+                </stv-tooltip>
+                <div class="stv-btn stv-btn-shdw flex butstyle" on-click="clearForm">Clear</div>
+                <div class="stv-btn stv-btn-shdw flex butstyle" on-click="submitForm">Search</div>
             </div>
             <div id="customFiltersForm">
                 <stv-filter-position id="filterPosition" collapsible enable-snpid></stv-filter-position>
@@ -299,12 +299,12 @@
                         Genotype
                     </div>
                     <div class="container vertical layout">
-                        <label class="jso-control horizontal layout" style="margin-bottom:2px;">
+                        <label class="stv-control horizontal layout" style="margin-bottom:2px;">
                             <input value="het" type="checkbox" name="gt">
                             <span class="flex">Heterozygous</span>
                             <span class="numFilter">{{numHeterozygous}}</span>
                         </label>
-                        <label class="jso-control horizontal layout" style="margin-top:2px;">
+                        <label class="stv-control horizontal layout" style="margin-top:2px;">
                             <input value="hom" type="checkbox" name="gt">
                             <span class="flex">Homozygous</span>
                             <span class="numFilter">{{numHomozygous}}</span>

@@ -1,5 +1,4 @@
 <link rel="import" href="team-mutation-selector.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/opencga/files/jso-opencga-import-file.html">
 
 <dom-module id="team-panel-form-wizard">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
@@ -201,7 +200,7 @@
             overflow-y: auto;
         }
 
-        jso-tooltip {
+        stv-tooltip {
             font-size: 14px;
         }
 
@@ -276,7 +275,7 @@
     </style>
     <template>
 
-        <jso-wizard id="jsoFormWizard">
+        <stv-wizard id="jsoFormWizard">
             <div class="title">
                 <div class="stepName">Select Diseases</div>
                 <div class="stepName">Select Genes</div>
@@ -285,12 +284,12 @@
             </div>
             <div class="container">
                 <div class="step">
-                    <div class="jso-formcontent horizontal layout" style="border-top:0px;">
+                    <div class="stv-formcontent horizontal layout" style="border-top:0px;">
                         <div class="disease vertical layout">
                             <stv-table id="allDiseases" class="flex" columns="{{allDiseaseColumns}}" data="{{allDiseasesData}}" selected="{{currentSelectedDiseasesData}}" enable-select enable-filter enable-paging hide-column-selector page-size="12"></stv-table>
                             <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
-                                <div class="jso-btn jso-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
+                                <div class="stv-btn stv-btn-shdw file" on-click="handleAddSelectedDiseases"><i class="fa fa-plus-square-o"></i>&nbsp; Add
                                 </div>
                             </div>
                         </div>
@@ -299,7 +298,7 @@
                             </stv-table>
                             <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
-                                <div class="jso-btn jso-btn-shdw file" on-click="handleClearSelectedDiseases">
+                                <div class="stv-btn stv-btn-shdw file" on-click="handleClearSelectedDiseases">
                                     Clear
                                 </div>
                             </div>
@@ -325,14 +324,14 @@
                             <stv-form-box collapsible>
                                 <div class="header">
                                     Genes/Regions &nbsp;
-                                    <!-- <jso-tooltip type="info">
-                                    </jso-tooltip> -->
+                                    <!-- <stv-tooltip type="info">
+                                    </stv-tooltip> -->
                                 </div>
                                 <div class="container">
                                     <textarea class="jso sgenesTextArea" name="geneTextArea" id="geneTextArea" rows="3" placeholder="BRCA2,PPL"></textarea>
                                     <div class="horizontal layout">
                                         <div class="flex"></div>
-                                        <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneTextAreaButton">
+                                        <div class="stv-btn stv-btn-shdw file" on-click="handleClickGeneTextAreaButton">
                                             <i class="fa fa-plus-square-o"></i>&nbsp; Add Genes
                                         </div>
                                     </div>
@@ -341,34 +340,34 @@
                             <stv-form-box collapsible collapsed>
                                 <div class="header">
                                     Import from BED &nbsp;
-                                    <!-- <jso-tooltip type="info">
-                                    </jso-tooltip> -->
+                                    <!-- <stv-tooltip type="info">
+                                    </stv-tooltip> -->
                                 </div>
                                 <div class="container horizontal layout">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="showImportBEDComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    <div class="stv-btn stv-btn-shdw file" on-click="showImportBEDComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
                             </stv-form-box>
                             <stv-form-box collapsible collapsed>
                                 <div class="header">
                                     Import from other Panel &nbsp;
-                                    <!-- <jso-tooltip type="info">
-                                    </jso-tooltip> -->
+                                    <!-- <stv-tooltip type="info">
+                                    </stv-tooltip> -->
                                 </div>
                                 <div class="container">
-                                    <jso-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
-                                        <jso-option value=" "></jso-option>
+                                    <stv-select id="importGenesFromPanel" style="width:150px;margin-top:5px;margin-left:5px">
+                                        <stv-option value=" "></stv-option>
                                         <template is="dom-repeat" items="{{panelsNotArchived}}">
-                                            <jso-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</jso-option>
+                                            <stv-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</stv-option>
                                         </template>
-                                    </jso-select>
+                                    </stv-select>
 
                                     <div class="horizontal layout">
-                                        <div class="jso-btn jso-btn-shdw file" on-click="handlePreviewFile" style="width:105px;"> &nbsp; <i class="fa fa-eye"></i>&nbsp;View Panel
+                                        <div class="stv-btn stv-btn-shdw file" on-click="handlePreviewFile" style="width:105px;"> &nbsp; <i class="fa fa-eye"></i>&nbsp;View Panel
                                         </div>
                                         <div class="flex"></div>
-                                        <div class="jso-btn jso-btn-shdw file" on-click="handleImportGenesPanel" style="width:105px;"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                        <div class="stv-btn stv-btn-shdw file" on-click="handleImportGenesPanel" style="width:105px;"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                         </div>
                                     </div>
                                 </div>
@@ -376,12 +375,12 @@
                             <stv-form-box collapsible collapsed>
                                 <div class="header">
                                     Import from external App &nbsp;
-                                    <!-- <jso-tooltip type="info">
-                                    </jso-tooltip> -->
+                                    <!-- <stv-tooltip type="info">
+                                    </stv-tooltip> -->
                                 </div>
                                 <div class="container horizontal layout">
                                     <li class="flex" style="margin-top:8px">Panel App</li>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleImportAppPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                    <div class="stv-btn stv-btn-shdw file" on-click="handleImportAppPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                     </div>
                                 </div>
                             </stv-form-box>
@@ -391,7 +390,7 @@
                             <stv-table id="geneTable" columns="{{geneColumns}}" enable-edit hide-column-selector enable-paging page-size="13"></stv-table>
                             <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                 <div class="flex"></div>
-                                <div class="jso-btn jso-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
+                                <div class="stv-btn stv-btn-shdw file" on-click="handleClickGeneListClear">Clear</div>
                             </div>
                         </div>
 
@@ -400,7 +399,7 @@
                         <div class="header">
                             <i class="fa fa-plus-square-o"></i> Import File
                         </div>
-                        <jso-opencga-import-file id="importBEDFile" class="container" on-importbed="handleImportBEDFile" bioformat="{{bedBioformat}}"></jso-opencga-import-file>
+                        <stv-import-file id="importBEDFile" class="container" on-importfile="handleImportBEDFile" bioformat="{{bedBioformat}}"></stv-import-file>
                     </stv-panel>
 
                     <stv-panel modal closable hidden id="panelPreview">
@@ -415,7 +414,7 @@
                             <i class="fa fa-plus-square-o"></i> Import from PanelApp
                         </div>
 
-                        <div class="jso-formcontent horizontal layout container">
+                        <div class="stv-formcontent horizontal layout container">
 
                             <div id="panelAppDiseases" class="vertical layout">
                                 <stv-table class="flex" id="panelAppSelectedDisease" enable-filter columns="{{panelAppDiseasesColumns}}" data="{{panelAppDiseases}}" on-selected="handlePanelAppSelected" enable-select enable-paging hide-column-selector style="height:450px" page-size="12"></stv-table>
@@ -423,7 +422,7 @@
                                 <div class="horizontal layout">
                                     <div class="flex"></div>
                                     <a href="https://bioinfo.extge.co.uk/crowdsourcing/PanelApp/" target="_blank">
-                                        <div class="jso-btn jso-btn-shdw file" style="width: 150px"> >>More info
+                                        <div class="stv-btn stv-btn-shdw file" style="width: 150px"> >>More info
                                             << </div>
                                     </a>
                                     </div>
@@ -432,7 +431,7 @@
                                     <stv-table class="flex" id="panelAppSelectedGenes" columns="{{panelAppGenesColumns}}" data="{{panelAppGenes}}" on-selected="handlePanelAppSelectedGen" enable-select hide-column-selector enable-paging style="height:450px"></stv-table>
                                     <div class="horizontal layout">
                                         <div class="flex errmsg">{{errorAddGenes}}</div>
-                                        <div class="jso-btn jso-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
+                                        <div class="stv-btn stv-btn-shdw file" on-click="handlePanelAppAddGenes"><i class="fa fa-plus-square-o"></i>&nbsp;Add Genes
                                         </div>
                                     </div>
                                 </div>
@@ -484,11 +483,11 @@
                                             <!--</datalist>-->
                                         </div>
                                         <div class="horizontal layout">
-                                            <div class="jso-btn jso-btn-shdw file" style="width: 150px" on-click="handleOpenGV">
+                                            <div class="stv-btn stv-btn-shdw file" style="width: 150px" on-click="handleOpenGV">
                                                 Open Genome Browser
                                             </div>
                                             <div class="flex"></div>
-                                            <div class="jso-btn jso-btn-shdw file" on-click="handleMutationAdd"><i class="fa fa-plus-square-o"></i>&nbsp; Add
+                                            <div class="stv-btn stv-btn-shdw file" on-click="handleMutationAdd"><i class="fa fa-plus-square-o"></i>&nbsp; Add
                                             </div>
 
                                         </div>
@@ -511,7 +510,7 @@
 
                                         <div class="horizontal layout">
                                             <div class="flex"></div>
-                                            <div class="jso-btn jso-btn-shdw file" on-click="showImportVCFComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                            <div class="stv-btn stv-btn-shdw file" on-click="showImportVCFComponent"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                             </div>
                                         </div>
                                     </div>
@@ -523,11 +522,11 @@
                                     <div class="container">
                                         <div class="horizontal layout">
                                             <label class="data" style="font-size:12px; margin-top:5px" for="">Separator:</label>
-                                            <jso-select name="mutationCSVSeparator" id="mutationCSVSeparator" style="width:75px; margin-left:5px;margin-top: 5px; height: 17px;">
-                                                <jso-option value=";" selected>;</jso-option>
-                                                <jso-option value=",">,</jso-option>
-                                                <jso-option value="tab">Tab</jso-option>
-                                            </jso-select>
+                                            <stv-select name="mutationCSVSeparator" id="mutationCSVSeparator" style="width:75px; margin-left:5px;margin-top: 5px; height: 17px;">
+                                                <stv-option value=";" selected>;</stv-option>
+                                                <stv-option value=",">,</stv-option>
+                                                <stv-option value="tab">Tab</stv-option>
+                                            </stv-select>
                                         </div>
                                         <div>
                                             <label class="data" style="font-size:12px;" for="">Ignore first line (header):
@@ -539,7 +538,7 @@
 
                                         <div class="horizontal layout">
                                             <div class="flex"></div>
-                                            <div class="jso-btn jso-btn-shdw file" on-click="handleMutationImportCSV"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                            <div class="stv-btn stv-btn-shdw file" on-click="handleMutationImportCSV"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                             </div>
                                         </div>
                                     </div>
@@ -549,18 +548,18 @@
                                         Import from other Panel &nbsp;
                                     </div>
                                     <div class="container">
-                                        <jso-select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
-                                            <jso-option value=" "></jso-option>
+                                        <stv-select id="importMutationsFromPanel" style="width:150px; margin-top:5px">
+                                            <stv-option value=" "></stv-option>
                                             <template is="dom-repeat" items="{{panelsNotArchived}}">
-                                                <jso-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</jso-option>
+                                                <stv-option value$="{{item.name}}" data-file$="{{item.fileId}}">{{item.name}}</stv-option>
                                             </template>
-                                        </jso-select>
+                                        </stv-select>
                                         <div class="horizontal layout">
-                                            <div class="jso-btn jso-btn-shdw file" on-click="handlePreviewFileMut"> &nbsp;
+                                            <div class="stv-btn stv-btn-shdw file" on-click="handlePreviewFileMut"> &nbsp;
                                                 <i class="fa fa-eye"></i>&nbsp;View Panel
                                             </div>
                                             <div class="flex"></div>
-                                            <div class="jso-btn jso-btn-shdw file" on-click="handleImportMutationsPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
+                                            <div class="stv-btn stv-btn-shdw file" on-click="handleImportMutationsPanel"><i class="fa fa-plus-square-o"></i>&nbsp; Import
                                             </div>
                                         </div>
                                     </div>
@@ -570,7 +569,7 @@
                                 <stv-table id="mutationTable" columns="{{mutationColumns}}" enable-paging page-size="13" enable-edit hide-column-selector></stv-table>
                                 <div class="horizontal layout" style="border-top: 1px solid #d3d3d3;">
                                     <div class="flex"></div>
-                                    <div class="jso-btn jso-btn-shdw file" on-click="handleClickMutationListClear">Clear
+                                    <div class="stv-btn stv-btn-shdw file" on-click="handleClickMutationListClear">Clear
                                     </div>
                                 </div>
                             </div>
@@ -580,7 +579,7 @@
                             <div class="header">
                                 <i class="fa fa-plus-square-o"></i> Import File
                             </div>
-                            <jso-opencga-import-file id="importVCFFile" class="container" on-importbed="handleImportVCFFile" bioformat="{{vcfBioformat}}"></jso-opencga-import-file>
+                            <stv-import-file id="importVCFFile" class="container" on-importfile="handleImportVCFFile" bioformat="{{vcfBioformat}}"></stv-import-file>
                         </stv-panel>
                         <stv-panel modal closable hidden id="panelPreviewMut">
                             <div class="header">
@@ -599,7 +598,7 @@
                         </stv-panel>
                     </div>
                     <div class="step layout center">
-                        <div class="jso-formcontent vertical layout" id="personalData">
+                        <div class="stv-formcontent vertical layout" id="personalData">
                             <div style="color:#666;margin-top:5px;" for="">Name</div>
                             <input style="margin-top: 2px;border-color:#d3d3d3;" type="text" value="{{formData.name::input}}" />
 
@@ -612,18 +611,18 @@
                             <div class="data" for="">Description &nbsp; </div>
                             <textarea class="jso sgenesTextArea" style="height: 120px" name="" id="" cols="30" rows="10" value="{{formData.description::input}}"></textarea>
 
-                            <div id="savePanel" class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save
+                            <div id="savePanel" class="stv-btn stv-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel"><i class="fa fa-floppy-o"></i>&nbsp; Save
                             </div>
-                            <div id="saveAsPanel" class="jso-btn jso-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel" hidden><i class="fa fa-floppy-o"></i>&nbsp; Save As
+                            <div id="saveAsPanel" class="stv-btn stv-btn-shdw file" style="margin: 0 auto; margin-top:10px" on-click="handleClickSavePanel" hidden><i class="fa fa-floppy-o"></i>&nbsp; Save As
                             </div>
                         </div>
                     </div>
                 </div>
-        </jso-wizard>
+        </stv-wizard>
         <div id="progressDiv" hidden>
 
         </div>
-        <jso-progress-bar id="progressBar" percent="{{percent}}" text="{{textbar}}" hidden></jso-progress-bar>
+        <stv-progress-bar id="progressBar" percent="{{percent}}" text="{{textbar}}" hidden></stv-progress-bar>
 
     </template>
 </dom-module>
@@ -1544,7 +1543,7 @@
         handlePreviewFile: function(e) {
             var fileId;
             if (this.$.importGenesFromPanel.value != " ") {
-                var panels = this.$.importGenesFromPanel.querySelectorAll("jso-option");
+                var panels = this.$.importGenesFromPanel.querySelectorAll("stv-option");
                 for (var i = 0; i < panels.length; i++) {
                     if (this.$.importGenesFromPanel.value == panels[i].value) {
                         fileId = parseInt(panels[i].dataset.file);
@@ -1625,7 +1624,7 @@
         handlePreviewFileMut: function(e) {
             var fileId;
             if (this.$.importMutationsFromPanel.value != " ") {
-                var panels = this.$.importMutationsFromPanel.querySelectorAll("jso-option");
+                var panels = this.$.importMutationsFromPanel.querySelectorAll("stv-option");
                 for (var i = 0; i < panels.length; i++) {
                     if (this.$.importMutationsFromPanel.value == panels[i].value) {
                         fileId = parseInt(panels[i].dataset.file);

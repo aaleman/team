@@ -142,10 +142,10 @@
                     <div class="">
                         <input id="panelsInfoAnexII" on-click="showInReport" type="checkbox" value="anexII" checked> Panel used</div>
                 </ul>
-                <div class="jso-btn jso-btn-shdw colorButton" on-click="handleSaveReport" title="Save report for this Job"><i class="fa fa-floppy-o"></i>&nbsp; Save report</div>
+                <div class="stv-btn stv-btn-shdw colorButton" on-click="handleSaveReport" title="Save report for this Job"><i class="fa fa-floppy-o"></i>&nbsp; Save report</div>
                 <br>
-                <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export report to PDF/Print</div>
-                <div class="jso-btn jso-btn-shdw exportBut" on-click="exportPanelPDF"><i class="fa fa-download"></i>&nbsp; Export panel to PDF/Print</div>
+                <div class="stv-btn stv-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export report to PDF/Print</div>
+                <div class="stv-btn stv-btn-shdw exportBut" on-click="exportPanelPDF"><i class="fa fa-download"></i>&nbsp; Export panel to PDF/Print</div>
             </div>
             <team-panel-export id="panelExport">
             </team-panel-export hidden>
@@ -206,7 +206,7 @@
                                     <option value="{{item.phenotype}}">{{item.phenotype}}</option>
                                 </template>
                             </datalist>
-                            <!-- <jso-tooltip icon="arrow-circle-down"></jso-tooltip> -->
+                            <!-- <stv-tooltip icon="arrow-circle-down"></stv-tooltip> -->
                             <span id="confDiag" hidden>{{confDiag}}</span></b>
                             </div>
                         </ul>
