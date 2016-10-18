@@ -200,11 +200,14 @@
                             <div>
                                 Patient Diagnosis:&nbsp;
                                 <!-- <input type="text" data-name="confDiag"> -->
-                                <b><input list="dataListPheVCF" data-name="confDiag">
+                                <b><input list="dataListPheVCF" data-name="confDiag" value={{search::input}}>
                             <datalist id="dataListPheVCF">
-                                <template is="dom-repeat" items="{{allDiseasesData}}">
-                                    <option value="{{item.phenotype}}">{{item.phenotype}}</option>
+                                <template is="dom-repeat" items="{{icd10}}">
+                                    <option value="{{item}}">{{item.phenotype}}</option>
                                 </template>
+                                <!-- <template is="dom-repeat" items="{{allDiseasesData}}">
+                                    <option value="{{item.phenotype}}">{{item.phenotype}}</option>
+                                </template> -->
                             </datalist>
                             <!-- <stv-tooltip icon="arrow-circle-down"></stv-tooltip> -->
                             <span id="confDiag" hidden>{{confDiag}}</span></b>
@@ -662,7 +665,12 @@
                     width: 50,
                     defaultValue: '.'
                 }]
-            }
+            },
+            search: {
+                type: String,
+                value: "",
+                observer: 'searchNameChanged'
+            },
 
         },
         ready: function() {
@@ -673,8 +681,8 @@
                 this.allDiseasesData = JSON.parse(localStorage.bioinfo_team_diseases);
             } else {
                 $.ajax({
-                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
-                    // url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-dev-v4.0/webservices/rest/v4/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    url: "http://bioinfodev.hpc.cam.ac.uk/cellbase-legacy/webservices/rest/v3/hsapiens/feature/clinical/phenotype-gene?include=clinvar,gwas",
+                    //only in cellbase v3
                     dataType: 'json',
                     async: false,
                     success: function(response, textStatus, jqXHR) {
@@ -716,6 +724,44 @@
 
             }
 
+        },
+
+        searchNameChanged: function(e) {
+          var me=this;
+            if (this.search.length == 4) {
+                var formData = {};
+                formData.SearchText = this.search + '*';
+                formData.Search_Title = true;
+                formData.Search_Definition = false;
+                formData.Search_Inclusion = false;
+                formData.Search_Exclusion = false;
+                formData.Search_Note = false;
+                formData.Search_CodingHint = false;
+                formData.Search_Index = false;
+
+                var urlEncoded = stv.utils.queryString(formData);
+
+                var request = new XMLHttpRequest();
+
+                request.onload = function() {
+                    var dis = [];
+                    var parser = new DOMParser();
+                    var doc = parser.parseFromString(this.response, "text/html");
+                    var diseases = doc.querySelectorAll('span');
+                    for (var i = 0; i < diseases.length; i++) {
+                        dis.push(diseases[i].innerHTML.trim());
+                    }
+                    me.set('icd10', dis);
+
+                };
+                request.onerror = function() {
+                    console.log("request error");
+                };
+                request.open("POST", 'http://proxy.babelomics.org/url.php/http://apps.who.int/classifications/icd10/browse/2016/en/AdvancedSearch', true);
+                request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+                request.send(urlEncoded);
+            }
         },
 
         print: function(data) {
