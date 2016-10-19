@@ -20,6 +20,7 @@
 <link rel="import" href="bower_components/stevia-elements/src/stv-progress-bar.html">
 <link rel="import" href="bower_components/stevia-elements/src/stv-import-file.html">
 <link rel="import" href="bower_components/stevia-elements/src/validator/stv-validator.html">
+<link rel="import" href="bower_components/stevia-elements/src/dropdown/stv-dropdown.html">
 <script src="bower_components/stevia-elements/src/validator/bed-validator.js"></script>
 
 <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-application-behavior.html">
@@ -30,7 +31,7 @@
 <!-- <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-opencga-input-text.html"> -->
 <!-- <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-select.html"> -->
 <!-- <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-opencga-button-tooltip.html"> -->
-<link rel="import" href="bower_components/jsorolla/src/lib/components/jso-help-menu.html">
+<!-- <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-help-menu.html"> -->
 <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-genome-viewer-element.html">
 <link rel="import" href="bower_components/jsorolla/src/lib/components/variant/jso-variant-overview.html">
 <link rel="import" href="bower_components/jsorolla/src/lib/components/variant/jso-variant-frequencies-grid.html">
@@ -215,6 +216,14 @@
         div.menu-button:hover {
             background-color: rgba(0, 0, 0, 0.20);
         }
+
+        #dropmenu {
+            position: fixed !important;
+            right: 10px !important;
+            top: 50px !important;
+            width: 200px;
+            left: calc(100vw - 210px) !important;
+        }
     </style>
     <template>
 
@@ -316,17 +325,26 @@
                 <div class="flex"></div>
             </div>
 
-            <jso-help-menu class="helpmenu" selectedOption="{{selectedOption}}">
-                <a href="https://github.com/babelomics/team/wiki" target="_blank">
-                    <i class="fa fa-book"></i> &nbsp; Documentation
-                </a>
-                <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
-                    <i class="fa fa-compass"></i> &nbsp; Tutorial
-                </a>
-                <a href="https://github.com/babelomics/team/" target="_blank">
-                    <i class="fa fa-github"></i> &nbsp; Source code
-                </a>
-            </jso-help-menu>
+            <stv-dropdown dark class="helpmenu">
+                <div data-button><i class="fa fa-question-circle"></i></div>
+                <ul data-menu id="dropmenu">
+                    <li>
+                        <a href="https://github.com/babelomics/team/wiki" target="_blank">
+                            <i class="fa fa-book"></i> &nbsp; Documentation
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/babelomics/team/wiki/tutorial" target="_blank">
+                            <i class="fa fa-compass"></i> &nbsp; Tutorial
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/babelomics/team/" target="_blank">
+                            <i class="fa fa-github"></i> &nbsp; Source code
+                        </a>
+                    </li>
+                </ul>
+            </stv-dropdown>
         </jso-opencga-header>
 
         <jso-opencga-footer menu-option="home,loging,singup,profile,remember">
@@ -424,7 +442,7 @@
             this.$.jsoHeader.anonymousSign();
         },
         projectsChanged: function(neo, old) {
-          var me=this;
+            var me = this;
             if (neo.length > 0) {
                 var projects = neo;
 
