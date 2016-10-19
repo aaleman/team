@@ -285,13 +285,13 @@
                 <img src="images/bier-text.svg" style="height: 50px;margin: 5px 0px 0 0;">
             </div>
             <span class="title">TEAM</span>
-            <span class="description">1.2.1</span>
-
+            <span class="description">1.2.1 </span>
 
             <div id="menu" class="menu horizontal layout flex">
                 <!-- <div style="margin-left:4vw;"></div> -->
-                <div style="margin-left:2vw;"></div>
 
+
+                <div style="margin-left:2vw;"></div>
                 <div title="New Diagnosis" class="option" on-click="handleMenuOption" data-option="newdiagnostic">
                     <i class="fa fa-stethoscope"></i>
                     <span class="option-text">Run Diagnosis</span>
@@ -323,6 +323,9 @@
                     <span class="option-text">Diagnostics</span>
                 </div>
                 <div class="flex"></div>
+                <div class="option" on-click="handleMenuOption" data-option="home" title="Go to home page" style="font-size:30px">
+                    <i class="fa fa-home"></i>
+                </div>
             </div>
 
             <stv-dropdown dark class="helpmenu">
