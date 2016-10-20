@@ -160,6 +160,23 @@
 
         .butstyle {
             border-radius: 4px;
+            width: 100px;
+            background-color: var(--dark-button-color) !important;
+            color: var(--text-primary-color) !important;
+        }
+
+        .butstyle:hover {
+            background-color: var(--light-button-color) !important;
+        }
+
+        #filterHistoryTooltip {
+            border-radius: 4px;
+            background-color: var(--dark-button-color) !important;
+            color: var(--text-primary-color) !important;
+        }
+
+        #filterHistoryTooltip:hover {
+            background: var(--accent-color) !important;
         }
 
         .numFilter {
@@ -194,7 +211,7 @@
     <template>
         <form id="filter_form">
             <div id="bar" class="horizontal layout">
-                <stv-tooltip id="filterHistoryTooltip" class="stv-btn stv-btn-shdw butstyle" title="Filters History" icon="filter">
+                <stv-tooltip id="filterHistoryTooltip" class="stv-btn stv-btn-shdw" title="Filters History" icon="filter">
                     <div class="stv-btn stv-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
                         Clear
                     </div>
