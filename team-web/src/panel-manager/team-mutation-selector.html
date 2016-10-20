@@ -7,6 +7,8 @@
             width: 800px;
             border: 1px solid #d3d3d3;
             padding: 5px;
+            height: 500px;
+            overflow-y: scroll;
         }
 
         .input {
@@ -51,16 +53,16 @@
 
 
         <div class="horizontal layout data">
-            <label class="jso">Chr: &nbsp;</label>
-            <input class="input chr jso" type="text" value="{{chr::input}}">
-            <label class="jso">Pos: &nbsp;</label>
-            <input class="input pos jso" type="number" step="1" min="0" value="{{pos::input}}">
-            <label class="jso">Ref: &nbsp;</label>
-            <input class="input ref jso" type="text" value="{{ref::input}}">
-            <label class="jso">Alt: &nbsp;</label>
-            <input class="input alt jso" type="text" value="{{alt::input}}">
-            <label class="jso">Disease Name: &nbsp;</label>
-            <input class="input flex jso" type="text" value="{{phe::input}}">
+            <label class="stv">Chr: &nbsp;</label>
+            <input class="input chr stv" type="text" value="{{chr::input}}">
+            <label class="stv">Pos: &nbsp;</label>
+            <input class="input pos stv" type="number" step="1" min="0" value="{{pos::input}}">
+            <label class="stv">Ref: &nbsp;</label>
+            <input class="input ref stv" type="text" value="{{ref::input}}">
+            <label class="stv">Alt: &nbsp;</label>
+            <input class="input alt stv" type="text" value="{{alt::input}}">
+            <label class="stv">Disease Name: &nbsp;</label>
+            <input class="input flex stv" type="text" value="{{phe::input}}">
         </div>
         <!--<div class="horizontal layout data">-->
         <!--<label style="font-size:12px;" for="">Gene Name: &nbsp;</label>-->
@@ -69,11 +71,11 @@
 
         <div class="horizontal layout" style="margin: 5px 10px 10px 0;">
             <div class="flex"> </div>
-            <div class="jso-btn jso-btn-shdw file" on-click="handleReset">Reset</div>
+            <div class="stv-btn stv-btn-shdw file" on-click="handleReset">Reset</div>
             &nbsp;
-            <div class="jso-btn jso-btn-shdw file" on-click="handleCheck">Check</div>
+            <div class="stv-btn stv-btn-shdw file" on-click="handleCheck">Check</div>
             &nbsp;
-            <div class="jso-btn jso-btn-shdw file" on-click="handleAddMut">Add Mutation</div>
+            <div class="stv-btn stv-btn-shdw file" on-click="handleAddMut">Add Mutation</div>
         </div>
         <jso-genome-viewer-element id="gv" hidden on-hidden="handleGenomeViewerHidden"></jso-genome-viewer-element>
     </template>
@@ -106,9 +108,9 @@
             ready: function() {
                 var me = this;
 
-                if (this._parentJsoPanel != null) {
-                    this._parentJsoPanel.addEventListener('hidden', function() {
-                        me.$.gv.set('hidden', me._parentJsoPanel.hidden);
+                if (this._parentPanel != null) {
+                    this._parentPanel.addEventListener('hidden', function() {
+                        me.$.gv.set('hidden', me._parentPanel.hidden);
                     });
                 }
             },
@@ -130,8 +132,8 @@
                         this.genomeViewer.on("region:change", updateForm);
                         this.genomeViewer.on("region:move", updateForm);
 
-                        if (this._parentJsoPanel != null) {
-                            this._parentJsoPanel._center();
+                        if (this._parentPanel != null) {
+                            this._parentPanel._center();
                         }
 
                     }, 10);
