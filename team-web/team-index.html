@@ -6,7 +6,6 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Team-acci</title>
-
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <!-- Chrome for Android theme color -->
@@ -105,12 +104,6 @@
                 AVAILABLE_SPECIES = s;
                 DEFAULT_SPECIES = AVAILABLE_SPECIES.vertebrates[0];
                 speciesReady = true;
-                if (speciesReady && panelsReady) {
-                    init();
-                }
-            });
-            getAppPanels(function() {
-                panelsReady = true;
                 if (speciesReady && panelsReady) {
                     init();
                 }
