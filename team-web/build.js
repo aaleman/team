@@ -69,6 +69,9 @@ async.waterfall([
         shell.cp('-r', path.join(__dirname, 'bower_components', 'jsorolla','src','lib','components','jso-global.css'), bp);
         shell.cp('-r', path.join(__dirname, 'bower_components', 'jsorolla','src','lib','components','jso-dropdown.css'), bp);
         shell.cp('-r', path.join(__dirname, 'bower_components', 'jsorolla','src','lib','components','jso-form.css'), bp);
+        shell.cp('-r', path.join(__dirname, 'bower_components', 'stevia-elements','fonts'), bp);
+        shell.cp('-r', path.join(__dirname, 'bower_components', 'stevia-elements','css'), bp);
+
 
         // fix index.html paths
         shell.sed('-i', 'bower_components/stevia-elements/', '', buildIndexHTML);
