@@ -16,4 +16,4 @@ Releases notes are available at [GitHub releases](https://github.com/babelomics/
 Roadmap is available at [GitHub milestones](https://github.com/babelomics/team/milestones). You can report bugs or request new features at [GitHub issue tracking](https://github.com/babelomics/team/issues).
 
 ### Versioning
-BierApp is versioned following the rules from [Semantic versioning](http://semver.org/).
+TEAM is versioned following the rules from [Semantic versioning](http://semver.org/).

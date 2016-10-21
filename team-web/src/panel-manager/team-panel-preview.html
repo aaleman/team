@@ -11,7 +11,7 @@
             /*@apply(--layout-horizontal);*/
         }
 
-        jso-table {
+        stv-table {
             min-height: 300px;
             height: 100%;
         }
@@ -29,15 +29,15 @@
             position: relative;
             height: 100%;
         }
-        /*jso-table::shadow .table-row {
+        /*stv-table::shadow .table-row {
             height: 15px;
         }*/
 
-        jso-table::shadow {
+        stv-table::shadow {
             font-size: 11px;
         }
 
-        jso-table::shadow .table-pager > input {
+        stv-table::shadow .table-pager > input {
             width: 40px !important;
         }
 
@@ -119,13 +119,13 @@
             </div>
             <div id="table">
                 <div hidden$="{{!computeOptions(option, 'diseases')}}" id="diseases">
-                    <jso-table id="diseaseTable" columns="{{diseaseColumns}}" enable-paging hide-column-selector></jso-table>
+                    <stv-table id="diseaseTable" columns="{{diseaseColumns}}" enable-paging hide-column-selector></stv-table>
                 </div>
                 <div hidden$="{{!computeOptions(option, 'genes')}}" id="genes">
-                    <jso-table id="geneTable" columns="{{geneColumns}}" enable-paging hide-column-selector> </jso-table>
+                    <stv-table id="geneTable" columns="{{geneColumns}}" enable-paging hide-column-selector> </stv-table>
                 </div>
                 <div hidden$="{{!computeOptions(option, 'mutations')}}" id="mutations">
-                    <jso-table id="mutationTable" columns="{{mutationColumns}}" enable-paging hide-column-selector></jso-table>
+                    <stv-table id="mutationTable" columns="{{mutationColumns}}" enable-paging hide-column-selector></stv-table>
                 </div>
             </div>
         </div>

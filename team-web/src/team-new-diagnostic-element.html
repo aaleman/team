@@ -1,7 +1,3 @@
-<link rel="import" href="../bower_components/jsorolla/src/lib/components/jso-select-box.html">
-<link rel="import" href="../bower_components/jsorolla/src/lib/components/jso-wizard.html">
-<link rel="import" href="../bower_components/jsorolla/src/lib/components/jso-progress-bar.html">
-
 <dom-module id="team-new-diagnostic-element">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
@@ -105,7 +101,7 @@
     </style>
     <template>
 
-        <jso-wizard id="jsoFormWizard">
+        <stv-wizard id="jsoFormWizard">
             <div class="title">
                 <span class="stepName"><span>Choose a Sample</span><span class="errmsg" style="padding-right:50px;">{{errorMessageFile}}</span></span>
                 <span class="stepName"><span>Choose a Panel</span><span class="errmsg" style="padding-right:50px;">{{errorMessagePanel}}</span></span>
@@ -121,7 +117,7 @@
                     <div class="horizontal layout" style="height:100%;padding:20px;box-sizing:border-box;">
                         <div id="panelSelector" style="width:300px;height:100%;box-sizing:border-box;padding-right:15px;">
                             <div class="t1"><i class="fa fa-list"></i> &nbsp; User Panel List</div>
-                            <jso-select-box id="newDiagnosticPanels" options="{{jobsPanels}}" data-panels="{{jobsPanels}}" title-attribute="name" on-select="handlePanelClick"></jso-select-box>
+                            <stv-select-box id="newDiagnosticPanels" options="{{jobsPanels}}" data-panels="{{jobsPanels}}" title-attribute="name" on-select="handlePanelClick"></stv-select-box>
 
                             <div class="t1" style="margin-top:20px;"><i class="fa fa-list"></i> &nbsp; Example Panel List</div>
                             <div id="examplePanels">
@@ -132,7 +128,7 @@
                                 </template>
                             </div>
 
-                            <div class="colorButton jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
+                            <div class="colorButton stv-btn stv-btn-shdw" title="New Panel" on-click="handleNewPanel">
                                 <i class="fa fa-plus"></i>&nbsp; New Panel
                             </div>
                         </div>
@@ -143,12 +139,12 @@
                             </team-panel-preview>
                         </div>
                     </div>
-                    <jso-panel fixed modal closable id="newPanelPanel" hidden>
+                    <stv-panel fixed modal closable id="newPanelPanel" hidden>
                         <div class="header" style="text-align:left;font-size:14px;">
                             <i class="fa fa-plus"></i> New Panel
                         </div>
                         <team-panel-form-wizard panel-config="{{panelConfig}}" id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" config-panel="{{configPanel}}"></team-panel-form-wizard>
-                    </jso-panel>
+                    </stv-panel>
 
                 </div>
                 <div class="step" style="width:400px;margin: 0 auto">
@@ -158,13 +154,13 @@
                     <div class="data">Description</label>
                         <textarea class="jso sgenesTextArea flex" value="{{jobDescription::change}}" required></textarea>
                     </div>
-                    <div class="colorButton jso-btn jso-btn-shdw file" style="width:200px;margin: 0 auto;margin-top:10px;" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
+                    <div class="colorButton stv-btn stv-btn-shdw file" style="width:200px;margin: 0 auto;margin-top:10px;" on-click="handleForm"><i class="fa fa-rocket"></i>&nbsp; Run
                     </div>
                     <span class="errmsg" style="margin-right: 50px;">{{errorMessage}}</span>
                 </div>
             </div>
-        </jso-wizard>
-        <jso-progress-bar id="progressBar" percent="{{percent}}" text="Launching jobs..." hidden></jso-progress-bar>
+        </stv-wizard>
+        <stv-progress-bar id="progressBar" percent="{{percent}}" text="Launching jobs..." hidden></stv-progress-bar>
     </template>
 </dom-module>
 <script>
