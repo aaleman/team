@@ -79,7 +79,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append("ct").append(SEPARATOR);
         sb.append("phylop").append(SEPARATOR);
         sb.append("phastcons").append(SEPARATOR);
-        sb.append("grep").append(SEPARATOR);
+        sb.append("gerp").append(SEPARATOR);
         sb.append("sift").append(SEPARATOR);
         sb.append("polyphen").append(SEPARATOR);
         sb.append("CADD").append(SEPARATOR);
@@ -146,11 +146,11 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
 
         String phylop = getConservedRegionScore(variant.getAnnotation().getConservation(), "phylop");
         String phastCons = getConservedRegionScore(variant.getAnnotation().getConservation(), "phastcons");
-        String grep = getConservedRegionScore(variant.getAnnotation().getConservation(), "grep");
+        String gerp = getConservedRegionScore(variant.getAnnotation().getConservation(), "gerp");
 
         sb.append(phylop).append(SEPARATOR);
         sb.append(phastCons).append(SEPARATOR);
-        sb.append(grep).append(SEPARATOR);
+        sb.append(gerp).append(SEPARATOR);
 
         String sift = getProteinSubstitutionScores(variant.getAnnotation().getConsequenceTypes(), "sift");
         String polyphen = getProteinSubstitutionScores(variant.getAnnotation().getConsequenceTypes(), "polyphen");
