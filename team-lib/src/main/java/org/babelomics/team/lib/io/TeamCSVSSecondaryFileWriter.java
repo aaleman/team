@@ -136,7 +136,7 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
             sb.append(".").append(SEPARATOR);
         }
 
-        Maf maf1000GP3 = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000GENOMES_phase_3", "ALL");
+        Maf maf1000GP3 = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1KG_phase3", "ALL");
 
         if (maf1000GP3 != null) {
             sb.append(df.format(maf1000GP3.maf)).append(SEPARATOR);
@@ -146,7 +146,7 @@ public class TeamCSVSSecondaryFileWriter extends TeamCSVDiagnosticFileWriter {
             sb.append(".").append(SEPARATOR);
         }
 
-        Maf mafESPALL = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP_6500", "ALL");
+        Maf mafESPALL = getMAF(variant.getAnnotation().getPopulationFrequencies(), "ESP6500", "ALL");
 
         if (mafESPALL != null) {
             sb.append(df.format(mafESPALL.maf)).append(SEPARATOR);

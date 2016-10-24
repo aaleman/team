@@ -172,7 +172,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
             sb.append(".").append(SEPARATOR);
         }
 
-        Maf maf1000GP3 = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1000GENOMES_phase_3", "ALL");
+        Maf maf1000GP3 = getMAF(variant.getAnnotation().getPopulationFrequencies(), "1KG_phase3", "ALL");
 
         if (maf1000GP3 != null) {
             sb.append(df.format(maf1000GP3.maf)).append(SEPARATOR);
