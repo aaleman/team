@@ -368,7 +368,7 @@
                         </div>
                     </div>
                 </stv-form-box>
-                <stv-filter-scores id="filterScores" collapsible collapsed enable-cadd></stv-filter-scores>
+                <stv-filter-scores id="filterScores" collapsible collapsed></stv-filter-scores>
                 <stv-filter-conservation id="filterConservation" collapsible collapsed></stv-filter-conservation>
                 <stv-filter-consequencetypes id="filterCT" collapsible collapsed data="{{data}}" enable-result></stv-filter-consequencetypes>
 
@@ -612,7 +612,7 @@
             if (phastcons != null) {
                 q["phastcons"] = phastcons;
             }
-            var gerp = this.$.filterConservation.checkGerp(2);
+            var gerp = this.$.filterConservation.checkGerp();
             if (gerp != null) {
                 q["gerp"] = gerp;
             }
