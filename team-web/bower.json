@@ -34,6 +34,7 @@
     "jsorolla": "https://github.com/opencb/jsorolla.git#develop-0.8",
     "stevia-elements": "https://github.com/babelomics/stevia-elements.git#master",
     "file-saver.js": "~1.20150507.2",
+    "FileSaver.js": "git://github.com/eligrey/FileSaver.js#1.3.3",
     "paper-slider": "^1.0.11",
     "async": "^2.0.1"
   }

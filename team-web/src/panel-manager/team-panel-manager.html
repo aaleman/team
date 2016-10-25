@@ -183,10 +183,10 @@
         <div id="left" class="vertical layout">
             <div class="titlePreview"><i class="fa fa-list"></i>&nbsp; User Panel List</div>
             <div class="horizontal layout" style="margin-bottom:5px;">
-                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
+                <div class="stv-btn stv-btn-shdw flex" on-click="handleView" data-value="main" data-checked$="{{computeView(view, 'main')}}">
                     <i class="fa fa-laptop"></i>&nbsp; Main
                 </div>
-                <div class="jso-btn jso-btn-shdw flex" on-click="handleView" data-value="archived" data-checked$="{{computeView(view, 'archived')}}">
+                <div class="stv-btn stv-btn-shdw flex" on-click="handleView" data-value="archived" data-checked$="{{computeView(view, 'archived')}}">
                     <i class="fa fa-inbox"></i>&nbsp; Archived
                 </div>
             </div>
@@ -228,11 +228,11 @@
                 </template>
             </div>
 
-            <div class="colorButton jso-btn jso-btn-shdw" title="New Panel" on-click="handleNewPanel">
+            <div class="colorButton stv-btn stv-btn-shdw" title="New Panel" on-click="handleNewPanel">
                 <i class="fa fa-plus"></i>&nbsp; New Panel
             </div>
 
-            <div class="jso-btn jso-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export panel to PDF/Print</div>
+            <div class="stv-btn stv-btn-shdw exportBut" on-click="handleExportPDF"><i class="fa fa-download"></i>&nbsp; Export panel to PDF/Print</div>
         </div>
 
         <div id="right">
@@ -243,14 +243,14 @@
             </team-panel-preview>
         </div>
 
-        <jso-panel fixed modal closable id="newPanelPanel" hidden>
+        <stv-panel fixed modal closable id="newPanelPanel" hidden>
             <div class="header" style="text-align:left;font-size:15px;">
                 <i class$="{{computeMode(mode)}}"></i>&nbsp;
                 <span>{{mode}}</span>&nbsp;
                 <span>Panel</span>
             </div>
             <team-panel-form-wizard panel-config="{{panelConfig}}" id="formWizard" class="container" team-config-folder="{{teamConfigFolder}}" default-study="{{defaultStudy}}" panels="{{panels}}"></team-panel-form-wizard>
-        </jso-panel>
+        </stv-panel>
 
         <team-panel-export id="panelExport">
         </team-panel-export hidden>

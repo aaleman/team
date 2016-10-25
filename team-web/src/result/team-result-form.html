@@ -1,8 +1,7 @@
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/jso-form-box.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-position.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-scores.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-conservation.html">
-<link rel="import" href="../../bower_components/jsorolla/src/lib/components/filters/jso-filter-consequencetypes.html">
+<link rel="import" href="../../bower_components/stevia-elements/src/filter/stv-filter-position.html">
+<link rel="import" href="../../bower_components/stevia-elements/src/filter/stv-filter-scores.html">
+<link rel="import" href="../../bower_components/stevia-elements/src/filter/stv-filter-conservation.html">
+<link rel="import" href="../../bower_components/stevia-elements/src/filter/stv-filter-consequencetypes.html">
 <link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 <dom-module id="team-result-form">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
@@ -29,7 +28,7 @@
             padding: 0 3px 5px 0;
         }
 
-        #bar > .jso-btn {
+        #bar > .stv-btn {
             margin: 0px 2px;
         }
 
@@ -97,10 +96,10 @@
             font-weight: bold;
         }
 
-        .maf-elem > .jso-select,
-        .pss-elem > .jso-select,
-        .conserv-elem > .jso-select,
-        .qual-elem > .jso-select {
+        .maf-elem > .stv-select,
+        .pss-elem > .stv-select,
+        .conserv-elem > .stv-select,
+        .qual-elem > .stv-select {
             width: 45px;
             margin-right: 3px;
             align-self: center;
@@ -132,7 +131,7 @@
             background-color: #f0f4f4 !important;
         }
 
-        jso-tooltip::shadow #messageInfo::shadow {
+        stv-tooltip::shadow #messageInfo::shadow {
             height: 300px;
             width: 500px;
             background-color: #e2e9e9;
@@ -141,7 +140,7 @@
             font-style: normal;
         }
 
-        jso-tooltip::shadow .closeInfo::shadow {
+        stv-tooltip::shadow .closeInfo::shadow {
             margin-left: 490px;
         }
 
@@ -161,6 +160,23 @@
 
         .butstyle {
             border-radius: 4px;
+            width: 100px;
+            background-color: var(--dark-button-color) !important;
+            color: var(--text-primary-color) !important;
+        }
+
+        .butstyle:hover {
+            background-color: var(--light-button-color) !important;
+        }
+
+        #filterHistoryTooltip {
+            border-radius: 4px;
+            background-color: var(--dark-button-color) !important;
+            color: var(--text-primary-color) !important;
+        }
+
+        #filterHistoryTooltip:hover {
+            background: var(--accent-color) !important;
         }
 
         .numFilter {
@@ -195,8 +211,8 @@
     <template>
         <form id="filter_form">
             <div id="bar" class="horizontal layout">
-                <jso-tooltip id="filterHistoryTooltip" class="jso-btn jso-btn-shdw butstyle" title="Filters History" icon="filter">
-                    <div class="jso-btn jso-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
+                <stv-tooltip id="filterHistoryTooltip" class="stv-btn stv-btn-shdw" title="Filters History" icon="filter">
+                    <div class="stv-btn stv-btn-shdw clear-but" title="Clear Filters History" on-click="clearFiltersHistory">
                         Clear
                     </div>
                     <div class="horizontal layout flex">
@@ -213,13 +229,13 @@
                             </div>
                         </template>
                     </div>
-                </jso-tooltip>
-                <div class="jso-btn jso-btn-shdw flex butstyle" on-click="clearForm">Clear</div>
-                <div class="jso-btn jso-btn-shdw flex butstyle" on-click="submitForm">Search</div>
+                </stv-tooltip>
+                <div class="stv-btn stv-btn-shdw flex butstyle" on-click="clearForm">Clear</div>
+                <div class="stv-btn stv-btn-shdw flex butstyle" on-click="submitForm">Search</div>
             </div>
             <div id="customFiltersForm">
-                <jso-filter-position id="filterPosition" collapsible enable-snpid></jso-filter-position>
-                <jso-form-box collapsible collapsed>
+                <stv-filter-position id="filterPosition" collapsible enable-snpid></stv-filter-position>
+                <stv-form-box collapsible collapsed>
                     <div class="header">
                         Population Freqs.
                     </div>
@@ -228,15 +244,15 @@
                         <label class="jso">1000G Phase 3</label>
 
                         <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="maf1000GP3_op" id="maf1000GP3_op">
-                                    <jso-option value="<" selected>
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">">></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="maf1000GP3_op" id="maf1000GP3_op">
+                                    <stv-option value="<" selected>
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">">></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="maf1000GP3" editable></paper-slider>
 
@@ -245,15 +261,15 @@
                         <label class="jso">ESP 6500</label>
 
                         <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="esp6500_op" id="esp6500_op">
-                                    <jso-option value="<" selected>
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">">></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="esp6500_op" id="esp6500_op">
+                                    <stv-option value="<" selected>
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">">></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="esp6500" editable></paper-slider>
 
@@ -262,15 +278,15 @@
                         <label class="jso">Spanish MAF</label>
 
                         <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="spanishmaf_op" id="spanishmaf_op">
-                                    <jso-option value="<" selected>
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">">></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="spanishmaf_op" id="spanishmaf_op">
+                                    <stv-option value="<" selected>
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">">></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="spanishmaf" editable></paper-slider>
 
@@ -279,57 +295,57 @@
                         <label class="jso">EXAC</label>
 
                         <div class="horizontal layout maf-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="mafEXAC_op" id="mafEXAC_op">
-                                    <jso-option value="<" selected>
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">">></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="mafEXAC_op" id="mafEXAC_op">
+                                    <stv-option value="<" selected>
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">">></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin min="0" max="1" step="0.0000001" on-value-change="sliderChange" value="0" class="sliderBar" id="mafEXAC" editable></paper-slider>
 
                         </div>
                     </div>
-                </jso-form-box>
+                </stv-form-box>
 
-                <jso-form-box collapsible collapsed>
+                <stv-form-box collapsible collapsed>
                     <div class="header">
                         Genotype
                     </div>
                     <div class="container vertical layout">
-                        <label class="jso-control horizontal layout" style="margin-bottom:2px;">
+                        <label class="stv-control horizontal layout" style="margin-bottom:2px;">
                             <input value="het" type="checkbox" name="gt">
                             <span class="flex">Heterozygous</span>
                             <span class="numFilter">{{numHeterozygous}}</span>
                         </label>
-                        <label class="jso-control horizontal layout" style="margin-top:2px;">
+                        <label class="stv-control horizontal layout" style="margin-top:2px;">
                             <input value="hom" type="checkbox" name="gt">
                             <span class="flex">Homozygous</span>
                             <span class="numFilter">{{numHomozygous}}</span>
                         </label>
                     </div>
-                </jso-form-box>
+                </stv-form-box>
 
 
-                <jso-form-box collapsible collapsed>
+                <stv-form-box collapsible collapsed>
                     <div class="header">
                         Quality
                     </div>
                     <div class="container vertical layout">
                         <label class="jso">QUAL </label>
                         <div class="horizontal layout qual-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="qual_op" id="qual_op">
-                                    <jso-option value="<">
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">" selected>></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="qual_op" id="qual_op">
+                                    <stv-option value="<">
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">" selected>></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="qual" editable></paper-slider>
                         </div>
@@ -338,23 +354,23 @@
                             <label class="jso">DP </label>
                         </div>
                         <div class="horizontal layout qual-elem">
-                            <div class="jso-select">
-                                <jso-select class="jso" name="dp_op" id="dp_op">
-                                    <jso-option value="<">
-                                        < </jso-option>
-                                            <jso-option value="<=">
-                                                <=< /jso-option>
-                                                    <jso-option value=">" selected>></jso-option>
-                                                    <jso-option value=">=">>=</jso-option>
-                                </jso-select>
+                            <div class="stv-select">
+                                <stv-select class="jso" name="dp_op" id="dp_op">
+                                    <stv-option value="<">
+                                        < </stv-option>
+                                            <stv-option value="<=">
+                                                <=</stv-option>
+                                                    <stv-option value=">" selected>></stv-option>
+                                                    <stv-option value=">=">>=</stv-option>
+                                </stv-select>
                             </div>
                             <paper-slider pin step=1 min="0" max="200000" on-value-change="sliderChange" value="100000" class="sliderBar" id="dp" editable></paper-slider>
                         </div>
                     </div>
-                </jso-form-box>
-                <jso-filter-scores id="filterScores" collapsible collapsed enable-cadd></jso-filter-scores>
-                <jso-filter-conservation id="filterConservation" collapsible collapsed></jso-filter-conservation>
-                <jso-filter-consequencetypes id="filterCT" collapsible collapsed data="{{data}}" enable-result></jso-filter-consequencetypes>
+                </stv-form-box>
+                <stv-filter-scores id="filterScores" collapsible collapsed></stv-filter-scores>
+                <stv-filter-conservation id="filterConservation" collapsible collapsed></stv-filter-conservation>
+                <stv-filter-consequencetypes id="filterCT" collapsible collapsed data="{{data}}" enable-result></stv-filter-consequencetypes>
 
             </div>
         </form>
@@ -439,7 +455,7 @@
             phastconsValue: {
                 type: Number,
             },
-            grepValue: {
+            gerpValue: {
                 type: Number,
             },
             historyFilters: {
@@ -596,9 +612,9 @@
             if (phastcons != null) {
                 q["phastcons"] = phastcons;
             }
-            var grep = this.$.filterConservation.checkGrep(2);
-            if (grep != null) {
-                q["grep"] = grep;
+            var gerp = this.$.filterConservation.checkGerp();
+            if (gerp != null) {
+                q["gerp"] = gerp;
             }
 
             var phylop = this.$.filterConservation.checkPhylop(2);
@@ -663,7 +679,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.grep != null || q["annot-ct"] != null || q["gt"] != null) {
+                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.gerp != null || q["annot-ct"] != null || q["gt"] != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -711,7 +727,7 @@
                 localStorage.bioinfo_team_filter_history = JSON.stringify(this.hash);
 
             }
-            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.grep != null || q["annot-ct"] != null || q["gt"] != null) {
+            if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.gerp != null || q["annot-ct"] != null || q["gt"] != null) {
                 document.getElementById('teamResultReport').computeFilter(1, this.jobId);
             }
         },
@@ -739,7 +755,7 @@
                     filterName.push(fC[i]);
                 }
             }
-            var fCg = this.$.filterConservation.loadGrep(hf);
+            var fCg = this.$.filterConservation.loadGerp(hf);
             if (fCg != "") {
                 filterName.push(fCg);
             }

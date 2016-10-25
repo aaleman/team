@@ -15,21 +15,21 @@
             padding: 13px 0px;
         }
 
-        jso-table {
+        stv-table {
             height: 365px;
             border: 1px solid #d0d0d0;
         }
 
-        jso-table::shadow .table-row {
+        stv-table::shadow .table-row {
             height: 25px;
         }
 
-        jso-table::shadow,
-        jso-variant-frequencies-grid::shadow jso-table::shadow {
+        stv-table::shadow,
+        jso-variant-frequencies-grid::shadow stv-table::shadow {
             font-size: 11px;
         }
 
-        jso-table::shadow .table-pager > input {
+        stv-table::shadow .table-pager > input {
             width: 40px !important;
         }
 
@@ -90,7 +90,7 @@
     </style>
     <template>
         <div class="title">{{title}}</div>
-        <jso-table id="table" data="{{_data}}" enable-paging enable-select enable-export enable-resize on-rowclick="handleRowClick"></jso-table>
+        <stv-table id="table" data="{{_data}}" enable-paging enable-select enable-export enable-resize on-rowclick="handleRowClick"></stv-table>
 
         <div class="title">
             Variant Data
@@ -250,8 +250,8 @@
             width: 50,
             defaultValue: '.'
         }, {
-            name: 'grep',
-            title: 'Grep',
+            name: 'gerp',
+            title: 'GERP',
             width: 50,
             defaultValue: '.'
         }, {
@@ -425,8 +425,8 @@
             width: 50,
             defaultValue: '.'
         }, {
-            name: 'grep',
-            title: 'Grep',
+            name: 'gerp',
+            title: 'GERP',
             width: 50,
             defaultValue: '.'
         }, {
@@ -794,8 +794,8 @@
                     match = this._computeInputOption(data.phylop, query);
                 } else if (key === "phastcons") {
                     match = this._computeInputOption(data.phastcons, query);
-                } else if (key === "grep") {
-                    match = this._computeInputOption(data.grep, query);
+                } else if (key === "gerp") {
+                    match = this._computeInputOption(data.gerp, query);
                 } else if (key === "annot-ct") {
                     ct_aux = data.ct.split(",");
                     match = this._checkValue(ct_aux, query);
