@@ -1,4 +1,3 @@
-
 <dom-module id="team-result-diagnostic">
     <style is="custom-style" include="iron-flex iron-flex-reverse iron-flex-alignment iron-flex-factors iron-positioning">
         :host {
@@ -201,6 +200,12 @@
                 var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
                 return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
             },
+            sort: function(a, b) {
+                var rsnum_a = parseInt(a.id.replace('rs', ''));
+                var rsnum_b = parseInt(b.id.replace('rs', ''));
+                return rsnum_a - rsnum_b;
+            }
+
         }, {
             name: 'qual',
             title: 'Qual',
@@ -376,6 +381,11 @@
                 var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
                 return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
             },
+            sort: function(a, b) {
+                var rsnum_a = parseInt(a.id.replace('rs', ''));
+                var rsnum_b = parseInt(b.id.replace('rs', ''));
+                return rsnum_a - rsnum_b;
+            }
         }, {
             name: 'qual',
             title: 'Qual',
@@ -640,15 +650,15 @@
             }
 
             this.$.table.exportParsers.headerParser = function(columns) {
-                  var headerLine = this.comment;
-                  for (var i = 0; i < columns.length; i++) {
-                      if (columns[i].type === "action" || columns[i].name == "beacon" || columns[i].name == "omim") {
-                          continue;
-                      }
-                      headerLine += columns[i].title + this.separator;
-                  }
-                  return headerLine;
-              }
+                var headerLine = this.comment;
+                for (var i = 0; i < columns.length; i++) {
+                    if (columns[i].type === "action" || columns[i].name == "beacon" || columns[i].name == "omim") {
+                        continue;
+                    }
+                    headerLine += columns[i].title + this.separator;
+                }
+                return headerLine;
+            }
 
             this.$.table.exportParsers.dataParser = function(columns, row) {
 
