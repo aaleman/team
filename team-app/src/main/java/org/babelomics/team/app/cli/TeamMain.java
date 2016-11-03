@@ -77,7 +77,6 @@ public class TeamMain {
         catalogProp.load(TeamMain.class.getClassLoader().getResourceAsStream("catalog.properties"));
         CatalogManager catalogManager = new CatalogManager(catalogProp);
 
-
         StorageConfiguration storageConfiguration = StorageConfiguration.load(TeamMain.class.getClassLoader().getResourceAsStream("storage-configuration.yml"));
 //        System.out.println(storageConfiguration);
         int batchSize = 1000;
