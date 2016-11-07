@@ -117,6 +117,12 @@
         .colorButton:hover {
             background-color: var(--light-button-color);
         }
+
+        .chart {
+            padding: 10px;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
     </style>
     <template>
         <div class="horizontal layout">
@@ -342,14 +348,16 @@
                             </div>
                             <br>
                             <div><b>Variants found for each gene in panel used:</b></div>
-                            <ul>
+                            <div id="genesChart" class="chart" hidden>
+                            </div>
+                            <!-- <ul>
                                 <div>
                                     <template is="dom-repeat" items="{{geneList}}">
                                         <span style="margin-right:50px;">{{item.gene}}
                                     <span>:&nbsp;<b>{{item.value}}</b></span></span>
                                     </template>
                                 </div>
-                            </ul>
+                            </ul> -->
                         </ul>
                     </div>
                 </div>
@@ -451,9 +459,9 @@
                 type: Array,
             },
             geneList: {
-                type: Array,
+                type: Object,
                 value: function() {
-                    return [];
+                    return {};
                 }
             },
             _columnsDiag: {
@@ -727,7 +735,7 @@
         },
 
         searchNameChanged: function(e) {
-          var me=this;
+            var me = this;
             if (this.search.length == 4) {
                 var formData = {};
                 formData.SearchText = this.search + '*';
@@ -889,31 +897,32 @@
 
         },
         geneMapChange: function(neo, old) {
-            if (this.geneNames != null && this.geneNames.length > 0 && neo != null) {
-                var list = [];
-                for (var i = 0; i < this.geneNames.length; i++) {
-                    var key = this.geneNames[i];
-                    this.push('geneList', {
-                        gene: key,
-                        value: neo[key]
-                    });
-                    // list[i] = {
-                    //     gene: key,
-                    //     value: neo[key]
-                    // }
-                }
-                // this.set('geneList',list)
-
-                // var genListColumns = [{
-                //     name: 'gene',
-                //     title: 'Gene',
-                // }, {
-                //     name: 'value',
-                //     title: 'Variants Found',
-                // }];
-
-                // this._getTable(genListColumns, dataList, this.$.reportGeneList);
-            }
+            // if (this.geneNames != null && this.geneNames.length > 0 && neo != null) {
+            //     var list = [];
+            //     for (var i = 0; i < this.geneNames.length; i++) {
+            //         var key = this.geneNames[i];
+            //         this.push('geneList', {
+            //             gene: key,
+            //             value: neo[key]
+            //         });
+            //         // list[i] = {
+            //         //     gene: key,
+            //         //     value: neo[key]
+            //         // }
+            //     }
+            //     // this.set('geneList',list)
+            //
+            //     // var genListColumns = [{
+            //     //     name: 'gene',
+            //     //     title: 'Gene',
+            //     // }, {
+            //     //     name: 'value',
+            //     //     title: 'Variants Found',
+            //     // }];
+            //
+            //     // this._getTable(genListColumns, dataList, this.$.reportGeneList);
+            // }
+                this._createGenesChart(neo, Object.keys(neo));
         },
 
         _getTable: function(columns, data, ref) {
@@ -928,6 +937,7 @@
         },
         jobChanged: function(neo, old) {
             var me = this;
+            this.$.genesChart.hidden = true;
             if (neo.id) {
                 this.getJobPanel();
                 var inputValues = this.$.reportOptions.querySelectorAll('input');
@@ -1086,6 +1096,62 @@
             } else {
                 this.$.panelExport.exportPDF(this.selectedPanel);
             }
-        }
+        },
+        _createGenesChart: function(map, gen) {
+            var renderTo = this.$.genesChart;
+            var title = "Number of Variants/GEN";
+            this.$.genesChart.hidden = false;
+
+            var value = [];
+            for (var i = 0; i < gen.length; i++) {
+                var key = gen[i];
+                value[i] = map[key];
+            }
+            var chart = new Highcharts.Chart({
+                chart: {
+                    type: 'column',
+                    renderTo: renderTo,
+                    width: 550
+                },
+                credits: {
+                    enabled: false
+                },
+                pane: {
+                    size: 60
+                },
+                legend: {
+                    enabled: false
+                },
+                title: {
+                    text: title,
+                },
+                xAxis: {
+                    categories: gen,
+                    labels: {
+                        rotation: -45,
+                        style: {
+                            fontSize: '10px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    },
+                    title: {
+                        text: null
+                    }
+                },
+
+                yAxis: {
+                    title: {
+                        text: 'Variants'
+                    },
+                    min: 0
+                },
+
+                series: [{
+                    name: "Variants",
+                    data: value,
+                }]
+
+            });
+        },
     });
 </script>
