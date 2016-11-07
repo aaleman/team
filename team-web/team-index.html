@@ -119,24 +119,26 @@
         function init() {
             team = document.createElement('team-element');
             document.body.appendChild(team);
+            team.set('maintenance', 'Tue Nov 08 2016 10:30:00 GMT+0100 (CET),Tue Nov 08 2016 11:30:00 GMT+0100 (CET)');
         };
 
         function getSpecies(callback) {
             CellBaseManager.get({
-                host: CELLBASE_HOST,
-                category: "meta",
-                subCategory: "species",
-                success: function(r) {
-                    var taxonomies = r.response[0].result[0];
-                    for (var taxonomy in taxonomies) {
-                        var newSpecies = [];
-                        for (var i = 0; i < taxonomies[taxonomy].length; i++) {
-                            var species = taxonomies[taxonomy][i];
-                            for (var j = 0; j < species.assemblies.length; j++) {
-                                var s = Utils.clone(species)
-                                s.assembly = species.assemblies[j];
-                                delete s.assemblies;
-                                newSpecies.push(s)
+                    host: CELLBASE_HOST,
+                    category: "meta",
+                    subCategory: "species",
+                    success: function(r) {
+                        var taxonomies = r.response[0].result[0];
+                        for (var taxonomy in taxonomies) {
+                            var newSpecies = [];
+                            for (var i = 0; i < taxonomies[taxonomy].length; i++) {
+                                var species = taxonomies[taxonomy][i];
+                                for (var j = 0; j < species.assemblies.length; j++) {
+                                    var s = Utils.clone(species)
+                                    s.assembly = species.assemblies[j];
+                                    delete s.assemblies;
+                                    newSpecies.push(s)
+                                }
                             }
                         }
                         taxonomies[taxonomy] = newSpecies;
