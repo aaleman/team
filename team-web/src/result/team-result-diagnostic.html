@@ -197,8 +197,13 @@
             width: 80,
             defaultValue: '.',
             formula: function(row) {
-                var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
-                return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
+                var ids = row.id.split(",");
+                var links = [];
+                for (var i = 0; i < ids.length; i++) {
+                    var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + ids[i] + ";vdb=variation";
+                    links.push('<a href="' + url + '" target="_blank">' + ids[i] + '</a>');
+                }
+                return links.join(",");
             },
             sort: function(a, b) {
                 var rsnum_a = parseInt(a.id.replace('rs', ''));
@@ -378,8 +383,13 @@
             width: 80,
             defaultValue: '.',
             formula: function(row) {
-                var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + row.id + ";vdb=variation";
-                return '<a href="' + url + '" target="_blank">' + row.id + '</a>'
+              var ids = row.id.split(",");
+              var links = [];
+              for (var i = 0; i < ids.length; i++) {
+                  var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + ids[i] + ";vdb=variation";
+                  links.push('<a href="' + url + '" target="_blank">' + ids[i] + '</a>');
+              }
+              return links.join(",");
             },
             sort: function(a, b) {
                 var rsnum_a = parseInt(a.id.replace('rs', ''));
