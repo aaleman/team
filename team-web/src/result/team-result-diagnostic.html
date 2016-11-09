@@ -42,6 +42,7 @@
 
         #tools {
             margin-top: 5px;
+            width: 100%;
         }
 
         #commentsTextArea {
@@ -95,25 +96,25 @@
             Variant Data
         </div>
         <div id="menu" class="horizontal layout">
-            <div class="tabs" on-click="handleMenuClick" data-option="overview" data-value="overview" data-checked$="{{computeView(view, 'overview')}}">Overview
+            <div class="tabs" on-click="handleMenuClick" data-option="overview" data-value="overview">Overview
             </div>
-            <div class="tabs" on-click="handleMenuClick" data-option="comments" data-value="comments" data-checked$="{{computeView(view, 'comments')}}">Comments
+            <div class="tabs" on-click="handleMenuClick" data-option="comments" data-value="comments">Comments
             </div>
-            <div class="tabs" on-click="handleMenuClick" data-option="frequency" data-value="frequency" data-checked$="{{computeView(view, 'frequency')}}">Frequencies
+            <div class="tabs" on-click="handleMenuClick" data-option="frequency" data-value="frequency">Frequencies
             </div>
-            <div class="tabs" on-click="handleMenuClick" data-option="gv" data-value="gv" data-checked$="{{computeView(view, 'gv')}}">Genome Viewer
+            <div class="tabs" on-click="handleMenuClick" data-option="gv" data-value="gv">Genome Viewer
             </div>
         </div>
 
         <div id="tools">
-            <jso-variant-overview id="overview" hidden$="{{!computeView(view, 'overview')}}"></jso-variant-overview>
-            <div id="comments" hidden$="{{!computeView(view, 'comments')}}">
+            <jso-variant-overview id="overview"></jso-variant-overview>
+            <div id="comments" hidden>
                 <div style="margin-top: 10px">
                     <textarea id="commentsTextArea" class="jso commentsTextArea" placeholder="Comments..."></textarea>
                 </div>
             </div>
-            <jso-variant-frequencies-grid id="frequency" hidden$="{{!computeView(view, 'frequency')}}"></jso-variant-frequencies-grid>
-            <jso-genome-viewer-element id="gv" hidden$="{{!computeView(view, 'gv')}}" on-hidden="handleGenomeViewerHidden"></jso-genome-viewer-element>
+            <jso-variant-frequencies-grid id="frequency" hidden></jso-variant-frequencies-grid>
+            <jso-genome-viewer-element id="gv" hidden on-hidden="handleGenomeViewerHidden"></jso-genome-viewer-element>
             <br>
         </div>
     </template>
@@ -383,13 +384,13 @@
             width: 80,
             defaultValue: '.',
             formula: function(row) {
-              var ids = row.id.split(",");
-              var links = [];
-              for (var i = 0; i < ids.length; i++) {
-                  var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + ids[i] + ";vdb=variation";
-                  links.push('<a href="' + url + '" target="_blank">' + ids[i] + '</a>');
-              }
-              return links.join(",");
+                var ids = row.id.split(",");
+                var links = [];
+                for (var i = 0; i < ids.length; i++) {
+                    var url = "http://www.ensembl.org/Homo_sapiens/Variation/Explore?r=" + row.chr + ":" + row.pos + "-" + row.pos + ";v=" + ids[i] + ";vdb=variation";
+                    links.push('<a href="' + url + '" target="_blank">' + ids[i] + '</a>');
+                }
+                return links.join(",");
             },
             sort: function(a, b) {
                 var rsnum_a = parseInt(a.id.replace('rs', ''));
@@ -652,6 +653,7 @@
         }],
 
         ready: function() {
+            this.selectedMenuTool = this.$.menu.querySelector('div');
             var me = this;
             if (this.typeData == "diagnostic") {
                 this.$.table.columns = this._columnsDiag;
@@ -929,7 +931,7 @@
         },
         handleMenuClick: function(e) {
             if (this._data[0] != null) {
-                this.view = e.target.dataset.value;
+                this.selectedMenuTool = e.currentTarget;
             }
         },
         computeView: function(view, value) {
