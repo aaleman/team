@@ -21,6 +21,8 @@
 <link rel="import" href="bower_components/stevia-elements/src/stv-import-file.html">
 <link rel="import" href="bower_components/stevia-elements/src/validator/stv-validator.html">
 <link rel="import" href="bower_components/stevia-elements/src/dropdown/stv-dropdown.html">
+<link rel="import" href="bower_components/stevia-elements/src/variant/stv-variant-overview.html">
+<link rel="import" href="bower_components/stevia-elements/src/variant/stv-variant-frequencies.html">
 <script src="bower_components/stevia-elements/src/validator/bed-validator.js"></script>
 
 <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-application-behavior.html">
@@ -33,8 +35,6 @@
 <!-- <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-opencga-button-tooltip.html"> -->
 <!-- <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-help-menu.html"> -->
 <link rel="import" href="bower_components/jsorolla/src/lib/components/jso-genome-viewer-element.html">
-<link rel="import" href="bower_components/jsorolla/src/lib/components/variant/jso-variant-overview.html">
-<link rel="import" href="bower_components/jsorolla/src/lib/components/variant/jso-variant-frequencies-grid.html">
 <link rel="import" href="bower_components/jsorolla/src/lib/components/table/jso-table.html">
 <link rel="import" href="bower_components/jsorolla/src/lib/validator/jso-validator.html">
 <script src="bower_components/jsorolla/src/lib/validator/bed-validator.js"></script>
@@ -286,12 +286,14 @@
             </div>
 
             <span class="title">TEAM-ivo</span>
-            <span class="description">1.2.0</span>
+            <span class="description">1.2.1</span>
 
             <div id="menu" class="menu horizontal layout flex">
-                <!-- <div style="margin-left:4vw;"></div> -->
-
-
+                <div style="margin-left:4vw;"></div>
+                <div class="option" on-click="handleMenuOption" data-option="home" title="Go to home page">
+                    <i class="fa fa-home"></i>
+                    <span class="option-text">Home</span>
+                </div>
                 <div style="margin-left:2vw;"></div>
                 <div title="New Diagnosis" class="option" on-click="handleMenuOption" data-option="newdiagnostic">
                     <i class="fa fa-stethoscope"></i>
@@ -323,10 +325,8 @@
                     <i class="fa fa-user-md"></i>
                     <span class="option-text">Diagnostics</span>
                 </div>
-                <div class="flex"></div>
-                <div class="option" on-click="handleMenuOption" data-option="home" title="Go to home page" style="font-size:30px">
-                    <i class="fa fa-home"></i>
-                </div>
+                <div style="margin-left:2vw;"></div>
+
             </div>
 
             <stv-dropdown dark class="helpmenu">
