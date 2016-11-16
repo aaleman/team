@@ -82,7 +82,7 @@ public class TeamCSVDiagnosticFileWriter implements DataWriter<TeamVariant> {
         sb.append("gerp").append(SEPARATOR);
         sb.append("sift").append(SEPARATOR);
         sb.append("polyphen").append(SEPARATOR);
-        sb.append("CADD").append(SEPARATOR);
+        sb.append("cadd").append(SEPARATOR);
 
         sb.append("MAF 1000G").append(SEPARATOR);
         sb.append("MAF 1000G (Allele)").append(SEPARATOR);
