@@ -1189,7 +1189,7 @@
 
                 if (bed_file != null) {
 
-                    var _navigator = new FileNavigator(bed_file);
+                    var _navigator = new LineNavigator(bed_file);
                     var indexToStartWith = 0;
 
                     _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
@@ -1279,7 +1279,7 @@
 
                 if (vcf_file != null) {
 
-                    var _navigator = new FileNavigator(vcf_file);
+                    var _navigator = new LineNavigator(vcf_file);
                     var indexToStartWith = 0;
 
                     _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
@@ -1334,7 +1334,7 @@
                     separator = (separator === "tab") ? '\t' : separator;
                     var ignoreHeader = me.$.mutationCSVHeader.checked;
 
-                    var _navigator = new FileNavigator(csv_file);
+                    var _navigator = new LineNavigator(csv_file);
                     var indexToStartWith = 0;
 
                     _navigator.readSomeLines(indexToStartWith, function linesReadHandler(err, index, lines, eof, progress) {
