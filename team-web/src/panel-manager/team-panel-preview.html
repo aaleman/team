@@ -6,9 +6,6 @@
             box-sizing: border-box;
             width: 600px;
             height: 100%;
-            /*padding: 10px;*/
-            /*height: 500px;*/
-            /*@apply(--layout-horizontal);*/
         }
 
         stv-table {
@@ -20,19 +17,6 @@
             color: #666;
         }
 
-        #table {
-            position: relative;
-            height: calc(100% - 42px);
-        }
-
-        #table > div {
-            position: relative;
-            height: 100%;
-        }
-        /*stv-table::shadow .table-row {
-            height: 15px;
-        }*/
-
         stv-table::shadow {
             font-size: 11px;
         }
@@ -41,56 +25,15 @@
             width: 40px !important;
         }
 
-        .information {
-            box-sizing: border-box;
-            /*border: 1px solid var(--divider-color);*/
-            /*box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);*/
-            padding: 10px;
-            /*background-color: #ffffff*/
-            height: 100px;
-        }
-
-        .tabwrap {
-            box-sizing: border-box;
-            position: relative;
-            border: 1px solid var(--divider-color);
-            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+        stv-tab {
+            min-height: 300px;
             height: calc(100% - 100px);
         }
 
-        .tab {
-            height: 20px;
-            line-height: 20px;
-            font-size: 14px;
-            width: 150px;
-            padding: 5px 10px;
-            color: #666;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-
-        .tab[data-checked] {
-            background-color: #fff;
-            border-top-left-radius: 7px;
-            border-top-right-radius: 7px;
-            color: #222;
-            border: 1px solid #ddd;
-            border-bottom: 1px solid transparent;
-            box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.1);
-        }
-
-        .tab:hover {
-            /*background-color: #eee;*/
-            /*border-radius: 7px;*/
-            color: #8ba7a7;
-            font-weight: bold;
-        }
-
-        #submenu {
-            background-color: #e2e9e9;
-            padding-left: 10px;
-            padding-top: 10px;
+        .information {
+            box-sizing: border-box;
+            padding: 10px;
+            height: 100px;
         }
     </style>
     <template>
@@ -104,31 +47,17 @@
             <span class="data">Description:</span> &nbsp; {{desc}}
         </div>
 
-        <div class="tabwrap">
-            <div id="submenu" class="horizontal layout">
-                <div class="tab" on-click="handleOptions" data-value="diseases" data-checked$="{{computeOptions(option, 'diseases')}}">
-                    Diseases
-                </div>
-                <div class="tab" on-click="handleOptions" data-value="genes" data-checked$="{{computeOptions(option, 'genes')}}">
-                    Genes/Regions
-                </div>
-                <div class="tab" on-click="handleOptions" data-value="mutations" data-checked$="{{computeOptions(option, 'mutations')}}">
-                    Mutations
-                </div>
-                <div class="tab flex" style="cursor:default"></div>
+        <stv-tab>
+            <div class="tabContainer" data-tab="diseases">
+                <stv-table id="diseaseTable" columns="{{diseaseColumns}}" enable-paging hide-column-selector></stv-table>
             </div>
-            <div id="table">
-                <div hidden$="{{!computeOptions(option, 'diseases')}}" id="diseases">
-                    <stv-table id="diseaseTable" columns="{{diseaseColumns}}" enable-paging hide-column-selector></stv-table>
-                </div>
-                <div hidden$="{{!computeOptions(option, 'genes')}}" id="genes">
-                    <stv-table id="geneTable" columns="{{geneColumns}}" enable-paging hide-column-selector> </stv-table>
-                </div>
-                <div hidden$="{{!computeOptions(option, 'mutations')}}" id="mutations">
-                    <stv-table id="mutationTable" columns="{{mutationColumns}}" enable-paging hide-column-selector></stv-table>
-                </div>
+            <div class="tabContainer" data-tab="genes">
+                <stv-table id="geneTable" columns="{{geneColumns}}" enable-paging hide-column-selector> </stv-table>
             </div>
-        </div>
+            <div class="tabContainer" data-tab="mutations">
+                <stv-table id="mutationTable" columns="{{mutationColumns}}" enable-paging hide-column-selector></stv-table>
+            </div>
+        </stv-tab>
 
     </template>
 
@@ -217,16 +146,6 @@
                     width: 240
                 }];
 
-            },
-
-            handleOptions: function(e) {
-                this.option = e.target.dataset.value;
-                this.diseases = this.selectedPanel.diseases;
-                this.genes = this.selectedPanel.genes;
-                this.mutations = this.selectedPanel.mutations;
-            },
-            computeOptions: function(option, value) {
-                return option === value;
             },
             selectedPanelChanged: function(neo, old) {
                 if (Object.keys(neo).length > 0) {
