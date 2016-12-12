@@ -231,7 +231,7 @@
                     </div>
                 </stv-tooltip>
                 <div class="stv-btn stv-btn-shdw flex butstyle" on-click="clearForm">Clear</div>
-                <div class="stv-btn stv-btn-shdw flex butstyle" on-click="submitForm">Search</div>
+                <div class="stv-btn stv-btn-shdw flex butstyle" on-click="handleSubmitClick">Search</div>
             </div>
             <div id="customFiltersForm">
                 <stv-filter-position id="filterPosition" collapsible enable-snpid></stv-filter-position>
@@ -514,7 +514,7 @@
         fileChanged: function(neo, old) {
             if (neo) {
                 //                this.clearForm();
-                //                this.submitForm();
+                //                this.handleSubmitClick();
             }
         },
         handleFeatureSelected: function(e) {
@@ -563,10 +563,16 @@
                 el.checked = false;
             }
 
-            this.submitForm();
+            this.handleSubmitClick();
             document.getElementById('teamResultReport').computeFilter(0, this.jobId);
         },
-        submitForm: function() {
+        handleSubmitClick: function() {
+            var me = this;
+            this.$.filterPosition.checkGene(function(geneQuery) {
+                me.submitForm(geneQuery);
+            });
+        },
+        submitForm: function(geneQuery) {
             var hash = {};
             var q = {};
 
@@ -577,7 +583,7 @@
                 q["region"] = regionQuery;
             }
 
-            var geneQuery = this.$.filterPosition.checkGene();
+            // var geneQuery = this.$.filterPosition.checkGene();
             if (geneQuery != null) {
                 q["gene"] = geneQuery;
             }
@@ -679,7 +685,7 @@
             }
 
             if (_load == -1) { // This filter is new (has not been selected from the history)
-                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.gerp != null || q.cadd != null ||q["annot-ct"] != null || q["gt"] != null) {
+                if (q.region != null || q.gene != null || q.ids != null || q.dp != null || q.qual != null || q.maf1000GP3 != null || q.esp6500 != null || q.spanishmaf != null || q.mafEXAC != null || q.sift != null || q.polyphen != null || q.phylop != null || q.phastcons != null || q.gerp != null || q.cadd != null || q["annot-ct"] != null || q["gt"] != null) {
                     var dateAux = new Date();
                     var minAux = dateAux.getMinutes();
                     if (minAux < 10) {
@@ -827,7 +833,7 @@
             this.clearForm();
             this.loadForm(e.currentTarget.dataFilter);
             this.$.filterHistoryTooltip.handleClose(e);
-            this.submitForm();
+            this.handleSubmitClick();
 
         },
         clearFiltersHistory: function(e) {

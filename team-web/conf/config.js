@@ -2,8 +2,9 @@
 CELLBASE_HOST ="http://ws.babelomics.org/cellbase";
 CELLBASE_VERSION = "v4";
 
-// OPENCGA_HOST = "http://test.babelomics.org/opencga-0.7-new";
 OPENCGA_HOST = "http://test.babelomics.org/opencga-0.7-dev";
+// OPENCGA_HOST = "http://test.babelomics.org/opencga-0.7-new";
+// OPENCGA_HOST = "http://ws.babelomics.org/opencga-0.7-courses";
 
 CONTACT_MAIL = 'bioinfo.notifications@cipf.es';
 
